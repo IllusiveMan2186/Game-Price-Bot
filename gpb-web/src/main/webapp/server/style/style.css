@@ -1,0 +1,496 @@
+
+body {
+    margin: 0;
+}
+
+.account {
+    padding: 18px 0 14px;
+}
+
+.account_right{
+    position:absolute;
+    right: 1em;
+    display: flex;
+    justify-content: space-between;
+}
+
+.account_sing_in{
+    background:white;
+    border: 0;
+    font-size: 20px;
+    color: black;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.account_img{
+    width:30px;
+    height:30px;
+}
+
+.main-menu {
+    margin-top: 1em;
+    width: 100%;
+    background: #282828;
+    list-style: none;
+}
+
+.main-menu a {
+    color: white;
+    font-size: 30px;
+    padding: 14px 25px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.login_form {
+    margin-right: 35%;
+    margin-left: 35%;
+    margin-top: 30px;
+    background-color: #cfdbff;
+    box-shadow: 0 10px 30px 0 rgba(0,0,0,.1);
+    padding: 10px 27px 15px;
+}
+
+
+.login_form_input {
+    display: block;
+    width: 100%;
+    font-size: 20px;
+    height: 36px;
+    border-radius: 5px;
+    padding-left: 10px;
+    border: 1px solid rgba(23,113,185,.2);
+}
+
+.login_form_label{
+    display: inline-block;
+    color: #999;
+    padding-bottom: 6px;
+    font-size: 13px;
+}
+
+.login_form_title {
+    text-align: center;
+    display: block;
+    color: #333;
+    font-size: 20px;
+}
+
+.login_form_row {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 17px;
+    padding-bottom: 10px;
+}
+
+.login_form_forget-link {
+    display: inline-block;
+    color: #1771b9;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.login_form_login_button{
+    border: 0;
+    padding: 0;
+    background-color: #4aacfb;
+    color: white;
+    margin-top: 1em;
+    padding: 14px 25px;
+}
+
+.login_form_close_button{
+    background-color: #cfdbff;
+    border: 0;
+    padding: 0;
+    color: black;
+    position:absolute;
+    margin-top: 0.3em;
+    right: 0.3em;
+    padding: 5px 5px;
+}
+
+.register a{
+    display: inline-block;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13px;
+    color: #1771b9;
+    margin-top: 18px;
+}
+
+.register_form{
+    margin-right: 35%;
+    margin-left: 35%;
+    margin-top: 30px;
+    background-color: #cfdbff;
+    box-shadow: 0 10px 30px 0 rgba(0,0,0,.1);
+    padding: 10px 27px 15px;
+}
+
+.register_form_title {
+    text-align: center;
+    display: block;
+    color: #333;
+    font-size: 20px;
+}
+
+.register_form_input {
+    display: block;
+    width: 100%;
+    font-size: 20px;
+    height: 36px;
+    border-radius: 5px;
+    padding-left: 10px;
+    border: 1px solid rgba(23,113,185,.2);
+}
+
+.register_form_label{
+    display: inline-block;
+    color: #999;
+    padding-bottom: 6px;
+    font-size: 13px;
+}
+
+.register_form_login_button{
+    border: 0;
+    padding: 0;
+    background-color: #4aacfb;
+    color: white;
+    margin-top: 1em;
+    padding: 14px 25px;
+}
+
+.error_validate{
+        font-size: 13px;
+        color: #e44d4d;
+        display: block;
+}
+
+
+.products{
+    width:1200px;
+    margin-right: 15%;
+    margin-left: 7%;
+}
+
+.products_sort_top_panel{
+    margin-top:10px;
+    margin-left: 29%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.sort_message{
+    padding-left: 15px;
+    padding-top:15px;
+}
+
+.select_sort{
+    width: 100px;
+    height: 30px;
+    text-align: center;
+    padding-left: 15px;
+}
+
+.products_search{
+    float: left;
+    width: 70%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.products_search_input{
+     width: 600px;
+     border: none;
+     font-size: 13px;
+     padding: 17px 17px 16px 17px;
+     border: 1px solid rgba(23,113,185,.2);
+     border-radius: 4px;
+     background-color: #fff;
+     height: 50px;
+}
+
+.products_search_btn{
+     padding-bottom: 10px;
+     height: 50px;
+     width: 50px;
+     background: white;
+     border: 0;
+     margin-top:10px;
+}
+
+.products_sort_left_panel{
+    float: left;
+    margin-left: 1%;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 28px 20px;
+    width:280px;
+}
+
+.products_price{
+}
+
+.products_price_label{
+    font-size: 23px;
+    color: #666;
+    font-weight: 500;
+}
+
+.products_price_between_inputs{
+    display:inline-block;
+    padding_right: 5px;
+    padding_left: 5px;
+}
+
+.products_price_input {
+    display:inline-block;
+    width: 90px;
+    height: 25px;
+    border: 1px solid rgba(0,0,0,.1);
+    border-radius: 4px;
+    color: #666;
+    font-weight: 700;
+    font-size: 13px;
+    padding-left: 13px;
+}
+
+.products_option{
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.products_option_label{
+    font-size: 23px;
+    width: 200px;
+}
+
+.products_option_list {
+    display:none;
+    flex-direction: column;
+}
+
+.open {
+   display:block;
+}
+
+.products_option_list_value {
+    flex-direction: column;
+    width: 200px;
+}
+
+.products_list  {
+    float: right;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    width: 850px;
+    min-width:540px;
+    margin-top: 5px;
+}
+
+.product_item {
+    width:100%;
+    border: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 7px;
+    text-decoration: none;
+    height: 350px;
+}
+
+.product_item_img{
+   width:230px;
+   height:230px;
+   margin-left: 10px;
+   padding-top: 10px;
+   padding-bottom: 10px;
+}
+
+.product_item_information {
+   margin-left: 15px;
+   flex-direction: column;
+   width: 400px;
+}
+
+.product_item_name{
+   font-size: 22px;
+   color: #333;
+}
+
+.product_item_data{
+   margin-top: 25px;
+   font-size: 12px;
+   color: #666;
+}
+
+.product_item_price_information {
+   margin-right: 10px;
+   width: 130px;
+   flex-direction: column;
+}
+
+.product_item_price {
+    margin-left: 30px;
+    margin-right: 10px;
+    width: 125px;
+    font-size: 26px;
+}
+
+.product_item_count {
+    display: flex;
+}
+
+.product_item_count_button {
+    border: 0;
+    padding: 0;
+    margin-left: 20px;
+    background-color: white;
+    font-size: 26px;
+}
+
+.product_item_current_count {
+    margin-left: 20px;
+    font-size: 30px;
+}
+
+.product_item_btn {
+   width: 130px;
+   padding-top: 10px;
+   padding-bottom: 10px;
+   text-align: center;
+   background-color: #4aacfb;
+   color: white;
+}
+
+.product_list_load_more_items{
+   width: 100%;
+   padding-top: 12px;
+   padding-bottom: 10px;
+   text-align: center;
+   background-color: #4aacfb;
+   color: white;
+   padding-top: 12px;
+}
+
+.products_pages{
+   height:23px;
+   display:inline-block;
+}
+
+.products_page{
+   font-size: 23px;
+   display: inline;
+   margin-right: 20px;
+   border: 2px solid #000;
+   padding: 6px;
+}
+
+.home{
+   margin-right: 25%;
+   margin-left: 25%;
+   margin-top: 1%;
+   margin-bottom: 1%;
+   width: 50%;
+   min-width:540px;
+}
+
+.home_label{
+   float: bottom;
+   display: inline-block;
+   color: #999;
+   padding-bottom: 6px;
+   font-size: 50px;
+}
+
+.sho_all_product{
+   margin-right: 45%;
+   margin-left: 45%;
+}
+
+.flex {
+    display:flex;
+}
+
+.none {
+   display:none;
+}
+
+.selected_product{
+   position: fixed;
+   width:100%;
+   border: 1px solid #eee;
+   justify-content: space-between;
+   align-items: center;
+   margin-bottom: 7px;
+   text-decoration: none;
+   height: 300px;
+   top: 25%;
+   right: 25%;
+   width:800px;
+   background:#CBCBCB;
+}
+
+.basket_list {
+    margin-top: 1%;
+    margin-bottom: 1%;
+    width: 850px;
+    min-width:540px;
+    margin-top: 5px;
+}
+
+.basket_item {
+    width:1000px;
+    border: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 7px;
+    text-decoration: none;
+    height: 250px;
+}
+
+.basket_item_price_information {
+   margin-right: 10px;
+   width: 130px;
+   height: 100px;
+   flex-direction: column;
+}
+
+.basket_bottom_panel {
+   margin-right: 35%;
+   font-size: 30px;
+}
+
+.order_form {
+    display: flex;
+    flex-direction: column;
+    margin-right: 35%;
+    margin-left: 35%;
+    margin-top: 30px;
+    background-color: #cfdbff;
+    box-shadow: 0 10px 30px 0 rgba(0,0,0,.1);
+    padding: 10px 27px 15px;
+}
+
+.option_inputs{
+    display: none;
+}
+
+.error {
+    display: flex;
+    flex-direction: column;
+    margin-right: 35%;
+    margin-left: 35%;
+    margin-top: 30px;
+    background-color: #cfdbff;
+    box-shadow: 0 10px 30px 0 rgba(0,0,0,.1);
+    padding: 10px 27px 15px;
+}
+
+.error_label_head {
+    font-size:45px
+}
