@@ -1,0 +1,114 @@
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
+
+    <welcome-file-list>
+        <welcome-file>products</welcome-file>
+    </welcome-file-list>
+
+    <context-param>
+        <param-name>captchaSaveStrategy</param-name>
+        <param-value>cookie</param-value>
+    </context-param>
+    <context-param>
+        <param-name>TimeOut</param-name>
+        <param-value>120</param-value>
+    </context-param>
+    <context-param>
+         <param-name>TimeOut</param-name>
+         <param-value>120</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>lockTimeMinute</param-name>
+        <param-value>5</param-value>
+    </context-param>
+    <context-param>
+        <param-name>loginFailedCount</param-name>
+        <param-value>5</param-value>
+    </context-param>
+    <context-param>
+        <param-name>loginFailedTimeMinute</param-name>
+        <param-value>10</param-value>
+    </context-param>
+
+
+    <filter>
+        <filter-name>LocaleFilter</filter-name>
+        <filter-class>filter.LocaleFilter</filter-class>
+        <init-param>
+            <param-name>locales</param-name>
+            <param-value>en,ru</param-value>
+        </init-param>
+        <init-param>
+            <param-name>defaultLocales</param-name>
+            <param-value>ru</param-value>
+        </init-param>
+        <init-param>
+            <param-name>strategy</param-name>
+            <param-value>cookie</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>LocaleFilter</filter-name>
+        <url-pattern>/addToBasket</url-pattern>
+        <url-pattern>/basket</url-pattern>
+        <url-pattern>/changeCount</url-pattern>
+        <url-pattern>/clearBasket</url-pattern>
+        <url-pattern>/getOrder</url-pattern>
+        <url-pattern>/makeOrder</url-pattern>
+        <url-pattern>/removeProduct</url-pattern>
+        <url-pattern>/products</url-pattern>
+        <url-pattern>/login</url-pattern>
+        <url-pattern>/logout</url-pattern>
+        <url-pattern>/registerUser</url-pattern>
+        <url-pattern>/registerPage</url-pattern>
+        <url-pattern>/admin</url-pattern>
+        <url-pattern>/</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>GzipFilter</filter-name>
+        <filter-class>filter.GzipFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>GzipFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>NoCacheFilter</filter-name>
+        <filter-class>filter.NoCacheFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>NoCacheFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>ExistenceVerificationFilter</filter-name>
+        <filter-class>filter.ExistenceVerificationFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>ExistenceVerificationFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>AccessFilter</filter-name>
+        <filter-class>filter.AccessFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>AccessFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <display-name>Archetype Created Web Application</display-name>
+
+</web-app>
