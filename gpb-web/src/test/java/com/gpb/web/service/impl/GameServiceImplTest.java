@@ -42,7 +42,7 @@ class GameServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> {
             gameService.getById(id);
-        });
+        }, "Game with id '1' not found");
     }
 
     @Test
@@ -62,7 +62,7 @@ class GameServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> {
             gameService.getByName(name);
-        });
+        }, "Game with name 'name' not found");
     }
 
     @Test
@@ -72,7 +72,7 @@ class GameServiceImplTest {
 
         Game result = gameService.getByUrl(url);
 
-        assertEquals(game, result);
+        assertEquals(game, result, "Game with url 'url' not found");
     }
 
     @Test
@@ -119,6 +119,6 @@ class GameServiceImplTest {
 
         assertThrows(UrlAlreadyExistException.class, () -> {
             gameService.create(game);
-        });
+        }, "Game with this url already exist");
     }
 }

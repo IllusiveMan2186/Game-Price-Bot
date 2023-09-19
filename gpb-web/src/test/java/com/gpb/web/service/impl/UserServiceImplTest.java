@@ -50,7 +50,7 @@ class UserServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> {
             userService.getUserById(id);
-        });
+        }, "User with id '1' not found");
     }
 
     @Test
@@ -70,7 +70,7 @@ class UserServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> {
             userService.getUserByUsername(username);
-        });
+        }, "User with username 'username' not found");
     }
 
     @Test
@@ -90,7 +90,7 @@ class UserServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> {
             userService.getUserByEmail(email);
-        });
+        }, "User with email 'email' not found");
     }
 
     @Test
@@ -113,7 +113,7 @@ class UserServiceImplTest {
 
         assertThrows(EmailAlreadyExistException.class, () -> {
             userService.createUser(user);
-        });
+        }, "User with this email already exist");
     }
 
 
