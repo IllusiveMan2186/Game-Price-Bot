@@ -3,9 +3,12 @@ package com.gpb.web.controller;
 import com.gpb.web.bean.Game;
 import com.gpb.web.bean.Genre;
 import com.gpb.web.service.GameService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,9 +23,10 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @GetMapping(value = "/id")
-    public Game getGamerById(@RequestParam final long gameId) {
-        return gameService.getById(gameId);
+    @GetMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Game getGamerById(@PathVariable final long id) {
+        return gameService.getById(id);
     }
 
     @GetMapping(value = "/name")
@@ -37,9 +41,10 @@ public class GameController {
         return gameService.getByUrl(url);
     }
 
-    @GetMapping(value = "/genre")
-    public List<Game> getGamesForGenre(@RequestParam final Genre genre, @RequestParam final int pageSize,
-                                      @RequestParam final int pageNum) {
-        return gameService.getByGenre(genre,pageSize,pageNum);
+    @GetMapping(value = "/genre/{genre}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Game> getGamesForGenre(@PathVariable final Genre genre, @RequestParam final int pageSize,
+                                       @RequestParam final int pageNum) {
+        return gameService.getByGenre(genre, pageSize, pageNum);
     }
 }
