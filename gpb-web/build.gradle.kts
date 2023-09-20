@@ -22,12 +22,12 @@ dependencies {
 	implementation("org.postgresql:postgresql:42.5.1")
 	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 
-	// https://mvnrepository.com/artifact/org.flywaydb/flyway-core
 	implementation("org.flywaydb:flyway-core:8.5.13")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
-
+	testImplementation("com.h2database:h2:2.2.220")
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 }
 
 tasks.withType<Test> {
