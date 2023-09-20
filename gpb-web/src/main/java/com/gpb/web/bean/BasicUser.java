@@ -1,5 +1,7 @@
 package com.gpb.web.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import jakarta.persistence.Entity;
@@ -11,11 +13,15 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 @Data
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@NoArgsConstructor
+@AllArgsConstructor
 public class BasicUser {
 
     @Id
@@ -25,9 +31,10 @@ public class BasicUser {
     @ManyToMany
     @JoinTable(
             name = "user_game",
-            joinColumns = { @JoinColumn(name = "user_id") },
-            inverseJoinColumns = { @JoinColumn(name = "game_id") }
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "game_id")}
     )
+    @JsonIgnore
     private List<Game> gameList;
 }
     

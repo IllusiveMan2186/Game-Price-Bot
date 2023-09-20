@@ -2,13 +2,16 @@ package com.gpb.web.controller;
 
 import com.gpb.web.bean.WebUser;
 import com.gpb.web.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.transaction.Transactional;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,30 +24,24 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(value = "/id")
-    public WebUser getUserById(@RequestParam final long userId) {
-        return userService.getUserById(userId);
-    }
-
-    @GetMapping(value = "/email")
-    public WebUser getUserByEmail(@RequestParam final String email) {
-        return userService.getUserByEmail(email);
-    }
-
-    @GetMapping(value = "/username")
-    public WebUser getUserByUsername(@RequestParam final String username) {
-        return userService.getUserByUsername(username);
+    @GetMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public WebUser getUserById(@PathVariable final long id) {
+        return userService.getUserById(id);
     }
 
     @PostMapping
     @Transactional
-    public WebUser createUser(@RequestParam final WebUser user) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public WebUser createUser(@RequestBody final WebUser user) {
+        System.out.println(user.getPassword());
         return userService.createUser(user);
     }
 
-    @DeleteMapping
+    @DeleteMapping(value = "/{id}")
     @Transactional
-    public boolean removeUser(@RequestParam final long userId) {
-        return userService.deleteUser(userId);
+    @ResponseStatus(HttpStatus.OK)
+    public boolean removeUser(@PathVariable final long id) {
+        return userService.deleteUser(id);
     }
 }

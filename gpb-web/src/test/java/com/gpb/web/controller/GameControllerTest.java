@@ -19,7 +19,7 @@ class GameControllerTest {
 
     private GameController controller = new GameController(service);
 
-    private Game game = new Game();
+    private final Game game = new Game();
 
     @Test
     void getGameByIdSuccessfullyShouldReturnGame() {
@@ -32,7 +32,7 @@ class GameControllerTest {
     }
 
     @Test
-    void getGameByGamenameSuccessfullyShouldReturnGame() {
+    void getGameByGameNameSuccessfullyShouldReturnGame() {
         String name = "name";
         when(service.getByName(name)).thenReturn(game);
 
@@ -57,7 +57,7 @@ class GameControllerTest {
         int pageSize = 2;
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);
-        when(service.getByGenre(genre, pageNum , pageSize))
+        when(service.getByGenre(genre, pageNum, pageSize))
                 .thenReturn(gameList);
 
         List<Game> result = controller.getGamesForGenre(genre, pageSize, pageNum);
