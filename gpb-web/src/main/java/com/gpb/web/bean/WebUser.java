@@ -16,6 +16,7 @@ import lombok.ToString;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @PrimaryKeyJoinColumn(name = "userId")
 public class WebUser extends BasicUser {
@@ -25,5 +26,6 @@ public class WebUser extends BasicUser {
     private String email;
 
     @JsonIgnore
+    @ToString.Exclude
     private String password;
 }

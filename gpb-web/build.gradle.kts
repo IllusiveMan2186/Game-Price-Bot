@@ -13,15 +13,21 @@ repositories {
 	mavenCentral()
 }
 
+configurations.all {
+	exclude(module = "spring-boot-starter-logging")
+}
+
 dependencies {
 	compileOnly("org.projectlombok:lombok:1.18.24")
 	annotationProcessor("org.projectlombok:lombok:1.18.24")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.postgresql:postgresql:42.5.1")
+	implementation("org.springframework.boot:spring-boot-starter-log4j2:3.1.3")
 	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 
+
+	implementation("org.postgresql:postgresql:42.5.1")
 	implementation("org.flywaydb:flyway-core:8.5.13")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
