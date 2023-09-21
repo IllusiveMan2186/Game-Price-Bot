@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class BasicUser {
 
     @Id
@@ -35,6 +37,7 @@ public class BasicUser {
             inverseJoinColumns = {@JoinColumn(name = "game_id")}
     )
     @JsonIgnore
+    @ToString.Exclude
     private List<Game> gameList;
 }
     
