@@ -3,7 +3,6 @@ package com.gpb.web.controller;
 import com.gpb.web.bean.WebUser;
 import com.gpb.web.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,23 +24,17 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/info/{id}")
     @ResponseStatus(HttpStatus.OK)
     public WebUser getUserById(@PathVariable final long id) {
         return userService.getUserById(id);
     }
 
-    @PostMapping
+    @PostMapping(value = "/registration")
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
-    public WebUser createUser(@RequestBody final WebUser user) {
+    public WebUser userRegistration(@RequestBody final WebUser user) {
         return userService.createUser(user);
     }
 
-    @DeleteMapping(value = "/{id}")
-    @Transactional
-    @ResponseStatus(HttpStatus.OK)
-    public boolean removeUser(@PathVariable final long id) {
-        return userService.deleteUser(id);
-    }
 }

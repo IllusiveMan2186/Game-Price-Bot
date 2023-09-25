@@ -102,27 +102,6 @@ class UserServiceImplTest {
         }, "User with this email already exist");
     }
 
-
-    @Test
-    void deleteUserSuccessfullyShouldRemoveAndReturnTrue() {
-        int id = 1;
-        when(repository.findById(id)).thenReturn(user);
-
-        boolean result = userService.deleteUser(id);
-
-        assertTrue(result);
-    }
-
-    @Test
-    void deleteNotExistingUserShouldReturnFalse() {
-        int id = 1;
-        when(repository.findById(id)).thenReturn(null);
-
-        boolean result = userService.deleteUser(id);
-
-        assertFalse(result);
-    }
-
     private WebUser getWebUser(final UserDetails user) {
         return new WebUser(user.getUsername(), user.getPassword());
     }

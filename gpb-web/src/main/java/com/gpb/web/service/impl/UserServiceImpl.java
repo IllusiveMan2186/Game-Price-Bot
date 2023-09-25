@@ -48,18 +48,4 @@ public class UserServiceImpl implements UserService {
         }
         return userRepository.save(user);
     }
-
-
-    @Override
-    public boolean deleteUser(final long userId) {
-        log.info(String.format("Delete user with id : %s", userId));
-
-        if (userRepository.findById(userId) == null) {
-            return false;
-        }
-
-        userRepository.deleteById(userId);
-
-        return true;
-    }
 }

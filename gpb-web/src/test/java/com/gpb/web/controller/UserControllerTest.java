@@ -35,18 +35,8 @@ class UserControllerTest {
         user.setEmail(email);
         when(service.createUser(user)).thenReturn(user);
 
-        UserDetails result = controller.createUser(user);
+        UserDetails result = controller.userRegistration(user);
 
         assertEquals(user, result);
-    }
-
-    @Test
-    void removeUserSuccessfullyShouldReturnTrue() {
-        int id = 1;
-        when(service.deleteUser(id)).thenReturn(true);
-
-        boolean result = controller.removeUser(id);
-
-        assertTrue(result);
     }
 }

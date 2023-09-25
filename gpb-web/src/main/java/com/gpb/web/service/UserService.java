@@ -9,6 +9,4 @@ public interface UserService {
     WebUser getUserByEmail(String email);
 
     WebUser createUser(WebUser user);
-
-    boolean deleteUser(long id);
 }
