@@ -9,8 +9,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -23,7 +27,8 @@ class UserServiceImplTest {
 
     UserService userService = new UserServiceImpl(repository);
 
-    private final WebUser user = new WebUser();
+    private final WebUser user = new WebUser("email", "password");
+    private UserDetails userDetails = getUser(user);
 
     @BeforeEach
     void setUp() {
@@ -38,7 +43,7 @@ class UserServiceImplTest {
         int id = 1;
         when(repository.findById(id)).thenReturn(user);
 
-        WebUser result = userService.getUserById(id);
+        UserDetails result = userService.getUserById(id);
 
         assertEquals(user, result);
     }
@@ -54,31 +59,11 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserByUsernameSuccessfullyShouldReturnUser() {
-        String username = "username";
-        when(repository.findByUsername(username)).thenReturn(user);
-
-        WebUser result = userService.getUserByUsername(username);
-
-        assertEquals(user, result);
-    }
-
-    @Test
-    void getUserByUsernameThatNotFoundShouldThrowException() {
-        String username = "username";
-        when(repository.findByUsername(username)).thenReturn(null);
-
-        assertThrows(NotFoundException.class, () -> {
-            userService.getUserByUsername(username);
-        }, "User with username 'username' not found");
-    }
-
-    @Test
     void getUserByEmailSuccessfullyShouldReturnUser() {
         String email = "email";
         when(repository.findByEmail(email)).thenReturn(user);
 
-        WebUser result = userService.getUserByEmail(email);
+        UserDetails result = userService.getUserByEmail(email);
 
         assertEquals(user, result);
     }
@@ -100,7 +85,7 @@ class UserServiceImplTest {
         when(repository.findByEmail(email)).thenReturn(null);
         when(repository.save(user)).thenReturn(user);
 
-        WebUser result = userService.createUser(user);
+        UserDetails result = userService.createUser(user);
 
         assertEquals(user, result);
     }
@@ -109,6 +94,7 @@ class UserServiceImplTest {
     void createUserWithRegisteredEmailShouldThrowException() {
         String email = "email";
         user.setEmail(email);
+        userDetails = getUser(user);
         when(repository.findByEmail(email)).thenReturn(user);
 
         assertThrows(EmailAlreadyExistException.class, () -> {
@@ -135,5 +121,15 @@ class UserServiceImplTest {
         boolean result = userService.deleteUser(id);
 
         assertFalse(result);
+    }
+
+    private WebUser getWebUser(final UserDetails user) {
+        return new WebUser(user.getUsername(), user.getPassword());
+    }
+
+    private User getUser(WebUser user) {
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("user"));
+
+        return new User(user.getEmail(), user.getPassword(), authorities);
     }
 }

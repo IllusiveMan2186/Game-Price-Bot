@@ -41,19 +41,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public WebUser getUserByUsername(final String username) {
-        log.info(String.format("Get user by username : %s", username));
-        final WebUser user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new NotFoundException(String.format("User with username '%s' not found", username));
-        }
-        return user;
-    }
-
-    @Override
     public WebUser createUser(final WebUser user) {
-        log.info(String.format("Create user : %s", user));
-        if (userRepository.findByEmail(user.getEmail()) != null) {
+        log.info(String.format("Create user : %s", user.getUsername()));
+        if (userRepository.findByEmail(user.getUsername()) != null) {
             throw new EmailAlreadyExistException();
         }
         return userRepository.save(user);
