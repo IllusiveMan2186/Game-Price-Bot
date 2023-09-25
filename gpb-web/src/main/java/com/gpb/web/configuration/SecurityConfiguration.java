@@ -22,11 +22,17 @@ public class SecurityConfiguration {
     @Bean
     @Order(1)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests((authorize) -> authorize
-                        .anyRequest().authenticated()
-
-                ).csrf().disable();
+        http.authorizeHttpRequests()
+                .requestMatchers("/user/registration")
+                .permitAll()
+                .and()
+                .authorizeHttpRequests()
+                .requestMatchers("/game/**", "/user/info/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .csrf().disable();
         return http.build();
     }
 
