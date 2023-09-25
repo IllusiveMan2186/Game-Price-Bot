@@ -3,6 +3,7 @@ package com.gpb.web.controller;
 import com.gpb.web.bean.WebUser;
 import com.gpb.web.service.UserService;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,14 +16,14 @@ class UserControllerTest {
 
     private final UserController controller = new UserController(service);
 
-    private final WebUser user = new WebUser();
+    private final WebUser user = new WebUser("email", "password");
 
     @Test
     void getUserByIdSuccessfullyShouldReturnUser() {
         int id = 1;
         when(service.getUserById(id)).thenReturn(user);
 
-        WebUser result = controller.getUserById(id);
+        UserDetails result = controller.getUserById(id);
 
         assertEquals(user, result);
     }
@@ -34,7 +35,7 @@ class UserControllerTest {
         user.setEmail(email);
         when(service.createUser(user)).thenReturn(user);
 
-        WebUser result = controller.createUser(user);
+        UserDetails result = controller.createUser(user);
 
         assertEquals(user, result);
     }

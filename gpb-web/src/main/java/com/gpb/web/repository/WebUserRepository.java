@@ -10,8 +10,6 @@ public interface WebUserRepository extends CrudRepository<WebUser, Long> {
 
     WebUser findByEmail(String email);
 
-    WebUser findByUsername(String username);
-
     WebUser save(WebUser user);
 
     void deleteById(long id);
