@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -34,21 +33,21 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @Test
     void getUserByIdSuccessfullyShouldReturnUser() throws Exception {
-        mockMvc.perform(get("/user/{id}", userList.get(0).getId())
+        mockMvc.perform(get("/user/info/{id}", userList.get(0).getId())
                         .with(user("email1").password("pass")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.email").value(userList.get(0).getEmail()));
+                .andExpect(jsonPath("$.email").value(userList.get(0).getEmail()))
+                .andExpect(jsonPath("$.password").doesNotExist());
     }
 
     @Test
     void createUserSuccessfullyShouldReturnUser() throws Exception {
         WebUser user = userCreation("email3", "password");
 
-        mockMvc.perform(post("/user")
-                        .with(user("email1").password("pass"))
+        mockMvc.perform(post("/user/registration")
                         .contentType(APPLICATION_JSON)
                         .content(objectToJson(user)))
                 .andDo(print())
@@ -57,16 +56,6 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
                 .andExpect(jsonPath("$.id").value(3))
                 .andExpect(jsonPath("$.email").value(user.getEmail()))
                 .andExpect(jsonPath("$.password").doesNotExist());
-    }
-
-    @Test
-    void removeUserByIdSuccessfullyShouldReturnTrue() throws Exception {
-        mockMvc.perform(delete("/user/{id}", userList.get(0).getId())
-                        .with(user("email1").password("pass")))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(content().string("true"));
     }
 
     private String objectToJson(WebUser user) throws JsonProcessingException {
