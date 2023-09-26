@@ -6,8 +6,14 @@ import com.gpb.web.bean.WebUser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.test.web.servlet.MvcResult;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -21,20 +27,25 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @BeforeAll
     static void beforeAllTest() {
-        beforeAll();
-        userList.add(userCreation("email2", "pass"));
+        userList.add(userCreation("email2", DECODE_PASSWORD));
     }
 
     @BeforeEach
     void userCreationBeforeAllTests() {
-        userCreationForAuthBeforeAllTests();
-        repository.save(userList.get(1));
+        service.createUser(userList.get(1));
+    }
+
+    @Test
+    void testAccessToGetUserInfoShouldNotHaveAccess() throws Exception {
+        mockMvc.perform(get("/user/info/{id}", userList.get(0).getId()))
+                .andDo(print())
+                .andExpect(status().isFound());
     }
 
     @Test
     void getUserByIdSuccessfullyShouldReturnUser() throws Exception {
         mockMvc.perform(get("/user/info/{id}", userList.get(0).getId())
-                        .with(user("email1").password("pass")))
+                        .with(user(userList.get(0).getEmail()).password(userList.get(0).getPassword())))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -57,6 +68,24 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
                 .andExpect(jsonPath("$.email").value(user.getEmail()))
                 .andExpect(jsonPath("$.password").doesNotExist());
     }
+
+    @Test
+    void loginSuccessfullyShouldSetUserInfoInSession() throws Exception {
+        MvcResult result = mockMvc.perform(formLogin("/login").user(userList.get(0).getEmail())
+                        .password(ENCODE_PASSWORD))
+                .andDo(print())
+                .andExpect(status().isFound())
+                .andReturn();
+        assertNotNull(result.getRequest().getSession());
+        SecurityContextImpl securityContext = (SecurityContextImpl) result.getRequest()
+                .getSession().getAttribute("SPRING_SECURITY_CONTEXT");
+        assertTrue(securityContext.getAuthentication().isAuthenticated());
+        WebUser resultUser = (WebUser) securityContext.getAuthentication().getPrincipal();
+        assertEquals(1, resultUser.getId());
+        assertEquals(userList.get(0).getEmail(), resultUser.getEmail());
+
+    }
+
 
     private String objectToJson(WebUser user) throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(user);

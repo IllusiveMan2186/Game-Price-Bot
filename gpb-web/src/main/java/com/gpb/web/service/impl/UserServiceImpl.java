@@ -6,11 +6,14 @@ import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.repository.WebUserRepository;
 import com.gpb.web.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final WebUserRepository userRepository;
 
@@ -47,5 +50,14 @@ public class UserServiceImpl implements UserService {
             throw new EmailAlreadyExistException();
         }
         return userRepository.save(user);
+    }
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        log.info(String.format("Login user : %s", username));
+        WebUser user = userRepository.findByEmail(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        return user;
     }
 }
