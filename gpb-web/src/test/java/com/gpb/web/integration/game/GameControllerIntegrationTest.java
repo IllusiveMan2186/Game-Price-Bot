@@ -31,7 +31,6 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @BeforeAll
     static void beforeAllGame() {
-        beforeAll();
         games.add(gameCreation("name1", "url1", Genre.STRATEGY));
         games.add(gameCreation("name2", "url2", Genre.RPG));
         games.add(gameCreation("name3", "url3", Genre.STRATEGY));
@@ -39,7 +38,6 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @BeforeEach
     void gameCreationBeforeAllTests() {
-        userCreationForAuthBeforeAllTests();
         gameRepository.save(games.get(0));
         gameRepository.save(games.get(1));
         gameRepository.save(games.get(2));
@@ -49,7 +47,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
     void getUserByIdSuccessfullyShouldReturnUser() throws Exception {
 
         mockMvc.perform(get("/game/{id}", games.get(0).getId())
-                        .with(user("email1").password("pass")))
+                        .with(user(userList.get(0).getEmail()).password(userList.get(0).getPassword())))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -62,7 +60,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
     void getGamesByGenreSuccessfullyShouldReturnListOfGames() throws Exception {
         mockMvc.perform(get("/game/genre/{genre}?pageNum=1&pageSize={size}", games.get(0).getGenre(),
                         games.size() + 1)
-                        .with(user("email1").password("pass")))
+                        .with(user(userList.get(0).getEmail()).password(userList.get(0).getPassword())))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -75,7 +73,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
     @Test
     void getGamesByGenreSuccessfullyShouldReturnSecondPageOfGame() throws Exception {
         mockMvc.perform(get("/game/genre/{genre}?pageNum=2&pageSize=1", games.get(0).getGenre())
-                        .with(user("email1").password("pass")))
+                        .with(user(userList.get(0).getEmail()).password(userList.get(0).getPassword())))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
