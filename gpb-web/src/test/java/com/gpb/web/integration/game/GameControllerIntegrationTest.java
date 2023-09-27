@@ -22,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
 
-
     @Autowired
     private GameRepository gameRepository;
 
@@ -80,6 +79,17 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$.[0].id").value(3));
+    }
+
+    @Test
+    void getUserByNotExistingIdShouldReturnError() throws Exception {
+        int notExistingGameId = games.size() + 1;
+
+        mockMvc.perform(get("/game/{id}", notExistingGameId)
+                        .with(user(userList.get(0).getEmail()).password(userList.get(0).getPassword())))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$").value(String.format("Game with id '%s' not found", notExistingGameId)));
     }
 
     private static Game gameCreation(String name, String url, Genre genre) {
