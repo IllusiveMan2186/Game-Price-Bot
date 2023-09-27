@@ -1,7 +1,9 @@
 package com.gpb.web.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +16,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -30,11 +31,10 @@ public class Game {
 
     private String name;
 
-    private String url;
-
     private Genre genre;
 
-    private BigDecimal price;
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    private List<GameInShop> gamesInShop;
 
     @ManyToMany
     @JoinTable(
