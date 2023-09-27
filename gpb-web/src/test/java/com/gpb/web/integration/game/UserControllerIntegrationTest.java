@@ -55,6 +55,27 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
     }
 
     @Test
+    void getUserByNotExistingIdShouldReturnErrorMessage() throws Exception {
+        int notExistingUserId = userList.size() + 1;
+
+        mockMvc.perform(get("/user/info/{id}", notExistingUserId)
+                        .with(user(userList.get(0).getEmail()).password(userList.get(0).getPassword())))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$").value(String.format("User with id '%s' not found", notExistingUserId)));
+    }
+
+    @Test
+    void createUserWithAlreadyRegisteredEmailShouldReturnErrorMessage() throws Exception {
+        mockMvc.perform(post("/user/registration")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectToJson(userList.get(0))))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("User with this email already exist"));
+    }
+
+    @Test
     void createUserSuccessfullyShouldReturnUser() throws Exception {
         WebUser user = userCreation("email3", "password");
 

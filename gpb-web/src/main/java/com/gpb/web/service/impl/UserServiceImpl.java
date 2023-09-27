@@ -54,10 +54,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info(String.format("Login user : %s", username));
-        WebUser user = userRepository.findByEmail(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-        return user;
+        return getUserByEmail(username);
     }
 }
