@@ -1,9 +1,11 @@
 package com.gpb.web.service.impl;
 
 import com.gpb.web.bean.Game;
+import com.gpb.web.bean.GameInShop;
 import com.gpb.web.bean.Genre;
+import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.NotFoundException;
-import com.gpb.web.exception.UrlAlreadyExistException;
+import com.gpb.web.repository.GameInShopRepository;
 import com.gpb.web.repository.GameRepository;
 import com.gpb.web.service.GameService;
 import org.junit.jupiter.api.Test;
@@ -20,8 +22,9 @@ import static org.mockito.Mockito.when;
 class GameServiceImplTest {
 
     GameRepository repository = mock(GameRepository.class);
+    GameInShopRepository gameInShopRepository = mock(GameInShopRepository.class);
 
-    GameService gameService = new GameServiceImpl(repository);
+    GameService gameService = new GameServiceImpl(repository, gameInShopRepository);
 
     private final Game game = new Game();
 
@@ -68,17 +71,18 @@ class GameServiceImplTest {
     @Test
     void getGameByUrlSuccessfullyShouldReturnGame() {
         String url = "url";
-        when(repository.findByUrl(url)).thenReturn(game);
+        GameInShop gameInShop = GameInShop.builder().game(game).build();
+        when(gameInShopRepository.findByUrl(url)).thenReturn(gameInShop);
 
         Game result = gameService.getByUrl(url);
 
-        assertEquals(game, result, "Game with url 'url' not found");
+        assertEquals(game, result);
     }
 
     @Test
     void getGameByUrlThatNotFoundShouldThrowException() {
         String url = "url";
-        when(repository.findByUrl(url)).thenReturn(null);
+        when(gameInShopRepository.findByUrl(url)).thenReturn(null);
 
         assertThrows(NotFoundException.class, () -> {
             gameService.getByUrl(url);
@@ -101,9 +105,9 @@ class GameServiceImplTest {
 
     @Test
     void createUserSuccessfullyShouldSaveAndReturnUser() {
-        String url = "url";
-        game.setUrl(url);
-        when(repository.findByUrl(url)).thenReturn(null);
+        String name = "name";
+        game.setName(name);
+        when(repository.findByName(name)).thenReturn(null);
         when(repository.save(game)).thenReturn(game);
 
         Game result = gameService.create(game);
@@ -113,11 +117,11 @@ class GameServiceImplTest {
 
     @Test
     void createUserWithRegisteredEmailShouldThrowException() {
-        String url = "url";
-        game.setUrl(url);
-        when(repository.findByUrl(url)).thenReturn(game);
+        String name = "url";
+        game.setName(name);
+        when(repository.findByName(name)).thenReturn(game);
 
-        assertThrows(UrlAlreadyExistException.class, () -> {
+        assertThrows(GameAlreadyRegisteredException.class, () -> {
             gameService.create(game);
         }, "Game with this url already exist");
     }

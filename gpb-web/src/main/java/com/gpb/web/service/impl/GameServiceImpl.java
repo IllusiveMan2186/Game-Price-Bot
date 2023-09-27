@@ -1,15 +1,14 @@
 package com.gpb.web.service.impl;
 
 import com.gpb.web.bean.Game;
+import com.gpb.web.bean.GameInShop;
 import com.gpb.web.bean.Genre;
+import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.NotFoundException;
-import com.gpb.web.exception.UrlAlreadyExistException;
+import com.gpb.web.repository.GameInShopRepository;
 import com.gpb.web.repository.GameRepository;
 import com.gpb.web.service.GameService;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +19,11 @@ import java.util.List;
 public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
+    private final GameInShopRepository gameInShopRepository;
 
-    public GameServiceImpl(GameRepository gameRepository) {
+    public GameServiceImpl(GameRepository gameRepository, GameInShopRepository gameInShopRepository) {
         this.gameRepository = gameRepository;
+        this.gameInShopRepository = gameInShopRepository;
     }
 
     @Override
@@ -50,15 +51,15 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Game getByUrl(final String url) {
+    public Game getByUrl(String url) {
         log.info(String.format("Get game by url : %s", url));
 
-        final Game game = gameRepository.findByUrl(url);
-        if (game == null) {
+        final GameInShop gameInShop = gameInShopRepository.findByUrl(url);
+        if (gameInShop == null) {
             throw new NotFoundException(String.format("Game with url '%s' not found", url));
         }
 
-        return game;
+        return gameInShop.getGame();
     }
 
     @Override
@@ -72,8 +73,8 @@ public class GameServiceImpl implements GameService {
     public Game create(Game game) {
         log.info(String.format("Create game : %s", game));
 
-        if (gameRepository.findByUrl(game.getUrl()) != null) {
-            throw new UrlAlreadyExistException();
+        if (gameRepository.findByName(game.getName()) != null) {
+            throw new GameAlreadyRegisteredException();
         }
 
         return gameRepository.save(game);

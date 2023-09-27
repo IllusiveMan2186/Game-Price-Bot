@@ -29,14 +29,14 @@ public class GameController {
         return gameService.getById(id);
     }
 
-    @GetMapping(value = "/name")
-    public Game getGameByName(@RequestParam final String name) {
+    @GetMapping(value = "/name/{name}")
+    public Game getGameByName(@PathVariable final String name) {
         //TODO find game or creation
         return gameService.getByName(name);
     }
 
-    @GetMapping(value = "/url")
-    public Game getGameByUrl(@RequestParam final String url) {
+    @GetMapping(value = "/url/{url}")
+    public Game getGameByUrl(@PathVariable final String url) {
         //TODO creation
         return gameService.getByUrl(url);
     }
