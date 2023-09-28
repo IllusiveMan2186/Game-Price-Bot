@@ -8,6 +8,7 @@ import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.repository.GameInShopRepository;
 import com.gpb.web.repository.GameRepository;
 import com.gpb.web.service.GameService;
+import com.gpb.web.service.GameStoresService;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 
@@ -24,7 +25,9 @@ class GameServiceImplTest {
     GameRepository repository = mock(GameRepository.class);
     GameInShopRepository gameInShopRepository = mock(GameInShopRepository.class);
 
-    GameService gameService = new GameServiceImpl(repository, gameInShopRepository);
+    GameStoresService gameStoresService = mock(GameStoresService.class);
+
+    GameService gameService = new GameServiceImpl(repository, gameInShopRepository, gameStoresService);
 
     private final Game game = new Game();
 
@@ -43,9 +46,7 @@ class GameServiceImplTest {
         int id = 1;
         when(repository.findById(id)).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> {
-            gameService.getById(id);
-        }, "Game with id '1' not found");
+        assertThrows(NotFoundException.class, () -> gameService.getById(id), "Game with id '1' not found");
     }
 
     @Test
@@ -59,13 +60,17 @@ class GameServiceImplTest {
     }
 
     @Test
-    void getGameByNameThatNotFoundShouldThrowException() {
+    void getGameByNameThatNotRegisteredShouldFindGameFromStoresService() {
         String name = "name";
         when(repository.findByName(name)).thenReturn(null);
+        when(gameStoresService.findOrCreateGameByName(name)).thenReturn(game);
+        game.setName(name);
+        when(repository.findByName(name)).thenReturn(null);
+        when(repository.save(game)).thenReturn(game);
 
-        assertThrows(NotFoundException.class, () -> {
-            gameService.getByName(name);
-        }, "Game with name 'name' not found");
+        Game result = gameService.getByName(name);
+
+        assertEquals(game, result);
     }
 
     @Test
@@ -80,13 +85,18 @@ class GameServiceImplTest {
     }
 
     @Test
-    void getGameByUrlThatNotFoundShouldThrowException() {
+    void getGameByUrlThatNotRegisteredShouldFindGameFromStoresService() {
         String url = "url";
         when(gameInShopRepository.findByUrl(url)).thenReturn(null);
+        when(gameStoresService.findOrCreateGameByUrl(url)).thenReturn(game);
+        String name = "name";
+        game.setName(name);
+        when(repository.findByName(name)).thenReturn(null);
+        when(repository.save(game)).thenReturn(game);
 
-        assertThrows(NotFoundException.class, () -> {
-            gameService.getByUrl(url);
-        });
+        Game result = gameService.getByUrl(url);
+
+        assertEquals(game, result);
     }
 
     @Test
@@ -121,8 +131,6 @@ class GameServiceImplTest {
         game.setName(name);
         when(repository.findByName(name)).thenReturn(game);
 
-        assertThrows(GameAlreadyRegisteredException.class, () -> {
-            gameService.create(game);
-        }, "Game with this url already exist");
+        assertThrows(GameAlreadyRegisteredException.class, () -> gameService.create(game), "Game with this url already exist");
     }
 }
