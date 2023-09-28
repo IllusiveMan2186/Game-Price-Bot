@@ -31,13 +31,11 @@ public class GameController {
 
     @GetMapping(value = "/name/{name}")
     public Game getGameByName(@PathVariable final String name) {
-        //TODO find game or creation
         return gameService.getByName(name);
     }
 
     @GetMapping(value = "/url/{url}")
     public Game getGameByUrl(@PathVariable final String url) {
-        //TODO creation
         return gameService.getByUrl(url);
     }
 
