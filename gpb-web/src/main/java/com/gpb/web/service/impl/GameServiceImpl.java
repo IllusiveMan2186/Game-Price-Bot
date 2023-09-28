@@ -8,6 +8,7 @@ import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.repository.GameInShopRepository;
 import com.gpb.web.repository.GameRepository;
 import com.gpb.web.service.GameService;
+import com.gpb.web.service.GameStoresService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,17 @@ import java.util.List;
 public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
+
     private final GameInShopRepository gameInShopRepository;
 
-    public GameServiceImpl(GameRepository gameRepository, GameInShopRepository gameInShopRepository) {
+    private final GameStoresService gameStoresService;
+
+    public GameServiceImpl(GameRepository gameRepository, GameInShopRepository gameInShopRepository, GameStoresService gameStoresService) {
         this.gameRepository = gameRepository;
         this.gameInShopRepository = gameInShopRepository;
+        this.gameStoresService = gameStoresService;
     }
+
 
     @Override
     public Game getById(final long gameId) {
@@ -42,9 +48,9 @@ public class GameServiceImpl implements GameService {
 
         log.info(String.format("Get game by name : %s", name));
 
-        final Game game = gameRepository.findByName(name);
+        Game game = gameRepository.findByName(name);
         if (game == null) {
-            throw new NotFoundException(String.format("Game with name '%s' not found", name));
+            game = create(gameStoresService.findOrCreateGameByName(name));
         }
 
         return game;
@@ -56,7 +62,8 @@ public class GameServiceImpl implements GameService {
 
         final GameInShop gameInShop = gameInShopRepository.findByUrl(url);
         if (gameInShop == null) {
-            throw new NotFoundException(String.format("Game with url '%s' not found", url));
+            Game game = gameStoresService.findOrCreateGameByUrl(url);
+            return create(game);
         }
 
         return gameInShop.getGame();
