@@ -9,4 +9,6 @@ public interface UserService {
     WebUser getUserByEmail(String email);
 
     WebUser createUser(WebUser user);
+
+    WebUser updateUser(WebUser newUser, WebUser oldUser);
 }

@@ -1,9 +1,11 @@
 package com.gpb.web.controller;
 
+import com.gpb.web.bean.UserInfo;
 import com.gpb.web.bean.WebUser;
 import com.gpb.web.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,15 +28,29 @@ public class UserController {
 
     @GetMapping(value = "/info/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public WebUser getUserById(@PathVariable final long id) {
-        return userService.getUserById(id);
+    public UserInfo getUserById(@PathVariable final long id) {
+        return new UserInfo(userService.getUserById(id));
+    }
+
+    @PostMapping(value = "/info")
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    public UserInfo updateUser(@RequestBody final WebUser newUser, HttpSession session) {
+        WebUser oldUser = getUserFromSession(session);
+        return new UserInfo(userService.updateUser(newUser, oldUser));
     }
 
     @PostMapping(value = "/registration")
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
-    public WebUser userRegistration(@RequestBody final WebUser user) {
-        return userService.createUser(user);
+    public UserInfo userRegistration(@RequestBody final WebUser user) {
+        return new UserInfo(userService.createUser(user));
+    }
+
+    private WebUser getUserFromSession(HttpSession session) {
+        SecurityContextImpl securityContext = (SecurityContextImpl) session.getAttribute("SPRING_SECURITY_CONTEXT");
+
+        return (WebUser) securityContext.getAuthentication().getPrincipal();
     }
 
 }
