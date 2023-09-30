@@ -3,6 +3,7 @@ package com.gpb.web.service.impl;
 import com.gpb.web.bean.WebUser;
 import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.NotFoundException;
+import com.gpb.web.exception.UserDataNotChangedException;
 import com.gpb.web.repository.WebUserRepository;
 import com.gpb.web.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -45,11 +46,23 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public WebUser createUser(final WebUser user) {
-        log.info(String.format("Create user : %s", user.getUsername()));
+        log.info(String.format("Create user : %s", user.getId()));
         if (userRepository.findByEmail(user.getUsername()) != null) {
             throw new EmailAlreadyExistException();
         }
         return userRepository.save(user);
+    }
+
+    @Override
+    public WebUser updateUser(WebUser newUser, WebUser oldUser) {
+        log.info(String.format("Update user : %s", oldUser.getId()));
+        String oldUserEmail = oldUser.getEmail();
+        if (oldUser.equals(newUser)) {
+            throw new UserDataNotChangedException();
+        } else if (!newUser.getEmail().equals(oldUserEmail) && userRepository.findByEmail(newUser.getEmail()) != null) {
+            throw new EmailAlreadyExistException();
+        }
+        return userRepository.save(newUser);
     }
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

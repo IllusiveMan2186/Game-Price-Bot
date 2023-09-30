@@ -2,7 +2,6 @@ package com.gpb.web.integration.game;
 
 import com.gpb.web.GpbWebApplication;
 import com.gpb.web.bean.WebUser;
-import com.gpb.web.repository.WebUserRepository;
 import com.gpb.web.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @ExtendWith(SpringExtension.class)
@@ -33,8 +33,6 @@ public class BaseAuthenticationIntegration {
     protected MockMvc mockMvc;
 
     @Autowired
-    protected WebUserRepository repository;
-    @Autowired
     protected UserService service;
 
     @BeforeAll
@@ -49,14 +47,8 @@ public class BaseAuthenticationIntegration {
         service.createUser(userList.get(0));
     }
 
-    protected static WebUser userCreation(String email) {
-        return WebUser.builder().email(email).build();
-    }
-
     protected static WebUser userCreation(String email, String password) {
-        WebUser user = userCreation(email);
-        user.setPassword(password);
-
-        return user;
+        return WebUser.builder().email(email).password(password).build();
     }
+
 }

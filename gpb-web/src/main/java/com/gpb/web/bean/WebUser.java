@@ -29,7 +29,6 @@ public class WebUser extends BasicUser implements UserDetails {
 
     private String email;
 
-    @JsonIgnore
     @ToString.Exclude
     private String password;
 
