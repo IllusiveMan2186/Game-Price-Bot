@@ -6,8 +6,11 @@ import com.gpb.web.bean.WebUser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -91,16 +94,73 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
     }
 
     @Test
+    void updateUserSuccessfullyShouldReturnUser() throws Exception {
+        WebUser user = userCreation("email3", "password");
+        user.setId(1);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userList.get(0), userList.get(0).getPassword(), new ArrayList<>());
+        SecurityContextImpl securityContext = new SecurityContextImpl(token);
+
+        mockMvc.perform(post("/user/info")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectToJson(user))
+                        .sessionAttr("SPRING_SECURITY_CONTEXT", securityContext))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.email").value(user.getEmail()))
+                .andExpect(jsonPath("$.password").doesNotExist());
+    }
+
+    @Test
+    void updateUserThatDidNotChangedInfoShouldReturnErrorMessage() throws Exception {
+        WebUser user = userCreation("email1", DECODE_PASSWORD);
+        user.setId(1);
+        SecurityContextImpl securityContext = new SecurityContextImpl();
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userList.get(0), userList.get(0).getPassword(), new ArrayList<>());
+
+        securityContext.setAuthentication(token);
+
+        mockMvc.perform(post("/user/info")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectToJson(user))
+                        .sessionAttr("SPRING_SECURITY_CONTEXT", securityContext))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("User didn't changed during update operation"));
+    }
+
+    @Test
+    void updateUserWithEmailThatAlreadyRegisteredShouldReturnUser() throws Exception {
+        WebUser user = userCreation("email2", DECODE_PASSWORD);
+        user.setId(1);
+        SecurityContextImpl securityContext = new SecurityContextImpl();
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userList.get(0), userList.get(0).getPassword(), new ArrayList<>());
+
+        securityContext.setAuthentication(token);
+
+        mockMvc.perform(post("/user/info")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectToJson(user))
+                        .sessionAttr("SPRING_SECURITY_CONTEXT", securityContext))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("User with this email already exist"));
+    }
+
+    @Test
     void loginSuccessfullyShouldSetUserInfoInSession() throws Exception {
         MvcResult result = mockMvc.perform(formLogin("/login").user(userList.get(0).getEmail())
                         .password(ENCODE_PASSWORD))
                 .andDo(print())
                 .andExpect(status().isFound())
                 .andReturn();
+
         assertNotNull(result.getRequest().getSession());
         SecurityContextImpl securityContext = (SecurityContextImpl) result.getRequest()
                 .getSession().getAttribute("SPRING_SECURITY_CONTEXT");
         assertTrue(securityContext.getAuthentication().isAuthenticated());
+
         WebUser resultUser = (WebUser) securityContext.getAuthentication().getPrincipal();
         assertEquals(1, resultUser.getId());
         assertEquals(userList.get(0).getEmail(), resultUser.getEmail());

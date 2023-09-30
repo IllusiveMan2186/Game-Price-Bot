@@ -3,6 +3,7 @@ package com.gpb.web.controller;
 import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.NotFoundException;
+import com.gpb.web.exception.UserDataNotChangedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {EmailAlreadyExistException.class, GameAlreadyRegisteredException.class})
+    @ExceptionHandler(value = {EmailAlreadyExistException.class, GameAlreadyRegisteredException.class
+            , UserDataNotChangedException.class})
     protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }

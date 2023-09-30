@@ -3,6 +3,7 @@ package com.gpb.web.service.impl;
 import com.gpb.web.bean.WebUser;
 import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.NotFoundException;
+import com.gpb.web.exception.UserDataNotChangedException;
 import com.gpb.web.repository.WebUserRepository;
 import com.gpb.web.service.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -10,13 +11,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +26,6 @@ class UserServiceImplTest {
     UserService userService = new UserServiceImpl(repository);
 
     private final WebUser user = new WebUser("email", "password");
-    private UserDetails userDetails = getUser(user);
 
     @BeforeEach
     void setUp() {
@@ -53,9 +50,8 @@ class UserServiceImplTest {
         int id = 1;
         when(repository.findById(id)).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> {
-            userService.getUserById(id);
-        }, "User with id '1' not found");
+        assertThrows(NotFoundException.class, () -> userService.getUserById(id),
+                "User with id '1' not found");
     }
 
     @Test
@@ -73,16 +69,13 @@ class UserServiceImplTest {
         String email = "email";
         when(repository.findByEmail(email)).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> {
-            userService.getUserByEmail(email);
-        }, "User with email 'email' not found");
+        assertThrows(NotFoundException.class, () -> userService.getUserByEmail(email),
+                "User with email 'email' not found");
     }
 
     @Test
     void createUserSuccessfullyShouldSaveAndReturnUser() {
-        String email = "email";
-        user.setEmail(email);
-        when(repository.findByEmail(email)).thenReturn(null);
+        when(repository.findByEmail(user.getEmail())).thenReturn(null);
         when(repository.save(user)).thenReturn(user);
 
         UserDetails result = userService.createUser(user);
@@ -92,23 +85,37 @@ class UserServiceImplTest {
 
     @Test
     void createUserWithRegisteredEmailShouldThrowException() {
-        String email = "email";
-        user.setEmail(email);
-        userDetails = getUser(user);
-        when(repository.findByEmail(email)).thenReturn(user);
+        when(repository.findByEmail(user.getEmail())).thenReturn(user);
 
-        assertThrows(EmailAlreadyExistException.class, () -> {
-            userService.createUser(user);
-        }, "User with this email already exist");
+        assertThrows(EmailAlreadyExistException.class, () -> userService.createUser(user),
+                "User with this email already exist");
     }
 
-    private WebUser getWebUser(final UserDetails user) {
-        return new WebUser(user.getUsername(), user.getPassword());
+    @Test
+    void updateUserSuccessfullyShouldSaveAndReturnUser() {
+        WebUser newUser = new WebUser("email2", "password2");
+        when(repository.findByEmail(user.getEmail())).thenReturn(null);
+        when(repository.save(newUser)).thenReturn(newUser);
+
+        UserDetails result = userService.updateUser(newUser, user);
+
+        assertEquals(newUser, result);
     }
 
-    private User getUser(WebUser user) {
-        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("user"));
+    @Test
+    void updateUserThatDidNotChangedInfoShouldThrowException() {
+        WebUser newUser = new WebUser("email", "password");
 
-        return new User(user.getEmail(), user.getPassword(), authorities);
+        assertThrows(UserDataNotChangedException.class, () -> userService.updateUser(newUser, user),
+                "User didn't changed during update operation");
+    }
+
+    @Test
+    void updateUserWithRegisteredEmailShouldThrowException() {
+        WebUser newUser = new WebUser("email2", "password2");
+        when(repository.findByEmail(newUser.getEmail())).thenReturn(new WebUser());
+
+        assertThrows(EmailAlreadyExistException.class, () -> userService.updateUser(newUser, user),
+                "User with this email already exist");
     }
 }
