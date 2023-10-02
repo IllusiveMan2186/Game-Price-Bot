@@ -23,7 +23,7 @@ public class GameStoresServiceImpl implements GameStoresService {
     }
 
     @Override
-    public Game findOrCreateGameByName(String name) {
+    public Game findGameByName(String name) {
         for (StoreService service : storeService.values()) {
             Game game = service.findUncreatedGameByName(name);
             if (game != null) {
@@ -35,7 +35,7 @@ public class GameStoresServiceImpl implements GameStoresService {
     }
 
     @Override
-    public Game findOrCreateGameByUrl(String url) {
+    public Game findGameByUrl(String url) {
         for (StoreService service : storeService.values()) {
             Game game = service.findUncreatedGameByUrl(url);
             if (game != null) {

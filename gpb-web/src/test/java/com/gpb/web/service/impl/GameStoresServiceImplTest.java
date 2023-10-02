@@ -46,7 +46,7 @@ class GameStoresServiceImplTest {
         copyOfList.add(gameInShop1);
         game.setGamesInShop(copyOfList);
 
-        Game result = gameStoresService.findOrCreateGameByName(name);
+        Game result = gameStoresService.findGameByName(name);
 
         assertEquals(game, result);
     }
@@ -59,7 +59,7 @@ class GameStoresServiceImplTest {
         String name = "name";
         when(storeService2.findUncreatedGameByName(name)).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> gameStoresService.findOrCreateGameByName(name), "");
+        assertThrows(NotFoundException.class, () -> gameStoresService.findGameByName(name), "");
     }
 
     @Test
@@ -75,7 +75,7 @@ class GameStoresServiceImplTest {
         copyOfList.add(gameInShop1);
         game.setGamesInShop(copyOfList);
 
-        Game result = gameStoresService.findOrCreateGameByUrl(url);
+        Game result = gameStoresService.findGameByUrl(url);
 
         assertEquals(game, result);
     }
@@ -88,6 +88,6 @@ class GameStoresServiceImplTest {
         String url = "url";
         when(storeService2.findUncreatedGameByUrl(url)).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> gameStoresService.findOrCreateGameByUrl(url), "");
+        assertThrows(NotFoundException.class, () -> gameStoresService.findGameByUrl(url), "");
     }
 }

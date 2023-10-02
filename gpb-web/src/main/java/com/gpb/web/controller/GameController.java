@@ -23,22 +23,48 @@ public class GameController {
         this.gameService = gameService;
     }
 
+    /**
+     * Get game by id
+     *
+     * @param id games id
+     * @return game
+     */
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Game getGamerById(@PathVariable final long id) {
         return gameService.getById(id);
     }
 
+    /**
+     * Get game by name
+     *
+     * @param name games name
+     * @return game
+     */
     @GetMapping(value = "/name/{name}")
     public Game getGameByName(@PathVariable final String name) {
         return gameService.getByName(name);
     }
 
+    /**
+     * Get game by url
+     *
+     * @param url game url from the store
+     * @return game
+     */
     @GetMapping(value = "/url/{url}")
     public Game getGameByUrl(@PathVariable final String url) {
         return gameService.getByUrl(url);
     }
 
+    /**
+     * Get games by genre
+     *
+     * @param genre    genre of the game
+     * @param pageSize amount of elements on page
+     * @param pageNum  page number
+     * @return list of games
+     */
     @GetMapping(value = "/genre/{genre}")
     @ResponseStatus(HttpStatus.OK)
     public List<Game> getGamesForGenre(@PathVariable final Genre genre, @RequestParam final int pageSize,
