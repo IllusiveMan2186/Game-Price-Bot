@@ -26,12 +26,25 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * Get user by id
+     *
+     * @param id users id
+     * @return user
+     */
     @GetMapping(value = "/info/{id}")
     @ResponseStatus(HttpStatus.OK)
     public UserInfo getUserById(@PathVariable final long id) {
         return new UserInfo(userService.getUserById(id));
     }
 
+    /**
+     * Update registered user
+     *
+     * @param newUser new version of user
+     * @param session current user session
+     * @return updated user
+     */
     @PostMapping(value = "/info")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
@@ -40,6 +53,12 @@ public class UserController {
         return new UserInfo(userService.updateUser(newUser, oldUser));
     }
 
+    /**
+     * Create new user
+     *
+     * @param user user that would be registered in system
+     * @return created user
+     */
     @PostMapping(value = "/registration")
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)

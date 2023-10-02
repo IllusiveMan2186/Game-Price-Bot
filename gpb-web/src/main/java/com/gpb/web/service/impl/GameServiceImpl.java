@@ -50,7 +50,7 @@ public class GameServiceImpl implements GameService {
 
         Game game = gameRepository.findByName(name);
         if (game == null) {
-            game = create(gameStoresService.findOrCreateGameByName(name));
+            game = create(gameStoresService.findGameByName(name));
         }
 
         return game;
@@ -62,7 +62,7 @@ public class GameServiceImpl implements GameService {
 
         final GameInShop gameInShop = gameInShopRepository.findByUrl(url);
         if (gameInShop == null) {
-            Game game = gameStoresService.findOrCreateGameByUrl(url);
+            Game game = gameStoresService.findGameByUrl(url);
             return create(game);
         }
 
