@@ -1,7 +1,7 @@
 package com.gpb.web.controller;
 
-import com.gpb.web.bean.UserInfo;
-import com.gpb.web.bean.WebUser;
+import com.gpb.web.bean.user.UserInfo;
+import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -45,12 +46,28 @@ public class UserController {
      * @param session current user session
      * @return updated user
      */
-    @PostMapping(value = "/info")
+    @PutMapping(value = "/info")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
     public UserInfo updateUser(@RequestBody final WebUser newUser, HttpSession session) {
         WebUser oldUser = getUserFromSession(session);
         return new UserInfo(userService.updateUser(newUser, oldUser));
+    }
+
+    /**
+     * Add game to user list of games
+     *
+     * @param gameId games id
+     * @param session current user session
+     * @return updated user
+     */
+    @PostMapping(value = "/info/games")
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    public UserInfo addGameToUserListOfGames(@RequestBody final long gameId, HttpSession session) {
+        WebUser user = getUserFromSession(session);
+        userService.addGameToUserListOfGames(user.getId(), gameId);
+        return new UserInfo(userService.getUserById(user.getId()));
     }
 
     /**

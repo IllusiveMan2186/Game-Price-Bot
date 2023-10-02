@@ -1,7 +1,7 @@
 package com.gpb.web.controller;
 
-import com.gpb.web.bean.Game;
-import com.gpb.web.bean.Genre;
+import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.Genre;
 import com.gpb.web.service.GameService;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ class GameControllerTest {
 
     GameService service = mock(GameService.class);
 
-    private GameController controller = new GameController(service);
+    private final GameController controller = new GameController(service);
 
     private final Game game = new Game();
 

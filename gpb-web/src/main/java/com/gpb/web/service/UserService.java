@@ -1,6 +1,6 @@
 package com.gpb.web.service;
 
-import com.gpb.web.bean.WebUser;
+import com.gpb.web.bean.user.WebUser;
 
 /**
  * Class for handling users
@@ -39,4 +39,12 @@ public interface UserService {
      * @return updated user
      */
     WebUser updateUser(WebUser newUser, WebUser oldUser);
+
+    /**
+     * Add game to user list of games
+     *
+     * @param userId users id
+     * @param gameId games id
+     */
+    void addGameToUserListOfGames(long userId, long gameId);
 }

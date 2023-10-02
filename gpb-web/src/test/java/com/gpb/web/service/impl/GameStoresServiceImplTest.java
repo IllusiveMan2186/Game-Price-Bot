@@ -1,7 +1,7 @@
 package com.gpb.web.service.impl;
 
-import com.gpb.web.bean.Game;
-import com.gpb.web.bean.GameInShop;
+import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.service.GameStoresService;
 import com.gpb.web.service.StoreService;

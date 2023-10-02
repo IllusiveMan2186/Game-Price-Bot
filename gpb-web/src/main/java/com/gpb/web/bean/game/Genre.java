@@ -1,4 +1,4 @@
-package com.gpb.web.bean;
+package com.gpb.web.bean.game;
 
 public enum Genre {
 

@@ -1,4 +1,4 @@
-package com.gpb.web.bean;
+package com.gpb.web.bean.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;

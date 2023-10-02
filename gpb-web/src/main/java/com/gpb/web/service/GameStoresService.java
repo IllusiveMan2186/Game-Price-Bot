@@ -1,6 +1,6 @@
 package com.gpb.web.service;
 
-import com.gpb.web.bean.Game;
+import com.gpb.web.bean.game.Game;
 
 /**
  * CLass for handling work with game stores

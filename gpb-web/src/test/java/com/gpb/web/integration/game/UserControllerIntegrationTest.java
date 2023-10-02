@@ -2,7 +2,7 @@ package com.gpb.web.integration.game;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gpb.web.bean.WebUser;
+import com.gpb.web.bean.user.WebUser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,6 +21,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,7 +37,7 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @BeforeEach
     void userCreationBeforeAllTests() {
-        service.createUser(userList.get(1));
+        userService.createUser(userList.get(1));
     }
 
     @Test
@@ -100,7 +102,7 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userList.get(0), userList.get(0).getPassword(), new ArrayList<>());
         SecurityContextImpl securityContext = new SecurityContextImpl(token);
 
-        mockMvc.perform(post("/user/info")
+        mockMvc.perform(put("/user/info")
                         .contentType(APPLICATION_JSON)
                         .content(objectToJson(user))
                         .sessionAttr("SPRING_SECURITY_CONTEXT", securityContext))
@@ -121,7 +123,7 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
 
         securityContext.setAuthentication(token);
 
-        mockMvc.perform(post("/user/info")
+        mockMvc.perform(put("/user/info")
                         .contentType(APPLICATION_JSON)
                         .content(objectToJson(user))
                         .sessionAttr("SPRING_SECURITY_CONTEXT", securityContext))
@@ -139,7 +141,7 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
 
         securityContext.setAuthentication(token);
 
-        mockMvc.perform(post("/user/info")
+        mockMvc.perform(put("/user/info")
                         .contentType(APPLICATION_JSON)
                         .content(objectToJson(user))
                         .sessionAttr("SPRING_SECURITY_CONTEXT", securityContext))
@@ -167,8 +169,34 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
 
     }
 
+    @Test
+    void addGameToUserListOfGamesShouldAddToRepository() throws Exception {
+        WebUser user = userCreation("email2", DECODE_PASSWORD);
+        user.setId(1);
+        SecurityContextImpl securityContext = new SecurityContextImpl();
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userList.get(0), userList.get(0).getPassword(), new ArrayList<>());
 
-    private String objectToJson(WebUser user) throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(user);
+        securityContext.setAuthentication(token);
+
+        mockMvc.perform(post("/user/info/games")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectToJson(1))
+                        .sessionAttr("SPRING_SECURITY_CONTEXT", securityContext))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.email").value(userList.get(0).getEmail()))
+                .andExpect(jsonPath("$.password").doesNotExist())
+                .andExpect(jsonPath("$.gameList").isArray())
+                .andExpect(jsonPath("$.gameList", hasSize(1)))
+                .andExpect(jsonPath("$.gameList[0].id").value(1))
+                .andExpect(jsonPath("$.gameList[0].name").value(games.get(0).getName()))
+                .andExpect(jsonPath("$.gameList[0].genre").value(games.get(0).getGenre().name()));
+    }
+
+
+    private String objectToJson(Object obj) throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(obj);
     }
 }
