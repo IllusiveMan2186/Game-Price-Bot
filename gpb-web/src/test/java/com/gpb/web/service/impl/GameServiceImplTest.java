@@ -63,7 +63,7 @@ class GameServiceImplTest {
     void getGameByNameThatNotRegisteredShouldFindGameFromStoresService() {
         String name = "name";
         when(repository.findByName(name)).thenReturn(null);
-        when(gameStoresService.findOrCreateGameByName(name)).thenReturn(game);
+        when(gameStoresService.findGameByName(name)).thenReturn(game);
         game.setName(name);
         when(repository.findByName(name)).thenReturn(null);
         when(repository.save(game)).thenReturn(game);
@@ -88,7 +88,7 @@ class GameServiceImplTest {
     void getGameByUrlThatNotRegisteredShouldFindGameFromStoresService() {
         String url = "url";
         when(gameInShopRepository.findByUrl(url)).thenReturn(null);
-        when(gameStoresService.findOrCreateGameByUrl(url)).thenReturn(game);
+        when(gameStoresService.findGameByUrl(url)).thenReturn(game);
         String name = "name";
         game.setName(name);
         when(repository.findByName(name)).thenReturn(null);
