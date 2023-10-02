@@ -1,6 +1,6 @@
 package com.gpb.web.repository;
 
-import com.gpb.web.bean.GameInShop;
+import com.gpb.web.bean.game.GameInShop;
 import org.springframework.data.repository.CrudRepository;
 
 public interface GameInShopRepository extends CrudRepository<GameInShop, Long> {

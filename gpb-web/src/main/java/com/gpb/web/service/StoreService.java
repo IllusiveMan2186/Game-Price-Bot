@@ -1,8 +1,8 @@
 package com.gpb.web.service;
 
 
-import com.gpb.web.bean.Game;
-import com.gpb.web.bean.GameInShop;
+import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.GameInShop;
 
 /**
  * Class for handling specific store

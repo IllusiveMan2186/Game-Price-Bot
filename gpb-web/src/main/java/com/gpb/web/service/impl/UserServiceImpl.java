@@ -1,6 +1,6 @@
 package com.gpb.web.service.impl;
 
-import com.gpb.web.bean.WebUser;
+import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.exception.UserDataNotChangedException;
@@ -63,6 +63,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new EmailAlreadyExistException();
         }
         return userRepository.save(newUser);
+    }
+
+    @Override
+    public void addGameToUserListOfGames(long userId, long gameId) {
+        log.info(String.format("Add game(%s) into user(%s) game list", userId, gameId));
+        userRepository.addGameToUserListOfGames(userId, gameId);
     }
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

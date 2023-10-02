@@ -1,6 +1,6 @@
 package com.gpb.web.repository;
 
-import com.gpb.web.bean.BasicUser;
+import com.gpb.web.bean.user.BasicUser;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

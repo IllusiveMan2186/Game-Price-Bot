@@ -1,3 +1,4 @@
+DELETE FROM user_game ;
 DELETE FROM web_user ;
 DELETE FROM basic_user ;
 DELETE FROM game_in_shop ;

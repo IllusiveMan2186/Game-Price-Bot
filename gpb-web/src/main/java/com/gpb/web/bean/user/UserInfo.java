@@ -1,5 +1,6 @@
-package com.gpb.web.bean;
+package com.gpb.web.bean.user;
 
+import com.gpb.web.bean.game.Game;
 import lombok.Data;
 
 import java.util.List;
