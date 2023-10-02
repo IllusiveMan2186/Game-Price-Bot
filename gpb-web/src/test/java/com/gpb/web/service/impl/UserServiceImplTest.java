@@ -1,6 +1,6 @@
 package com.gpb.web.service.impl;
 
-import com.gpb.web.bean.WebUser;
+import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.exception.UserDataNotChangedException;
@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -117,5 +118,13 @@ class UserServiceImplTest {
 
         assertThrows(EmailAlreadyExistException.class, () -> userService.updateUser(newUser, user),
                 "User with this email already exist");
+    }
+
+    @Test
+    void addGameToUserListOfGamesShouldCallRepository() {
+
+        userService.addGameToUserListOfGames(1, 1);
+
+        verify(repository).addGameToUserListOfGames(1, 1);
     }
 }

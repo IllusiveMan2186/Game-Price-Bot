@@ -1,7 +1,7 @@
 package com.gpb.web.controller;
 
-import com.gpb.web.bean.Game;
-import com.gpb.web.bean.Genre;
+import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.Genre;
 import com.gpb.web.service.GameService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;

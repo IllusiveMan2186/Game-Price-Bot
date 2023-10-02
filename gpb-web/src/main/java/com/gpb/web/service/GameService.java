@@ -1,7 +1,7 @@
 package com.gpb.web.service;
 
-import com.gpb.web.bean.Game;
-import com.gpb.web.bean.Genre;
+import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.Genre;
 
 import java.util.List;
 

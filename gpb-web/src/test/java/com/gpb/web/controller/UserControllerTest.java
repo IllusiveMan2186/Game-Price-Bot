@@ -1,7 +1,7 @@
 package com.gpb.web.controller;
 
-import com.gpb.web.bean.UserInfo;
-import com.gpb.web.bean.WebUser;
+import com.gpb.web.bean.user.UserInfo;
+import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class UserControllerTest {
@@ -59,5 +60,25 @@ class UserControllerTest {
         UserInfo result = controller.updateUser(newUser, session);
 
         assertEquals(expected, result);
+    }
+
+    @Test
+    void addGameToUserListOfGamesShouldCallServiceAndReturnUser() {
+        user.setId(1);
+        HttpSession session = mock(HttpSession.class);
+        SecurityContextImpl securityContext = mock(SecurityContextImpl.class);
+        when(session.getAttribute("SPRING_SECURITY_CONTEXT")).thenReturn(securityContext);
+        Authentication authentication = mock(Authentication.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(user);
+        int id = 1;
+        when(service.getUserById(id)).thenReturn(user);
+        UserInfo expected = new UserInfo(user);
+
+        UserInfo result = controller.addGameToUserListOfGames(1, session);
+
+
+        assertEquals(expected, result);
+        verify(service).addGameToUserListOfGames(1, 1);
     }
 }

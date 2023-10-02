@@ -1,8 +1,8 @@
 package com.gpb.web.service.impl;
 
-import com.gpb.web.bean.Game;
-import com.gpb.web.bean.GameInShop;
-import com.gpb.web.bean.Genre;
+import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.GameInShop;
+import com.gpb.web.bean.game.Genre;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.repository.GameInShopRepository;

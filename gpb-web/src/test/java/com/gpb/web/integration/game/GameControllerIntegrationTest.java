@@ -1,20 +1,8 @@
 package com.gpb.web.integration.game;
 
-import com.gpb.web.bean.Game;
-import com.gpb.web.bean.GameInShop;
-import com.gpb.web.bean.Genre;
-import com.gpb.web.repository.GameInShopRepository;
-import com.gpb.web.repository.GameRepository;
-import org.junit.jupiter.api.BeforeAll;
+import com.gpb.web.bean.game.GameInShop;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -27,31 +15,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
 
-    private static final String DATE_STRING_FORMAT = "dd/MM/yyyy";
-
-    @Autowired
-    private GameRepository gameRepository;
-
-    @Autowired
-    private GameInShopRepository gameInShopRepository;
-
-    private static final List<Game> games = new ArrayList<>();
-
-
-    @BeforeAll
-    static void beforeAllGame() throws ParseException {
-        games.add(gameCreation("name1", "url1", Genre.STRATEGY));
-        games.add(gameCreation("name2", "url2", Genre.RPG));
-        games.add(gameCreation("name3", "url3", Genre.STRATEGY));
-    }
-
     @BeforeEach
     void gameCreationBeforeAllTests() {
-        gameRepository.save(games.get(0));
-        gameRepository.save(games.get(1));
-        gameRepository.save(games.get(2));
-        games.forEach(game -> game.getGamesInShop()
-                .forEach(gameInShop -> gameInShopRepository.save(gameInShop)));
     }
 
     @Test
@@ -125,23 +90,4 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
                 .andExpect(jsonPath("$").value(String.format("Game with id '%s' not found", notExistingGameId)));
     }
 
-    private static GameInShop gameInShopCreation(String url, BigDecimal price, int discount) throws ParseException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_STRING_FORMAT);
-        return GameInShop.builder()
-                .url(url)
-                .price(price)
-                .discount(discount)
-                .discountDate(dateFormat.parse("12/12/2021"))
-                .isAvailable(true)
-                .build();
-    }
-
-    private static Game gameCreation(String name, String url, Genre genre) throws ParseException {
-        Game game = Game.builder()
-                .name(name)
-                .gamesInShop(List.of(gameInShopCreation(url, new BigDecimal("50.0"), 15)))
-                .genre(genre).build();
-        game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));
-        return game;
-    }
 }
