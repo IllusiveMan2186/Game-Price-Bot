@@ -1,9 +1,12 @@
 package com.gpb.web.integration.game;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gpb.web.GpbWebApplication;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.repository.GameInShopRepository;
 import com.gpb.web.repository.GameRepository;
@@ -34,9 +37,7 @@ public class BaseAuthenticationIntegration {
 
     private static final String DATE_STRING_FORMAT = "dd/MM/yyyy";
 
-    protected static final String DECODE_PASSWORD = "$2a$04$6B90esin.A8CPQ7PY2EheOu7nFzKBrHGlWlNyKlmtRCPPiikObH/W";
-
-    protected static final String ENCODE_PASSWORD = "pass";
+    protected static final String DECODE_PASSWORD = "pass";
 
     protected static final List<WebUser> userList = new ArrayList<>();
     protected static final List<Game> games = new ArrayList<>();
@@ -67,7 +68,7 @@ public class BaseAuthenticationIntegration {
     @BeforeEach
     void userCreationForAuthBeforeAllTests() {
 
-        userService.createUser(userList.get(0));
+        userService.createUser(new UserRegistration(userList.get(0)));
 
         gameRepository.save(games.get(0));
         gameRepository.save(games.get(1));
@@ -80,12 +81,12 @@ public class BaseAuthenticationIntegration {
         return WebUser.builder().email(email).password(password).build();
     }
 
-    protected static GameInShop gameInShopCreation(String url, BigDecimal price, int discount) throws ParseException {
+    protected static GameInShop gameInShopCreation(String url, BigDecimal price) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_STRING_FORMAT);
         return GameInShop.builder()
                 .url(url)
                 .price(price)
-                .discount(discount)
+                .discount(15)
                 .discountDate(dateFormat.parse("12/12/2021"))
                 .isAvailable(true)
                 .build();
@@ -94,9 +95,13 @@ public class BaseAuthenticationIntegration {
     protected static Game gameCreation(String name, String url, Genre genre) throws ParseException {
         Game game = Game.builder()
                 .name(name)
-                .gamesInShop(List.of(gameInShopCreation(url, new BigDecimal("50.0"), 15)))
+                .gamesInShop(List.of(gameInShopCreation(url, new BigDecimal("50.0"))))
                 .genre(genre).build();
         game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));
         return game;
+    }
+
+    protected String objectToJson(Object obj) throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(obj);
     }
 }

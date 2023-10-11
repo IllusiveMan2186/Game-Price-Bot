@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface WebUserRepository extends CrudRepository<WebUser, Long> {
 
+    Optional<WebUser> findById(long userId);
 
-    WebUser findById(long userId);
-
-    WebUser findByEmail(String email);
+    Optional<WebUser> findByEmail(String email);
 
     @Modifying
     @Query(value = "insert into user_game(user_id,game_id) VALUES(:userId,:gameId); ", nativeQuery = true)

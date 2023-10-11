@@ -18,6 +18,8 @@ configurations.all {
 }
 
 dependencies {
+	implementation("com.auth0:java-jwt:4.3.0")
+
 	compileOnly("org.projectlombok:lombok:1.18.24")
 	annotationProcessor("org.projectlombok:lombok:1.18.24")
 
@@ -36,7 +38,6 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
 	testImplementation("com.h2database:h2:2.2.220")
-	implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 }
 
 tasks.withType<Test> {
