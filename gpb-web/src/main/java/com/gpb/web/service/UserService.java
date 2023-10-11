@@ -1,5 +1,8 @@
 package com.gpb.web.service;
 
+import com.gpb.web.bean.user.Credentials;
+import com.gpb.web.bean.user.UserDto;
+import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.WebUser;
 
 /**
@@ -13,7 +16,7 @@ public interface UserService {
      * @param userId users id
      * @return user
      */
-    WebUser getUserById(long userId);
+    UserDto getUserById(long userId);
 
     /**
      * Get user by email
@@ -21,7 +24,7 @@ public interface UserService {
      * @param email users email
      * @return user
      */
-    WebUser getUserByEmail(String email);
+    UserDto getUserByEmail(String email);
 
     /**
      * Create new user
@@ -29,16 +32,16 @@ public interface UserService {
      * @param user user that would be registered in system
      * @return created user
      */
-    WebUser createUser(WebUser user);
+    UserDto createUser(UserRegistration user);
 
     /**
      * Update registered user
      *
      * @param newUser new version of user
-     * @param oldUser old version of user
+     * @param userId user id
      * @return updated user
      */
-    WebUser updateUser(WebUser newUser, WebUser oldUser);
+    UserDto updateUser(UserRegistration newUser, long userId);
 
     /**
      * Add game to user list of games
@@ -47,4 +50,12 @@ public interface UserService {
      * @param gameId games id
      */
     void addGameToUserListOfGames(long userId, long gameId);
+
+    /**
+     * Check user credential for authentication
+     *
+     * @param credentials user authentication credential
+     * @return founded user
+     */
+    UserDto login(Credentials credentials);
 }

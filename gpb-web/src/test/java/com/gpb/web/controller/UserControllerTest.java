@@ -1,6 +1,7 @@
 package com.gpb.web.controller;
 
-import com.gpb.web.bean.user.UserInfo;
+import com.gpb.web.bean.user.UserRegistration;
+import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -22,42 +23,20 @@ class UserControllerTest {
     private final WebUser user = new WebUser("email", "password");
 
     @Test
-    void getUserByIdSuccessfullyShouldReturnUser() {
-        int id = 1;
-        when(service.getUserById(id)).thenReturn(user);
-        UserInfo expected = new UserInfo(user);
-
-        UserInfo result = controller.getUserById(id);
-
-
-        assertEquals(expected, result);
-    }
-
-
-    @Test
-    void createUserSuccessfullyShouldReturnUser() {
-        when(service.createUser(user)).thenReturn(user);
-        UserInfo expected = new UserInfo(user);
-
-        UserInfo result = controller.userRegistration(user);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
     void updateUserSuccessfullyShouldReturnUser() {
         HttpSession session = mock(HttpSession.class);
         SecurityContextImpl securityContext = mock(SecurityContextImpl.class);
         when(session.getAttribute("SPRING_SECURITY_CONTEXT")).thenReturn(securityContext);
         Authentication authentication = mock(Authentication.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(user);
-
+        user.setId(1);
+        when(authentication.getPrincipal()).thenReturn(new UserDto(user));
         WebUser newUser = new WebUser("email2", "password2");
-        when(service.updateUser(newUser, user)).thenReturn(newUser);
-        UserInfo expected = new UserInfo(newUser);
+        UserRegistration newUserRegistration = new UserRegistration("email2", "password2".toCharArray());
+        UserDto expected = new UserDto(newUser);
+        when(service.updateUser(newUserRegistration, 1)).thenReturn(expected);
 
-        UserInfo result = controller.updateUser(newUser, session);
+        UserDto result = controller.updateUser(newUserRegistration, session);
 
         assertEquals(expected, result);
     }
@@ -70,12 +49,12 @@ class UserControllerTest {
         when(session.getAttribute("SPRING_SECURITY_CONTEXT")).thenReturn(securityContext);
         Authentication authentication = mock(Authentication.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(user);
-        int id = 1;
-        when(service.getUserById(id)).thenReturn(user);
-        UserInfo expected = new UserInfo(user);
+        user.setId(1);
+        UserDto expected = new UserDto(user);
+        when(authentication.getPrincipal()).thenReturn(expected);
+        when(service.getUserById(1)).thenReturn(expected);
 
-        UserInfo result = controller.addGameToUserListOfGames(1, session);
+        UserDto result = controller.addGameToUserListOfGames(1, session);
 
 
         assertEquals(expected, result);

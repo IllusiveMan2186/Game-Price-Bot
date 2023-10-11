@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GPB-main" type="Application" factoryName="Application">
+    <envs>
+      <env name="POSTGRES_DB_URL" value="jdbc:postgresql://localhost:5432/postgres" />
+      <env name="POSTGRES_DB_USERNAME" value="postgres" />
+      <env name="POSTGRES_DB_PASSWORD" value="REDACTED" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.gpb.web.GpbWebApplication" />
+    <module name="gpb-web.main" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
