@@ -111,7 +111,7 @@ class UserServiceImplTest {
 
     private WebUser getWebUser(UserRegistration userRegistration) {
         return WebUser.builder()
-                .email(userRegistration.getUsername())
+                .email(userRegistration.getEmail())
                 .password(ENCODED_PASSWORD).build();
     }
 }

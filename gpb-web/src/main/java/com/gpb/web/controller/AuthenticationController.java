@@ -42,6 +42,8 @@ public class AuthenticationController {
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto userRegistration(@RequestBody final UserRegistration user) {
-        return userService.createUser(user);
+        UserDto userDto = userService.createUser(user);
+        userDto.setToken(userAuthenticationProvider.createToken(userDto.getEmail()));
+        return userDto;
     }
 }
