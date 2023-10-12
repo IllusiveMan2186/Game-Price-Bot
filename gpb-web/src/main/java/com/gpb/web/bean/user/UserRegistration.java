@@ -9,11 +9,11 @@ import lombok.ToString;
 public class UserRegistration {
 
     public UserRegistration(WebUser user){
-        this.username = user.getEmail();
+        this.email = user.getEmail();
         this.password = user.getPassword().toCharArray();
     }
 
-    private String username;
+    private String email;
 
     @ToString.Exclude
     private char[] password;

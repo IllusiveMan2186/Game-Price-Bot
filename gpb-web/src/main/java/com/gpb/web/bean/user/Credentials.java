@@ -8,7 +8,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Credentials {
 
-    private String username;
+    private String email;
 
     @ToString.Exclude
     private char[] password;
