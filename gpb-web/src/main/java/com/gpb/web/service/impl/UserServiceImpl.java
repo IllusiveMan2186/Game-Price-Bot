@@ -45,8 +45,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(final UserRegistration userRegistration) {
-        log.info(String.format("Create user : %s", userRegistration.getUsername()));
-        if (userRepository.findByEmail(userRegistration.getUsername()).isPresent()) {
+        log.info(String.format("Create user : %s", userRegistration.getEmail()));
+        if (userRepository.findByEmail(userRegistration.getEmail()).isPresent()) {
             throw new EmailAlreadyExistException();
         }
         WebUser user = getWebUser(userRegistration);
@@ -78,10 +78,10 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto login(Credentials credentials) {
-        log.info(String.format("Login user : %s", credentials.getUsername()));
-        final WebUser user = userRepository.findByEmail(credentials.getUsername())
+        log.info(String.format("Login user : %s", credentials.getEmail()));
+        final WebUser user = userRepository.findByEmail(credentials.getEmail())
                 .orElseThrow(() -> new NotFoundException(String
-                        .format("User with email '%s' not found", credentials.getUsername())));
+                        .format("User with email '%s' not found", credentials.getEmail())));
 
         if (matchPassword(credentials.getPassword(), user.getPassword())) {
             return new UserDto(user);
@@ -91,12 +91,12 @@ public class UserServiceImpl implements UserService {
 
     private WebUser getWebUser(UserRegistration userRegistration) {
         return WebUser.builder()
-                .email(userRegistration.getUsername())
+                .email(userRegistration.getEmail())
                 .password(passwordEncoder.encode(CharBuffer.wrap(userRegistration.getPassword()))).build();
     }
 
     private boolean equalsUpdatedUser(WebUser oldUser, UserRegistration newUser) {
-        return oldUser.getEmail().equals(newUser.getUsername())
+        return oldUser.getEmail().equals(newUser.getEmail())
                 && matchPassword(newUser.getPassword(), oldUser.getPassword());
     }
 
