@@ -25,7 +25,6 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    @Transactional
     public UserDto login(@RequestBody Credentials credentials) {
         UserDto userDto = userService.login(credentials);
         userDto.setToken(userAuthenticationProvider.createToken(userDto.getEmail()));

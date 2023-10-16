@@ -20,7 +20,7 @@ class UserControllerTest {
 
     private final UserController controller = new UserController(service);
 
-    private final WebUser user = new WebUser("email", "password");
+    private final WebUser user = new WebUser("email", "password", false, 0, null);
 
     @Test
     void updateUserSuccessfullyShouldReturnUser() {
@@ -31,7 +31,7 @@ class UserControllerTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         user.setId(1);
         when(authentication.getPrincipal()).thenReturn(new UserDto(user));
-        WebUser newUser = new WebUser("email2", "password2");
+        WebUser newUser = new WebUser("email2", "password2", false, 0, null);
         UserRegistration newUserRegistration = new UserRegistration("email2", "password2".toCharArray());
         UserDto expected = new UserDto(newUser);
         when(service.updateUser(newUserRegistration, 1)).thenReturn(expected);
