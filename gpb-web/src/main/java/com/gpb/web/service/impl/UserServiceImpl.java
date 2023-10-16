@@ -5,7 +5,7 @@ import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.exception.EmailAlreadyExistException;
-import com.gpb.web.exception.InvalidPasswordException;
+import com.gpb.web.exception.LoginFailedException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.exception.UserDataNotChangedException;
 import com.gpb.web.repository.WebUserRepository;
@@ -80,13 +80,12 @@ public class UserServiceImpl implements UserService {
     public UserDto login(Credentials credentials) {
         log.info(String.format("Login user : %s", credentials.getEmail()));
         final WebUser user = userRepository.findByEmail(credentials.getEmail())
-                .orElseThrow(() -> new NotFoundException(String
-                        .format("User with email '%s' not found", credentials.getEmail())));
+                .orElseThrow(LoginFailedException::new);
 
         if (matchPassword(credentials.getPassword(), user.getPassword())) {
             return new UserDto(user);
         }
-        throw new InvalidPasswordException();
+        throw new LoginFailedException();
     }
 
     private WebUser getWebUser(UserRegistration userRegistration) {
