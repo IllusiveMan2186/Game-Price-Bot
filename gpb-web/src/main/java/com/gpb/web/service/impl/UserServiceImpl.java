@@ -8,6 +8,7 @@ import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.LoginFailedException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.exception.UserDataNotChangedException;
+import com.gpb.web.exception.UserLockedException;
 import com.gpb.web.repository.WebUserRepository;
 import com.gpb.web.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +16,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.util.Calendar;
+import java.util.Date;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
+
+    private static final int MAX_FAILED_ATTEMPTS = 3;
+
+    private static final long LOCK_TIME_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
     private final WebUserRepository userRepository;
 
@@ -82,10 +89,45 @@ public class UserServiceImpl implements UserService {
         final WebUser user = userRepository.findByEmail(credentials.getEmail())
                 .orElseThrow(LoginFailedException::new);
 
+        if (user.isLocked()) {
+            long lockTimeInMillis = user.getLockTime().getTime();
+            long currentTimeInMillis = System.currentTimeMillis();
+            if (lockTimeInMillis + LOCK_TIME_DURATION < currentTimeInMillis) {
+                unlockUser(user);
+            } else {
+                throw new UserLockedException();
+            }
+        }
+
         if (matchPassword(credentials.getPassword(), user.getPassword())) {
             return new UserDto(user);
         }
+        failedLoginAttempt(user);
         throw new LoginFailedException();
+    }
+
+    private void failedLoginAttempt(WebUser user) {
+        user.increaseFailedAttempt();
+        if (user.getFailedAttempt() >= MAX_FAILED_ATTEMPTS) {
+            lockUser(user);
+        }
+        userRepository.save(user);
+    }
+
+    private void lockUser(WebUser user) {
+        user.setLocked(true);
+
+        Calendar lockTime = Calendar.getInstance();
+        lockTime.setTime(new Date());
+        lockTime.add(Calendar.DATE, 1);
+        user.setLockTime(lockTime.getTime());
+    }
+
+    private void unlockUser(WebUser user) {
+        user.setLocked(false);
+        user.setLockTime(null);
+        user.setFailedAttempt(0);
+        userRepository.save(user);
     }
 
     private WebUser getWebUser(UserRegistration userRegistration) {

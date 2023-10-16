@@ -10,6 +10,8 @@ import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.Date;
+
 @Data
 @Entity
 @Builder
@@ -24,4 +26,14 @@ public class WebUser extends BasicUser {
 
     @ToString.Exclude
     private String password;
+
+    private boolean isLocked;
+
+    private int failedAttempt;
+
+    private Date lockTime;
+
+    public void increaseFailedAttempt() {
+        failedAttempt++;
+    }
 }
