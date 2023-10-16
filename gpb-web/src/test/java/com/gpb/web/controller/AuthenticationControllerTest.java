@@ -19,7 +19,7 @@ class AuthenticationControllerTest {
 
     private final AuthenticationController controller = new AuthenticationController(service, provider);
 
-    private final WebUser user = new WebUser("email", "password");
+    private final WebUser user = new WebUser("email", "password", false, 0, null);
 
     @Test
     void createUserSuccessfullyShouldReturnUser() {
