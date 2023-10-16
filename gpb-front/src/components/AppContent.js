@@ -13,7 +13,8 @@ export default class AppContent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            componentToShow: "welcome"
+            componentToShow: "welcome",
+            errorMessage: ""
         }
     };
 
@@ -26,13 +27,21 @@ export default class AppContent extends React.Component {
         setAuthHeader(null);
     };
 
+    getErrorMessage = () => {
+        return this.state.errorMessage
+    }
+
+    cleanErrorMessage = () => {
+        this.setState({ 'errorMessage': "" })
+    }
+
     onLogin = (e, email, password) => {
         e.preventDefault();
         request(
             "POST",
             "/login",
             {
-                username: email,
+                email: email,
                 password: password
             }).then(
                 (response) => {
@@ -41,7 +50,7 @@ export default class AppContent extends React.Component {
                 }).catch(
                     (error) => {
                         setAuthHeader(null);
-                        this.setState({ componentToShow: "welcome" })
+                        this.setState({ errorMessage: error.response.data })
                     }
                 );
     };
@@ -61,7 +70,7 @@ export default class AppContent extends React.Component {
                 }).catch(
                     (error) => {
                         setAuthHeader(null);
-                        this.setState({ componentToShow: "welcome" })
+                        this.setState({ errorMessage: error.response.data })
                     }
                 );
     };
@@ -72,7 +81,7 @@ export default class AppContent extends React.Component {
                 <header className="App-header">
                     <div className="App-title">
                         <img src={logo} className="App-logo" alt="logo" />
-                        <h1 style={{fontSize: 'auto'}}>GPB</h1>
+                        <h1 style={{ fontSize: 'auto' }}>GPB</h1>
                     </div>
 
                     <Buttons
@@ -82,7 +91,8 @@ export default class AppContent extends React.Component {
                 </header>
 
                 {this.state.componentToShow === "welcome" && <WelcomeContent />}
-                {this.state.componentToShow === "login" && <LoginForm onLogin={this.onLogin} onRegister={this.onRegister} />}
+                {this.state.componentToShow === "login" && <LoginForm onLogin={this.onLogin} onRegister={this.onRegister} errorMessage={this.getErrorMessage}
+                    cleanErrorMessage={this.cleanErrorMessage} />}
                 {this.state.componentToShow === "messages" && <AuthContent />}
 
             </>
