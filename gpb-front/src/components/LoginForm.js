@@ -13,6 +13,8 @@ export default class LoginForm extends React.Component {
       passwordError: "",
       confirmPassword: "",
       confirmPasswordError: "",
+      errorMessage: props.errorMessage,
+      cleanErrorMessage: props.cleanErrorMessage,
       onLogin: props.onLogin,
       onRegister: props.onRegister
     };
@@ -48,6 +50,24 @@ export default class LoginForm extends React.Component {
   isRegistrationFormValid = () => {
     return this.isAllFieldsFiled() && this.isNoErrors()
   }
+
+  cleanAll(string) {
+    this.setState({
+      active: string,
+      email: "",
+      emailError: "",
+      password: "",
+      passwordError: "",
+      confirmPassword: "",
+      confirmPasswordError: ""
+    });
+    this.state.cleanErrorMessage();
+  }
+
+  isLoginFormValid() {
+    return !this.isEmptyString(this.state.email) && !this.isEmptyString(this.state.password)
+  }
+
 
   isNoErrors() {
     return this.isEmptyString(this.state.emailError) && this.isEmptyString(this.state.passwordError) && this.isEmptyString(this.state.confirmPasswordError);
@@ -113,14 +133,15 @@ export default class LoginForm extends React.Component {
           <ul className="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
             <li className="nav-item" role="presentation">
               <button className={classNames("nav-link", this.state.active === "login" ? "active" : "")} id="tab-login"
-                onClick={() => this.setState({ active: "login" })}>Login</button>
+                onClick={() => this.cleanAll("login")}>Login</button>
             </li>
             <li className="nav-item" role="presentation">
               <button className={classNames("nav-link", this.state.active === "register" ? "active" : "")} id="tab-register"
-                onClick={() => this.setState({ active: "register" })}>Register</button>
+                onClick={() => this.cleanAll("register")}>Register</button>
             </li>
           </ul>
 
+          <span className='Error'>{this.state.errorMessage()}</span>
           <div className="tab-content">
             <div className={classNames("tab-pane", "fade", this.state.active === "login" ? "show active" : "")} id="pills-login" >
               <form onSubmit={this.onSubmitLogin}>
@@ -135,7 +156,7 @@ export default class LoginForm extends React.Component {
                   <input type="password" id="loginPassword" name="password" className="form-control" onChange={this.onChangeHandler} />
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-block mb-4">Sign in</button>
+                <button type="submit" className="btn btn-primary btn-block mb-4" disabled={!this.isLoginFormValid()}>Sign in</button>
 
               </form>
             </div>
