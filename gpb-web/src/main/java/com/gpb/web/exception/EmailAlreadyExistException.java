@@ -3,6 +3,6 @@ package com.gpb.web.exception;
 public class EmailAlreadyExistException extends RuntimeException{
 
     public EmailAlreadyExistException() {
-        super("User with this email already exist");
+        super("app.user.error.email.already.exists");
     }
 }

@@ -87,7 +87,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
                         .with(user(userList.get(0).getEmail()).password(userList.get(0).getPassword())))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$").value(String.format("Game with id '%s' not found", notExistingGameId)));
+                .andExpect(jsonPath("$").value("app.game.error.id.not.found"));
     }
 
 }
