@@ -69,7 +69,7 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
                         .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value("User didn't changed during update operation"));
+                .andExpect(jsonPath("$").value("app.user.error.did.not.changed"));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
                         .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value("User with this email already exist"));
+                .andExpect(jsonPath("$").value("app.user.error.email.already.exists"));
     }
 
     @Test

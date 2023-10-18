@@ -45,8 +45,8 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserByEmail(final String email) {
         log.info(String.format("Get user by email : %s", email));
 
-        final WebUser user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(String
-                .format("User with email '%s' not found", email)));
+        final WebUser user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(
+                "app.user.error.email.not.found"));
         return new UserDto(user);
     }
 
@@ -149,7 +149,6 @@ public class UserServiceImpl implements UserService {
         log.info(String.format("Get user by id : %s", userId));
 
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String
-                        .format("User with id '%s' not found", userId)));
+                .orElseThrow(() -> new NotFoundException("app.user.error.id.not.found"));
     }
 }

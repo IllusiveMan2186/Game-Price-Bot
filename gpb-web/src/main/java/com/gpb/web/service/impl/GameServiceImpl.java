@@ -38,7 +38,7 @@ public class GameServiceImpl implements GameService {
 
         final Game game = gameRepository.findById(gameId);
         if (game == null) {
-            throw new NotFoundException(String.format("Game with id '%s' not found", gameId));
+            throw new NotFoundException("app.game.error.id.not.found");
         }
         return game;
     }
