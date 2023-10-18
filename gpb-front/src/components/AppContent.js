@@ -71,7 +71,7 @@ export default class AppContent extends React.Component {
                 }).catch(
                     (error) => {
                         setAuthHeader(null);
-                        this.setState({ errorMessage: error.response.data })
+                        this.setState({ errorMessage: <Message string={error.response.data} /> })
                     }
                 );
     };
