@@ -1,5 +1,6 @@
 import * as React from 'react'
 import classNames from 'classnames'
+import Message from './Message';
 
 export default class LoginForm extends React.Component {
 
@@ -92,9 +93,9 @@ export default class LoginForm extends React.Component {
     switch (name) {
       case "email":
         if (!value) {
-          this.setState({ 'emailError': "Please enter Email." })
+          this.setState({ 'emailError': <Message string={'app.login.form.error.empty.email'} /> })
         } else if (!this.isValidEmail(value)) {
-          this.setState({ 'emailError': "Email is invalid" })
+          this.setState({ 'emailError': <Message string={'app.login.form.error.wrong.email'} /> })
         } else {
           this.setState({ 'emailError': "" })
         }
@@ -102,9 +103,9 @@ export default class LoginForm extends React.Component {
 
       case "password":
         if (!value) {
-          this.setState({ 'passwordError': "Please enter Password." })
+          this.setState({ 'passwordError': <Message string={'app.login.form.error.empty.password'} /> })
         } else if (value !== this.state.password) {
-          this.setState({ 'passwordError': "Password and Confirm Password does not match." })
+          this.setState({ 'passwordError':  <Message string={'app.registr.form.error.not.match.pass.conf'} /> })
         } else {
           this.setState({ 'passwordError': "" })
         }
@@ -112,9 +113,9 @@ export default class LoginForm extends React.Component {
 
       case "confirmPassword":
         if (!value) {
-          this.setState({ 'confirmPasswordError': "Please enter Confirm Password." })
+          this.setState({ 'confirmPasswordError': <Message string={'app.registr.form.error.empty.pass.conf'} /> })
         } else if (this.state.password && value !== this.state.password) {
-          this.setState({ 'confirmPasswordError': "Password and Confirm Password does not match." })
+          this.setState({ 'confirmPasswordError': <Message string={'app.registr.form.error.not.match.pass.conf'} /> })
         } else {
           this.setState({ 'confirmPasswordError': "" })
         }
@@ -133,11 +134,11 @@ export default class LoginForm extends React.Component {
           <ul className="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
             <li className="nav-item" role="presentation">
               <button className={classNames("nav-link", this.state.active === "login" ? "active" : "")} id="tab-login"
-                onClick={() => this.cleanAll("login")}>Login</button>
+                onClick={() => this.cleanAll("login")}>{<Message string={'app.login'} />}</button>
             </li>
             <li className="nav-item" role="presentation">
               <button className={classNames("nav-link", this.state.active === "register" ? "active" : "")} id="tab-register"
-                onClick={() => this.cleanAll("register")}>Register</button>
+                onClick={() => this.cleanAll("register")}><Message string={'app.registr'} /></button>
             </li>
           </ul>
 
@@ -147,16 +148,16 @@ export default class LoginForm extends React.Component {
               <form onSubmit={this.onSubmitLogin}>
 
                 <div className="form-outline mb-4">
-                  <label className="form-label" htmlFor="loginName">Email</label>
+                  <label className="form-label" htmlFor="loginName"><Message string={'app.login.form.email'} /></label>
                   <input type="email" id="loginName" name="email" className="form-control" onChange={this.onChangeHandler} />
                 </div>
 
                 <div className="form-outline mb-4">
-                  <label className="form-label" htmlFor="loginPassword">Password</label>
+                  <label className="form-label" htmlFor="loginPassword"><Message string={'app.login.form.password'} /></label>
                   <input type="password" id="loginPassword" name="password" className="form-control" onChange={this.onChangeHandler} />
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-block mb-4" disabled={!this.isLoginFormValid()}>Sign in</button>
+                <button type="submit" className="btn btn-primary btn-block mb-4" disabled={!this.isLoginFormValid()}><Message string={'app.login.form.singup'} /></button>
 
               </form>
             </div>
@@ -165,27 +166,27 @@ export default class LoginForm extends React.Component {
 
 
                 <div className="form-outline mb-4">
-                  <label className="form-label" htmlFor="email">Email</label>
+                  <label className="form-label" htmlFor="email"><Message string={'app.login.form.email'} /></label>
                   <input type="email" id="login" name="email" className="form-control" onChange={this.onChangeHandler}
                     onBlur={this.validateInput} />
                   <span className='Error'>{this.state.emailError}</span>
                 </div>
 
                 <div className="form-outline mb-4">
-                  <label className="form-label" htmlFor="registerPassword">Password</label>
+                  <label className="form-label" htmlFor="registerPassword"><Message string={'app.login.form.password'} /></label>
                   <input type="password" id="registerPassword" name="password" className="form-control" onChange={this.onChangeHandler}
                     onBlur={this.validateInput} />
                   <span className='Error'>{this.state.passwordError}</span>
                 </div>
 
                 <div className="form-outline mb-4">
-                  <label className="form-label" htmlFor="registerPasswordConfirm">Confirm Password</label>
+                  <label className="form-label" htmlFor="registerPasswordConfirm"><Message string={'app.registr.form.pass.conf'} /></label>
                   <input type="password" id="registerPasswordConfirmation" name="confirmPassword" className="form-control"
                     onChange={this.onChangeHandler} onBlur={this.validateInput} />
                   <span className='Error'>{this.state.confirmPasswordError}</span>
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-block mb-3" disabled={!this.isRegistrationFormValid()}>Register</button>
+                <button type="submit" className="btn btn-primary btn-block mb-3" disabled={!this.isRegistrationFormValid()}><Message string={'app.registr.form.reg.buttom'} /></button>
               </form>
             </div>
           </div>

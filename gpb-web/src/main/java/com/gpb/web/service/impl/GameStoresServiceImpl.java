@@ -31,7 +31,7 @@ public class GameStoresServiceImpl implements GameStoresService {
                 return game;
             }
         }
-        throw new NotFoundException(String.format("Game with name '%s' not found", name));
+        throw new NotFoundException("app.game.error.name.not.found");
     }
 
     @Override
@@ -43,7 +43,7 @@ public class GameStoresServiceImpl implements GameStoresService {
                 return game;
             }
         }
-        throw new NotFoundException(String.format("Game with url '%s' not found", url));
+        throw new NotFoundException("app.game.error.url.not.found");
     }
 
     private void setGameFromAllStores(Game game, StoreService serviceToSkip) {

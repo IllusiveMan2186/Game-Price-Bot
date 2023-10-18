@@ -31,7 +31,7 @@ public class AuthenticationControllerIntegrationTest extends BaseAuthenticationI
                         .content(objectToJson(new UserRegistration(userList.get(0)))))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value("User with this email already exist"));
+                .andExpect(jsonPath("$").value("app.user.error.email.already.exists"));
     }
 
     @Test
