@@ -54,6 +54,7 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(final UserRegistration userRegistration) {
         log.info(String.format("Create user : %s", userRegistration.getEmail()));
         if (userRepository.findByEmail(userRegistration.getEmail()).isPresent()) {
+            log.info(String.format("User with email : '%s' already registered", userRegistration.getEmail()));
             throw new EmailAlreadyExistException();
         }
         WebUser user = getWebUser(userRegistration);
@@ -70,8 +71,10 @@ public class UserServiceImpl implements UserService {
         newUser.setId(userId);
 
         if (equalsUpdatedUser(oldUser, newUserRegistration)) {
+            log.info(String.format("User with id : '%s' did not changed data for update", userId));
             throw new UserDataNotChangedException();
         } else if (!newUser.getEmail().equals(oldUser.getEmail()) && userRepository.findByEmail(newUser.getEmail()).isPresent()) {
+            log.info(String.format("User with email : '%s' already registered", newUser.getEmail()));
             throw new EmailAlreadyExistException();
         }
         WebUser user = userRepository.save(newUser);
@@ -112,6 +115,7 @@ public class UserServiceImpl implements UserService {
             lockUser(user);
         }
         userRepository.save(user);
+        log.info(String.format("Failed login for user : '%s'", user.getEmail()));
     }
 
     private void lockUser(WebUser user) {
@@ -121,6 +125,7 @@ public class UserServiceImpl implements UserService {
         lockTime.setTime(new Date());
         lockTime.add(Calendar.DATE, 1);
         user.setLockTime(lockTime.getTime());
+        log.info(String.format("Unlock user : '%s'", user.getEmail()));
     }
 
     private void unlockUser(WebUser user) {
@@ -128,6 +133,7 @@ public class UserServiceImpl implements UserService {
         user.setLockTime(null);
         user.setFailedAttempt(0);
         userRepository.save(user);
+        log.info(String.format("Lock user : '%s'", user.getEmail()));
     }
 
     private WebUser getWebUser(UserRegistration userRegistration) {
