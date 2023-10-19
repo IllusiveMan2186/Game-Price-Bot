@@ -52,8 +52,8 @@ public class GameController {
      * @param url game url from the store
      * @return game
      */
-    @GetMapping(value = "/url/{url}")
-    public Game getGameByUrl(@PathVariable final String url) {
+    @GetMapping(value = "/url")
+    public Game getGameByUrl(@RequestParam final String url) {
         return gameService.getByUrl(url);
     }
 
