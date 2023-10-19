@@ -35,7 +35,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
     void getGameByUrlSuccessfullyShouldReturnGame() throws Exception {
         GameInShop gameInShop = games.get(0).getGamesInShop().get(0);
 
-        mockMvc.perform(get("/game/url/{url}", games.get(0).getGamesInShop().get(0).getUrl())
+        mockMvc.perform(get("/game/url?url={url}", games.get(0).getGamesInShop().get(0).getUrl())
                         .with(user(userList.get(0).getEmail()).password(userList.get(0).getPassword())))
                 .andDo(print())
                 .andExpect(status().isOk())

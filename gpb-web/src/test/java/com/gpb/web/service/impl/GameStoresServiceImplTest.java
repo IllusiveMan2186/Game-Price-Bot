@@ -29,12 +29,12 @@ class GameStoresServiceImplTest {
     void beforeAllGame() {
         Map<String, StoreService> storeServiceMap = new HashMap<>();
         storeServiceMap.put("storeService1", storeService1);
-        storeServiceMap.put("storeService2", storeService2);
+        storeServiceMap.put("gamazey.com.ua", storeService2);
         gameStoresService = new GameStoresServiceImpl(storeServiceMap);
     }
 
     @Test
-    void findOrCreateGameByName() {
+    void getGameByNameSuccessfullyShouldReturnNewGame() {
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
         final GameInShop gameInShop2 = new GameInShop();
@@ -63,12 +63,12 @@ class GameStoresServiceImplTest {
     }
 
     @Test
-    void findOrCreateGameByUrl() {
+    void getGameByUrlSuccessfullyShouldReturnNewGame() {
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
         final GameInShop gameInShop2 = new GameInShop();
         game.setGamesInShop(Collections.singletonList(gameInShop2));
-        String url = "url";
+        String url = "https://gamazey.com.ua/games/steam/sid-meiers-civilization-vi";
         when(storeService2.findUncreatedGameByUrl(url)).thenReturn(game);
         when(storeService1.findByUrl(url)).thenReturn(gameInShop1);
         List<GameInShop> copyOfList = new ArrayList<>(Collections.singletonList(gameInShop2));

@@ -19,6 +19,7 @@ configurations.all {
 
 dependencies {
 	implementation("com.auth0:java-jwt:4.3.0")
+	implementation("org.jsoup:jsoup:1.15.3")
 
 	compileOnly("org.projectlombok:lombok:1.18.24")
 	annotationProcessor("org.projectlombok:lombok:1.18.24")

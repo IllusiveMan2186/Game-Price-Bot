@@ -8,6 +8,8 @@ import com.gpb.web.service.StoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -16,15 +18,15 @@ import java.util.Map;
 @Service
 public class GameStoresServiceImpl implements GameStoresService {
 
-    private final Map<String, StoreService> storeService;
+    private final Map<String, StoreService> storeServices;
 
-    public GameStoresServiceImpl(Map<String, StoreService> storeService) {
-        this.storeService = storeService;
+    public GameStoresServiceImpl(Map<String, StoreService> storeServices) {
+        this.storeServices = storeServices;
     }
 
     @Override
     public Game findGameByName(String name) {
-        for (StoreService service : storeService.values()) {
+        for (StoreService service : storeServices.values()) {
             Game game = service.findUncreatedGameByName(name);
             if (game != null) {
                 setGameFromAllStores(game, service);
@@ -36,20 +38,27 @@ public class GameStoresServiceImpl implements GameStoresService {
     }
 
     @Override
-    public Game findGameByUrl(String url) {
-        for (StoreService service : storeService.values()) {
-            Game game = service.findUncreatedGameByUrl(url);
-            if (game != null) {
-                setGameFromAllStores(game, service);
-                return game;
+    public Game findGameByUrl(String link) {
+        try {
+            URL url = new URL(link);
+            StoreService storeService = storeServices.get(url.getHost());
+            if(storeService != null){
+                Game game = storeService.findUncreatedGameByUrl(link);
+                if (game != null) {
+                    setGameFromAllStores(game, storeService);
+                    return game;
+                }
             }
+        } catch (MalformedURLException e) {
+            log.info(String.format("Game with url : '%s' not found", link));
+            throw new NotFoundException("app.game.error.url.not.found");
         }
-        log.info(String.format("Game with url : '%s' not found", url));
+        log.info(String.format("Game with url : '%s' not found", link));
         throw new NotFoundException("app.game.error.url.not.found");
     }
 
     private void setGameFromAllStores(Game game, StoreService serviceToSkip) {
-        Collection<StoreService> services = storeService.values();
+        Collection<StoreService> services = storeServices.values();
         services.remove(serviceToSkip);
 
         List<GameInShop> gameInShopList = services.stream()
