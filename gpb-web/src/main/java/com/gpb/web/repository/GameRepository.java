@@ -15,5 +15,5 @@ public interface GameRepository extends CrudRepository<Game, Long> {
 
     Game findByName(String name);
 
-    List<Game> findByGenre(Genre genre, Pageable pageable);
+    List<Game> findByGenresIn(List<Genre> genres, Pageable pageable);
 }

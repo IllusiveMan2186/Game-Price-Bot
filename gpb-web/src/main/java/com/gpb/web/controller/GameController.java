@@ -65,9 +65,9 @@ public class GameController {
      * @param pageNum  page number
      * @return list of games
      */
-    @GetMapping(value = "/genre/{genre}")
+    @GetMapping(value = "/genre")
     @ResponseStatus(HttpStatus.OK)
-    public List<Game> getGamesForGenre(@PathVariable final Genre genre, @RequestParam final int pageSize,
+    public List<Game> getGamesForGenre(@RequestParam final List<Genre> genre, @RequestParam final int pageSize,
                                        @RequestParam final int pageNum) {
         return gameService.getByGenre(genre, pageSize, pageNum);
     }
