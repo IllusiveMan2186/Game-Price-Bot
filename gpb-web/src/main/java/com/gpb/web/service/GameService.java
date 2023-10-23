@@ -42,7 +42,7 @@ public interface GameService {
      * @param pageNum  page number
      * @return list of games
      */
-    List<Game> getByGenre(Genre genre, int pageSize, int pageNum);
+    List<Game> getByGenre(List<Genre> genre, int pageSize, int pageNum);
 
     /**
      * Create game

@@ -2,6 +2,7 @@ package com.gpb.web.service.impl.store;
 
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
+import com.gpb.web.bean.game.Genre;
 import com.gpb.web.parser.StorePageParser;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -21,10 +24,19 @@ class GamazeyStoreServiceTest {
     private static final String GAME_PAGE_OLD_PRICE_FIELD = "rm-product-center-price-old";
     private static final String GAME_PAGE_DISCOUNT_FIELD = "main-product-you-save";
     private static final String GAME_PAGE_IS_AVAILABLE = "rm-module-stock rm-out-of-stock";
+    private static final String GAME_PAGE_CHARACTERISTICS = "rm-product-attr-list-item d-flex d-sm-block";
+
+    private static final String GENRE_ELEMENT = """
+            <div class="rm-product-attr-list-item d-flex d-sm-block">
+            <div>Жанр</div>
+            <div>Симуляторы, Стратегии</div>
+            </div>""";
 
     StorePageParser parser = mock(StorePageParser.class);
 
-    GamazeyStoreService storeService = new GamazeyStoreService(parser);
+    Map<String, Genre> genereMap = new HashMap<>();
+
+    GamazeyStoreService storeService = new GamazeyStoreService(parser, genereMap);
 
     @Test
     void getUncreatedGameByUrlSuccessfullyShouldReturnNewGame() {
@@ -42,16 +54,21 @@ class GamazeyStoreServiceTest {
         Elements priceFieldElement = mock(Elements.class);
         Element discountFieldElement = mock(Document.class);
         Elements isAvailableElement = mock(Elements.class);
+        Elements characteristicsElement = mock(Elements.class);
+        Element genreElement = mock(Element.class);
 
         when(page.getElementsByClass(GAME_PAGE_NAME_FIELD)).thenReturn(nameFieldElement);
         when(page.getElementsByClass(GAME_PAGE_OLD_PRICE_FIELD)).thenReturn(priceFieldElement);
         when(page.getElementById(GAME_PAGE_DISCOUNT_FIELD)).thenReturn(discountFieldElement);
         when(page.getElementsByClass(GAME_PAGE_IS_AVAILABLE)).thenReturn(isAvailableElement);
+        when(page.getElementsByClass(GAME_PAGE_CHARACTERISTICS)).thenReturn(characteristicsElement);
+        when(characteristicsElement.get(3)).thenReturn(genreElement);
 
         when(nameFieldElement.text()).thenReturn(gameInShop.getNameInStore());
         when(priceFieldElement.text()).thenReturn(gameInShop.getPrice().toString());
         when(discountFieldElement.text()).thenReturn(String.valueOf(gameInShop.getDiscount()));
         when(isAvailableElement.isEmpty()).thenReturn(gameInShop.isAvailable());
+        when(genreElement.text()).thenReturn(GENRE_ELEMENT);
 
         Game result = storeService.findUncreatedGameByUrl(url);
 
@@ -92,8 +109,8 @@ class GamazeyStoreServiceTest {
         assertEquals(gameInShop, result);
     }
 
-    private GameInShop getGameInStore(){
-        return  GameInShop.builder()
+    private GameInShop getGameInStore() {
+        return GameInShop.builder()
                 .nameInStore("name")
                 .price(new BigDecimal(1))
                 .url("url")
