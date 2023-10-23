@@ -71,10 +71,10 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<Game> getByGenre(final Genre genre, final int pageSize, final int pageNum) {
+    public List<Game> getByGenre(final List<Genre> genre, final int pageSize, final int pageNum) {
         log.info(String.format("Get games by genre : %s", genre));
 
-        return gameRepository.findByGenre(genre, PageRequest.of(pageNum - 1, pageSize));
+        return gameRepository.findByGenresIn(genre, PageRequest.of(pageNum - 1, pageSize));
     }
 
     @Override

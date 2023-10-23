@@ -53,7 +53,7 @@ class GameControllerTest {
 
     @Test
     void findByGenreSuccessfullyShouldReturnGameList() {
-        Genre genre = Genre.STRATEGY;
+        List<Genre> genre = Collections.singletonList(Genre.STRATEGIES);
         int pageSize = 2;
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);

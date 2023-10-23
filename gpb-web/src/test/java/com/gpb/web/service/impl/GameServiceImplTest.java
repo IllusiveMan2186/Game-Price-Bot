@@ -101,14 +101,14 @@ class GameServiceImplTest {
 
     @Test
     void findByGenreSuccessfullyShouldReturnGameList() {
-        Genre genre = Genre.STRATEGY;
+        Genre genre = Genre.STRATEGIES;
         int pageSize = 2;
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);
-        when(repository.findByGenre(genre, PageRequest.of(pageNum - 1, pageSize)))
+        when(repository.findByGenresIn(Collections.singletonList(genre), PageRequest.of(pageNum - 1, pageSize)))
                 .thenReturn(gameList);
 
-        List<Game> result = gameService.getByGenre(genre, pageSize, pageNum);
+        List<Game> result = gameService.getByGenre(Collections.singletonList(genre), pageSize, pageNum);
 
         assertEquals(gameList, result);
     }

@@ -55,21 +55,22 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @Test
     void getGamesByGenreSuccessfullyShouldReturnListOfGames() throws Exception {
-        mockMvc.perform(get("/game/genre/{genre}?pageNum=1&pageSize={size}", games.get(0).getGenre(),
-                        games.size() + 1)
+        mockMvc.perform(get("/game/genre?genre={genre}&genre={genre}&pageNum=1&pageSize={size}",
+                        games.get(0).getGenres().get(0), games.get(1).getGenres().get(0), games.size() + 1)
                         .with(user(userList.get(0).getEmail()).password(userList.get(0).getPassword())))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$.[0].id").value(1))
-                .andExpect(jsonPath("$.[1].id").value(3));
+                .andExpect(jsonPath("$.[1].id").value(2))
+                .andExpect(jsonPath("$.[2].id").value(3));
     }
 
     @Test
     void getGamesByGenreSuccessfullyShouldReturnSecondPageOfGame() throws Exception {
-        mockMvc.perform(get("/game/genre/{genre}?pageNum=2&pageSize=1", games.get(0).getGenre())
+        mockMvc.perform(get("/game/genre?genre={genre}&pageNum=2&pageSize=1", games.get(0).getGenres().get(0))
                         .with(user(userList.get(0).getEmail()).password(userList.get(0).getPassword())))
                 .andDo(print())
                 .andExpect(status().isOk())

@@ -2,14 +2,19 @@ package com.gpb.web.service.impl.store;
 
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
+import com.gpb.web.bean.game.Genre;
 import com.gpb.web.service.StoreService;
 import com.gpb.web.parser.StorePageParser;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,11 +26,15 @@ public class GamazeyStoreService implements StoreService {
     private static final String GAME_PAGE_OLD_PRICE_FIELD = "rm-product-center-price-old";
     private static final String GAME_PAGE_DISCOUNT_FIELD = "main-product-you-save";
     private static final String GAME_PAGE_IS_AVAILABLE = "rm-module-stock rm-out-of-stock";
+    private static final String GAME_PAGE_CHARACTERISTICS = "rm-product-attr-list-item d-flex d-sm-block";
 
     private final StorePageParser parser;
 
-    public GamazeyStoreService(StorePageParser parser) {
+    private final Map<String, Genre> genreMap;
+
+    public GamazeyStoreService(StorePageParser parser, Map<String, Genre> genreMap) {
         this.parser = parser;
+        this.genreMap = genreMap;
     }
 
     @Override
@@ -33,11 +42,15 @@ public class GamazeyStoreService implements StoreService {
         log.info(String.format("Searching uncreated game with url : '%s' in gamazey store", url));
         Document page = parser.getPage(url);
         GameInShop gameInShop = getGameInShop(page);
+        List<Genre> genres = getGenres(page.getElementsByClass(GAME_PAGE_CHARACTERISTICS).get(3));
+
         gameInShop.setUrl(url);
 
         Game game = Game.builder()
                 .name(gameInShop.getNameInStore())
-                .gamesInShop(Collections.singletonList(gameInShop)).build();
+                .gamesInShop(Collections.singletonList(gameInShop))
+                .genres(genres)
+                .build();
         gameInShop.setGame(game);
         return game;
     }
@@ -80,5 +93,15 @@ public class GamazeyStoreService implements StoreService {
         Matcher makeMatch = intsOnly.matcher(field);
         makeMatch.find();
         return makeMatch.group();
+    }
+
+    private List<Genre> getGenres(Element genreElement){
+        List<Genre> genres = new ArrayList<>();
+        for (Map.Entry<String,Genre> entry: genreMap.entrySet()) {
+            if (genreElement.text().contains(entry.getKey())){
+                genres.add(entry.getValue());
+            }
+        }
+        return genres;
     }
 }

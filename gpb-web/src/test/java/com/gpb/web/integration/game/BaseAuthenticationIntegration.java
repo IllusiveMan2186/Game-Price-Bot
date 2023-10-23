@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
@@ -60,9 +61,9 @@ public class BaseAuthenticationIntegration {
         userList.add(userCreation("email1", DECODE_PASSWORD));
 
         games.clear();
-        games.add(gameCreation("name1", "url1", Genre.STRATEGY));
+        games.add(gameCreation("name1", "url1", Genre.STRATEGIES));
         games.add(gameCreation("name2", "url2", Genre.RPG));
-        games.add(gameCreation("name3", "url3", Genre.STRATEGY));
+        games.add(gameCreation("name3", "url3", Genre.STRATEGIES));
     }
 
     @BeforeEach
@@ -96,7 +97,7 @@ public class BaseAuthenticationIntegration {
         Game game = Game.builder()
                 .name(name)
                 .gamesInShop(List.of(gameInShopCreation(url, new BigDecimal("50.0"))))
-                .genre(genre).build();
+                .genres(Collections.singletonList(genre)).build();
         game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));
         return game;
     }

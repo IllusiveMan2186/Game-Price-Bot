@@ -3,7 +3,10 @@ package com.gpb.web.bean.game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gpb.web.bean.user.BasicUser;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,7 +36,9 @@ public class Game {
 
     private String name;
 
-    private Genre genre;
+    @Enumerated(EnumType.ORDINAL)
+    @ElementCollection(targetClass = Genre.class)
+    private List<Genre> genres;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<GameInShop> gamesInShop;
