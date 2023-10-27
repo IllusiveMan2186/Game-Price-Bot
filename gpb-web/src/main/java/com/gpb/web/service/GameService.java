@@ -1,6 +1,8 @@
 package com.gpb.web.service;
 
 import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.GameInfoDto;
+import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 
 import java.util.List;
@@ -16,7 +18,7 @@ public interface GameService {
      * @param gameId games id
      * @return game
      */
-    Game getById(long gameId);
+    GameInfoDto getById(long gameId);
 
     /**
      * Get game by name
@@ -24,7 +26,7 @@ public interface GameService {
      * @param name games name
      * @return game
      */
-    Game getByName(String name);
+    GameInfoDto getByName(String name);
 
     /**
      * Get game by url
@@ -32,7 +34,7 @@ public interface GameService {
      * @param url game url from the store
      * @return game
      */
-    Game getByUrl(String url);
+    GameInfoDto getByUrl(String url);
 
     /**
      * Get games by genre
@@ -40,9 +42,9 @@ public interface GameService {
      * @param genre    genre of the game
      * @param pageSize amount of elements on page
      * @param pageNum  page number
-     * @return list of games
+     * @return list of games with all amount
      */
-    List<Game> getByGenre(List<Genre> genre, int pageSize, int pageNum);
+    GameListPageDto getByGenre(List<Genre> genre, int pageSize, int pageNum);
 
     /**
      * Create game

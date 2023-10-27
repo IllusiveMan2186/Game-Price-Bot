@@ -1,8 +1,10 @@
 package com.gpb.web.controller;
 
-import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.GameInfoDto;
+import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.service.GameService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Log4j2
 @RestController
 @RequestMapping("/game")
 public class GameController {
@@ -31,7 +34,7 @@ public class GameController {
      */
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Game getGamerById(@PathVariable final long id) {
+    public GameInfoDto getGamerById(@PathVariable final long id) {
         return gameService.getById(id);
     }
 
@@ -42,7 +45,7 @@ public class GameController {
      * @return game
      */
     @GetMapping(value = "/name/{name}")
-    public Game getGameByName(@PathVariable final String name) {
+    public GameInfoDto getGameByName(@PathVariable final String name) {
         return gameService.getByName(name);
     }
 
@@ -53,7 +56,7 @@ public class GameController {
      * @return game
      */
     @GetMapping(value = "/url")
-    public Game getGameByUrl(@RequestParam final String url) {
+    public GameInfoDto getGameByUrl(@RequestParam final String url) {
         return gameService.getByUrl(url);
     }
 
@@ -67,8 +70,11 @@ public class GameController {
      */
     @GetMapping(value = "/genre")
     @ResponseStatus(HttpStatus.OK)
-    public List<Game> getGamesForGenre(@RequestParam final List<Genre> genre, @RequestParam final int pageSize,
-                                       @RequestParam final int pageNum) {
+    public GameListPageDto getGamesForGenre(@RequestParam(required = false) final List<Genre> genre,
+                                            @RequestParam(required = false, defaultValue = "25") final int pageSize,
+                                            @RequestParam(required = false, defaultValue = "1") final int pageNum) {
+        log.info(String.format("Get games by genres : '%s' with '%s' element on page for '%s' page ",
+                genre, pageSize, pageNum));
         return gameService.getByGenre(genre, pageSize, pageNum);
     }
 }

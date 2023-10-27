@@ -6,7 +6,7 @@ import { request, setAuthHeader } from '../helpers/axios_helper';
 import Buttons from './Buttons';
 import AuthContent from './AuthContent';
 import LoginForm from './LoginForm';
-import WelcomeContent from './WelcomeContent'
+import Games from './Games'
 import Message from './Message';
 
 export default class AppContent extends React.Component {
@@ -14,17 +14,17 @@ export default class AppContent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            componentToShow: "welcome",
+            componentToShow: "game",
             errorMessage: ""
         }
     };
 
     login = () => {
-        this.setState({ componentToShow: "login" })
+        this.setState({ componentToShow: "game" })
     };
 
     logout = () => {
-        this.setState({ componentToShow: "welcome" })
+        this.setState({ componentToShow: "game" })
         setAuthHeader(null);
     };
 
@@ -91,7 +91,7 @@ export default class AppContent extends React.Component {
                     />
                 </header>
 
-                {this.state.componentToShow === "welcome" && <WelcomeContent />}
+                {this.state.componentToShow === "game" && <Games onLogin={this.onLogin}/>}
                 {this.state.componentToShow === "login" && <LoginForm onLogin={this.onLogin} onRegister={this.onRegister} errorMessage={this.getErrorMessage}
                     cleanErrorMessage={this.cleanErrorMessage} />}
                 {this.state.componentToShow === "messages" && <AuthContent />}

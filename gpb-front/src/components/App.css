@@ -1,8 +1,9 @@
-html, body {
+html,
+body {
   height: 100%;
 }
 
-#root{
+#root {
   height: 100%;
 }
 
@@ -15,7 +16,6 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
 }
 
 .App-logo {
@@ -74,6 +74,234 @@ html, body {
   }
 }
 
-.Error{
+.App-game {
+  background-color: #13538881;
+  box-sizing: border-box;
+  width: 100%;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-top: 20px;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1140px;
+  border-radius: 10px;
+  display: flex;
+}
+
+.App-game-filter {
+  border: 1px solid rgb(39, 47, 71);
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-radius: 10px;
+  max-width: 240px;
+  flex: 0 0 25%;
+  max-width: 25%;
+}
+
+.App-game-filter-title {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.App-game-filter-subdiv {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.App-game-filter-section {
+  background-color: #186db381;
+  margin-bottom: 20px;
+  border: 1px solid rgb(39, 47, 71);
+  border-radius: 10px;
+  box-sizing: border-box;
+  display: table;
+}
+
+.App-game-filter-price-inputs {
+  display: table;
+  float: left;
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+
+.App-game-filter-price-inputs input {
+  max-width: 35%;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.App-game-filter-price-inputs span {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.App-game-filter-genre {
+  vertical-align: middle;
+  display: table-column;
+  float: left;
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+
+.App-game-filter-genre-button {
+  width: 90%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.App-game-filter-genre-button-checkbox {
+  float: left;
+  margin-left: 10px;
+  width: 25px;
+  height: 25px;
+}
+
+.App-game-filter-genre-button-text {
+  float: left;
+  margin-left: 10px;
+}
+
+.App-game-content {
+  border: 1px solid rgb(39, 47, 71);
+  margin-left: 5px;
+  border-radius: 10px;
+  flex: 0 0 75%;
+  max-width: 75%;
+}
+
+.App-game-content-header {
+
+  width: 100%;
+  height: 50px;
+  max-height: 50px;
+}
+
+.App-game-content-header-search {
+  background-color: #000000;
+  float: left;
+  border: 1px solid rgb(39, 47, 71);
+  border-radius: 10px;
+  margin-left: 10px;
+  margin-top: 6px;
+}
+
+.App-game-content-header-search input {
+  margin-right: 10px;
+  color: white;
+  background-color: #000000;
+  border: 1px solid #000;
+  padding: 2px 12px;
+  border-radius: 2px;
+  height: 38px;
+  flex-grow: 2;
+  /* And hide the input's outline, so the form looks like the outline */
+  border: none;
+}
+
+
+.App-game-content-header input,
+select:focus {
+  outline: none;
+}
+
+.App-game-content-header-search button {
+  border: none;
+  background: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  margin-right: 10px;
+}
+
+
+.App-game-content-header-select {
+  margin-top: 10px;
+  height: 30px;
+  border: 1px solid #000;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.App-game-content-header-sort {
+  float: right;
+  margin-right: 10px;
+}
+
+.App-game-content-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.App-game-content-list-game {
+  border: 1px solid rgb(39, 47, 71);
+  padding: 15px 12px;
+  width: auto;
+  height: 400px;
+  flex: 0 0 33.33333%;
+  max-width: 33.33333%;
+}
+
+
+
+.App-game-content-list-game-info {
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: flex-start;
+}
+
+.App-game-content-list-game-info-img {
+  width: 180px;
+  height: auto;
+}
+
+.App-game-content-list-game-info-title {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.App-game-content-list-game-info-genre {}
+
+.App-game-content-list-game-info-bottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: flex-start;
+}
+
+.App-game-content-list-game-info-available {
+  color: #62f14f;
+  font-size: 0.8rem;
+  margin-bottom: 0;
+}
+
+.App-game-content-list-game-info-price {
+  margin-bottom: 0;
+  font-size: 1.5rem;
+}
+
+.App-game-content-fotter button {
+  border: none;
+  background-color: #000000;
+  margin: 20px;
+  display: inline-block;
+  border-radius: 6px;
+  line-height: 15px;
+  padding: 10px 15px;
+  font-size: 15px;
+  color: white;
+
+}
+
+.App-game-content-fotter a:hover {
+  background-color: rgb(56, 113, 219);
+}
+
+.App-game-content-fotter-active {
+  background-color: rgb(56, 113, 219);
+}
+
+.Error {
   color: #911010;
 }
