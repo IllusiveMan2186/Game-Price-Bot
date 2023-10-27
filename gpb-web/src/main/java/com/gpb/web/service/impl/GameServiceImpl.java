@@ -1,7 +1,10 @@
 package com.gpb.web.service.impl;
 
 import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.GameDto;
 import com.gpb.web.bean.game.GameInShop;
+import com.gpb.web.bean.game.GameInfoDto;
+import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.NotFoundException;
@@ -14,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -33,7 +37,7 @@ public class GameServiceImpl implements GameService {
 
 
     @Override
-    public Game getById(final long gameId) {
+    public GameInfoDto getById(final long gameId) {
         log.info(String.format("Get game by id : %s", gameId));
 
         final Game game = gameRepository.findById(gameId);
@@ -41,11 +45,11 @@ public class GameServiceImpl implements GameService {
             log.info(String.format("Game with id : '%s' not found", gameId));
             throw new NotFoundException("app.game.error.id.not.found");
         }
-        return game;
+        return new GameInfoDto(game);
     }
 
     @Override
-    public Game getByName(final String name) {
+    public GameInfoDto getByName(final String name) {
 
         log.info(String.format("Get game by name : %s", name));
 
@@ -54,27 +58,41 @@ public class GameServiceImpl implements GameService {
             game = create(gameStoresService.findGameByName(name));
         }
 
-        return game;
+        return new GameInfoDto(game);
     }
 
     @Override
-    public Game getByUrl(String url) {
+    public GameInfoDto getByUrl(String url) {
         log.info(String.format("Get game by url : %s", url));
 
         final GameInShop gameInShop = gameInShopRepository.findByUrl(url);
         if (gameInShop == null) {
             Game game = gameStoresService.findGameByUrl(url);
-            return create(game);
+            return new GameInfoDto(create(game));
         }
 
-        return gameInShop.getGame();
+        return new GameInfoDto(gameInShop.getGame());
     }
 
     @Override
-    public List<Game> getByGenre(final List<Genre> genre, final int pageSize, final int pageNum) {
+    public GameListPageDto getByGenre(List<Genre> genre, final int pageSize, final int pageNum) {
         log.info(String.format("Get games by genre : %s", genre));
+        PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize);
+        List<Game> games;
+        long elementAmount;
 
-        return gameRepository.findByGenresIn(genre, PageRequest.of(pageNum - 1, pageSize));
+        if (genre == null) {
+            games = gameRepository.findAll(pageRequest);
+            elementAmount = gameRepository.count();
+        } else {
+            games = gameRepository.findByGenresIn(genre, pageRequest);
+            elementAmount = gameRepository.countByGenresIn(genre);
+        }
+        List<GameDto> gameDtos = games.stream()
+                .map(GameDto::new)
+                .collect(Collectors.toList());
+
+        return new GameListPageDto(elementAmount, gameDtos);
     }
 
     @Override

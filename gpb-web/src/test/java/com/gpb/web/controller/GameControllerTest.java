@@ -1,11 +1,17 @@
 package com.gpb.web.controller;
 
 import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.GameDto;
+import com.gpb.web.bean.game.GameInShop;
+import com.gpb.web.bean.game.GameInfoDto;
+import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.service.GameService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,36 +25,50 @@ class GameControllerTest {
 
     private final GameController controller = new GameController(service);
 
-    private final Game game = new Game();
+    private final GameInShop gameInShop = GameInShop.builder()
+            .price(new BigDecimal(1))
+            .build();
+
+    private final Game game = Game.builder()
+            .gamesInShop(Collections.singletonList(gameInShop))
+            .build();
+
+    @BeforeAll
+    static void beforeAll() {
+
+    }
 
     @Test
     void getGameByIdSuccessfullyShouldReturnGame() {
         int id = 1;
-        when(service.getById(id)).thenReturn(game);
+        GameInfoDto gameInfoDto = new GameInfoDto(game);
+        when(service.getById(id)).thenReturn(gameInfoDto);
 
-        Game result = controller.getGamerById(id);
+        GameInfoDto result = controller.getGamerById(id);
 
-        assertEquals(game, result);
+        assertEquals(gameInfoDto, result);
     }
 
     @Test
     void getGameByGameNameSuccessfullyShouldReturnGame() {
         String name = "name";
-        when(service.getByName(name)).thenReturn(game);
+        GameInfoDto gameInfoDto = new GameInfoDto(game);
+        when(service.getByName(name)).thenReturn(gameInfoDto);
 
-        Game result = controller.getGameByName(name);
+        GameInfoDto result = controller.getGameByName(name);
 
-        assertEquals(game, result);
+        assertEquals(gameInfoDto, result);
     }
 
     @Test
     void getGameByEmailSuccessfullyShouldReturnGame() {
         String url = "email";
-        when(service.getByUrl(url)).thenReturn(game);
+        GameInfoDto gameInfoDto = new GameInfoDto(game);
+        when(service.getByUrl(url)).thenReturn(gameInfoDto);
 
-        Game result = controller.getGameByUrl(url);
+        GameInfoDto result = controller.getGameByUrl(url);
 
-        assertEquals(game, result);
+        assertEquals(gameInfoDto, result);
     }
 
     @Test
@@ -57,11 +77,13 @@ class GameControllerTest {
         int pageSize = 2;
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);
+        List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
+        GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
         when(service.getByGenre(genre, pageNum, pageSize))
-                .thenReturn(gameList);
+                .thenReturn(new GameListPageDto(1, gameDtoList));
 
-        List<Game> result = controller.getGamesForGenre(genre, pageSize, pageNum);
+        GameListPageDto result = controller.getGamesForGenre(genre, pageSize, pageNum);
 
-        assertEquals(gameList, result);
+        assertEquals(gameListPageDto, result);
     }
 }

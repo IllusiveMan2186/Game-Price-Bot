@@ -1,7 +1,10 @@
 package com.gpb.web.service.impl;
 
 import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.GameDto;
 import com.gpb.web.bean.game.GameInShop;
+import com.gpb.web.bean.game.GameInfoDto;
+import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.NotFoundException;
@@ -12,6 +15,7 @@ import com.gpb.web.service.GameStoresService;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,16 +33,23 @@ class GameServiceImplTest {
 
     GameService gameService = new GameServiceImpl(repository, gameInShopRepository, gameStoresService);
 
-    private final Game game = new Game();
+    private final GameInShop gameInShop = GameInShop.builder()
+            .price(new BigDecimal(1))
+            .build();
+
+
+    private final Game game = Game.builder().gamesInShop(Collections.singletonList(gameInShop)).build();
+
 
     @Test
     void getGameByIdSuccessfullyShouldReturnGame() {
         int id = 1;
         when(repository.findById(id)).thenReturn(game);
+        GameInfoDto gameInfoDto = new GameInfoDto(game);
 
-        Game result = gameService.getById(id);
+        GameInfoDto result = gameService.getById(id);
 
-        assertEquals(game, result);
+        assertEquals(gameInfoDto, result);
     }
 
     @Test
@@ -53,10 +64,11 @@ class GameServiceImplTest {
     void getGameByNameSuccessfullyShouldReturnGame() {
         String name = "name";
         when(repository.findByName(name)).thenReturn(game);
+        GameInfoDto gameInfoDto = new GameInfoDto(game);
 
-        Game result = gameService.getByName(name);
+        GameInfoDto result = gameService.getByName(name);
 
-        assertEquals(game, result);
+        assertEquals(gameInfoDto, result);
     }
 
     @Test
@@ -67,10 +79,11 @@ class GameServiceImplTest {
         game.setName(name);
         when(repository.findByName(name)).thenReturn(null);
         when(repository.save(game)).thenReturn(game);
+        GameInfoDto gameInfoDto = new GameInfoDto(game);
 
-        Game result = gameService.getByName(name);
+        GameInfoDto result = gameService.getByName(name);
 
-        assertEquals(game, result);
+        assertEquals(gameInfoDto, result);
     }
 
     @Test
@@ -78,10 +91,11 @@ class GameServiceImplTest {
         String url = "url";
         GameInShop gameInShop = GameInShop.builder().game(game).build();
         when(gameInShopRepository.findByUrl(url)).thenReturn(gameInShop);
+        GameInfoDto gameInfoDto = new GameInfoDto(game);
 
-        Game result = gameService.getByUrl(url);
+        GameInfoDto result = gameService.getByUrl(url);
 
-        assertEquals(game, result);
+        assertEquals(gameInfoDto, result);
     }
 
     @Test
@@ -93,10 +107,11 @@ class GameServiceImplTest {
         game.setName(name);
         when(repository.findByName(name)).thenReturn(null);
         when(repository.save(game)).thenReturn(game);
+        GameInfoDto gameInfoDto = new GameInfoDto(game);
 
-        Game result = gameService.getByUrl(url);
+        GameInfoDto result = gameService.getByUrl(url);
 
-        assertEquals(game, result);
+        assertEquals(gameInfoDto, result);
     }
 
     @Test
@@ -105,12 +120,15 @@ class GameServiceImplTest {
         int pageSize = 2;
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);
+        List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
         when(repository.findByGenresIn(Collections.singletonList(genre), PageRequest.of(pageNum - 1, pageSize)))
                 .thenReturn(gameList);
+        when(repository.countByGenresIn(Collections.singletonList(genre))).thenReturn(1L);
+        GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
 
-        List<Game> result = gameService.getByGenre(Collections.singletonList(genre), pageSize, pageNum);
+        GameListPageDto result = gameService.getByGenre(Collections.singletonList(genre), pageSize, pageNum);
 
-        assertEquals(gameList, result);
+        assertEquals(gameListPageDto, result);
     }
 
     @Test
