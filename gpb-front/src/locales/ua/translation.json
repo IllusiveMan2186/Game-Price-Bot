@@ -16,6 +16,7 @@
     "app.footer.contact": "КОНТАКТ",
     "app.footer.follow": "НАШІ КОНТАКТИ",
     "app.footer.language": "МОВА",
+    "app.game.error.price": "Неверний діапазон цін. Максимальна ціна повинна бути меншою.",
     "app.game.error.id.not.found": "Гру з цим ідентифікатором не знайдено",
     "app.game.error.name.not.found": "Гру з такою назвою не знайдено",
     "app.game.error.url.not.found": "Гра з цією URL-адресою не знайдена",

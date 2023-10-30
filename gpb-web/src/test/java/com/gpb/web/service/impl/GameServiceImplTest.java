@@ -14,6 +14,7 @@ import com.gpb.web.service.GameService;
 import com.gpb.web.service.GameStoresService;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -121,14 +122,15 @@ class GameServiceImplTest {
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
         when(repository.findByGenresInAndGamesInShop_PriceBetween(Collections.singletonList(genre),
-                PageRequest.of(pageNum - 1, pageSize), new BigDecimal(0), new BigDecimal(1)))
+                PageRequest.of(pageNum - 1, pageSize, sort), new BigDecimal(0), new BigDecimal(1)))
                 .thenReturn(gameList);
         when(repository.countByGenresIn(Collections.singletonList(genre))).thenReturn(1L);
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
 
         GameListPageDto result = gameService.getByGenre(Collections.singletonList(genre), pageSize, pageNum,
-                new BigDecimal(0), new BigDecimal(1));
+                new BigDecimal(0), new BigDecimal(1), sort);
 
         assertEquals(gameListPageDto, result);
     }
