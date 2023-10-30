@@ -16,10 +16,10 @@ const pageSizes = [
 
 const sortBy = [
 
-    { value: "1", label: <Message string={'app.game.filter.sort.name'} /> },
-    { value: "2", label: <Message string={'app.game.filter.sort.name.reverse'} /> },
-    { value: "3", label: <Message string={'app.game.filter.sort.price'} /> },
-    { value: "4", label: <Message string={'app.game.filter.sort.price.reverse'} /> }
+    { value: "name-ASC", label: <Message string={'app.game.filter.sort.name'} /> },
+    { value: "name-DESC", label: <Message string={'app.game.filter.sort.name.reverse'} /> },
+    { value: "gamesInShop.price-ASC", label: <Message string={'app.game.filter.sort.price'} /> },
+    { value: "gamesInShop.price-DESC", label: <Message string={'app.game.filter.sort.price.reverse'} /> }
 ];
 
 const ganres = [
@@ -73,13 +73,17 @@ export default class Games extends React.Component {
         this.state = {
             minPrice: "0",
             maxPrice: "10000",
+            price: "0",
+            pp: "0",
             sortBy: "",
             elementAmount: "",
             page: "1",
             pageSize: pageSizes[0].label,
+            priceError: "",
             isLoaded: false,
             isLoading: false,
-            isFormChanged: false
+            isFormChanged: false,
+            isFilterFormError: false,
         };
         this.searchParams.append("pageSize", this.state.pageSize);
         this.searchParams.append("pageNum", this.state.page);
@@ -90,6 +94,7 @@ export default class Games extends React.Component {
         this.searchParams.set("pageNum", this.state.page);
         this.searchParams.set("minPrice", this.state.minPrice);
         this.searchParams.set("maxPrice", this.state.maxPrice);
+        this.searchParams.set("sortBy", this.state.sortBy);
 
         this.setState({ isLoading: true })
         const response = await request(
@@ -113,10 +118,19 @@ export default class Games extends React.Component {
     };
 
     handlePriceChange = (event) => {
-        let name = event.target.name;
-        let value = event.target.value;
-        this.setState({ [name]: value })
+        this.setState({ [event.target.name]: event.target.value })
         this.setState({ isFormChanged: true })
+        let name = 'maxPrice'
+        if ((event.target.name === 'minPrice' && +this.state.maxPrice >= +event.target.value)
+            || (event.target.name === 'maxPrice' && +event.target.value >= +this.state.minPrice)) {
+            this.setState({ isFilterFormError: false })
+            this.setState({ priceError: "" })
+        } else {
+            this.setState({ isFilterFormError: true })
+            this.setState({ priceError: <Message string={'app.game.error.price'} /> })
+        }
+
+
     };
 
     handlePageSizeChange = (selectedOption) => {
@@ -126,7 +140,8 @@ export default class Games extends React.Component {
     };
 
     handleSortByChange = selectedOption => {
-        this.setState({ sortBy: selectedOption });
+        this.setState({ sortBy: selectedOption.value });
+        this.setState({ isLoaded: false })
     };
 
     handlePageChange = (selectedPage) => {
@@ -146,6 +161,10 @@ export default class Games extends React.Component {
         this.setState({ isFormChanged: true })
     };
 
+    isFilterFormReadyToAccept = () => {
+        return !this.state.isFilterFormError && this.state.isFormChanged
+    }
+
     render() {
 
         !this.state.isLoaded && !this.state.isLoading && this.loadGames()
@@ -153,7 +172,6 @@ export default class Games extends React.Component {
             <>
                 <div class='App-game'>
                     <aside class="col-lg-3 App-game-filter">
-
                         <div class="App-game-filter-title"><Message string={'app.game.filter.title'} /></div>
                         <div class="App-game-filter-subdiv">
                             <div class=" App-game-filter-section">
@@ -164,11 +182,13 @@ export default class Games extends React.Component {
                                 <div class="">
                                     <div class="App-game-filter-price-inputs">
 
-                                        <input type="number" name="minPrice" defaultValue={this.state.minPrice} onChange={this.handlePriceChange}/>
+                                        <input type="number" name="minPrice" defaultValue={this.state.minPrice} onChange={this.handlePriceChange} />
                                         <span >-</span>
-                                        <input type="number" name="maxPrice" defaultValue={this.state.maxPrice} onChange={this.handlePriceChange}/>
+                                        <input type="number" name="maxPrice" defaultValue={this.state.maxPrice} onChange={this.handlePriceChange} />
                                         <span> ₴</span>
+
                                     </div>
+                                    <span className='Error'>{this.state.priceError}</span>
                                 </div>
                             </div>
 
@@ -187,7 +207,7 @@ export default class Games extends React.Component {
 
                                 </div>
                             </div>
-                            <button type="submit" className="btn btn-primary btn-block mb-3" disabled={!this.state.isFormChanged} onClick={this.handleFilterButtonClick}> <Message string={'app.game.filter.accept.button'}/> </button>
+                            <button type="submit" className="btn btn-primary btn-block mb-3" disabled={!this.isFilterFormReadyToAccept()} onClick={this.handleFilterButtonClick}> <Message string={'app.game.filter.accept.button'} /> </button>
                         </div>
                     </aside >
 

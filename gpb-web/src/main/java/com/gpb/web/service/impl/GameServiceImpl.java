@@ -14,6 +14,7 @@ import com.gpb.web.service.GameService;
 import com.gpb.web.service.GameStoresService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -77,10 +78,10 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameListPageDto getByGenre(List<Genre> genre, final int pageSize, final int pageNum, BigDecimal minPrice,
-                                      BigDecimal maxPrice) {
+                                      BigDecimal maxPrice, Sort sort) {
         log.info(String.format("Get games by genres : '%s',price '%s' - '%s' with '%s' element on page for '%s' page ",
                 genre, minPrice, maxPrice, pageSize, pageNum));
-        PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize);
+        PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
         List<Game> games;
         long elementAmount;
 

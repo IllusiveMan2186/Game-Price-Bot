@@ -6,16 +6,21 @@ import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.exception.PriceRangeException;
+import com.gpb.web.exception.SortParamException;
 import com.gpb.web.service.GameService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Sort;
 
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -79,12 +84,25 @@ class GameControllerTest {
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
-        when(service.getByGenre(genre, pageNum, pageSize, new BigDecimal(0), new BigDecimal(1)))
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        when(service.getByGenre(genre, pageNum, pageSize, new BigDecimal(0), new BigDecimal(1), sort))
                 .thenReturn(new GameListPageDto(1, gameDtoList));
 
         GameListPageDto result = controller
-                .getGamesForGenre(genre, pageSize, pageNum, new BigDecimal(0), new BigDecimal(1));
+                .getGamesForGenre(genre, pageSize, pageNum, new BigDecimal(0), new BigDecimal(1), "name-ASC");
 
         assertEquals(gameListPageDto, result);
+    }
+
+    @Test
+    void getGameByInvalidPriceRangeUnsuccessfullyShouldThrowException() {
+        assertThrows(PriceRangeException.class, () -> controller
+                .getGamesForGenre(new ArrayList<>(), 1, 1, new BigDecimal(10), new BigDecimal(1), "name-ASC"));
+    }
+
+    @Test
+    void getGameByInvalidSortByUnsuccessfullyShouldThrowException() {
+        assertThrows(SortParamException.class, () -> controller
+                .getGamesForGenre(new ArrayList<>(), 1, 1, new BigDecimal(1), new BigDecimal(1), "name"));
     }
 }
