@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -15,9 +16,11 @@ public interface GameRepository extends CrudRepository<Game, Long> {
 
     Game findByName(String name);
 
-    List<Game> findAll(Pageable pageable);
+    List<Game> findAllByGamesInShop_PriceBetween(Pageable pageable, BigDecimal minPrice, BigDecimal maxPrice);
 
-    List<Game> findByGenresIn(List<Genre> genres, Pageable pageable);
+    long countAllByGamesInShop_PriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
+
+    List<Game> findByGenresInAndGamesInShop_PriceBetween(List<Genre> genres, Pageable pageable, BigDecimal minPrice, BigDecimal maxPrice);
 
     long countByGenresIn(List<Genre> genres);
 }

@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,17 +76,19 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameListPageDto getByGenre(List<Genre> genre, final int pageSize, final int pageNum) {
-        log.info(String.format("Get games by genre : %s", genre));
+    public GameListPageDto getByGenre(List<Genre> genre, final int pageSize, final int pageNum, BigDecimal minPrice,
+                                      BigDecimal maxPrice) {
+        log.info(String.format("Get games by genres : '%s',price '%s' - '%s' with '%s' element on page for '%s' page ",
+                genre, minPrice, maxPrice, pageSize, pageNum));
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize);
         List<Game> games;
         long elementAmount;
 
         if (genre == null) {
-            games = gameRepository.findAll(pageRequest);
-            elementAmount = gameRepository.count();
+            games = gameRepository.findAllByGamesInShop_PriceBetween(pageRequest, minPrice, maxPrice);
+            elementAmount = gameRepository.countAllByGamesInShop_PriceBetween(minPrice, maxPrice);
         } else {
-            games = gameRepository.findByGenresIn(genre, pageRequest);
+            games = gameRepository.findByGenresInAndGamesInShop_PriceBetween(genre, pageRequest, minPrice, maxPrice);
             elementAmount = gameRepository.countByGenresIn(genre);
         }
         List<GameDto> gameDtos = games.stream()

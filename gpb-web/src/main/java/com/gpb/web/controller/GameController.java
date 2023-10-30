@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Log4j2
@@ -63,18 +64,20 @@ public class GameController {
     /**
      * Get games by genre
      *
-     * @param genre    genre of the game
+     * @param genre    genres of the game
      * @param pageSize amount of elements on page
      * @param pageNum  page number
+     * @param minPrice minimal price
+     * @param maxPrice maximal price
      * @return list of games
      */
     @GetMapping(value = "/genre")
     @ResponseStatus(HttpStatus.OK)
     public GameListPageDto getGamesForGenre(@RequestParam(required = false) final List<Genre> genre,
                                             @RequestParam(required = false, defaultValue = "25") final int pageSize,
-                                            @RequestParam(required = false, defaultValue = "1") final int pageNum) {
-        log.info(String.format("Get games by genres : '%s' with '%s' element on page for '%s' page ",
-                genre, pageSize, pageNum));
-        return gameService.getByGenre(genre, pageSize, pageNum);
+                                            @RequestParam(required = false, defaultValue = "1") final int pageNum,
+                                            @RequestParam(required = false, defaultValue = "0") final BigDecimal minPrice,
+                                            @RequestParam(required = false, defaultValue = "10000") final BigDecimal maxPrice) {
+        return gameService.getByGenre(genre, pageSize, pageNum, minPrice, maxPrice);
     }
 }

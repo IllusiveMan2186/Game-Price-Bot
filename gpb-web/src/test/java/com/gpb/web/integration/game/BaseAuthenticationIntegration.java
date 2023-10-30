@@ -61,9 +61,9 @@ public class BaseAuthenticationIntegration {
         userList.add(userCreation("email1", DECODE_PASSWORD));
 
         games.clear();
-        games.add(gameCreation("name1", "url1", Genre.STRATEGIES));
-        games.add(gameCreation("name2", "url2", Genre.RPG));
-        games.add(gameCreation("name3", "url3", Genre.STRATEGIES));
+        games.add(gameCreation("name1", "url1", Genre.STRATEGIES, new BigDecimal("100.0")));
+        games.add(gameCreation("name2", "url2", Genre.RPG, new BigDecimal("500.0")));
+        games.add(gameCreation("name3", "url3", Genre.STRATEGIES, new BigDecimal("1000.0")));
     }
 
     @BeforeEach
@@ -93,10 +93,10 @@ public class BaseAuthenticationIntegration {
                 .build();
     }
 
-    protected static Game gameCreation(String name, String url, Genre genre) throws ParseException {
+    protected static Game gameCreation(String name, String url, Genre genre, BigDecimal price) throws ParseException {
         Game game = Game.builder()
                 .name(name)
-                .gamesInShop(List.of(gameInShopCreation(url, new BigDecimal("50.0"))))
+                .gamesInShop(List.of(gameInShopCreation(url, price)))
                 .genres(Collections.singletonList(genre)).build();
         game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));
         return game;

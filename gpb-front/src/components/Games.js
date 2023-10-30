@@ -71,18 +71,15 @@ export default class Games extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            priceMin: "login",
-            priceMax: "",
+            minPrice: "0",
+            maxPrice: "10000",
             sortBy: "",
             elementAmount: "",
             page: "1",
             pageSize: pageSizes[0].label,
-            confirmPasswordError: "",
-            errorMessage: props.errorMessage,
-            cleanErrorMessage: props.cleanErrorMessage,
-            onLogin: props.onLogin,
             isLoaded: false,
-            isLoading: false
+            isLoading: false,
+            isFormChanged: false
         };
         this.searchParams.append("pageSize", this.state.pageSize);
         this.searchParams.append("pageNum", this.state.page);
@@ -91,6 +88,8 @@ export default class Games extends React.Component {
     loadGames = async () => {
         this.searchParams.set("pageSize", this.state.pageSize);
         this.searchParams.set("pageNum", this.state.page);
+        this.searchParams.set("minPrice", this.state.minPrice);
+        this.searchParams.set("maxPrice", this.state.maxPrice);
 
         this.setState({ isLoading: true })
         const response = await request(
@@ -102,11 +101,23 @@ export default class Games extends React.Component {
                 this.setState({ elementAmount: response.data.elementAmount })
                 this.setState({ isLoaded: true })
                 this.setState({ isLoading: false })
+                this.setState({ isFormChanged: false })
             }).catch(
                 (error) => {
                 }
             );
     }
+
+    handleFilterButtonClick = (event) => {
+        this.setState({ isLoaded: false })
+    };
+
+    handlePriceChange = (event) => {
+        let name = event.target.name;
+        let value = event.target.value;
+        this.setState({ [name]: value })
+        this.setState({ isFormChanged: true })
+    };
 
     handlePageSizeChange = (selectedOption) => {
         this.setState({ pageSize: selectedOption.value });
@@ -132,7 +143,7 @@ export default class Games extends React.Component {
             this.setState({ confirmPasswordError: "no" })
         }
         this.setState({ page: 1 });
-        this.setState({ isLoaded: false })
+        this.setState({ isFormChanged: true })
     };
 
     render() {
@@ -153,9 +164,9 @@ export default class Games extends React.Component {
                                 <div class="">
                                     <div class="App-game-filter-price-inputs">
 
-                                        <input type="number" name="ocf[2-0-1][min]" value="0" id="ocf-input-min-2-0-1" autocomplete="off" aria-label="Цена" />
+                                        <input type="number" name="minPrice" defaultValue={this.state.minPrice} onChange={this.handlePriceChange}/>
                                         <span >-</span>
-                                        <input type="number" name="ocf[2-0-1][max]" value="10000" id="ocf-input-max-2-0-1" autocomplete="off" aria-label="Цена" />
+                                        <input type="number" name="maxPrice" defaultValue={this.state.maxPrice} onChange={this.handlePriceChange}/>
                                         <span> ₴</span>
                                     </div>
                                 </div>
@@ -176,6 +187,7 @@ export default class Games extends React.Component {
 
                                 </div>
                             </div>
+                            <button type="submit" className="btn btn-primary btn-block mb-3" disabled={!this.state.isFormChanged} onClick={this.handleFilterButtonClick}> <Message string={'app.game.filter.accept.button'}/> </button>
                         </div>
                     </aside >
 

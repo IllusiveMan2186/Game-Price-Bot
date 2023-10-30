@@ -79,10 +79,11 @@ class GameControllerTest {
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
-        when(service.getByGenre(genre, pageNum, pageSize))
+        when(service.getByGenre(genre, pageNum, pageSize, new BigDecimal(0), new BigDecimal(1)))
                 .thenReturn(new GameListPageDto(1, gameDtoList));
 
-        GameListPageDto result = controller.getGamesForGenre(genre, pageSize, pageNum);
+        GameListPageDto result = controller
+                .getGamesForGenre(genre, pageSize, pageNum, new BigDecimal(0), new BigDecimal(1));
 
         assertEquals(gameListPageDto, result);
     }

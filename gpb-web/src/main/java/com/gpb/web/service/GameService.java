@@ -5,6 +5,7 @@ import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -39,12 +40,14 @@ public interface GameService {
     /**
      * Get games by genre
      *
-     * @param genre    genre of the game
+     * @param genre    genres of the game
      * @param pageSize amount of elements on page
      * @param pageNum  page number
+     * @param minPrice minimal price
+     * @param maxPrice maximal price
      * @return list of games with all amount
      */
-    GameListPageDto getByGenre(List<Genre> genre, int pageSize, int pageNum);
+    GameListPageDto getByGenre(List<Genre> genre, int pageSize, int pageNum, BigDecimal minPrice, BigDecimal maxPrice);
 
     /**
      * Create game
