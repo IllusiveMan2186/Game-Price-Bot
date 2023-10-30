@@ -121,12 +121,14 @@ class GameServiceImplTest {
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
-        when(repository.findByGenresIn(Collections.singletonList(genre), PageRequest.of(pageNum - 1, pageSize)))
+        when(repository.findByGenresInAndGamesInShop_PriceBetween(Collections.singletonList(genre),
+                PageRequest.of(pageNum - 1, pageSize), new BigDecimal(0), new BigDecimal(1)))
                 .thenReturn(gameList);
         when(repository.countByGenresIn(Collections.singletonList(genre))).thenReturn(1L);
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
 
-        GameListPageDto result = gameService.getByGenre(Collections.singletonList(genre), pageSize, pageNum);
+        GameListPageDto result = gameService.getByGenre(Collections.singletonList(genre), pageSize, pageNum,
+                new BigDecimal(0), new BigDecimal(1));
 
         assertEquals(gameListPageDto, result);
     }

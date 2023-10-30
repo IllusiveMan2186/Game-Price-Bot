@@ -27,6 +27,7 @@
     "app.user.error.email.not.found": "Пользователь с этим адресом электронной почты не найден",
     "app.user.login.error": "Неверный адрес электронной почты или пароль",
     "app.game.filter.title": "Фильтр",
+    "app.game.filter.accept.button": "Принять",
     "app.game.filter.price.title": "Цена",
     "app.game.filter.genre.title": "Жанр",
     "app.game.filter.search.title": "Искать на сайте...",

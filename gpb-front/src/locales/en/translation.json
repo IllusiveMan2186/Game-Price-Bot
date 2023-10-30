@@ -26,6 +26,7 @@
     "app.user.error.email.already.exists": "User with this email already exist",
     "app.user.error.email.not.found": "User with this email not found",
     "app.game.filter.title": "Filter",
+    "app.game.filter.accept.button": "Accept",
     "app.game.filter.price.title": "Price",
     "app.game.filter.genre.title": "Genre",
     "app.game.filter.search.title": "Search the site...",

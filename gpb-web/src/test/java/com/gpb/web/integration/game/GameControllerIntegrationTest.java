@@ -1,8 +1,14 @@
 package com.gpb.web.integration.game;
 
+import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
+import com.gpb.web.bean.game.Genre;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -46,7 +52,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
     }
 
     @Test
-    void getGamesByGenreSuccessfullyShouldReturnListOfGames() throws Exception {
+    void getGamesByGenreWithoutParametersSuccessfullyShouldReturnListOfGames() throws Exception {
         mockMvc.perform(get("/game/genre?genre={genre}&genre={genre}&pageNum=1&pageSize={size}",
                         games.get(0).getGenres().get(0), games.get(1).getGenres().get(0), games.size() + 1))
                 .andDo(print())
@@ -75,7 +81,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
     }
 
     @Test
-    void getGamesByGenreSuccessfullyShouldReturnSecondPageOfGame() throws Exception {
+    void getSecondPageOfGamesByGenreSuccessfullyShouldReturnSecondPageOfGame() throws Exception {
         mockMvc.perform(get("/game/genre?genre={genre}&pageNum=2&pageSize=1", games.get(0).getGenres().get(0)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -84,6 +90,45 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
                 .andExpect(jsonPath("$.games").isArray())
                 .andExpect(jsonPath("$.games", hasSize(1)))
                 .andExpect(jsonPath("$.games[0].id").value(3));
+    }
+
+    @Test
+    void getGamesByGenreInPriceRangeSuccessfullyShouldReturnThreeGames() throws Exception {
+        GameInShop gameInShop1 = gameInShopCreation("url1", new BigDecimal(100));
+        GameInShop gameInShop2 = gameInShopCreation("url2", new BigDecimal(600));
+        GameInShop gameInShop3 = gameInShopCreation("url3", new BigDecimal(1500));
+
+        Game game = Game.builder()
+                .name("testGame")
+                .gamesInShop(List.of(gameInShop1, gameInShop2, gameInShop3))
+                .genres(Collections.singletonList(Genre.STRATEGIES)).build();
+        game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));
+        gameRepository.save(game);
+        game.getGamesInShop().forEach(gameInShop -> gameInShopRepository.save(gameInShop));
+
+        mockMvc.perform(get("/game/genre?minPrice={minPrice}&maxPrice={maxPrice}", "500" , "1000"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.elementAmount").value(3))
+                .andExpect(jsonPath("$.games").isArray())
+                .andExpect(jsonPath("$.games", hasSize(3)))
+                .andExpect(jsonPath("$.games[0].id").value(2))
+                .andExpect(jsonPath("$.games[1].id").value(3))
+                .andExpect(jsonPath("$.games[2].id").value(4));
+    }
+
+    @Test
+    void getGamesByGenreForOnePriceSuccessfullyShouldReturnOneGame() throws Exception {
+
+        mockMvc.perform(get("/game/genre?minPrice={minPrice}&maxPrice={maxPrice}", "500" , "500"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.elementAmount").value(1))
+                .andExpect(jsonPath("$.games").isArray())
+                .andExpect(jsonPath("$.games", hasSize(1)))
+                .andExpect(jsonPath("$.games[0].id").value(2));
     }
 
     @Test
