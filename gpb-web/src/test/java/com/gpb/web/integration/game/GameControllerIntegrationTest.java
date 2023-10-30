@@ -114,8 +114,8 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
                 .andExpect(jsonPath("$.games").isArray())
                 .andExpect(jsonPath("$.games", hasSize(3)))
                 .andExpect(jsonPath("$.games[0].id").value(2))
-                .andExpect(jsonPath("$.games[1].id").value(3))
-                .andExpect(jsonPath("$.games[2].id").value(4));
+                .andExpect(jsonPath("$.games[1].id").value(4))
+                .andExpect(jsonPath("$.games[2].id").value(3));
     }
 
     @Test

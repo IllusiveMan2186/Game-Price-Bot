@@ -4,6 +4,7 @@ import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -47,7 +48,8 @@ public interface GameService {
      * @param maxPrice maximal price
      * @return list of games with all amount
      */
-    GameListPageDto getByGenre(List<Genre> genre, int pageSize, int pageNum, BigDecimal minPrice, BigDecimal maxPrice);
+    GameListPageDto getByGenre(List<Genre> genre, int pageSize, int pageNum, BigDecimal minPrice, BigDecimal maxPrice,
+                               Sort sort);
 
     /**
      * Create game

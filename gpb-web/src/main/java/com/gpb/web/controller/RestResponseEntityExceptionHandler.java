@@ -4,6 +4,7 @@ import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.LoginFailedException;
 import com.gpb.web.exception.NotFoundException;
+import com.gpb.web.exception.PriceRangeException;
 import com.gpb.web.exception.UserDataNotChangedException;
 import com.gpb.web.exception.UserLockedException;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {EmailAlreadyExistException.class, GameAlreadyRegisteredException.class
-            , UserDataNotChangedException.class, LoginFailedException.class})
+            , UserDataNotChangedException.class, LoginFailedException.class, PriceRangeException.class})
     protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }

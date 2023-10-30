@@ -16,6 +16,7 @@
     "app.footer.contact": "CONTACT",
     "app.footer.follow": "FOLLOW US",
     "app.footer.language": "LANGUAGE",
+    "app.game.error.price": "Invalid price range. The maximum price must be greater than the minimum.",
     "app.game.error.id.not.found": "Game with this id not found",
     "app.game.error.name.not.found": "The game with this name was not found",
     "app.game.error.url.not.found": "The game with this url was not found",
@@ -45,6 +46,6 @@
     "app.game.genre.simulators": "Simulators",
     "app.game.genre.strategies": "Strategie",
     "app.game.genre.sport": "Sport",
-    "app.game.is.available":"Are available",
-    "app.game.not.available":"Out of stock"
+    "app.game.is.available": "Are available",
+    "app.game.not.available": "Out of stock"
 }
