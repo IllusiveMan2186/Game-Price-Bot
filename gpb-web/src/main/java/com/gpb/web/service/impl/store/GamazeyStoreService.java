@@ -10,6 +10,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 
 @Service(value = "gamazey.com.ua")
 @Log4j2
@@ -27,6 +37,9 @@ public class GamazeyStoreService implements StoreService {
     private static final String GAME_PAGE_DISCOUNT_FIELD = "main-product-you-save";
     private static final String GAME_PAGE_IS_AVAILABLE = "rm-module-stock rm-out-of-stock";
     private static final String GAME_PAGE_CHARACTERISTICS = "rm-product-attr-list-item d-flex d-sm-block";
+    private static final String GAME_IMG_CLASS = "img-fluid";
+    private static final String IMG_FOLDER = "E:\\Work\\Pet\\GPB\\Game-Price-Bot\\gpb-front\\src\\img\\";
+    private static final String IMG_FILE_EXTENSION = ".jpg";
 
     private final StorePageParser parser;
 
@@ -43,7 +56,7 @@ public class GamazeyStoreService implements StoreService {
         Document page = parser.getPage(url);
         GameInShop gameInShop = getGameInShop(page);
         List<Genre> genres = getGenres(page.getElementsByClass(GAME_PAGE_CHARACTERISTICS).get(3));
-
+        saveImage(page, gameInShop.getNameInStore());
         gameInShop.setUrl(url);
 
         Game game = Game.builder()
@@ -95,13 +108,42 @@ public class GamazeyStoreService implements StoreService {
         return makeMatch.group();
     }
 
-    private List<Genre> getGenres(Element genreElement){
+    private List<Genre> getGenres(Element genreElement) {
         List<Genre> genres = new ArrayList<>();
-        for (Map.Entry<String,Genre> entry: genreMap.entrySet()) {
-            if (genreElement.text().contains(entry.getKey())){
+        for (Map.Entry<String, Genre> entry : genreMap.entrySet()) {
+            if (genreElement.text().contains(entry.getKey())) {
                 genres.add(entry.getValue());
             }
         }
         return genres;
+    }
+
+    private void saveImage(Document document, String gameName) {
+        Element element = document.getElementsByClass(GAME_IMG_CLASS).get(1);
+        String imgUrl = element.attr("src");
+        String filePath = IMG_FOLDER + gameName + IMG_FILE_EXTENSION;
+        try {
+            URL url  = new URL(imgUrl);
+
+            try (InputStream is = url.openStream();
+                 OutputStream os = new FileOutputStream(filePath)) {
+
+                byte[] b = new byte[2048];
+                int length;
+
+                while ((length = is.read(b)) != -1) {
+                    os.write(b, 0, length);
+                }
+            }
+            cropImage(filePath);
+        } catch (IOException e) {
+            log.error(String.format("Not loaded image for game '%s' by url '%s':'%s'", gameName, imgUrl, e.getMessage()));
+        }
+    }
+
+    private void cropImage(String filePath) throws IOException {
+        BufferedImage image = ImageIO.read(new File(filePath));
+        BufferedImage crop = image.getSubimage(68,0, 560, 700);
+        ImageIO.write(crop, "JPG", new File(filePath));
     }
 }
