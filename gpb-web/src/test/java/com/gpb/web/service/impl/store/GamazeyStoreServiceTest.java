@@ -26,6 +26,8 @@ class GamazeyStoreServiceTest {
     private static final String GAME_PAGE_IS_AVAILABLE = "rm-module-stock rm-out-of-stock";
     private static final String GAME_PAGE_CHARACTERISTICS = "rm-product-attr-list-item d-flex d-sm-block";
 
+    private static final String GAME_IMG_CLASS = "img-fluid";
+
     private static final String GENRE_ELEMENT = """
             <div class="rm-product-attr-list-item d-flex d-sm-block">
             <div>Жанр</div>
@@ -56,6 +58,8 @@ class GamazeyStoreServiceTest {
         Elements isAvailableElement = mock(Elements.class);
         Elements characteristicsElement = mock(Elements.class);
         Element genreElement = mock(Element.class);
+        Elements imgElements = mock(Elements.class);
+        Element imgElement = mock(Element.class);
 
         when(page.getElementsByClass(GAME_PAGE_NAME_FIELD)).thenReturn(nameFieldElement);
         when(page.getElementsByClass(GAME_PAGE_OLD_PRICE_FIELD)).thenReturn(priceFieldElement);
@@ -63,12 +67,15 @@ class GamazeyStoreServiceTest {
         when(page.getElementsByClass(GAME_PAGE_IS_AVAILABLE)).thenReturn(isAvailableElement);
         when(page.getElementsByClass(GAME_PAGE_CHARACTERISTICS)).thenReturn(characteristicsElement);
         when(characteristicsElement.get(3)).thenReturn(genreElement);
+        when(page.getElementsByClass(GAME_IMG_CLASS)).thenReturn(imgElements);
+        when(imgElements.get(1)).thenReturn(imgElement);
 
         when(nameFieldElement.text()).thenReturn(gameInShop.getNameInStore());
         when(priceFieldElement.text()).thenReturn(gameInShop.getPrice().toString());
         when(discountFieldElement.text()).thenReturn(String.valueOf(gameInShop.getDiscount()));
         when(isAvailableElement.isEmpty()).thenReturn(gameInShop.isAvailable());
         when(genreElement.text()).thenReturn(GENRE_ELEMENT);
+        when(imgElement.attr("src")).thenReturn("url");
 
         Game result = storeService.findUncreatedGameByUrl(url);
 
