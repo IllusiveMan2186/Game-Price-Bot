@@ -16,6 +16,7 @@ public class GameInStoreDto {
         this.isAvailable = gameInShop.isAvailable();
         this.discount = gameInShop.getDiscount();
         this.discountDate = gameInShop.getDiscountDate();
+        this.discountPrice = gameInShop.getDiscountPrice();
     }
 
     private long id;
@@ -25,6 +26,8 @@ public class GameInStoreDto {
     private String url;
 
     private BigDecimal price;
+
+    private BigDecimal discountPrice;
 
     private boolean isAvailable;
 

@@ -1,43 +1,50 @@
 import * as React from 'react'
-import defaultImage from '../img/defaultImage.jpg';
 import Message from './Message';
+import GameImage from './GameImage';
+
+export default class GameContent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            getGameI: props.getGameI,
+            games: props.games
+        }
+    };
+
+    getGameInformation = (gameId) => {
+        this.state.getGameI(gameId)
+    };
 
 
-export default function GameContent(props) {
-    return (
+    render() {
+        return (
 
-        props.games.map(game => {
-            let image 
-            try {
-                image = require(`../img/${game.name}.jpg`)
-              } catch {
-                image = defaultImage
-              }
-            return (
-                <div class="App-game-content-list-game ">
-
-                    <img class="App-game-content-list-game-info-img" src={image} on ></img>
-                    <div class="App-game-content-list-game-info">
-                        <div class="App-game-content-list-game-info-title">
-                            {game.name}
-                        </div>
-                        <div class="App-game-content-list-game-info-genre">
-
-                        </div>
-                        <div class="App-game-content-list-game-info-bottom">
-                            <div class="App-game-content-list-game-info-available">
-                                {game.available ? <Message string={'app.game.is.available'} /> 
-                                : <Message string={'app.game.not.available'} />}
+            this.state.games.map(game => {
+                return (
+                    <div class="App-game-content-list-game " onClick={() => this.getGameInformation(game.id)}>
+                        <GameImage className="App-game-content-list-game-info-img" gameName={game.name} />
+                        <div class="App-game-content-list-game-info">
+                            <div class="App-game-content-list-game-info-title">
+                                {game.name}
                             </div>
-                            <div class="App-game-content-list-game-info-price">
-                                {game.minPrice} - {game.maxPrice} ₴
+                            <div class="App-game-content-list-game-info-genre">
+
+                            </div>
+                            <div class="App-game-content-list-game-info-bottom">
+                                <div class="App-game-content-list-game-info-available">
+                                    {game.available ? <Message string={'app.game.is.available'} />
+                                        : <Message string={'app.game.not.available'} />}
+                                </div>
+                                <div class="App-game-content-list-game-info-price">
+                                    {game.minPrice} - {game.maxPrice} ₴
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div >
-            );
-        })
+                    </div >
+                );
+            })
 
 
-    );
+        );
+    };
 }

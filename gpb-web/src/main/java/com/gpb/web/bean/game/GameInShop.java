@@ -34,6 +34,8 @@ public class GameInShop {
 
     private BigDecimal price;
 
+    private BigDecimal discountPrice;
+
     private boolean isAvailable;
 
     private int discount;
