@@ -11,8 +11,9 @@ public class GameInfoDto extends GameDto {
 
     public GameInfoDto(Game game) {
         super(game);
-        game.getGamesInShop().stream()
-                .map(GameInStoreDto::new);
+        gamesInShop = game.getGamesInShop().stream()
+                .map(GameInStoreDto::new)
+                .toList();
     }
 
     private List<GameInStoreDto> gamesInShop;

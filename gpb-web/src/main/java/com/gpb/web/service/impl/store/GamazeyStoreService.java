@@ -11,8 +11,6 @@ import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
-import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +32,7 @@ public class GamazeyStoreService implements StoreService {
 
     private static final String GAME_PAGE_NAME_FIELD = "rm-product-title order-1 order-md-0";
     private static final String GAME_PAGE_OLD_PRICE_FIELD = "rm-product-center-price-old";
+    private static final String GAME_PAGE_DISCOUNT_PRICE_FIELD = "rm-product-center-price";
     private static final String GAME_PAGE_DISCOUNT_FIELD = "main-product-you-save";
     private static final String GAME_PAGE_IS_AVAILABLE = "rm-module-stock rm-out-of-stock";
     private static final String GAME_PAGE_CHARACTERISTICS = "rm-product-attr-list-item d-flex d-sm-block";
@@ -90,12 +89,15 @@ public class GamazeyStoreService implements StoreService {
     private GameInShop getGameInShop(Document page) {
         String nameField = page.getElementsByClass(GAME_PAGE_NAME_FIELD).text();
         String priceField = page.getElementsByClass(GAME_PAGE_OLD_PRICE_FIELD).text();
+        String discountPriceField = page.getElementsByClass(GAME_PAGE_DISCOUNT_PRICE_FIELD).get(0)
+                .child(1).text();
         String discountField = page.getElementById(GAME_PAGE_DISCOUNT_FIELD).text();
         boolean isAvailable = page.getElementsByClass(GAME_PAGE_IS_AVAILABLE).isEmpty();
 
         return GameInShop.builder()
                 .nameInStore(nameField)
                 .price(new BigDecimal(getIntFromString(priceField)))
+                .discountPrice(new BigDecimal(getIntFromString(discountPriceField)))
                 .discount(Integer.parseInt(getIntFromString(discountField)))
                 .isAvailable(isAvailable)
                 .build();

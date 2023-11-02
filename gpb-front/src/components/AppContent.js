@@ -8,6 +8,7 @@ import AuthContent from './AuthContent';
 import LoginForm from './LoginForm';
 import Games from './Games'
 import Message from './Message';
+import GameInfo from './GameInfo';
 
 export default class AppContent extends React.Component {
 
@@ -15,12 +16,13 @@ export default class AppContent extends React.Component {
         super(props);
         this.state = {
             componentToShow: "game",
+            game: null,
             errorMessage: ""
         }
     };
 
     login = () => {
-        this.setState({ componentToShow: "game" })
+        this.setState({ componentToShow: "login" })
     };
 
     logout = () => {
@@ -34,6 +36,25 @@ export default class AppContent extends React.Component {
 
     cleanErrorMessage = () => {
         this.setState({ 'errorMessage': "" })
+    }
+
+    showGames = () => {
+        this.setState({ componentToShow: "game" })
+    }
+
+    getGameInfo = (gameId) => {
+        request(
+            "GET",
+            "/game/" + gameId,
+        ).then(
+            (response) => {
+                this.state.game = response.data;
+                this.setState({ componentToShow: "gameInfo" })
+            }).catch(
+                (error) => {
+                }
+            );
+
     }
 
     onLogin = (e, email, password) => {
@@ -80,7 +101,7 @@ export default class AppContent extends React.Component {
         return (
             <>
                 <header className="App-header">
-                    <div className="App-title">
+                    <div className="App-title" onClick={this.showGames}>
                         <img src={logo} className="App-logo" alt="logo" />
                         <h1 style={{ fontSize: 'auto' }}>GPB</h1>
                     </div>
@@ -91,7 +112,8 @@ export default class AppContent extends React.Component {
                     />
                 </header>
 
-                {this.state.componentToShow === "game" && <Games onLogin={this.onLogin}/>}
+                {this.state.componentToShow === "game" && <Games getGameInfo={this.getGameInfo} />}
+                {this.state.componentToShow === "gameInfo" && <GameInfo game={this.state.game} />}
                 {this.state.componentToShow === "login" && <LoginForm onLogin={this.onLogin} onRegister={this.onRegister} errorMessage={this.getErrorMessage}
                     cleanErrorMessage={this.cleanErrorMessage} />}
                 {this.state.componentToShow === "messages" && <AuthContent />}
