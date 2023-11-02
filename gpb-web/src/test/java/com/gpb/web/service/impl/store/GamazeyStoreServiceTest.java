@@ -25,6 +25,7 @@ class GamazeyStoreServiceTest {
     private static final String GAME_PAGE_DISCOUNT_FIELD = "main-product-you-save";
     private static final String GAME_PAGE_IS_AVAILABLE = "rm-module-stock rm-out-of-stock";
     private static final String GAME_PAGE_CHARACTERISTICS = "rm-product-attr-list-item d-flex d-sm-block";
+    private static final String GAME_PAGE_DISCOUNT_PRICE_FIELD = "rm-product-center-price";
 
     private static final String GAME_IMG_CLASS = "img-fluid";
 
@@ -60,6 +61,9 @@ class GamazeyStoreServiceTest {
         Element genreElement = mock(Element.class);
         Elements imgElements = mock(Elements.class);
         Element imgElement = mock(Element.class);
+        Elements discountPriceFieldElements = mock(Elements.class);
+        Element discountPriceFieldElement = mock(Element.class);
+        Element discountPriceFieldElementChild = mock(Element.class);
 
         when(page.getElementsByClass(GAME_PAGE_NAME_FIELD)).thenReturn(nameFieldElement);
         when(page.getElementsByClass(GAME_PAGE_OLD_PRICE_FIELD)).thenReturn(priceFieldElement);
@@ -69,6 +73,7 @@ class GamazeyStoreServiceTest {
         when(characteristicsElement.get(3)).thenReturn(genreElement);
         when(page.getElementsByClass(GAME_IMG_CLASS)).thenReturn(imgElements);
         when(imgElements.get(1)).thenReturn(imgElement);
+        when(page.getElementsByClass(GAME_PAGE_DISCOUNT_PRICE_FIELD)).thenReturn(discountPriceFieldElements);
 
         when(nameFieldElement.text()).thenReturn(gameInShop.getNameInStore());
         when(priceFieldElement.text()).thenReturn(gameInShop.getPrice().toString());
@@ -76,6 +81,9 @@ class GamazeyStoreServiceTest {
         when(isAvailableElement.isEmpty()).thenReturn(gameInShop.isAvailable());
         when(genreElement.text()).thenReturn(GENRE_ELEMENT);
         when(imgElement.attr("src")).thenReturn("url");
+        when(discountPriceFieldElements.get(0)).thenReturn(discountPriceFieldElement);
+        when(discountPriceFieldElement.child(1)).thenReturn(discountPriceFieldElementChild);
+        when(discountPriceFieldElementChild.text()).thenReturn(gameInShop.getDiscountPrice().toString());
 
         Game result = storeService.findUncreatedGameByUrl(url);
 
@@ -100,16 +108,23 @@ class GamazeyStoreServiceTest {
         Elements priceFieldElement = mock(Elements.class);
         Element discountFieldElement = mock(Document.class);
         Elements isAvailableElement = mock(Elements.class);
+        Elements discountPriceFieldElements = mock(Elements.class);
+        Element discountPriceFieldElement = mock(Element.class);
+        Element discountPriceFieldElementChild = mock(Element.class);
 
         when(page.getElementsByClass(GAME_PAGE_NAME_FIELD)).thenReturn(nameFieldElement);
         when(page.getElementsByClass(GAME_PAGE_OLD_PRICE_FIELD)).thenReturn(priceFieldElement);
         when(page.getElementById(GAME_PAGE_DISCOUNT_FIELD)).thenReturn(discountFieldElement);
         when(page.getElementsByClass(GAME_PAGE_IS_AVAILABLE)).thenReturn(isAvailableElement);
+        when(page.getElementsByClass(GAME_PAGE_DISCOUNT_PRICE_FIELD)).thenReturn(discountPriceFieldElements);
 
         when(nameFieldElement.text()).thenReturn(gameInShop.getNameInStore());
         when(priceFieldElement.text()).thenReturn(gameInShop.getPrice().toString());
         when(discountFieldElement.text()).thenReturn(String.valueOf(gameInShop.getDiscount()));
         when(isAvailableElement.isEmpty()).thenReturn(gameInShop.isAvailable());
+        when(discountPriceFieldElements.get(0)).thenReturn(discountPriceFieldElement);
+        when(discountPriceFieldElement.child(1)).thenReturn(discountPriceFieldElementChild);
+        when(discountPriceFieldElementChild.text()).thenReturn(gameInShop.getDiscountPrice().toString());
 
         GameInShop result = storeService.findByUrl(url);
 
@@ -119,7 +134,8 @@ class GamazeyStoreServiceTest {
     private GameInShop getGameInStore() {
         return GameInShop.builder()
                 .nameInStore("name")
-                .price(new BigDecimal(1))
+                .price(new BigDecimal(10))
+                .discountPrice(new BigDecimal(9))
                 .url("url")
                 .discount(10)
                 .isAvailable(true)

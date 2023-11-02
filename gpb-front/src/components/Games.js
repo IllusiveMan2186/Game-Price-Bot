@@ -40,7 +40,6 @@ const selectStyles = {
         ...styles,
         backgroundColor: 'black',
         border: 0,
-        // This line disable the blue border
         boxShadow: 'none',
         marginTop: '6px',
     }),
@@ -84,6 +83,7 @@ export default class Games extends React.Component {
             isLoading: false,
             isFormChanged: false,
             isFilterFormError: false,
+            getGame: props.getGameInfo
         };
         this.searchParams.append("pageSize", this.state.pageSize);
         this.searchParams.append("pageNum", this.state.page);
@@ -97,7 +97,7 @@ export default class Games extends React.Component {
         this.searchParams.set("sortBy", this.state.sortBy);
 
         this.setState({ isLoading: true })
-        const response = await request(
+        request(
             "GET",
             "/game/genre?" + this.searchParams.toString(),
         ).then(
@@ -164,6 +164,10 @@ export default class Games extends React.Component {
     isFilterFormReadyToAccept = () => {
         return !this.state.isFilterFormError && this.state.isFormChanged
     }
+
+    getGame = (gameId) => {
+        this.state.getGame(gameId)
+    };
 
     render() {
 
@@ -245,7 +249,7 @@ export default class Games extends React.Component {
                             </div>
                         </div>
                         <div class="App-game-content-list ">
-                            {this.state.isLoaded && <GameContent games={this.games} />}
+                            {this.state.isLoaded && <GameContent games={this.games} getGameI={this.getGame}/>}
                         </div>
                         <div class="App-game-content-fotter  ">
                             {this.state.isLoaded && <Pagination elementAmount={this.state.elementAmount} page={this.state.page}
