@@ -94,9 +94,9 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @Test
     void getGamesByGenreInPriceRangeSuccessfullyShouldReturnThreeGames() throws Exception {
-        GameInShop gameInShop1 = gameInShopCreation("url1", new BigDecimal(100));
-        GameInShop gameInShop2 = gameInShopCreation("url2", new BigDecimal(600));
-        GameInShop gameInShop3 = gameInShopCreation("url3", new BigDecimal(1500));
+        GameInShop gameInShop1 = gameInShopCreation("url1", new BigDecimal(100), new BigDecimal(100));
+        GameInShop gameInShop2 = gameInShopCreation("url2", new BigDecimal(600), new BigDecimal(100));
+        GameInShop gameInShop3 = gameInShopCreation("url3", new BigDecimal(1500), new BigDecimal(100));
 
         Game game = Game.builder()
                 .name("testGame")

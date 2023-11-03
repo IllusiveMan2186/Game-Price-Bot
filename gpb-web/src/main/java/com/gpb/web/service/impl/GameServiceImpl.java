@@ -1,5 +1,6 @@
 package com.gpb.web.service.impl;
 
+import com.google.common.collect.Lists;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameDto;
 import com.gpb.web.bean.game.GameInShop;
@@ -51,16 +52,22 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameInfoDto getByName(final String name) {
+    public List<GameDto> getByName(final String name, final int pageSize, final int pageNum, Sort sort) {
 
         log.info(String.format("Get game by name : %s", name));
+        PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
 
-        Game game = gameRepository.findByName(name);
-        if (game == null) {
-            game = create(gameStoresService.findGameByName(name));
+
+        List<Game> games = gameRepository.findByNameContainingIgnoreCase(name, pageRequest);
+        if (games.isEmpty()) {
+            List<Game> createdGames = gameStoresService.findGameByName(name);
+
+            games = Lists.newArrayList(gameRepository.saveAll(createdGames));
         }
 
-        return new GameInfoDto(game);
+        return games.stream()
+                .map(GameDto::new)
+                .toList();
     }
 
     @Override

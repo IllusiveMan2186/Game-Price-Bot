@@ -4,6 +4,8 @@ package com.gpb.web.service;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 
+import java.util.List;
+
 /**
  * Class for handling specific store
  */
@@ -31,7 +33,7 @@ public interface StoreService {
      * @param name games name
      * @return founded game
      */
-    Game findUncreatedGameByName(String name);
+    List<Game> findUncreatedGameByName(String name);
 
     /**
      * Find game that info for specific store that was has found in other store already by name

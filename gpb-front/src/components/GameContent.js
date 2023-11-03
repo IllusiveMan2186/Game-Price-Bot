@@ -1,6 +1,6 @@
 import * as React from 'react'
 import Message from './Message';
-import GameImage from './GameImage';
+import {GameImage,GameAvailability} from './GameImage';
 
 export default class GameContent extends React.Component {
     constructor(props) {
@@ -31,10 +31,7 @@ export default class GameContent extends React.Component {
 
                             </div>
                             <div class="App-game-content-list-game-info-bottom">
-                                <div class="App-game-content-list-game-info-available">
-                                    {game.available ? <Message string={'app.game.is.available'} />
-                                        : <Message string={'app.game.not.available'} />}
-                                </div>
+                                <GameAvailability available={game.available} />
                                 <div class="App-game-content-list-game-info-price">
                                     {game.minPrice} - {game.maxPrice} ₴
                                 </div>

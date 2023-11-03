@@ -8,6 +8,7 @@ import com.gpb.web.parser.StorePageParser;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -39,6 +40,7 @@ public class GamazeyStoreService implements StoreService {
     private static final String GAME_IMG_CLASS = "img-fluid";
     private static final String IMG_FOLDER = "E:\\Work\\Pet\\GPB\\Game-Price-Bot\\gpb-front\\src\\img\\";
     private static final String IMG_FILE_EXTENSION = ".jpg";
+    private static final String GAMEZEY_SEARCH_URL = "https://gamazey.com.ua/search?search=";
 
     private final StorePageParser parser;
 
@@ -77,8 +79,20 @@ public class GamazeyStoreService implements StoreService {
     }
 
     @Override
-    public Game findUncreatedGameByName(String name) {
-        return null;
+    public List<Game> findUncreatedGameByName(String name) {
+        log.info(String.format("Searching game with name : '%s' in gamazey store", name));
+
+        //String formattedName = name.replaceAll(" ", "%20");
+        Document page = parser.getPage(GAMEZEY_SEARCH_URL + name);
+        Elements elements = page.getElementsByClass("rm-module-title");
+
+        List<Game> games = new ArrayList<>();
+        for (Element element : elements) {
+            String url = element.child(0).attr("href");
+            games.add(findUncreatedGameByUrl(url));
+        }
+
+        return games;
     }
 
     @Override
@@ -106,8 +120,12 @@ public class GamazeyStoreService implements StoreService {
     private String getIntFromString(String field) {
         Pattern intsOnly = Pattern.compile("\\d+");
         Matcher makeMatch = intsOnly.matcher(field);
-        makeMatch.find();
-        return makeMatch.group();
+
+        StringBuilder result = new StringBuilder();
+        while (makeMatch.find()) {
+            result.append(makeMatch.group());
+        }
+        return result.toString();
     }
 
     private List<Genre> getGenres(Element genreElement) {
@@ -125,7 +143,7 @@ public class GamazeyStoreService implements StoreService {
         String imgUrl = element.attr("src");
         String filePath = IMG_FOLDER + gameName + IMG_FILE_EXTENSION;
         try {
-            URL url  = new URL(imgUrl);
+            URL url = new URL(imgUrl);
 
             try (InputStream is = url.openStream();
                  OutputStream os = new FileOutputStream(filePath)) {
@@ -145,7 +163,7 @@ public class GamazeyStoreService implements StoreService {
 
     private void cropImage(String filePath) throws IOException {
         BufferedImage image = ImageIO.read(new File(filePath));
-        BufferedImage crop = image.getSubimage(68,0, 560, 700);
+        BufferedImage crop = image.getSubimage(68, 0, 560, 700);
         ImageIO.write(crop, "JPG", new File(filePath));
     }
 }

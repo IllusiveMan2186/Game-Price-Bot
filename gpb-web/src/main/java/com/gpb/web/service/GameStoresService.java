@@ -2,6 +2,8 @@ package com.gpb.web.service;
 
 import com.gpb.web.bean.game.Game;
 
+import java.util.List;
+
 /**
  * CLass for handling work with game stores
  */
@@ -13,7 +15,7 @@ public interface GameStoresService {
      * @param name name of the game
      * @return game
      */
-    Game findGameByName(String name);
+    List<Game> findGameByName(String name);
 
     /**
      * Find game by url from all stores in system

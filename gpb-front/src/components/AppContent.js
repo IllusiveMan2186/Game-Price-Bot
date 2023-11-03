@@ -9,12 +9,14 @@ import LoginForm from './LoginForm';
 import Games from './Games'
 import Message from './Message';
 import GameInfo from './GameInfo';
+import GameNameSearch from './GameNameSearch';
 
 export default class AppContent extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            name: "",
             componentToShow: "game",
             game: null,
             errorMessage: ""
@@ -56,6 +58,11 @@ export default class AppContent extends React.Component {
             );
 
     }
+
+    getGameSearch = (name) => {
+        this.setState({ name: name });
+        this.setState({ componentToShow: "gameSearch" });
+    };
 
     onLogin = (e, email, password) => {
         e.preventDefault();
@@ -112,12 +119,12 @@ export default class AppContent extends React.Component {
                     />
                 </header>
 
-                {this.state.componentToShow === "game" && <Games getGameInfo={this.getGameInfo} />}
+                {this.state.componentToShow === "game" && <Games getGameInfo={this.getGameInfo} getGameSearch={this.getGameSearch} />}
                 {this.state.componentToShow === "gameInfo" && <GameInfo game={this.state.game} />}
                 {this.state.componentToShow === "login" && <LoginForm onLogin={this.onLogin} onRegister={this.onRegister} errorMessage={this.getErrorMessage}
                     cleanErrorMessage={this.cleanErrorMessage} />}
                 {this.state.componentToShow === "messages" && <AuthContent />}
-
+                {this.state.componentToShow === "gameSearch" && <GameNameSearch getGameInfo={this.getGameInfo}  name={this.state.name} />}
             </>
         );
     };

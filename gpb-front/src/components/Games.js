@@ -72,18 +72,18 @@ export default class Games extends React.Component {
         this.state = {
             minPrice: "0",
             maxPrice: "10000",
-            price: "0",
-            pp: "0",
             sortBy: "",
             elementAmount: "",
             page: "1",
             pageSize: pageSizes[0].label,
+            name: "s",
             priceError: "",
             isLoaded: false,
             isLoading: false,
             isFormChanged: false,
             isFilterFormError: false,
-            getGame: props.getGameInfo
+            getGame: props.getGameInfo,
+            getGameSearch: props.getGameSearch
         };
         this.searchParams.append("pageSize", this.state.pageSize);
         this.searchParams.append("pageNum", this.state.page);
@@ -161,6 +161,14 @@ export default class Games extends React.Component {
         this.setState({ isFormChanged: true })
     };
 
+    handleSearchChange = (event) => {
+        this.setState({ name: event.target.value });
+    };
+
+    handleSearch = () => {
+        this.state.getGameSearch(this.state.name)
+    };
+
     isFilterFormReadyToAccept = () => {
         return !this.state.isFilterFormError && this.state.isFormChanged
     }
@@ -181,14 +189,18 @@ export default class Games extends React.Component {
                             <div class=" App-game-filter-section">
                                 <div class="ocf-filter-header" data-ocf="expand">
                                     <i class="ocf-mobile ocf-icon ocf-arrow-long ocf-arrow-left"></i>
-                                    <div class="App-game-filter-title"><Message string={'app.game.filter.price.title'} /></div>
+                                    <div class="App-game-filter-title">
+                                        <Message string={'app.game.filter.price.title'} />
+                                    </div>
                                 </div>
                                 <div class="">
                                     <div class="App-game-filter-price-inputs">
 
-                                        <input type="number" name="minPrice" defaultValue={this.state.minPrice} onChange={this.handlePriceChange} />
+                                        <input type="number" name="minPrice" defaultValue={this.state.minPrice}
+                                            onChange={this.handlePriceChange} />
                                         <span >-</span>
-                                        <input type="number" name="maxPrice" defaultValue={this.state.maxPrice} onChange={this.handlePriceChange} />
+                                        <input type="number" name="maxPrice" defaultValue={this.state.maxPrice}
+                                            onChange={this.handlePriceChange} />
                                         <span> ₴</span>
 
                                     </div>
@@ -203,7 +215,8 @@ export default class Games extends React.Component {
                                     {
                                         ganres.map(ganre => {
                                             return (<label class="App-game-filter-genre-button"  >
-                                                <input type="checkbox" class="App-game-filter-genre-button-checkbox" value={ganre.value} onChange={this.handleGenreCHange}></input>
+                                                <input type="checkbox" class="App-game-filter-genre-button-checkbox"
+                                                    value={ganre.value} onChange={this.handleGenreCHange}></input>
                                                 <span class="App-game-filter-genre-button-text">{ganre.label}</span>
                                             </label>)
                                         })
@@ -211,15 +224,20 @@ export default class Games extends React.Component {
 
                                 </div>
                             </div>
-                            <button type="submit" className="btn btn-primary btn-block mb-3" disabled={!this.isFilterFormReadyToAccept()} onClick={this.handleFilterButtonClick}> <Message string={'app.game.filter.accept.button'} /> </button>
+                            <button type="submit" className="btn btn-primary btn-block mb-3"
+                                disabled={!this.isFilterFormReadyToAccept()} onClick={this.handleFilterButtonClick}>
+                                <Message string={'app.game.filter.accept.button'} /> </button>
                         </div>
                     </aside >
 
                     <div class="App-game-content">
                         <div class="App-game-content-header ">
                             <div class="App-game-content-header-search ">
-                                <input type="search" placeholder={<Message string={'app.game.filter.search.title'} />} />
-                                <button><Message string={'app.game.filter.search.button'} /></button>
+                                <input type="search" placeholder={<Message string={'app.game.filter.search.title'}/>} 
+                                 onChange={this.handleSearchChange}/>
+                                <button onClick={this.handleSearch}>
+                                    <Message string={'app.game.filter.search.button'} />
+                                </button>
                             </div>
                             <div class="App-game-content-header-sort ">
                                 <Select
@@ -249,7 +267,7 @@ export default class Games extends React.Component {
                             </div>
                         </div>
                         <div class="App-game-content-list ">
-                            {this.state.isLoaded && <GameContent games={this.games} getGameI={this.getGame}/>}
+                            {this.state.isLoaded && <GameContent games={this.games} getGameI={this.getGame} />}
                         </div>
                         <div class="App-game-content-fotter  ">
                             {this.state.isLoaded && <Pagination elementAmount={this.state.elementAmount} page={this.state.page}
