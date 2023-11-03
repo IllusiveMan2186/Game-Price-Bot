@@ -13,7 +13,7 @@ export default function Pagination(props) {
         i = +props.page - 3;
     }
     let end = lastPage;
-    if(lastPage > +props.page + 3){
+    if (lastPage > +props.page + 3) {
 
         end = +props.page + 3;
     }

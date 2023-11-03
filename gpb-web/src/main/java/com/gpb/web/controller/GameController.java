@@ -1,5 +1,6 @@
 package com.gpb.web.controller;
 
+import com.gpb.web.bean.game.GameDto;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
@@ -51,8 +52,11 @@ public class GameController {
      * @return game
      */
     @GetMapping(value = "/name/{name}")
-    public GameInfoDto getGameByName(@PathVariable final String name) {
-        return gameService.getByName(name);
+    public List<GameDto> getGameByName(@PathVariable final String name,
+                                       @RequestParam(required = false, defaultValue = "25") final int pageSize,
+                                       @RequestParam(required = false, defaultValue = "1") final int pageNum,
+                                       @RequestParam(required = false, defaultValue = "gamesInShop.price-ASC") final String sortBy) {
+        return gameService.getByName(name, pageSize, pageNum, getSortBy(sortBy));
     }
 
     /**

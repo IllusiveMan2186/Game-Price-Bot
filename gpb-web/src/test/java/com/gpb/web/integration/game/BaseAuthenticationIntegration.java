@@ -61,9 +61,9 @@ public class BaseAuthenticationIntegration {
         userList.add(userCreation("email1", DECODE_PASSWORD));
 
         games.clear();
-        games.add(gameCreation("name1", "url1", Genre.STRATEGIES, new BigDecimal("100.0")));
-        games.add(gameCreation("name2", "url2", Genre.RPG, new BigDecimal("500.0")));
-        games.add(gameCreation("name3", "url3", Genre.STRATEGIES, new BigDecimal("1000.0")));
+        games.add(gameCreation("name1", "url1", Genre.STRATEGIES, new BigDecimal("100.0"), new BigDecimal("100.0")));
+        games.add(gameCreation("name2", "url2", Genre.RPG, new BigDecimal("500.0"), new BigDecimal("100.0")));
+        games.add(gameCreation("name3", "url3", Genre.STRATEGIES, new BigDecimal("1000.0"), new BigDecimal("100.0")));
     }
 
     @BeforeEach
@@ -82,21 +82,24 @@ public class BaseAuthenticationIntegration {
         return WebUser.builder().email(email).password(password).build();
     }
 
-    protected static GameInShop gameInShopCreation(String url, BigDecimal price) throws ParseException {
+    protected static GameInShop gameInShopCreation(String url, BigDecimal price, BigDecimal discountPrice)
+            throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_STRING_FORMAT);
         return GameInShop.builder()
                 .url(url)
                 .price(price)
                 .discount(15)
+                .discountPrice(discountPrice)
                 .discountDate(dateFormat.parse("12/12/2021"))
                 .isAvailable(true)
                 .build();
     }
 
-    protected static Game gameCreation(String name, String url, Genre genre, BigDecimal price) throws ParseException {
+    protected static Game gameCreation(String name, String url, Genre genre, BigDecimal price, BigDecimal discountPrice)
+            throws ParseException {
         Game game = Game.builder()
                 .name(name)
-                .gamesInShop(List.of(gameInShopCreation(url, price)))
+                .gamesInShop(List.of(gameInShopCreation(url, price, discountPrice)))
                 .genres(Collections.singletonList(genre)).build();
         game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));
         return game;

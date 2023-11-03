@@ -31,7 +31,8 @@ class GameControllerTest {
     private final GameController controller = new GameController(service);
 
     private final GameInShop gameInShop = GameInShop.builder()
-            .price(new BigDecimal(1))
+            .price(new BigDecimal(2))
+            .discountPrice(new BigDecimal(1))
             .build();
 
     private final Game game = Game.builder()
@@ -57,12 +58,16 @@ class GameControllerTest {
     @Test
     void getGameByGameNameSuccessfullyShouldReturnGame() {
         String name = "name";
-        GameInfoDto gameInfoDto = new GameInfoDto(game);
-        when(service.getByName(name)).thenReturn(gameInfoDto);
+        int pageSize = 2;
+        int pageNum = 2;
+        List<Game> gameList = Collections.singletonList(game);
+        List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        when(service.getByName(name, pageNum, pageSize, sort)).thenReturn(gameDtoList);
 
-        GameInfoDto result = controller.getGameByName(name);
+        List<GameDto> result = controller.getGameByName(name, pageNum, pageSize, "name-ASC");
 
-        assertEquals(gameInfoDto, result);
+        assertEquals(gameDtoList, result);
     }
 
     @Test

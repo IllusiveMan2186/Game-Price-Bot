@@ -16,6 +16,8 @@ public interface GameRepository extends CrudRepository<Game, Long> {
 
     Game findByName(String name);
 
+    List<Game> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
     List<Game> findAllByGamesInShop_PriceBetween(Pageable pageable, BigDecimal minPrice, BigDecimal maxPrice);
 
     long countAllByGamesInShop_PriceBetween(BigDecimal minPrice, BigDecimal maxPrice);

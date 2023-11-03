@@ -1,7 +1,6 @@
 import * as React from 'react'
 import Message from './Message';
-import GameImage from './GameImage';
-import { request } from '../helpers/axios_helper';
+import { GameImage, GameAvailability } from './GameImage';
 
 export default function GameInfo(props) {
     return (
@@ -20,10 +19,8 @@ export default function GameInfo(props) {
                             </div>
                             <div class="App-game-page-info-common  ">
                                 <div class="App-game-page-info-common-price">
-                                    <div class="App-game-content-list-game-info-available">
-                                        {props.game.available ? <Message string={'app.game.is.available'} />
-                                            : <Message string={'app.game.not.available'} />}
-                                    </div>
+
+                                    <GameAvailability available={props.game.available} />
                                     <div class="App-game-content-list-game-info-price">
                                         {props.game.minPrice} - {props.game.maxPrice} ₴
                                     </div>
@@ -57,6 +54,7 @@ function GenreList(props) {
 
 }
 
+
 function GameInStoreList(props) {
     const listItems = [];
     props.stores.map(gameInStore => {
@@ -65,10 +63,7 @@ function GameInStoreList(props) {
         listItems.push(<a class="App-game-page-info-storeList-store " href={gameInStore.url}>
             <img src={image} />
             <div class="">{domain}</div>
-            <div class="App-game-content-list-game-info-available">
-                {gameInStore.available ? <Message string={'app.game.is.available'} />
-                    : <Message string={'app.game.not.available'} />}
-            </div>
+            <GameAvailability available={gameInStore.available} />
             <div class="App-game-page-info-storeList-store-price-section">
                 <div class="App-game-page-info-storeList-store-price">{gameInStore.price}</div>
                 <div class="App-game-page-info-storeList-store-discount">-{gameInStore.discount}%</div>

@@ -1,6 +1,7 @@
 package com.gpb.web.service;
 
 import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.GameDto;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
@@ -26,9 +27,12 @@ public interface GameService {
      * Get game by name
      *
      * @param name games name
+     * @param pageSize amount of elements on page
+     * @param pageNum  page number
+     * @param sort sort parameters
      * @return game
      */
-    GameInfoDto getByName(String name);
+    List<GameDto> getByName(final String name, final int pageSize, final int pageNum, Sort sort);
 
     /**
      * Get game by url
@@ -46,6 +50,7 @@ public interface GameService {
      * @param pageNum  page number
      * @param minPrice minimal price
      * @param maxPrice maximal price
+     * @param sort sort parameters
      * @return list of games with all amount
      */
     GameListPageDto getByGenre(List<Genre> genre, int pageSize, int pageNum, BigDecimal minPrice, BigDecimal maxPrice,
