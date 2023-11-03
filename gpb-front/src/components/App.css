@@ -280,6 +280,18 @@ select:focus {
   margin-bottom: 0;
 }
 
+.not-available {
+  color: #ff0000;
+}
+
+.App-game-search-content {
+  border: 1px solid rgb(39, 47, 71);
+  margin-left: 5px;
+  border-radius: 10px;
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
 .App-game-content-list-game-info-price {
   margin-bottom: 0;
   font-size: 1.5rem;

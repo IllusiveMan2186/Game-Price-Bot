@@ -18,11 +18,11 @@ public class GameDto {
         this.genres = game.getGenres();
         this.isAvailable = game.getGamesInShop().stream().anyMatch(GameInShop::isAvailable);
         this.minPrice = game.getGamesInShop().stream()
-                .map(GameInShop::getPrice)
+                .map(GameInShop::getDiscountPrice)
                 .max(Comparator.naturalOrder())
                 .orElse(null);
         this.maxPrice = game.getGamesInShop().stream()
-                .map(GameInShop::getPrice)
+                .map(GameInShop::getDiscountPrice)
                 .min(Comparator.naturalOrder())
                 .orElse(null);
     }

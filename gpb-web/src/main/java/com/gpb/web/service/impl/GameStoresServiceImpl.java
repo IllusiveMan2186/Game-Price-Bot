@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -25,16 +27,28 @@ public class GameStoresServiceImpl implements GameStoresService {
     }
 
     @Override
-    public Game findGameByName(String name) {
+    public List<Game> findGameByName(String name) {
+
+        log.info(String.format("Getting host from link : '%s'", name));
+        List<Game> games = new ArrayList<>();
+        Iterator<StoreService> iterator = storeServices.values().iterator();
         for (StoreService service : storeServices.values()) {
-            Game game = service.findUncreatedGameByName(name);
-            if (game != null) {
-                setGameFromAllStores(game, service);
-                return game;
+
+            List<Game> createdGames = service.findUncreatedGameByName(name);
+            for (Game createdGame : createdGames) {
+                if (games.stream()
+                        .map(Game::getName)
+                        .noneMatch(gameName -> gameName.equals(createdGame.getName()))) {
+                    setGameFromAllStores(createdGame, service);
+                    games.add(createdGame);
+                }
             }
         }
-        log.info(String.format("Game with name : '%s' not found", name));
-        throw new NotFoundException("app.game.error.name.not.found");
+        if(games.isEmpty()){
+            log.info(String.format("Game with name : '%s' not found", name));
+            throw new NotFoundException("app.game.error.name.not.found");
+        }
+        return games;
     }
 
     @Override
@@ -60,7 +74,7 @@ public class GameStoresServiceImpl implements GameStoresService {
 
     private void setGameFromAllStores(Game game, StoreService serviceToSkip) {
         log.info(String.format("Set game from all stores for  : '%s'", game.getName()));
-        Collection<StoreService> services = storeServices.values();
+        ArrayList<StoreService> services = new ArrayList<>(storeServices.values());
         services.remove(serviceToSkip);
 
         List<GameInShop> gameInShopList = services.stream()

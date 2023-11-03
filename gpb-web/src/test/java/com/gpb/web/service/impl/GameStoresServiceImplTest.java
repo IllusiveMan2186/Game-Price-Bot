@@ -35,20 +35,22 @@ class GameStoresServiceImplTest {
 
     @Test
     void getGameByNameSuccessfullyShouldReturnNewGame() {
+        String name = "name";
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
         final GameInShop gameInShop2 = new GameInShop();
         game.setGamesInShop(Collections.singletonList(gameInShop2));
-        String name = "name";
-        when(storeService2.findUncreatedGameByName(name)).thenReturn(game);
+
+        when(storeService2.findUncreatedGameByName(name)).thenReturn(List.of(game));
+        when(storeService1.findUncreatedGameByName(name)).thenReturn(new ArrayList<>());
         when(storeService1.findByName(name)).thenReturn(gameInShop1);
         List<GameInShop> copyOfList = new ArrayList<>(Collections.singletonList(gameInShop2));
         copyOfList.add(gameInShop1);
         game.setGamesInShop(copyOfList);
 
-        Game result = gameStoresService.findGameByName(name);
+        List<Game> result = gameStoresService.findGameByName(name);
 
-        assertEquals(game, result);
+        assertEquals(List.of(game), result);
     }
 
     @Test
@@ -57,9 +59,9 @@ class GameStoresServiceImplTest {
         final GameInShop gameInShop1 = new GameInShop();
         game.setGamesInShop(List.of(gameInShop1));
         String name = "name";
-        when(storeService2.findUncreatedGameByName(name)).thenReturn(null);
+        when(storeService2.findUncreatedGameByName(name)).thenReturn(new ArrayList<>());
 
-        assertThrows(NotFoundException.class, () -> gameStoresService.findGameByName(name), "");
+        assertThrows(NotFoundException.class, () -> gameStoresService.findGameByName(name), "app.game.error.name.not.found");
     }
 
     @Test

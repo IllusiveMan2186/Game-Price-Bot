@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,7 +36,8 @@ class GameServiceImplTest {
     GameService gameService = new GameServiceImpl(repository, gameInShopRepository, gameStoresService);
 
     private final GameInShop gameInShop = GameInShop.builder()
-            .price(new BigDecimal(1))
+            .price(new BigDecimal(2))
+            .discountPrice(new BigDecimal(1))
             .build();
 
 
@@ -64,27 +66,37 @@ class GameServiceImplTest {
     @Test
     void getGameByNameSuccessfullyShouldReturnGame() {
         String name = "name";
-        when(repository.findByName(name)).thenReturn(game);
+        int pageSize = 2;
+        int pageNum = 2;
         GameInfoDto gameInfoDto = new GameInfoDto(game);
+        List<Game> gameList = Collections.singletonList(game);
+        List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        when(repository.findByNameContainingIgnoreCase(name, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(gameList);
+        List<GameDto> result = gameService.getByName(name, pageSize, pageNum, sort);
 
-        GameInfoDto result = gameService.getByName(name);
-
-        assertEquals(gameInfoDto, result);
+        assertEquals(gameDtoList, result);
     }
 
     @Test
     void getGameByNameThatNotRegisteredShouldFindGameFromStoresService() {
         String name = "name";
-        when(repository.findByName(name)).thenReturn(null);
-        when(gameStoresService.findGameByName(name)).thenReturn(game);
+        int pageSize = 2;
+        int pageNum = 2;
         game.setName(name);
+        List<Game> gameList = Collections.singletonList(game);
+        List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        when(repository.findByNameContainingIgnoreCase(name, PageRequest.of(pageNum - 1, pageSize, sort)))
+                .thenReturn(new ArrayList<>());
+        when(gameStoresService.findGameByName(name)).thenReturn(gameList);
         when(repository.findByName(name)).thenReturn(null);
-        when(repository.save(game)).thenReturn(game);
+        when(repository.saveAll(gameList)).thenReturn(gameList);
         GameInfoDto gameInfoDto = new GameInfoDto(game);
 
-        GameInfoDto result = gameService.getByName(name);
+        List<GameDto> result = gameService.getByName(name, pageSize, pageNum, sort);
 
-        assertEquals(gameInfoDto, result);
+        assertEquals(gameDtoList, result);
     }
 
     @Test
