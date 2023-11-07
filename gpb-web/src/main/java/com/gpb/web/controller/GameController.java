@@ -52,7 +52,7 @@ public class GameController {
      * @return game
      */
     @GetMapping(value = "/name/{name}")
-    public List<GameDto> getGameByName(@PathVariable final String name,
+    public GameListPageDto getGameByName(@PathVariable final String name,
                                        @RequestParam(required = false, defaultValue = "25") final int pageSize,
                                        @RequestParam(required = false, defaultValue = "1") final int pageNum,
                                        @RequestParam(required = false, defaultValue = "gamesInShop.price-ASC") final String sortBy) {
