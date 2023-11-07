@@ -7,6 +7,7 @@
     "app.login.form.error.wrong.email": "Email is invalid",
     "app.login.form.error.empty.email": "Please enter Email",
     "app.login.form.error.empty.password": "Please enter Password",
+    "app.user.error.login.error": "Invalid login or password",
     "app.login.form.singup": "Sing up",
     "app.registr.form.pass.conf": "Confirm Password",
     "app.registr.form.error.empty.pass.conf": "Please enter Confirm Password",

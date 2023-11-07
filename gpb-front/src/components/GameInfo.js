@@ -1,37 +1,52 @@
 import * as React from 'react'
 import Message from './Message';
 import { GameImage, GameAvailability } from './GameImage';
+import { useParams } from 'react-router-dom'
+import { request } from '../helpers/axios_helper';
 
 export default function GameInfo(props) {
+
+    const [game, setGame] = React.useState(null);
+
+    let { gameId } = useParams();
+    console.info(gameId)
+    React.useEffect(() => {
+        request('GET','/game/'+ gameId).then((response) => {
+            setGame(response.data);
+          });
+    }, []);
+
+    if (!game) return null;
+
     return (
         <div class='App-game'>
             <div class="App-game-page-template">
                 <div class="App-game-page">
                     <div class="App-game-page-image">
-                        <GameImage className="App-game-content-list-game-info-img" gameName={props.game.name} />
+                        <GameImage className="App-game-content-list-game-info-img" gameName={game.name} />
                     </div>
                     <div class="App-game-page-info-half">
                         <div class="App-game-page-info">
 
 
                             <div class="App-game-page-info-title">
-                                {props.game.name}
+                                {game.name}
                             </div>
                             <div class="App-game-page-info-common  ">
                                 <div class="App-game-page-info-common-price">
 
-                                    <GameAvailability available={props.game.available} />
+                                    <GameAvailability available={game.available} />
                                     <div class="App-game-content-list-game-info-price">
-                                        {props.game.minPrice} - {props.game.maxPrice} ₴
+                                        {game.minPrice} - {game.maxPrice} ₴
                                     </div>
                                 </div>
                                 <div class="App-game-page-info-common-genre">
                                     <Message string={'app.game.filter.genre.title'} />:
-                                    <GenreList genres={props.game.genres} />
+                                    <GenreList genres={game.genres} />
                                 </div>
                             </div>
                             <div class="App-game-page-info-storeList">
-                                <GameInStoreList stores={props.game.gamesInShop} />
+                                <GameInStoreList stores={game.gamesInShop} />
                             </div>
                         </div>
                     </div>
@@ -42,8 +57,7 @@ export default function GameInfo(props) {
 
     );
 
-
-}
+};
 
 function GenreList(props) {
     const listItems = [];
@@ -53,7 +67,6 @@ function GenreList(props) {
     return listItems
 
 }
-
 
 function GameInStoreList(props) {
     const listItems = [];
@@ -72,5 +85,4 @@ function GameInStoreList(props) {
         </a>)
     })
     return listItems
-
 }

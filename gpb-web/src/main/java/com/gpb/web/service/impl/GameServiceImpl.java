@@ -52,22 +52,26 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<GameDto> getByName(final String name, final int pageSize, final int pageNum, Sort sort) {
+    public GameListPageDto getByName(final String name, final int pageSize, final int pageNum, Sort sort) {
 
         log.info(String.format("Get game by name : %s", name));
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
-
+        long elementAmount;
 
         List<Game> games = gameRepository.findByNameContainingIgnoreCase(name, pageRequest);
         if (games.isEmpty()) {
             List<Game> createdGames = gameStoresService.findGameByName(name);
-
+            elementAmount = createdGames.size();
             games = Lists.newArrayList(gameRepository.saveAll(createdGames));
+        } else {
+            elementAmount = gameRepository.countAllByNameContainingIgnoreCase(name);
         }
 
-        return games.stream()
+        List<GameDto> gameDtos = games.stream()
                 .map(GameDto::new)
                 .toList();
+
+        return new GameListPageDto(elementAmount, gameDtos);
     }
 
     @Override
@@ -93,10 +97,10 @@ public class GameServiceImpl implements GameService {
         long elementAmount;
 
         if (genre == null) {
-            games = gameRepository.findAllByGamesInShop_PriceBetween(pageRequest, minPrice, maxPrice);
-            elementAmount = gameRepository.countAllByGamesInShop_PriceBetween(minPrice, maxPrice);
+            games = gameRepository.findAllByGamesInShop_DiscountPriceBetween(pageRequest, minPrice, maxPrice);
+            elementAmount = gameRepository.countAllByGamesInShop_DiscountPriceBetween(minPrice, maxPrice);
         } else {
-            games = gameRepository.findByGenresInAndGamesInShop_PriceBetween(genre, pageRequest, minPrice, maxPrice);
+            games = gameRepository.findByGenresInAndGamesInShop_DiscountPriceBetween(genre, pageRequest, minPrice, maxPrice);
             elementAmount = gameRepository.countByGenresIn(genre);
         }
         List<GameDto> gameDtos = games.stream()

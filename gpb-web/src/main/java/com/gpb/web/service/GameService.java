@@ -32,7 +32,7 @@ public interface GameService {
      * @param sort sort parameters
      * @return game
      */
-    List<GameDto> getByName(final String name, final int pageSize, final int pageNum, Sort sort);
+    GameListPageDto getByName(final String name, final int pageSize, final int pageNum, Sort sort);
 
     /**
      * Get game by url

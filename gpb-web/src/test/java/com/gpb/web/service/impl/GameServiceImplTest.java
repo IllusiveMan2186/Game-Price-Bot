@@ -71,11 +71,13 @@ class GameServiceImplTest {
         GameInfoDto gameInfoDto = new GameInfoDto(game);
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
+        GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         when(repository.findByNameContainingIgnoreCase(name, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(gameList);
-        List<GameDto> result = gameService.getByName(name, pageSize, pageNum, sort);
+        when(repository.countAllByNameContainingIgnoreCase(name)).thenReturn(1L);
+        GameListPageDto result = gameService.getByName(name, pageSize, pageNum, sort);
 
-        assertEquals(gameDtoList, result);
+        assertEquals(gameListPageDto, result);
     }
 
     @Test
@@ -93,10 +95,11 @@ class GameServiceImplTest {
         when(repository.findByName(name)).thenReturn(null);
         when(repository.saveAll(gameList)).thenReturn(gameList);
         GameInfoDto gameInfoDto = new GameInfoDto(game);
+        GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
 
-        List<GameDto> result = gameService.getByName(name, pageSize, pageNum, sort);
+        GameListPageDto result = gameService.getByName(name, pageSize, pageNum, sort);
 
-        assertEquals(gameDtoList, result);
+        assertEquals(gameListPageDto, result);
     }
 
     @Test
@@ -135,7 +138,7 @@ class GameServiceImplTest {
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        when(repository.findByGenresInAndGamesInShop_PriceBetween(Collections.singletonList(genre),
+        when(repository.findByGenresInAndGamesInShop_DiscountPriceBetween(Collections.singletonList(genre),
                 PageRequest.of(pageNum - 1, pageSize, sort), new BigDecimal(0), new BigDecimal(1)))
                 .thenReturn(gameList);
         when(repository.countByGenresIn(Collections.singletonList(genre))).thenReturn(1L);
