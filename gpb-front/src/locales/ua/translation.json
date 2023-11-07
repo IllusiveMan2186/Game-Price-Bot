@@ -7,6 +7,7 @@
     "app.login.form.error.wrong.email": "Електронна адреса недійсна",
     "app.login.form.error.empty.email": "Будь ласка, введіть електронну адресу",
     "app.login.form.error.empty.password": "Будь ласка, введіть пароль",
+    "app.user.error.login.error": "Невірний логін або пароль",
     "app.login.form.singup": "Увійти",
     "app.registr.form.pass.conf": "Підтвердити пароль",
     "app.registr.form.error.empty.pass.conf": "Будь ласка, введіть пароль підтвердження",

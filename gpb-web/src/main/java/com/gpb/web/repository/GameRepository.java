@@ -18,11 +18,13 @@ public interface GameRepository extends CrudRepository<Game, Long> {
 
     List<Game> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
-    List<Game> findAllByGamesInShop_PriceBetween(Pageable pageable, BigDecimal minPrice, BigDecimal maxPrice);
+    long countAllByNameContainingIgnoreCase(String name);
 
-    long countAllByGamesInShop_PriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
+    List<Game> findAllByGamesInShop_DiscountPriceBetween(Pageable pageable, BigDecimal minPrice, BigDecimal maxPrice);
 
-    List<Game> findByGenresInAndGamesInShop_PriceBetween(List<Genre> genres, Pageable pageable, BigDecimal minPrice, BigDecimal maxPrice);
+    long countAllByGamesInShop_DiscountPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
+
+    List<Game> findByGenresInAndGamesInShop_DiscountPriceBetween(List<Genre> genres, Pageable pageable, BigDecimal minPrice, BigDecimal maxPrice);
 
     long countByGenresIn(List<Genre> genres);
 }

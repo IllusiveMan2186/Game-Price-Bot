@@ -62,12 +62,13 @@ class GameControllerTest {
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
+        GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        when(service.getByName(name, pageNum, pageSize, sort)).thenReturn(gameDtoList);
+        when(service.getByName(name, pageNum, pageSize, sort)).thenReturn(gameListPageDto);
 
-        List<GameDto> result = controller.getGameByName(name, pageNum, pageSize, "name-ASC");
+        GameListPageDto result = controller.getGameByName(name, pageNum, pageSize, "name-ASC");
 
-        assertEquals(gameDtoList, result);
+        assertEquals(gameListPageDto, result);
     }
 
     @Test

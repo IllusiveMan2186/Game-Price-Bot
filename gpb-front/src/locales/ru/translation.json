@@ -7,6 +7,7 @@
     "app.login.form.error.wrong.email": "Электронная почта недействительна",
     "app.login.form.error.empty.email": "Пожалуйста, введите адрес электронной почты",
     "app.login.form.error.empty.password": "Пожалуйста, введите пароль",
+    "app.user.error.login.error": "Неверный логин или пароль",
     "app.login.form.singup": "Войти",
     "app.registr.form.pass.conf": "Подтвердите пароль",
     "app.registr.form.error.empty.pass.conf": "Пожалуйста, введите подтверждение пароля",
