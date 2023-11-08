@@ -1,15 +1,16 @@
 package com.gpb.web.controller;
 
-import com.gpb.web.bean.game.GameDto;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.exception.PriceRangeException;
 import com.gpb.web.exception.SortParamException;
 import com.gpb.web.service.GameService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,10 +40,10 @@ public class GameController {
      * @param id games id
      * @return game
      */
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{gameId}")
     @ResponseStatus(HttpStatus.OK)
-    public GameInfoDto getGamerById(@PathVariable final long id) {
-        return gameService.getById(id);
+    public GameInfoDto getGamerById(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
+        return gameService.getById(gameId, user.getId());
     }
 
     /**
@@ -53,9 +54,9 @@ public class GameController {
      */
     @GetMapping(value = "/name/{name}")
     public GameListPageDto getGameByName(@PathVariable final String name,
-                                       @RequestParam(required = false, defaultValue = "25") final int pageSize,
-                                       @RequestParam(required = false, defaultValue = "1") final int pageNum,
-                                       @RequestParam(required = false, defaultValue = "gamesInShop.price-ASC") final String sortBy) {
+                                         @RequestParam(required = false, defaultValue = "25") final int pageSize,
+                                         @RequestParam(required = false, defaultValue = "1") final int pageNum,
+                                         @RequestParam(required = false, defaultValue = "gamesInShop.price-ASC") final String sortBy) {
         return gameService.getByName(name, pageSize, pageNum, getSortBy(sortBy));
     }
 

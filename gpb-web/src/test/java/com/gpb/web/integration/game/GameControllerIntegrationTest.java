@@ -27,7 +27,8 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
     @Test
     void getGameByIdSuccessfullyShouldReturnGame() throws Exception {
 
-        mockMvc.perform(get("/game/{id}", games.get(0).getId()))
+        mockMvc.perform(get("/game/{id}", games.get(0).getId())
+                        .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -135,7 +136,8 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
     void getUserByNotExistingIdShouldReturnError() throws Exception {
         int notExistingGameId = games.size() + 1;
 
-        mockMvc.perform(get("/game/{id}", notExistingGameId))
+        mockMvc.perform(get("/game/{id}", notExistingGameId)
+                        .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").value("app.game.error.id.not.found"));

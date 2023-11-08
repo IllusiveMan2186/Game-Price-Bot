@@ -15,6 +15,10 @@ public interface WebUserRepository extends CrudRepository<WebUser, Long> {
     Optional<WebUser> findByEmail(String email);
 
     @Modifying
-    @Query(value = "insert into user_game(user_id,game_id) VALUES(:userId,:gameId); ", nativeQuery = true)
+    @Query(value = "INSERT INTO user_game(user_id,game_id) VALUES(:userId,:gameId); ", nativeQuery = true)
     void addGameToUserListOfGames(@Param("userId") long userId, @Param("gameId") long gameId);
+
+    @Modifying
+    @Query(value = "DELETE FROM user_game WHERE user_id=:userId AND game_id=(:gameId); ", nativeQuery = true)
+    void removeGameFromUserListOfGames(@Param("userId") long userId, @Param("gameId") long gameId);
 }

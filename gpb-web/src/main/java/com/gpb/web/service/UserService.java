@@ -3,7 +3,6 @@ package com.gpb.web.service;
 import com.gpb.web.bean.user.Credentials;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
-import com.gpb.web.bean.user.WebUser;
 
 /**
  * Class for handling users
@@ -49,7 +48,7 @@ public interface UserService {
      * @param userId users id
      * @param gameId games id
      */
-    void addGameToUserListOfGames(long userId, long gameId);
+    void subscribeToGame(long userId, long gameId);
 
     /**
      * Check user credential for authentication
