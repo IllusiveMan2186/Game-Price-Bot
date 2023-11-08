@@ -48,5 +48,8 @@
     "app.game.genre.strategies": "Strategie",
     "app.game.genre.sport": "Sport",
     "app.game.is.available": "Are available",
-    "app.game.not.available": "Out of stock"
+    "app.game.not.available": "Out of stock",
+    "app.game.info.subscribe": "Subscribe",
+    "app.game.info.unsubscribe": "Unsubscribe",
+    "app.game.info.need.auth": "You must be logged in to be able to subscribe"
 }

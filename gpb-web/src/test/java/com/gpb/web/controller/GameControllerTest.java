@@ -6,6 +6,8 @@ import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.user.UserDto;
+import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.exception.PriceRangeException;
 import com.gpb.web.exception.SortParamException;
 import com.gpb.web.service.GameService;
@@ -47,10 +49,13 @@ class GameControllerTest {
     @Test
     void getGameByIdSuccessfullyShouldReturnGame() {
         int id = 1;
+        int userId = 1;
+        WebUser user = new WebUser("email", "password", false, 0, null);
+        user.setId(userId);
         GameInfoDto gameInfoDto = new GameInfoDto(game);
-        when(service.getById(id)).thenReturn(gameInfoDto);
+        when(service.getById(id, userId)).thenReturn(gameInfoDto);
 
-        GameInfoDto result = controller.getGamerById(id);
+        GameInfoDto result = controller.getGamerById(id, new UserDto(user));
 
         assertEquals(gameInfoDto, result);
     }

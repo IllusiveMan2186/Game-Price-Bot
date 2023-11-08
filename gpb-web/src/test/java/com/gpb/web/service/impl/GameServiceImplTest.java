@@ -47,10 +47,12 @@ class GameServiceImplTest {
     @Test
     void getGameByIdSuccessfullyShouldReturnGame() {
         int id = 1;
+        int userId = 1;
+        game.setUserList(new ArrayList<>());
         when(repository.findById(id)).thenReturn(game);
         GameInfoDto gameInfoDto = new GameInfoDto(game);
 
-        GameInfoDto result = gameService.getById(id);
+        GameInfoDto result = gameService.getById(id, userId);
 
         assertEquals(gameInfoDto, result);
     }
@@ -58,9 +60,10 @@ class GameServiceImplTest {
     @Test
     void getGameByIdThatNotFoundShouldThrowException() {
         int id = 1;
+        int userId = 1;
         when(repository.findById(id)).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> gameService.getById(id), "Game with id '1' not found");
+        assertThrows(NotFoundException.class, () -> gameService.getById(id,userId), "Game with id '1' not found");
     }
 
     @Test
