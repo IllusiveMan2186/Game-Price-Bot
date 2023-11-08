@@ -6,6 +6,7 @@ import com.gpb.web.GpbWebApplication;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.repository.GameInShopRepository;
@@ -17,6 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -107,5 +110,13 @@ public class BaseAuthenticationIntegration {
 
     protected String objectToJson(Object obj) throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(obj);
+    }
+
+    protected SecurityContextImpl getSecurityContext(){
+        UserDto userDto = new UserDto(userList.get(0));
+        userDto.setId(1);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                userDto, userList.get(0).getPassword(), new ArrayList<>());
+        return new SecurityContextImpl(token);
     }
 }

@@ -49,5 +49,8 @@
     "app.game.genre.strategies": "Стратегія",
     "app.game.genre.sport": "Спорт",
     "app.game.is.available": "Доступне",
-    "app.game.not.available": "Немає в наявності"
+    "app.game.not.available": "Немає в наявності",
+    "app.game.info.subscribe": "Відстежувати",
+    "app.game.info.unsubscribe": "Не відстежувати",
+    "app.game.info.need.auth": "Ви повинні увійти в систему, щоб мати можливість відстежувати"
 }

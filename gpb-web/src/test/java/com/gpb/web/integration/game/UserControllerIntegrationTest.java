@@ -1,15 +1,10 @@
 package com.gpb.web.integration.game;
 
-import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.WebUser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextImpl;
-
-import java.util.ArrayList;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -88,7 +83,7 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @Test
     void addGameToUserListOfGamesShouldAddToRepository() throws Exception {
-        mockMvc.perform(post("/user/games")
+        mockMvc.perform(post("/user/games/{gameId}", games.get(0).getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectToJson(1))
                         .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
@@ -103,14 +98,6 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
                 //.andExpect(jsonPath("$.gameList[0].id").value(1))
                 //.andExpect(jsonPath("$.gameList[0].name").value(games.get(0).getName()))
                 //.andExpect(jsonPath("$.gameList[0].genre").value(games.get(0).getGenre().name()));
-    }
-
-    SecurityContextImpl getSecurityContext(){
-        UserDto userDto = new UserDto(userList.get(0));
-        userDto.setId(1);
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                userDto, userList.get(0).getPassword(), new ArrayList<>());
-        return new SecurityContextImpl(token);
     }
 
 }

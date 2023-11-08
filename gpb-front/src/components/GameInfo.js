@@ -3,18 +3,27 @@ import Message from './Message';
 import { GameImage, GameAvailability } from './GameImage';
 import { useParams } from 'react-router-dom'
 import { request } from '../helpers/axios_helper';
+import { isUserAuth } from '../helpers/axios_helper';
+import { useNavigate } from 'react-router-dom'
 
 export default function GameInfo(props) {
 
     const [game, setGame] = React.useState(null);
 
     let { gameId } = useParams();
-    console.info(gameId)
     React.useEffect(() => {
-        request('GET','/game/'+ gameId).then((response) => {
+        request('GET', '/game/' + gameId).then((response) => {
             setGame(response.data);
-          });
+        });
     }, []);
+
+    const navigate = useNavigate();
+
+    const subscribe = () => {
+        request('POST', '/user/games/' + gameId ,{}).then((response) => {
+            navigate(0)
+        });
+    }
 
     if (!game) return null;
 
@@ -45,6 +54,7 @@ export default function GameInfo(props) {
                                     <GenreList genres={game.genres} />
                                 </div>
                             </div>
+                            <SubscribeButton isSubscribed={game.userSubscribed} subscribe={subscribe} />
                             <div class="App-game-page-info-storeList">
                                 <GameInStoreList stores={game.gamesInShop} />
                             </div>
@@ -85,4 +95,17 @@ function GameInStoreList(props) {
         </a>)
     })
     return listItems
+}
+
+function SubscribeButton(props) {
+
+    return (
+        <div class="App-game-page-info-subscribe">
+            <button type="submit" className="btn btn-primary btn-block mb-3"
+                disabled={!isUserAuth()} onClick={() => props.subscribe()}>
+                {props.isSubscribed ? <Message string={'app.game.info.unsubscribe'} /> : <Message string={'app.game.info.subscribe'} />}
+            </button>
+            <span>{!isUserAuth() && <Message string={'app.game.info.need.auth'} />}</span>
+        </div>
+    )
 }

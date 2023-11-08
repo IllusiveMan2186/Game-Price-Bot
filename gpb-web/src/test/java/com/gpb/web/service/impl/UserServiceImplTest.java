@@ -1,5 +1,6 @@
 package com.gpb.web.service.impl;
 
+import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.user.Credentials;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
@@ -19,8 +20,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.nio.CharBuffer;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -109,11 +112,23 @@ class UserServiceImplTest {
     }
 
     @Test
-    void addGameToUserListOfGamesShouldCallRepository() {
+    void addGameToUserListOfGamesShouldCallAddToListRepositoryMethod() {
+        user.setGameList(new ArrayList<>());
+        when(repository.findById(1)).thenReturn(Optional.of(user));
 
-        userService.addGameToUserListOfGames(1, 1);
+        userService.subscribeToGame(1, 1);
 
         verify(repository).addGameToUserListOfGames(1, 1);
+    }
+
+    @Test
+    void addGameToUserListOfGamesShouldCallRemoveFromListRepositoryMethod() {
+        user.setGameList(List.of(Game.builder().id(1).build()));
+        when(repository.findById(1)).thenReturn(Optional.of(user));
+
+        userService.subscribeToGame(1, 1);
+
+        verify(repository).removeGameFromUserListOfGames(1, 1);
     }
 
     @Test

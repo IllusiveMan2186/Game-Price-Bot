@@ -5,6 +5,9 @@ import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.configuration.UserAuthenticationProvider;
 import com.gpb.web.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +28,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public UserDto login(@RequestBody Credentials credentials) {
+    public UserDto login(@RequestBody Credentials credentials, HttpServletRequest request) {
         UserDto userDto = userService.login(credentials);
         userDto.setToken(userAuthenticationProvider.createToken(userDto.getEmail()));
         return userDto;

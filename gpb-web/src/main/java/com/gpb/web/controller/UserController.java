@@ -2,12 +2,10 @@ package com.gpb.web.controller;
 
 import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.UserDto;
-import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.service.UserService;
-import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Slf4j
 @RequestMapping("/user")
 public class UserController {
 
@@ -32,37 +31,28 @@ public class UserController {
      * Update registered user
      *
      * @param newUser new version of user
-     * @param session current user session
+     * @param user current user
      * @return updated user
      */
     @PutMapping
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public UserDto updateUser(@RequestBody final UserRegistration newUser, HttpSession session) {
-        long userId =getUserIdFromSession(session);
-        return userService.updateUser(newUser, userId);
+    public UserDto updateUser(@RequestBody final UserRegistration newUser, @AuthenticationPrincipal UserDto user) {
+        return userService.updateUser(newUser, user.getId());
     }
 
     /**
      * Add game to user list of games
      *
      * @param gameId games id
-     * @param session current user session
+     * @param user current user
      * @return updated user
      */
-    @PostMapping(value = "/games")
+    @PostMapping(value = "/games/{gameId}")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public UserDto addGameToUserListOfGames(@RequestBody final long gameId, HttpSession session) {
-        long userId = getUserIdFromSession(session);
-        userService.addGameToUserListOfGames(userId, gameId);
-        return userService.getUserById(userId);
+    public UserDto addGameToUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user ) {
+        userService.subscribeToGame(user.getId(), gameId);
+        return userService.getUserById(user.getId());
     }
-
-    private long getUserIdFromSession(HttpSession session) {
-        SecurityContextImpl securityContext = (SecurityContextImpl) session.getAttribute("SPRING_SECURITY_CONTEXT");
-
-        return ((UserDto) securityContext.getAuthentication().getPrincipal()).getId();
-    }
-
 }
