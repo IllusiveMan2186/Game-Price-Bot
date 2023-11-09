@@ -3,8 +3,10 @@ package com.gpb.web.integration.game;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.user.UserRegistration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.context.SecurityContextImpl;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -14,6 +16,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -107,7 +110,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
         gameRepository.save(game);
         game.getGamesInShop().forEach(gameInShop -> gameInShopRepository.save(gameInShop));
 
-        mockMvc.perform(get("/game/genre?minPrice={minPrice}&maxPrice={maxPrice}", "500" , "1000"))
+        mockMvc.perform(get("/game/genre?minPrice={minPrice}&maxPrice={maxPrice}", "500", "1000"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -122,7 +125,26 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
     @Test
     void getGamesByGenreForOnePriceSuccessfullyShouldReturnOneGame() throws Exception {
 
-        mockMvc.perform(get("/game/genre?minPrice={minPrice}&maxPrice={maxPrice}", "500" , "500"))
+        mockMvc.perform(get("/game/genre?minPrice={minPrice}&maxPrice={maxPrice}", "500", "500"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.elementAmount").value(1))
+                .andExpect(jsonPath("$.games").isArray())
+                .andExpect(jsonPath("$.games", hasSize(1)))
+                .andExpect(jsonPath("$.games[0].id").value(2));
+    }
+
+    @Test
+    void getUserGamesSuccessfullyShouldReturnGame() throws Exception {
+        SecurityContextImpl securityContext = getSecurityContext();
+        mockMvc.perform(post("/user/games/{gameId}", games.get(1).getId())
+                .contentType(APPLICATION_JSON)
+                .content(objectToJson(1))
+                .sessionAttr("SPRING_SECURITY_CONTEXT", securityContext));
+
+        mockMvc.perform(get("/game/user/games")
+                        .sessionAttr("SPRING_SECURITY_CONTEXT", securityContext))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))

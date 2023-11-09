@@ -3,7 +3,7 @@ import * as React from 'react'
 
 export default function Pagination(props) {
     const listItems = [];
-    let lastPage = props.elementAmount / props.pageSize;
+    let lastPage = Math.ceil(props.elementAmount / props.pageSize);
     let i = 1;
     if (+props.page !== 1) {
         listItems.push(<button onClick={e => props.onPageClick(1)}>|&lt;</button>)

@@ -6,6 +6,7 @@ import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.repository.GameInShopRepository;
@@ -149,6 +150,25 @@ class GameServiceImplTest {
 
         GameListPageDto result = gameService.getByGenre(Collections.singletonList(genre), pageSize, pageNum,
                 new BigDecimal(0), new BigDecimal(1), sort);
+
+        assertEquals(gameListPageDto, result);
+    }
+
+    @Test
+    void findUserGamesSuccessfullyShouldReturnGameList() {
+        int pageSize = 1;
+        int pageNum = 1;
+        int userId = 1;
+        BasicUser user = new BasicUser();
+        user.setId(userId);
+        List<Game> gameList = Collections.singletonList(game);
+        List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        when(repository.findByUserList(user, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(gameList);
+        when(repository.countAllByUserList(user)).thenReturn(1L);
+        GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
+
+        GameListPageDto result = gameService.getUserGames(userId, pageSize, pageNum, sort);
 
         assertEquals(gameListPageDto, result);
     }

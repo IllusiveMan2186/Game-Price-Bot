@@ -7,6 +7,8 @@ import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.user.BasicUser;
+import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.repository.GameInShopRepository;
@@ -104,6 +106,24 @@ public class GameServiceImpl implements GameService {
             games = gameRepository.findByGenresInAndGamesInShop_DiscountPriceBetween(genre, pageRequest, minPrice, maxPrice);
             elementAmount = gameRepository.countByGenresIn(genre);
         }
+        List<GameDto> gameDtos = games.stream()
+                .map(GameDto::new)
+                .collect(Collectors.toList());
+
+        return new GameListPageDto(elementAmount, gameDtos);
+    }
+
+    @Override
+    public GameListPageDto getUserGames(long userId, int pageSize, int pageNum, Sort sort) {
+        log.info(String.format("Get games for user '%s' with '%s' element on page for '%s' page ",
+                userId, pageSize, pageNum));
+        PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
+        BasicUser user = new BasicUser();
+        user.setId(userId);
+
+        List<Game> games= gameRepository.findByUserList(user, pageRequest);
+        long elementAmount = gameRepository.countAllByUserList(user);
+
         List<GameDto> gameDtos = games.stream()
                 .map(GameDto::new)
                 .collect(Collectors.toList());

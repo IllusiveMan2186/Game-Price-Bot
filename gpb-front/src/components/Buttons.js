@@ -2,23 +2,55 @@ import * as React from 'react';
 import { isUserAuth } from '../helpers/axios_helper';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import Message from './Message';
 
 export default function Buttons(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const handleClick = () => {
+  const handleClickLogin = () => {
     navigate("/login");
-}
+  }
 
   return (
     <div className="row">
       <div className="col-md-12 text-center">
-        <button className={isUserAuth() ? "btn btn-dark" : "btn btn-primary"} 
-        style={{ margin: '15px' }} onClick={isUserAuth() ? props.logout : handleClick}>
-          {isUserAuth() ? t('app.logout')  : t('app.login')}
-        </button>
+        {isUserAuth() ? <DropDown logout={props.logout} /> : <LoginButton handleClick={handleClickLogin} />}
       </div>
     </div>
   );
 };
+
+function LoginButton(props) {
+
+  return (
+    <button className={"btn btn-primary"} style={{ margin: '15px' }} onClick={props.handleClick}>
+      <Message string={'app.login'} />
+    </button>
+  )
+}
+
+function DropDown(props) {
+  const navigate = useNavigate();
+
+  const handleGameListClick = () => {
+    navigate("/user/games/");
+    navigate(0)
+  }
+
+  const handleProfileClick = () => {
+    navigate("/");
+  }
+
+  return (
+    <div class="dropdown">
+      <button class="btn btn-primary"><Message string={'app.profile'} /></button>
+      <div class="dropdown-content">
+        <a onClick={handleProfileClick}><Message string={'app.profile'} /></a>
+        <a onClick={handleGameListClick}><Message string={'app.profile.game.list'} /></a>
+        <a onClick={props.logout}><Message string={'app.profile.logout'} /></a>
+      </div>
+    </div>
+  )
+}

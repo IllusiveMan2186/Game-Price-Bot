@@ -37,13 +37,15 @@ public class GameController {
     /**
      * Get game by id
      *
-     * @param id games id
+     * @param gameId games id
+     * @param user   current user
      * @return game
      */
     @GetMapping(value = "/{gameId}")
     @ResponseStatus(HttpStatus.OK)
     public GameInfoDto getGamerById(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
-        return gameService.getById(gameId, user.getId());
+        long userId = user == null ? -1 : user.getId();
+        return gameService.getById(gameId, userId);
     }
 
     /**
@@ -79,6 +81,7 @@ public class GameController {
      * @param pageNum  page number
      * @param minPrice minimal price
      * @param maxPrice maximal price
+     * @param sortBy sort parameter
      * @return list of games
      */
     @GetMapping(value = "/genre")
@@ -96,6 +99,26 @@ public class GameController {
             throw new PriceRangeException();
         }
         return gameService.getByGenre(genre, pageSize, pageNum, minPrice, maxPrice, getSortBy(sortBy));
+    }
+
+    /**
+     * Get user games
+     *
+     * @param pageSize amount of elements on page
+     * @param pageNum  page number
+     * @param user current user
+     * @param sortBy sort parameter
+     * @return list of games
+     */
+    @GetMapping(value = "/user/games")
+    @ResponseStatus(HttpStatus.OK)
+    public GameListPageDto getGamesOfUser(@RequestParam(required = false, defaultValue = "25") final int pageSize,
+                                          @RequestParam(required = false, defaultValue = "1") final int pageNum,
+                                          @RequestParam(required = false, defaultValue = "gamesInShop.price-ASC") final String sortBy,
+                                          @AuthenticationPrincipal UserDto user) {
+        log.info(String.format("Get games for user '%s' with '%s' element on page for '%s' page and sort '%s' ",
+                user.getId(), pageSize, pageNum, sortBy));
+        return gameService.getUserGames(user.getId(), pageSize, pageNum, getSortBy(sortBy));
     }
 
     private Sort getSortBy(String sortBy) {
