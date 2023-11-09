@@ -106,6 +106,25 @@ class GameControllerTest {
     }
 
     @Test
+    void getGamesOfUserSuccessfullyShouldReturnGameList() {
+        int userId = 1;
+        int pageSize = 2;
+        int pageNum = 2;
+        WebUser user = new WebUser("email", "password", false, 0, null);
+        user.setId(userId);
+        List<Game> gameList = Collections.singletonList(game);
+        List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
+        GameListPageDto expected = new GameListPageDto(1, gameDtoList);
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        when(service.getUserGames(userId, pageNum, pageSize, sort))
+                .thenReturn(expected);
+
+        GameListPageDto result = controller.getGamesOfUser(pageSize, pageNum, "name-ASC", new UserDto(user));
+
+        assertEquals(expected, result);
+    }
+
+    @Test
     void getGameByInvalidPriceRangeUnsuccessfullyShouldThrowException() {
         assertThrows(PriceRangeException.class, () -> controller
                 .getGamesForGenre(new ArrayList<>(), 1, 1, new BigDecimal(10), new BigDecimal(1), "name-ASC"));

@@ -89,6 +89,11 @@ export default function GameList(props) {
     const [minPriceBuffer, setMinPrice] = React.useState(+minPrice);
     const [maxPriceBuffer, setMaxPrice] = React.useState(+maxPrice);
     const [name, setName] = React.useState(searchName);
+    const [isList, setIsList] = React.useState(props.mode === "list");
+    const [isSearch, setIsSearch] = React.useState(props.mode === "search");
+    const [isUserGameList, setIsUserGameList] = React.useState(props.mode === "usersGames");
+
+    console.info(props.mode)
 
     const parameterSetOrRemove = (parameter, value, defaultValue) => {
         if (value !== defaultValue) {
@@ -102,7 +107,7 @@ export default function GameList(props) {
         parameterSetOrRemove("pageSize", pageSize, "25")
         parameterSetOrRemove("pageNum", page, 1)
         parameterSetOrRemove("sortBy", sortBy, "name-ASC")
-        if (!props.isSearch) {
+        if (isList) {
             parameterSetOrRemove("minPrice", minPrice, 0)
             parameterSetOrRemove("maxPrice", maxPrice, 10000)
         }
@@ -163,11 +168,12 @@ export default function GameList(props) {
     };
 
     const handleSearch = () => {
-        if (props.isSearch) {
+        if (isSearch) {
             navigate("/search/" + name + "/" + searchParams.toString())
             navigate(0);
         } else {
             navigate("/search/" + name + "/")
+            navigate(0);
         }
     };
 
@@ -177,10 +183,17 @@ export default function GameList(props) {
 
     const reloadPage = () => {
         setParameters()
-        if (props.isSearch) {
-            navigate("/search/" + name + "/" + searchParams.toString())
-        } else {
-            navigate("/games/" + searchParams.toString())
+
+        switch (props.mode) {
+            case "usersGames":
+                navigate("/user/games/" + searchParams.toString())
+                break;
+            case "search":
+                navigate("/search/" + name + "/" + searchParams.toString())
+                break;
+            default:
+                navigate("/games/" + searchParams.toString())
+                break;
         }
         navigate(0);
     }
@@ -197,32 +210,46 @@ export default function GameList(props) {
 
     const handleEvent = () => {
         navigate(0)
-      };
+    };
 
 
     setParameters()
     React.useEffect(() => {
         window.addEventListener("popstate", handleEvent);
-        if (props.isSearch) {
-            request(
-                "GET",
-                "/game/name/" + name + "?" + searchParams.toString(),
-            ).then(
-                (response) => {
-                    setElementAmount(response.data.elementAmount)
-                    setGames(response.data.games);
-                    setFormChanged(false)
-                })
-        } else {
-            request(
-                "GET",
-                "/game/genre?" + searchParams.toString(),
-            ).then(
-                (response) => {
-                    setElementAmount(response.data.elementAmount)
-                    setGames(response.data.games);
-                    setFormChanged(false)
-                })
+        switch (props.mode) {
+            case "usersGames":
+                request(
+                    "GET",
+                    "/game/user/games?" + searchParams.toString(),
+                ).then(
+                    (response) => {
+                        setElementAmount(response.data.elementAmount)
+                        setGames(response.data.games);
+                        setFormChanged(false)
+                    })
+                break;
+            case "search":
+                request(
+                    "GET",
+                    "/game/name/" + name + "?" + searchParams.toString(),
+                ).then(
+                    (response) => {
+                        setElementAmount(response.data.elementAmount)
+                        setGames(response.data.games);
+                        setFormChanged(false)
+                    })
+                break;
+            default:
+                request(
+                    "GET",
+                    "/game/genre?" + searchParams.toString(),
+                ).then(
+                    (response) => {
+                        setElementAmount(response.data.elementAmount)
+                        setGames(response.data.games);
+                        setFormChanged(false)
+                    })
+                break;
         }
     }, []);
 
@@ -231,19 +258,13 @@ export default function GameList(props) {
     return (
         <>
             <div class='App-game'>
-                {!props.isSearch && <Filter minPrice={minPrice} maxPrice={maxPrice} handlePriceChange={handlePriceChange} handleGenreChange={handleGenreChange}
+                {isList && <Filter minPrice={minPrice} maxPrice={maxPrice} handlePriceChange={handlePriceChange} handleGenreChange={handleGenreChange}
                     handleFilterButtonClick={handleFilterButtonClick} isFilterFormReadyToAccept={isFilterFormReadyToAccept} isChecked={isChecked}
                     priceError={priceError} ganres={ganres} />}
 
-                <div className={!props.isSearch ? "App-game-content" : "App-game-search-content"}>
+                <div className={isList ? "App-game-content" : "App-game-search-content"}>
                     <div class="App-game-content-header ">
-                        <div class="App-game-content-header-search ">
-                            <input type="search" placeholder={<Message string={'app.game.filter.search.title'} />}
-                                onChange={handleSearchChange} />
-                            <button onClick={handleSearch}>
-                                <Message string={'app.game.filter.search.button'} />
-                            </button>
-                        </div>
+                        {!isUserGameList && <Search handleSearchChange={handleSearchChange} handleSearch={handleSearch} />}
                         <div class="App-game-content-header-sort ">
                             <Select
                                 classNamePrefix=''
@@ -284,6 +305,19 @@ export default function GameList(props) {
     );
 
 };
+
+function Search(props) {
+
+    return (
+        <div class="App-game-content-header-search ">
+            <input type="search" placeholder={<Message string={'app.game.filter.search.title'} />}
+                onChange={props.handleSearchChange} />
+            <button onClick={props.handleSearch}>
+                <Message string={'app.game.filter.search.button'} />
+            </button>
+        </div>
+    )
+}
 
 function Filter(props) {
 

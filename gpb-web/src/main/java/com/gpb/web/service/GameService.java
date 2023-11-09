@@ -56,6 +56,18 @@ public interface GameService {
                                Sort sort);
 
     /**
+     * Get games of user
+     *
+     * @param userId   user id
+     * @param pageSize amount of elements on page
+     * @param pageNum  page number
+     * @param sort     sort parameters
+     * @return list of user`s games with all amount
+     */
+    GameListPageDto getUserGames(long userId, int pageSize, int pageNum, Sort sort);
+
+
+    /**
      * Create game
      *
      * @param game game that would be created
