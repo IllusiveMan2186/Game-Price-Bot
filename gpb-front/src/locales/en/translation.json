@@ -1,6 +1,8 @@
 {
     "app.login": "Login",
-    "app.logout": "Logout",
+    "app.profile": "Profile",
+    "app.profile.game.list": "Game list",
+    "app.profile.logout": "Logout",
     "app.registr": "Registration",
     "app.login.form.email": "Email",
     "app.login.form.password": "Password",

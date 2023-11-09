@@ -14,9 +14,10 @@ export default function AppContent() {
                 <Header />
                 <Routes>
                     <Route path="/" >
-                        <Route index element={<GameList />} />
-                        <Route path="/games/(url)?/:url?" element={<GameList isSearch={false} />} />
-                        <Route path="/search/:searchName/(url)?/:url?" element={<GameList isSearch={true} />} />
+                        <Route index element={<GameList mode={"list"}  />} />
+                        <Route path="/games/(url)?/:url?" element={<GameList mode={"list"} />} />
+                        <Route path="/search/:searchName/(url)?/:url?" element={<GameList mode={"search"} />} />
+                        <Route path="/user/games/(url)?/:url?" element={<GameList mode={"usersGames"}/>} />
                         <Route path="/game/:gameId" element={<GameInfo />} />
                         <Route path="/login" element={<Login />} />
                     </Route>
