@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -63,22 +64,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(UserRegistration newUserRegistration, long userId) {
-        log.info(String.format("Update user : %s", userId));
+    public UserDto updateUserEmail(String newEmail, UserDto user) {
+        log.info(String.format("Update email for user : %s", user.getId()));
 
-        WebUser oldUser = getWebUserById(userId);
-        WebUser newUser = getWebUser(newUserRegistration);
-        newUser.setId(userId);
-
-        if (equalsUpdatedUser(oldUser, newUserRegistration)) {
-            log.info(String.format("User with id : '%s' did not changed data for update", userId));
+        if (newEmail.equals(user.getEmail())) {
+            log.info(String.format("User with id : '%s' did not changed email for update", user.getId()));
             throw new UserDataNotChangedException();
-        } else if (!newUser.getEmail().equals(oldUser.getEmail()) && userRepository.findByEmail(newUser.getEmail()).isPresent()) {
-            log.info(String.format("User with email : '%s' already registered", newUser.getEmail()));
+        } else if (userRepository.findByEmail(newEmail).isPresent()) {
+            log.info(String.format("User with email : '%s' already registered", newEmail));
             throw new EmailAlreadyExistException();
         }
-        WebUser user = userRepository.save(newUser);
-        return new UserDto(user);
+
+        WebUser webUser = getWebUserById(user.getId());
+        webUser.setEmail(newEmail);
+        WebUser updatedUser = userRepository.save(webUser);
+        return new UserDto(updatedUser);
+    }
+
+    @Override
+    public UserDto updateUserPassword(char[] password, UserDto user) {
+        log.info(String.format("Update password for user : %s", user.getId()));
+
+        WebUser webUser = getWebUserById(user.getId());
+        if (matchPassword(password, webUser.getPassword())) {
+            log.info(String.format("User with id : '%s' did not changed password for update", user.getId()));
+            throw new UserDataNotChangedException();
+        }
+
+        webUser.setPassword(passwordEncoder.encode(CharBuffer.wrap(password)));
+        WebUser updatedUser = userRepository.save(webUser);
+        return new UserDto(updatedUser);
     }
 
     @Override
@@ -109,6 +124,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (matchPassword(credentials.getPassword(), user.getPassword())) {
+            unlockUser(user);
             return new UserDto(user);
         }
         failedLoginAttempt(user);
@@ -146,11 +162,6 @@ public class UserServiceImpl implements UserService {
         return WebUser.builder()
                 .email(userRegistration.getEmail())
                 .password(passwordEncoder.encode(CharBuffer.wrap(userRegistration.getPassword()))).build();
-    }
-
-    private boolean equalsUpdatedUser(WebUser oldUser, UserRegistration newUser) {
-        return oldUser.getEmail().equals(newUser.getEmail())
-                && matchPassword(newUser.getPassword(), oldUser.getPassword());
     }
 
     private boolean matchPassword(char[] decodedPassword, String encodedPassword) {

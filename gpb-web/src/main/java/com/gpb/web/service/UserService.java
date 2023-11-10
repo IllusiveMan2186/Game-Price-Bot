@@ -34,13 +34,22 @@ public interface UserService {
     UserDto createUser(UserRegistration user);
 
     /**
-     * Update registered user
+     * Update registered user email
      *
-     * @param newUser new version of user
-     * @param userId user id
+     * @param newEmail new version of email
+     * @param user current user
      * @return updated user
      */
-    UserDto updateUser(UserRegistration newUser, long userId);
+    UserDto updateUserEmail(String newEmail, UserDto user);
+
+    /**
+     * Update registered user password
+     *
+     * @param password new version of password
+     * @param user current user
+     * @return updated user
+     */
+    UserDto updateUserPassword(char[] password, UserDto user);
 
     /**
      * Add game to user list of games

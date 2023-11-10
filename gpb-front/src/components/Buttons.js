@@ -2,11 +2,9 @@ import * as React from 'react';
 import { isUserAuth } from '../helpers/axios_helper';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import Message from './Message';
 
 export default function Buttons(props) {
-  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleClickLogin = () => {
@@ -39,15 +37,20 @@ function DropDown(props) {
     navigate(0)
   }
 
-  const handleProfileClick = () => {
-    navigate("/");
+  const handleChangeEmailClick = () => {
+    navigate("/change/email");
+  }
+
+  const handleChangePasswordClick = () => {
+    navigate("/change/password");
   }
 
   return (
     <div class="dropdown">
       <button class="btn btn-primary"><Message string={'app.profile'} /></button>
       <div class="dropdown-content">
-        <a onClick={handleProfileClick}><Message string={'app.profile'} /></a>
+        <a onClick={handleChangeEmailClick}><Message string={'app.user.change.email'} /></a>
+        <a onClick={handleChangePasswordClick}><Message string={'app.user.change.password'} /></a>
         <a onClick={handleGameListClick}><Message string={'app.profile.game.list'} /></a>
         <a onClick={props.logout}><Message string={'app.profile.logout'} /></a>
       </div>

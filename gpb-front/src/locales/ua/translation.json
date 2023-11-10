@@ -1,6 +1,8 @@
 {
     "app.login": "Вхід",
     "app.profile": "Профіль",
+    "app.user.change.email": "Змінити пошту",
+    "app.user.change.password": "Змінити пароль",
     "app.profile.game.list": "Список ігор",
     "app.profile.logout": "Вийти",
     "app.registr": "Реєстрація",
