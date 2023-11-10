@@ -505,3 +505,27 @@ select:focus {
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+.App-user-info {
+  background-color: #13538881;
+  box-sizing: border-box;
+  width: 100%;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-top: 20px;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1140px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.App-user-info-title {
+  font-size: 2.5rem;
+}

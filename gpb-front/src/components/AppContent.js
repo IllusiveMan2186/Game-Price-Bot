@@ -5,6 +5,8 @@ import Header from './Header';
 import Login from './Login';
 import GameList from './GameList'
 import GameInfo from './GameInfo';
+import PasswordChange from './PasswordChange';
+import EmailChange from './EmailChange';
 
 export default function AppContent() {
 
@@ -20,6 +22,8 @@ export default function AppContent() {
                         <Route path="/user/games/(url)?/:url?" element={<GameList mode={"usersGames"}/>} />
                         <Route path="/game/:gameId" element={<GameInfo />} />
                         <Route path="/login" element={<Login />} />
+                        <Route path="/change/email" element={<EmailChange />} />
+                        <Route path="/change/password" element={<PasswordChange />} />
                     </Route>
                 </Routes>
             </BrowserRouter>

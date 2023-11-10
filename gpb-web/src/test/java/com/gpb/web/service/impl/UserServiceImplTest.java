@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -75,40 +76,65 @@ class UserServiceImplTest {
     }
 
     @Test
-    void updateUserSuccessfullyShouldSaveAndReturnUser() {
+    void updateUserEmailSuccessfullyShouldSaveAndReturnUser() {
         WebUser newUser = new WebUser("email2", "password2", false, 0, null);
         newUser.setId(1);
         when(repository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
-        when(repository.findById(1)).thenReturn(Optional.of(user));
-        when(repository.save(newUser)).thenReturn(newUser);
-        UserRegistration userRegistration = new UserRegistration(newUser);
-        when(encoder.encode(CharBuffer.wrap(userRegistration.getPassword()))).thenReturn(newUser.getPassword());
+        when(repository.findById(user.getId())).thenReturn(Optional.of(user));
+        WebUser updatedUser = new WebUser("email2", ENCODED_PASSWORD, false, 0, null);
+        when(repository.save(updatedUser)).thenReturn(newUser);
 
-        UserDto result = userService.updateUser(userRegistration, 1);
+        UserDto result = userService.updateUserEmail(newUser.getEmail(), new UserDto(user));
 
         assertEquals(new UserDto(newUser), result);
     }
 
     @Test
-    void updateUserThatDidNotChangedInfoShouldThrowException() {
+    void updateUserEmailThatDidNotChangedInfoShouldThrowException() {
         WebUser newUser = new WebUser("email", "pass", false, 0, null);
         when(repository.findById(1)).thenReturn(Optional.of(user));
         UserRegistration userRegistration = new UserRegistration(newUser);
-        when(encoder.matches(CharBuffer.wrap(userRegistration.getPassword()), user.getPassword())).thenReturn(true);
-        when(encoder.encode(CharBuffer.wrap(userRegistration.getPassword()))).thenReturn(newUser.getPassword());
 
-        assertThrows(UserDataNotChangedException.class, () -> userService.updateUser(userRegistration, 1),
+        assertThrows(UserDataNotChangedException.class, () -> userService.updateUserEmail(newUser.getEmail(), new UserDto(user)),
                 "User didn't changed during update operation");
     }
 
     @Test
-    void updateUserWithRegisteredEmailShouldThrowException() {
+    void updateUserEmailWithRegisteredEmailShouldThrowException() {
         WebUser newUser = new WebUser("email2", "password2", false, 0, null);
         when(repository.findByEmail(newUser.getEmail())).thenReturn(Optional.of(new WebUser()));
         when(repository.findById(1)).thenReturn(Optional.of(user));
 
-        assertThrows(EmailAlreadyExistException.class, () -> userService.updateUser(new UserRegistration(newUser), 1),
+        assertThrows(EmailAlreadyExistException.class, () -> userService.updateUserEmail(newUser.getEmail(), new UserDto(user)),
                 "User with this email already exist");
+    }
+
+    @Test
+    void updateUserPasswordSuccessfullyShouldSaveAndReturnUser() {
+        WebUser newUser = new WebUser("email2", "password2", false, 0, null);
+        newUser.setId(1);
+        when(repository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
+        when(repository.findById(user.getId())).thenReturn(Optional.of(user));
+        WebUser updatedUser = new WebUser("email", newUser.getPassword(), false, 0, null);
+        when(repository.save(updatedUser)).thenReturn(updatedUser);
+        when(encoder.encode(CharBuffer.wrap(newUser.getPassword()))).thenReturn(newUser.getPassword());
+
+        UserDto result = userService.updateUserPassword(newUser.getPassword().toCharArray(), new UserDto(user));
+
+        assertEquals(new UserDto(updatedUser), result);
+    }
+
+    @Test
+    void updateUserPasswordThatDidNotChangedInfoShouldThrowException() {
+        WebUser newUser = new WebUser("email", "pass", false, 0, null);
+        user.setId(1);
+        when(repository.findById(1)).thenReturn(Optional.of(user));
+        when(encoder.matches(CharBuffer.wrap(newUser.getPassword()), user.getPassword())).thenReturn(true);
+        when(encoder.encode(CharBuffer.wrap(newUser.getPassword()))).thenReturn(newUser.getPassword());
+
+        assertThrows(UserDataNotChangedException.class, () -> userService
+                        .updateUserPassword("pass".toCharArray(), new UserDto(user)),
+                "User didn't changed during update operation");
     }
 
     @Test
@@ -191,7 +217,7 @@ class UserServiceImplTest {
         UserDto result = userService.login(credentials);
 
         assertEquals(new UserDto(user), result);
-        verify(repository).save(new WebUser("email", "pass", false, 0, null));
+        verify(repository, times(2)).save(new WebUser("email", "pass", false, 0, null));
     }
 
     @Test

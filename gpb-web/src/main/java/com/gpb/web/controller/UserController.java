@@ -1,7 +1,10 @@
 package com.gpb.web.controller;
 
-import com.gpb.web.bean.user.UserRegistration;
+import com.gpb.web.bean.user.EmailChangeDto;
+import com.gpb.web.bean.user.PasswordChangeDto;
 import com.gpb.web.bean.user.UserDto;
+import com.gpb.web.bean.user.WebUser;
+import com.gpb.web.configuration.UserAuthenticationProvider;
 import com.gpb.web.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,35 +26,53 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(final UserService userService) {
+    private final UserAuthenticationProvider userAuthenticationProvider;
+
+    public UserController(UserService userService, UserAuthenticationProvider userAuthenticationProvider) {
         this.userService = userService;
+        this.userAuthenticationProvider = userAuthenticationProvider;
+    }
+
+
+    /**
+     * Update registered user email
+     *
+     * @param emailChangeDto new version of email
+     * @param user           current user
+     * @return updated user
+     */
+    @PutMapping("/email")
+    @Transactional
+    public UserDto updateUserEmail(@RequestBody final EmailChangeDto emailChangeDto, @AuthenticationPrincipal UserDto user) {
+        UserDto userDto =  userService.updateUserEmail(emailChangeDto.getEmail(), user);
+        userDto.setToken(userAuthenticationProvider.createToken(userDto.getEmail()));
+        return userDto;
     }
 
     /**
-     * Update registered user
+     * Update registered user Password
      *
-     * @param newUser new version of user
-     * @param user current user
+     * @param passwordChangeDto new version of password
+     * @param user              current user
      * @return updated user
      */
-    @PutMapping
+    @PutMapping("/password")
     @Transactional
-    @ResponseStatus(HttpStatus.OK)
-    public UserDto updateUser(@RequestBody final UserRegistration newUser, @AuthenticationPrincipal UserDto user) {
-        return userService.updateUser(newUser, user.getId());
+    public UserDto updateUserPassword(@RequestBody final PasswordChangeDto passwordChangeDto, @AuthenticationPrincipal UserDto user) {
+        return userService.updateUserPassword(passwordChangeDto.getPassword(), user);
     }
 
     /**
      * Add game to user list of games
      *
      * @param gameId games id
-     * @param user current user
+     * @param user   current user
      * @return updated user
      */
     @PostMapping(value = "/games/{gameId}")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public UserDto addGameToUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user ) {
+    public UserDto addGameToUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
         userService.subscribeToGame(user.getId(), gameId);
         return userService.getUserById(user.getId());
     }
