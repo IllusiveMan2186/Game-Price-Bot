@@ -1,5 +1,6 @@
 package com.gpb.web.integration.game;
 
+import com.gpb.web.bean.user.EmailChangeDto;
 import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.WebUser;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,29 +39,30 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @Test
     void updateUserSuccessfullyShouldReturnUser() throws Exception {
-        WebUser user = userCreation("email3", "password");
-        user.setId(1);
+        String email ="email3";
+        EmailChangeDto emailChangeDto = new EmailChangeDto();
+        emailChangeDto.setEmail(email);
 
-        mockMvc.perform(put("/user")
+        mockMvc.perform(put("/user/email")
                         .contentType(APPLICATION_JSON)
-                        .content(objectToJson(new UserRegistration(user)))
+                        .content(objectToJson(emailChangeDto))
                         .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.email").value(user.getEmail()))
+                .andExpect(jsonPath("$.email").value(email))
                 .andExpect(jsonPath("$.password").doesNotExist());
     }
 
     @Test
     void updateUserThatDidNotChangedInfoShouldReturnErrorMessage() throws Exception {
-        WebUser user = userCreation("email1", DECODE_PASSWORD);
-        user.setId(1);
+        EmailChangeDto emailChangeDto = new EmailChangeDto();
+        emailChangeDto.setEmail(userList.get(0).getEmail());
 
-        mockMvc.perform(put("/user")
+        mockMvc.perform(put("/user/email")
                         .contentType(APPLICATION_JSON)
-                        .content(objectToJson(new UserRegistration(user)))
+                        .content(objectToJson(emailChangeDto))
                         .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -69,12 +71,13 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @Test
     void updateUserWithEmailThatAlreadyRegisteredShouldReturnUser() throws Exception {
-        WebUser user = userCreation("email2", DECODE_PASSWORD);
-        user.setId(1);
+        String email ="email2";
+        EmailChangeDto emailChangeDto = new EmailChangeDto();
+        emailChangeDto.setEmail(email);
 
-        mockMvc.perform(put("/user")
+        mockMvc.perform(put("/user/email")
                         .contentType(APPLICATION_JSON)
-                        .content(objectToJson(new UserRegistration(user)))
+                        .content(objectToJson(emailChangeDto))
                         .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -93,11 +96,6 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.email").value(userList.get(0).getEmail()))
                 .andExpect(jsonPath("$.password").doesNotExist());
-                //.andExpect(jsonPath("$.gameList").isArray())
-                //.andExpect(jsonPath("$.gameList", hasSize(1)))
-                //.andExpect(jsonPath("$.gameList[0].id").value(1))
-                //.andExpect(jsonPath("$.gameList[0].name").value(games.get(0).getName()))
-                //.andExpect(jsonPath("$.gameList[0].genre").value(games.get(0).getGenre().name()));
     }
 
 }
