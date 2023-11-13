@@ -21,6 +21,7 @@ dependencies {
 	implementation("com.auth0:java-jwt:4.3.0")
 	implementation("org.jsoup:jsoup:1.15.3")
 	implementation("com.google.guava:guava:32.1.2-jre")
+	implementation("org.modelmapper:modelmapper:3.2.0")
 
 	compileOnly("org.projectlombok:lombok:1.18.24")
 	annotationProcessor("org.projectlombok:lombok:1.18.24")

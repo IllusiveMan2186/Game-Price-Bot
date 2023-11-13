@@ -1,16 +1,15 @@
 package com.gpb.web.bean.user;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
-
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class UserDto {
-
-    public UserDto(WebUser user) {
-        this.email = user.getEmail();
-        this.id = user.getId();
-    }
 
     private long id;
 

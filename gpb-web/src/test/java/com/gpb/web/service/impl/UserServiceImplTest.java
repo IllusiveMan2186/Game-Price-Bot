@@ -5,6 +5,7 @@ import com.gpb.web.bean.user.Credentials;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.WebUser;
+import com.gpb.web.configuration.MapperConfig;
 import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.LoginFailedException;
 import com.gpb.web.exception.NotFoundException;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.nio.CharBuffer;
@@ -43,7 +45,9 @@ class UserServiceImplTest {
 
     PasswordEncoder encoder = mock(PasswordEncoder.class);
 
-    UserService userService = new UserServiceImpl(repository, encoder);
+    private final ModelMapper modelMapper = new MapperConfig().modelMapper();
+
+    UserService userService = new UserServiceImpl(repository, encoder, modelMapper);
 
     private final WebUser user = new WebUser("email", ENCODED_PASSWORD, false, 0, null);
 
@@ -64,7 +68,7 @@ class UserServiceImplTest {
 
         UserDto result = userService.createUser(userRegistration);
 
-        assertEquals(new UserDto(user), result);
+        assertEquals(modelMapper.map(user, UserDto.class), result);
     }
 
     @Test
@@ -84,18 +88,17 @@ class UserServiceImplTest {
         WebUser updatedUser = new WebUser("email2", ENCODED_PASSWORD, false, 0, null);
         when(repository.save(updatedUser)).thenReturn(newUser);
 
-        UserDto result = userService.updateUserEmail(newUser.getEmail(), new UserDto(user));
+        UserDto result = userService.updateUserEmail(newUser.getEmail(), modelMapper.map(user, UserDto.class));
 
-        assertEquals(new UserDto(newUser), result);
+        assertEquals(modelMapper.map(newUser, UserDto.class), result);
     }
 
     @Test
     void updateUserEmailThatDidNotChangedInfoShouldThrowException() {
         WebUser newUser = new WebUser("email", "pass", false, 0, null);
         when(repository.findById(1)).thenReturn(Optional.of(user));
-        UserRegistration userRegistration = new UserRegistration(newUser);
 
-        assertThrows(UserDataNotChangedException.class, () -> userService.updateUserEmail(newUser.getEmail(), new UserDto(user)),
+        assertThrows(UserDataNotChangedException.class, () -> userService.updateUserEmail(newUser.getEmail(), modelMapper.map(user, UserDto.class)),
                 "User didn't changed during update operation");
     }
 
@@ -105,7 +108,7 @@ class UserServiceImplTest {
         when(repository.findByEmail(newUser.getEmail())).thenReturn(Optional.of(new WebUser()));
         when(repository.findById(1)).thenReturn(Optional.of(user));
 
-        assertThrows(EmailAlreadyExistException.class, () -> userService.updateUserEmail(newUser.getEmail(), new UserDto(user)),
+        assertThrows(EmailAlreadyExistException.class, () -> userService.updateUserEmail(newUser.getEmail(), modelMapper.map(user, UserDto.class)),
                 "User with this email already exist");
     }
 
@@ -119,9 +122,9 @@ class UserServiceImplTest {
         when(repository.save(updatedUser)).thenReturn(updatedUser);
         when(encoder.encode(CharBuffer.wrap(newUser.getPassword()))).thenReturn(newUser.getPassword());
 
-        UserDto result = userService.updateUserPassword(newUser.getPassword().toCharArray(), new UserDto(user));
+        UserDto result = userService.updateUserPassword(newUser.getPassword().toCharArray(), modelMapper.map(user, UserDto.class));
 
-        assertEquals(new UserDto(updatedUser), result);
+        assertEquals(modelMapper.map(updatedUser, UserDto.class), result);
     }
 
     @Test
@@ -133,7 +136,7 @@ class UserServiceImplTest {
         when(encoder.encode(CharBuffer.wrap(newUser.getPassword()))).thenReturn(newUser.getPassword());
 
         assertThrows(UserDataNotChangedException.class, () -> userService
-                        .updateUserPassword("pass".toCharArray(), new UserDto(user)),
+                        .updateUserPassword("pass".toCharArray(), modelMapper.map(user, UserDto.class)),
                 "User didn't changed during update operation");
     }
 
@@ -162,12 +165,12 @@ class UserServiceImplTest {
         Credentials credentials = new Credentials("email", "pass".toCharArray());
         WebUser user = new WebUser("email", "pass", false, 0, null);
         when(repository.findByEmail(credentials.getEmail())).thenReturn(Optional.of(user));
-        when(encoder.matches(CharBuffer.wrap(credentials.getPassword()),user.getPassword()))
+        when(encoder.matches(CharBuffer.wrap(credentials.getPassword()), user.getPassword()))
                 .thenReturn(true);
 
         UserDto result = userService.login(credentials);
 
-        assertEquals(new UserDto(user), result);
+        assertEquals(modelMapper.map(user, UserDto.class), result);
     }
 
     @Test
@@ -216,7 +219,7 @@ class UserServiceImplTest {
 
         UserDto result = userService.login(credentials);
 
-        assertEquals(new UserDto(user), result);
+        assertEquals(modelMapper.map(user, UserDto.class), result);
         verify(repository, times(2)).save(new WebUser("email", "pass", false, 0, null));
     }
 
@@ -240,7 +243,7 @@ class UserServiceImplTest {
 
         UserDto result = userService.getUserByEmail(user.getEmail());
 
-        assertEquals(new UserDto(user), result);
+        assertEquals(modelMapper.map(user, UserDto.class), result);
     }
 
     @Test
@@ -249,11 +252,5 @@ class UserServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> userService.getUserByEmail(user.getEmail()),
                 "User with email 'email' not found");
-    }
-
-    private WebUser getWebUser(UserRegistration userRegistration) {
-        return WebUser.builder()
-                .email(userRegistration.getEmail())
-                .password(ENCODED_PASSWORD).build();
     }
 }
