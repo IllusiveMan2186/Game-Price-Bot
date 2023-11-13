@@ -253,8 +253,6 @@ export default function GameList(props) {
         }
     }, []);
 
-    if (!games) return null;
-
     return (
         <>
             <div class='App-game'>
@@ -292,19 +290,36 @@ export default function GameList(props) {
                             />
                         </div>
                     </div>
-                    <div class="App-game-content-list ">
-                        <GameContent games={games} />
-                    </div>
-                    <div class="App-game-content-fotter  ">
-                        <Pagination elementAmount={elementAmount} page={page}
-                            pageSize={pageSize} onPageClick={handlePageChange} />
-                    </div>
+                    <Loading games={games} elementAmount={elementAmount} page={page}
+                            pageSize={pageSize} onPageClick={handlePageChange}/>
                 </div>
             </div >
         </>
     );
 
 };
+
+function Loading(props) {
+
+    let image = require(`../img/load.png`)
+
+    if(!props.games){
+        return(
+            <img class="App-game-content-list-loading" src={image} on/>
+        )
+    }
+
+    return (<div>
+        <div class="App-game-content-list ">
+            <GameContent games={props.games} />
+        </div>
+        <div class="App-game-content-fotter  ">
+            <Pagination elementAmount={props.elementAmount} page={props.page}
+                pageSize={props.pageSize} onPageClick={props.onPageClick} />
+        </div>
+    </div>
+    )
+}
 
 function Search(props) {
 
