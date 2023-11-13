@@ -83,7 +83,7 @@ function GameInStoreList(props) {
     props.stores.map(gameInStore => {
         let domain = (new URL(gameInStore.url)).hostname;
         let image = require(`../img/${domain}.png`)
-        listItems.push(<a class="App-game-page-info-storeList-store " href={gameInStore.url}>
+        listItems.push(<a class="App-game-page-info-storeList-store " href={gameInStore.url} target="_blank">
             <img src={image} />
             <div class="">{domain}</div>
             <GameAvailability available={gameInStore.available} />
