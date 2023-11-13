@@ -280,6 +280,17 @@ select:focus {
   margin-bottom: 0;
 }
 
+.App-game-content-list-loading {
+  width: 30%;
+  margin-top: 20%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-game-content-list-loading {
+    animation: App-logo-spin infinite 10s linear reverse;
+  }
+}
+
 .not-available {
   color: #ff0000;
 }
@@ -529,3 +540,4 @@ select:focus {
 .App-user-info-title {
   font-size: 2.5rem;
 }
+
