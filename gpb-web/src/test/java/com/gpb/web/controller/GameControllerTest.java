@@ -8,11 +8,13 @@ import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
+import com.gpb.web.configuration.MapperConfig;
 import com.gpb.web.exception.PriceRangeException;
 import com.gpb.web.exception.SortParamException;
 import com.gpb.web.service.GameService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 
 
@@ -31,6 +33,8 @@ class GameControllerTest {
     GameService service = mock(GameService.class);
 
     private final GameController controller = new GameController(service);
+
+    private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
     private final GameInShop gameInShop = GameInShop.builder()
             .price(new BigDecimal(2))
@@ -52,10 +56,10 @@ class GameControllerTest {
         int userId = 1;
         WebUser user = new WebUser("email", "password", false, 0, null);
         user.setId(userId);
-        GameInfoDto gameInfoDto = new GameInfoDto(game);
+        GameInfoDto gameInfoDto = modelMapper.map(game, GameInfoDto.class);
         when(service.getById(id, userId)).thenReturn(gameInfoDto);
 
-        GameInfoDto result = controller.getGamerById(id, new UserDto(user));
+        GameInfoDto result = controller.getGamerById(id,  modelMapper.map(user, UserDto.class));
 
         assertEquals(gameInfoDto, result);
     }
@@ -66,7 +70,7 @@ class GameControllerTest {
         int pageSize = 2;
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);
-        List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
+        List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         when(service.getByName(name, pageNum, pageSize, sort)).thenReturn(gameListPageDto);
@@ -79,7 +83,7 @@ class GameControllerTest {
     @Test
     void getGameByEmailSuccessfullyShouldReturnGame() {
         String url = "email";
-        GameInfoDto gameInfoDto = new GameInfoDto(game);
+        GameInfoDto gameInfoDto = modelMapper.map(game, GameInfoDto.class);
         when(service.getByUrl(url)).thenReturn(gameInfoDto);
 
         GameInfoDto result = controller.getGameByUrl(url);
@@ -93,7 +97,7 @@ class GameControllerTest {
         int pageSize = 2;
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);
-        List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
+        List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         when(service.getByGenre(genre, pageNum, pageSize, new BigDecimal(0), new BigDecimal(1), sort))
@@ -113,13 +117,13 @@ class GameControllerTest {
         WebUser user = new WebUser("email", "password", false, 0, null);
         user.setId(userId);
         List<Game> gameList = Collections.singletonList(game);
-        List<GameDto> gameDtoList = gameList.stream().map(GameDto::new).toList();
+        List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
         GameListPageDto expected = new GameListPageDto(1, gameDtoList);
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         when(service.getUserGames(userId, pageNum, pageSize, sort))
                 .thenReturn(expected);
 
-        GameListPageDto result = controller.getGamesOfUser(pageSize, pageNum, "name-ASC", new UserDto(user));
+        GameListPageDto result = controller.getGamesOfUser(pageSize, pageNum, "name-ASC", modelMapper.map(user, UserDto.class));
 
         assertEquals(expected, result);
     }

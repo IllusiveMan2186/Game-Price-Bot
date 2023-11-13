@@ -8,7 +8,6 @@ import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.user.BasicUser;
-import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.repository.GameInShopRepository;
@@ -16,11 +15,13 @@ import com.gpb.web.repository.GameRepository;
 import com.gpb.web.service.GameService;
 import com.gpb.web.service.GameStoresService;
 import lombok.extern.log4j.Log4j2;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,10 +35,14 @@ public class GameServiceImpl implements GameService {
 
     private final GameStoresService gameStoresService;
 
-    public GameServiceImpl(GameRepository gameRepository, GameInShopRepository gameInShopRepository, GameStoresService gameStoresService) {
+    private final ModelMapper modelMapper;
+
+    public GameServiceImpl(GameRepository gameRepository, GameInShopRepository gameInShopRepository,
+                           GameStoresService gameStoresService, ModelMapper modelMapper) {
         this.gameRepository = gameRepository;
         this.gameInShopRepository = gameInShopRepository;
         this.gameStoresService = gameStoresService;
+        this.modelMapper = modelMapper;
     }
 
 
@@ -51,7 +56,9 @@ public class GameServiceImpl implements GameService {
             throw new NotFoundException("app.game.error.id.not.found");
         }
         boolean isUserSubscribed = game.getUserList().stream().anyMatch(user -> user.getId() == userId);
-        return new GameInfoDto(game, isUserSubscribed);
+        GameInfoDto gameInfoDto = modelMapper.map(game, GameInfoDto.class);
+        gameInfoDto.setUserSubscribed(isUserSubscribed);
+        return gameInfoDto;
     }
 
     @Override
@@ -71,7 +78,7 @@ public class GameServiceImpl implements GameService {
         }
 
         List<GameDto> gameDtos = games.stream()
-                .map(GameDto::new)
+                .map(this::gameMap)
                 .toList();
 
         return new GameListPageDto(elementAmount, gameDtos);
@@ -84,10 +91,10 @@ public class GameServiceImpl implements GameService {
         final GameInShop gameInShop = gameInShopRepository.findByUrl(url);
         if (gameInShop == null) {
             Game game = gameStoresService.findGameByUrl(url);
-            return new GameInfoDto(create(game));
+            return modelMapper.map(create(game), GameInfoDto.class);
         }
 
-        return new GameInfoDto(gameInShop.getGame());
+        return modelMapper.map(gameInShop.getGame(), GameInfoDto.class);
     }
 
     @Override
@@ -107,7 +114,7 @@ public class GameServiceImpl implements GameService {
             elementAmount = gameRepository.countByGenresIn(genre);
         }
         List<GameDto> gameDtos = games.stream()
-                .map(GameDto::new)
+                .map(this::gameMap)
                 .collect(Collectors.toList());
 
         return new GameListPageDto(elementAmount, gameDtos);
@@ -121,11 +128,11 @@ public class GameServiceImpl implements GameService {
         BasicUser user = new BasicUser();
         user.setId(userId);
 
-        List<Game> games= gameRepository.findByUserList(user, pageRequest);
+        List<Game> games = gameRepository.findByUserList(user, pageRequest);
         long elementAmount = gameRepository.countAllByUserList(user);
 
         List<GameDto> gameDtos = games.stream()
-                .map(GameDto::new)
+                .map(this::gameMap)
                 .collect(Collectors.toList());
 
         return new GameListPageDto(elementAmount, gameDtos);
@@ -140,5 +147,20 @@ public class GameServiceImpl implements GameService {
         }
 
         return gameRepository.save(game);
+    }
+
+    private GameDto gameMap(Game game) {
+        GameDto gameDto = modelMapper.map(game, GameDto.class);
+        BigDecimal minPrice = game.getGamesInShop().stream()
+                .map(GameInShop::getDiscountPrice)
+                .max(Comparator.naturalOrder())
+                .orElse(null);
+        BigDecimal maxPrice = game.getGamesInShop().stream()
+                .map(GameInShop::getDiscountPrice)
+                .min(Comparator.naturalOrder())
+                .orElse(null);
+        gameDto.setMinPrice(minPrice);
+        gameDto.setMaxPrice(maxPrice);
+        return gameDto;
     }
 }
