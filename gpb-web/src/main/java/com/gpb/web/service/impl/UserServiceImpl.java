@@ -12,11 +12,11 @@ import com.gpb.web.exception.UserLockedException;
 import com.gpb.web.repository.WebUserRepository;
 import com.gpb.web.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -32,14 +32,17 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(WebUserRepository userRepository, PasswordEncoder passwordEncoder) {
+    private final ModelMapper modelMapper;
+
+    public UserServiceImpl(WebUserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public UserDto getUserById(long userId) {
-        return new UserDto(getWebUserById(userId));
+        return modelMapper.map(getWebUserById(userId), UserDto.class);
     }
 
     @Override
@@ -48,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
         final WebUser user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(
                 "app.user.error.email.not.found"));
-        return new UserDto(user);
+        return modelMapper.map(user, UserDto.class);
     }
 
     @Override
@@ -60,7 +63,7 @@ public class UserServiceImpl implements UserService {
         }
         WebUser user = getWebUser(userRegistration);
         user = userRepository.save(user);
-        return new UserDto(user);
+        return modelMapper.map(user, UserDto.class);
     }
 
     @Override
@@ -78,7 +81,7 @@ public class UserServiceImpl implements UserService {
         WebUser webUser = getWebUserById(user.getId());
         webUser.setEmail(newEmail);
         WebUser updatedUser = userRepository.save(webUser);
-        return new UserDto(updatedUser);
+        return modelMapper.map(updatedUser, UserDto.class);
     }
 
     @Override
@@ -93,7 +96,7 @@ public class UserServiceImpl implements UserService {
 
         webUser.setPassword(passwordEncoder.encode(CharBuffer.wrap(password)));
         WebUser updatedUser = userRepository.save(webUser);
-        return new UserDto(updatedUser);
+        return modelMapper.map(updatedUser, UserDto.class);
     }
 
     @Override
@@ -125,7 +128,7 @@ public class UserServiceImpl implements UserService {
 
         if (matchPassword(credentials.getPassword(), user.getPassword())) {
             unlockUser(user);
-            return new UserDto(user);
+            return modelMapper.map(user, UserDto.class);
         }
         failedLoginAttempt(user);
         throw new LoginFailedException();

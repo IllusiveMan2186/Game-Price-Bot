@@ -15,6 +15,7 @@ import com.gpb.web.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,6 +58,9 @@ public class BaseAuthenticationIntegration {
 
     @Autowired
     protected GameInShopRepository gameInShopRepository;
+
+    @Autowired
+    protected ModelMapper modelMapper;
 
     @BeforeAll
     protected static void beforeAll() throws ParseException {
@@ -112,8 +116,8 @@ public class BaseAuthenticationIntegration {
         return new ObjectMapper().writeValueAsString(obj);
     }
 
-    protected SecurityContextImpl getSecurityContext(){
-        UserDto userDto = new UserDto(userList.get(0));
+    protected SecurityContextImpl getSecurityContext() {
+        UserDto userDto = modelMapper.map(userList.get(0), UserDto.class);
         userDto.setId(1);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 userDto, userList.get(0).getPassword(), new ArrayList<>());
