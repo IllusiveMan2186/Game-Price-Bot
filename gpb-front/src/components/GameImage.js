@@ -1,12 +1,12 @@
 import * as React from 'react'
-import defaultImage from '../img/defaultImage.jpg';
+import defaultImage from '../img/defaultGameImage.jpg';
 import Message from './Message';
 
 
 export function GameImage(props) {
   let image
   try {
-    image = require(`../img/${props.gameName}.jpg`)
+    image = require(`../img/games/${props.gameName}.jpg`)
   } catch {
     image = defaultImage
   }
