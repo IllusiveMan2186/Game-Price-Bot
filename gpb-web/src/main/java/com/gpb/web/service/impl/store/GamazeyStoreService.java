@@ -38,7 +38,7 @@ public class GamazeyStoreService implements StoreService {
     private static final String GAME_PAGE_IS_AVAILABLE = "rm-module-stock rm-out-of-stock";
     private static final String GAME_PAGE_CHARACTERISTICS = "rm-product-attr-list-item d-flex d-sm-block";
     private static final String GAME_IMG_CLASS = "img-fluid";
-    private static final String IMG_FOLDER = "E:\\Work\\Pet\\GPB\\Game-Price-Bot\\gpb-front\\src\\img\\";
+    private static final String IMG_FOLDER = "E:\\Work\\Pet\\GPB\\Game-Price-Bot\\gpb-front\\src\\img\\games\\";
     private static final String IMG_FILE_EXTENSION = ".jpg";
     private static final String GAMEZEY_SEARCH_URL = "https://gamazey.com.ua/search?search=";
 
