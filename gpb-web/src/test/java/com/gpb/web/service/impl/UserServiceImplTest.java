@@ -151,11 +151,11 @@ class UserServiceImplTest {
     }
 
     @Test
-    void addGameToUserListOfGamesShouldCallRemoveFromListRepositoryMethod() {
+    void removeGameFromUserListOfGamesShouldCallRemoveFromListRepositoryMethod() {
         user.setGameList(List.of(Game.builder().id(1).build()));
         when(repository.findById(1)).thenReturn(Optional.of(user));
 
-        userService.subscribeToGame(1, 1);
+        userService.unsubscribeFromGame(1, 1);
 
         verify(repository).removeGameFromUserListOfGames(1, 1);
     }

@@ -20,6 +20,15 @@ public interface GameService {
      * @param gameId games id
      * @return game
      */
+    Game getById(long gameId);
+
+    /**
+     * Get game by id
+     *
+     * @param gameId games id
+     * @param userId users id
+     * @return game
+     */
     GameInfoDto getById(long gameId, long userId);
 
     /**

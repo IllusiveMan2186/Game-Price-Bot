@@ -24,4 +24,18 @@ public interface GameStoresService {
      * @return game
      */
     Game findGameByUrl(String url);
+
+    /**
+     * Add to wishlist in store
+     *
+     * @param game game
+     */
+    void subscribeToGame(Game game);
+
+    /**
+     * Remove from wishlist in store
+     *
+     * @param game game
+     */
+    void unsubscribeFromGame(Game game);
 }

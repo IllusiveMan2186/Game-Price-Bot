@@ -44,7 +44,7 @@ public class GameStoresServiceImpl implements GameStoresService {
                 }
             }
         }
-        if(games.isEmpty()){
+        if (games.isEmpty()) {
             log.info(String.format("Game with name : '%s' not found", name));
             throw new NotFoundException("app.game.error.name.not.found");
         }
@@ -70,6 +70,32 @@ public class GameStoresServiceImpl implements GameStoresService {
             log.info(String.format("Game with url '%s' not found cause of exception : '%s'", link, e.getMessage()));
         }
         throw new NotFoundException("app.game.error.url.not.found");
+    }
+
+    @Override
+    public void subscribeToGame(Game game) {
+        try {
+            for (GameInShop gameInShop : game.getGamesInShop()) {
+                URL url = new URL(gameInShop.getUrl());
+                StoreService storeService = storeServices.get(url.getHost());
+                storeService.subscribeToGame(gameInShop);
+            }
+        } catch (MalformedURLException e) {
+            log.info(String.format("Not found cause of exception : '%s'", e.getMessage()));
+        }
+    }
+
+    @Override
+    public void unsubscribeFromGame(Game game) {
+        try {
+            for (GameInShop gameInShop : game.getGamesInShop()) {
+                URL url = new URL(gameInShop.getUrl());
+                StoreService storeService = storeServices.get(url.getHost());
+                storeService.unsubscribeFromGame(gameInShop);
+            }
+        } catch (MalformedURLException e) {
+            log.info(String.format("Not found cause of exception : '%s'", e.getMessage()));
+        }
     }
 
     private void setGameFromAllStores(Game game, StoreService serviceToSkip) {
