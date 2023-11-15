@@ -20,7 +20,13 @@ export default function GameInfo(props) {
     const navigate = useNavigate();
 
     const subscribe = () => {
-        request('POST', '/user/games/' + gameId ,{}).then((response) => {
+        request('POST', '/user/games/' + gameId, {}).then((response) => {
+            navigate(0)
+        });
+    }
+
+    const unsubscribe = () => {
+        request('DELETE', '/user/games/' + gameId, {}).then((response) => {
             navigate(0)
         });
     }
@@ -54,7 +60,8 @@ export default function GameInfo(props) {
                                     <GenreList genres={game.genres} />
                                 </div>
                             </div>
-                            <SubscribeButton isSubscribed={game.userSubscribed} subscribe={subscribe} />
+                            <SubscribeButton isSubscribed={game.userSubscribed} subscribe={subscribe}
+                                unsubscribe={unsubscribe} />
                             <div class="App-game-page-info-storeList">
                                 <GameInStoreList stores={game.gamesInShop} />
                             </div>
@@ -102,7 +109,7 @@ function SubscribeButton(props) {
     return (
         <div class="App-game-page-info-subscribe">
             <button type="submit" className="btn btn-primary btn-block mb-3"
-                disabled={!isUserAuth()} onClick={() => props.subscribe()}>
+                disabled={!isUserAuth()} onClick={() => props.isSubscribed ? props.unsubscribe() : props.subscribe()}>
                 {props.isSubscribed ? <Message string={'app.game.info.unsubscribe'} /> : <Message string={'app.game.info.subscribe'} />}
             </button>
             <span>{!isUserAuth() && <Message string={'app.game.info.need.auth'} />}</span>

@@ -101,14 +101,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void subscribeToGame(long userId, long gameId) {
-        WebUser user = getWebUserById(userId);
-        if (gameId > 0 && user.getGameList().stream().anyMatch(game -> game.getId() == gameId)) {
-            log.info(String.format("Unsubscribe game(%s) from user(%s) game list", gameId, userId));
-            userRepository.removeGameFromUserListOfGames(userId, gameId);
-        } else {
-            log.info(String.format("Subscribe for game(%s) into user(%s) game list", gameId, userId));
-            userRepository.addGameToUserListOfGames(userId, gameId);
-        }
+        log.info(String.format("Subscribe for game(%s) into user(%s) game list", gameId, userId));
+        userRepository.addGameToUserListOfGames(userId, gameId);
+    }
+
+    @Override
+    public void unsubscribeFromGame(long userId, long gameId) {
+        log.info(String.format("Unsubscribe game(%s) from user(%s) game list", gameId, userId));
+        userRepository.removeGameFromUserListOfGames(userId, gameId);
     }
 
     public UserDto login(Credentials credentials) {

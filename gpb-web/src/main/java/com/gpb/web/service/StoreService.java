@@ -42,4 +42,18 @@ public interface StoreService {
      * @return founded game for specific store
      */
     GameInShop findByName(String name);
+
+    /**
+     * Add to wishlist in store
+     *
+     * @param gameInShop game
+     */
+    void subscribeToGame(GameInShop gameInShop);
+
+    /**
+     * Remove from wishlist in store
+     *
+     * @param gameInShop game
+     */
+    void unsubscribeFromGame(GameInShop gameInShop);
 }

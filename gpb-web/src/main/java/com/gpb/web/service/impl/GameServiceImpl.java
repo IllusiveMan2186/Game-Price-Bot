@@ -45,9 +45,8 @@ public class GameServiceImpl implements GameService {
         this.modelMapper = modelMapper;
     }
 
-
     @Override
-    public GameInfoDto getById(final long gameId, final long userId) {
+    public Game getById(long gameId) {
         log.info(String.format("Get game by id : %s", gameId));
 
         final Game game = gameRepository.findById(gameId);
@@ -55,6 +54,13 @@ public class GameServiceImpl implements GameService {
             log.info(String.format("Game with id : '%s' not found", gameId));
             throw new NotFoundException("app.game.error.id.not.found");
         }
+        return game;
+    }
+
+    @Override
+    public GameInfoDto getById(final long gameId, final long userId) {
+        final Game game = getById(gameId);
+
         boolean isUserSubscribed = game.getUserList().stream().anyMatch(user -> user.getId() == userId);
         GameInfoDto gameInfoDto = modelMapper.map(game, GameInfoDto.class);
         gameInfoDto.setUserSubscribed(isUserSubscribed);

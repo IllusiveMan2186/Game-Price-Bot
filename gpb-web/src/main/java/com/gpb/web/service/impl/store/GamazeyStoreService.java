@@ -9,6 +9,12 @@ import lombok.extern.log4j.Log4j2;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -20,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.FileOutputStream;
@@ -41,6 +48,7 @@ public class GamazeyStoreService implements StoreService {
     private static final String IMG_FOLDER = "E:\\Work\\Pet\\GPB\\Game-Price-Bot\\gpb-front\\src\\img\\games\\";
     private static final String IMG_FILE_EXTENSION = ".jpg";
     private static final String GAMEZEY_SEARCH_URL = "https://gamazey.com.ua/search?search=";
+    private static final String GAMEZEY_WISHLIST = "https://gamazey.com.ua/wishlist";
 
     private final StorePageParser parser;
 
@@ -82,7 +90,6 @@ public class GamazeyStoreService implements StoreService {
     public List<Game> findUncreatedGameByName(String name) {
         log.info(String.format("Searching game with name : '%s' in gamazey store", name));
 
-        //String formattedName = name.replaceAll(" ", "%20");
         Document page = parser.getPage(GAMEZEY_SEARCH_URL + name);
         Elements elements = page.getElementsByClass("rm-module-title");
 
@@ -98,6 +105,50 @@ public class GamazeyStoreService implements StoreService {
     @Override
     public GameInShop findByName(String name) {
         return null;
+    }
+
+    @Override
+    public void subscribeToGame(GameInShop gameInShop) {
+        String url = gameInShop.getUrl();
+        log.info(String.format("Add to wish list of gamazey store game by url :'%s'", url));
+        WebDriver driver = login(url);
+
+        driver.findElement(By.cssSelector(".rm-product-top-button-wishlist")).click();
+        driver.quit();
+    }
+
+    @Override
+    public void unsubscribeFromGame(GameInShop gameInShop) {
+        String name = gameInShop.getNameInStore();
+        log.info(String.format("Remove from wish list of gamazey store game by name :'%s'", name));
+        WebDriver driver = login(GAMEZEY_WISHLIST);
+
+        driver.navigate().refresh();
+        WebElement element = driver.findElement(By.xpath(String.format("//*[text()='%s']", name)));
+        WebElement parent = element.findElement(By.xpath("./..")).findElement(By.xpath("./.."));
+        parent.findElement(By.className("rm-btn-icon")).click();
+        driver.quit();
+    }
+
+    private WebDriver login(String url) {
+        log.info("Login in gamazey store");
+
+        System.setProperty("webdriver.chrome.driver", "E:\\Programs\\chromedriver-win64\\chromedriver.exe");
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--remote-allow-origins=*");
+        WebDriver driver = new ChromeDriver(options);
+        driver.get(url);
+
+        driver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
+
+        driver.findElements(By.cssSelector(".d-flex.align-items-center")).get(3).click();
+        driver.findElement(By.id("emailLoginInput")).sendKeys("jediks22@gmail.com");
+        driver.findElement(By.id("passwordLoginInput")).sendKeys("11dra12kon22");
+        WebElement element = driver.findElement(By.id("popup-login-button"));
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        executor.executeScript("arguments[0].click();", element);
+        driver.navigate().refresh();
+        return driver;
     }
 
     private GameInShop getGameInShop(Document page) {

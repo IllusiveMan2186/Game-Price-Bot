@@ -60,6 +60,14 @@ public interface UserService {
     void subscribeToGame(long userId, long gameId);
 
     /**
+     * Add game to user list of games
+     *
+     * @param userId users id
+     * @param gameId games id
+     */
+    void unsubscribeFromGame(long userId, long gameId);
+
+    /**
      * Check user credential for authentication
      *
      * @param credentials user authentication credential

@@ -17,6 +17,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class GameStoresServiceImplTest {
@@ -91,5 +92,41 @@ class GameStoresServiceImplTest {
         when(storeService2.findUncreatedGameByUrl(url)).thenReturn(null);
 
         assertThrows(NotFoundException.class, () -> gameStoresService.findGameByUrl(url), "");
+    }
+
+    @Test
+    void subscribeToGameSuccessfullyShouldSubscribeToGame() {
+        final Game game = new Game();
+        String url1 = "https://storeService1/games";
+        String url2 = "https://gamazey.com.ua/games";
+        final GameInShop gameInShop1 = new GameInShop();
+        gameInShop1.setUrl(url1);
+        final GameInShop gameInShop2 = new GameInShop();
+        gameInShop2.setUrl(url2);
+        game.setGamesInShop(List.of(gameInShop1,gameInShop2));
+
+
+        gameStoresService.subscribeToGame(game);
+
+        verify(storeService1).subscribeToGame(gameInShop1);
+        verify(storeService2).subscribeToGame(gameInShop2);
+    }
+
+    @Test
+    void unsubscribeToGameSuccessfullyShouldSubscribeToGame() {
+        final Game game = new Game();
+        String url1 = "https://storeService1/games";
+        String url2 = "https://gamazey.com.ua/games";
+        final GameInShop gameInShop1 = new GameInShop();
+        gameInShop1.setUrl(url1);
+        final GameInShop gameInShop2 = new GameInShop();
+        gameInShop2.setUrl(url2);
+        game.setGamesInShop(List.of(gameInShop1,gameInShop2));
+
+
+        gameStoresService.unsubscribeFromGame(game);
+
+        verify(storeService1).unsubscribeFromGame(gameInShop1);
+        verify(storeService2).unsubscribeFromGame(gameInShop2);
     }
 }
