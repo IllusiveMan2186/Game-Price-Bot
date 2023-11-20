@@ -155,6 +155,19 @@ public class GameServiceImpl implements GameService {
         return gameRepository.save(game);
     }
 
+    @Override
+    public List<GameInShop> getSubscribedGames() {
+        log.info("Get game for which subscribe users");
+        return gameInShopRepository.findSubscribedGames();
+    }
+
+    @Override
+    public void changeInfo(List<GameInShop> changedGames) {
+        log.info(String.format("Save games in store changes for %s elements", changedGames.size()));
+
+        gameInShopRepository.saveAll(changedGames);
+    }
+
     private GameDto gameMap(Game game) {
         GameDto gameDto = modelMapper.map(game, GameDto.class);
         BigDecimal minPrice = game.getGamesInShop().stream()

@@ -15,6 +15,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -22,10 +23,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,6 +56,11 @@ public class GamazeyStoreService implements StoreService {
     private final StorePageParser parser;
 
     private final Map<String, Genre> genreMap;
+
+    @Value("${GAMEZEY_LOGIN}")
+    private String login;
+    @Value("${GAMEZEY_PASSWORD}")
+    private String password;
 
     public GamazeyStoreService(StorePageParser parser, Map<String, Genre> genreMap) {
         this.parser = parser;
@@ -130,6 +138,59 @@ public class GamazeyStoreService implements StoreService {
         driver.quit();
     }
 
+    @Override
+    public List<GameInShop> checkGameInStoreForChange(List<GameInShop> gameInShops) {
+        log.info(String.format("Check %s games from wishlist in stores for changes in gamazey store", gameInShops.size()));
+        WebDriver driver = login(GAMEZEY_WISHLIST);
+        List<GameInShop> changedGames = new ArrayList<>();
+        driver.navigate().refresh();
+        List<WebElement> elements = driver.findElements(By.className("rm-account-wishlist-item-info"));
+
+        for (WebElement element : elements) {
+            String name = element.findElement(By.className("rm-content-title")).getText();
+            Optional<GameInShop> game = gameInShops.stream().filter(s -> s.getNameInStore().equals(name)).findFirst();
+
+            if (game.isPresent() && isGameInfoChanged(game.get(), element)) {
+                changedGames.add(setChangedFields(game.get(), element));
+            }
+        }
+        driver.quit();
+        return changedGames;
+    }
+
+    private boolean isGameInfoChanged(GameInShop gameInShop, WebElement element) {
+        log.info(String.format("Check for game '%s' info changing in gamazey store", gameInShop.getNameInStore()));
+
+        String discountPrice = element.findElement(By.className("rm-module-price-new")).getText();
+        String price = element.findElement(By.className("rm-module-price-old")).getText();
+        boolean isAvailable = element.findElements(By.className("rm-account-text")).get(0)
+                .findElement(By.tagName("span")).getText().equals("В наличии");
+
+        return gameInShop.isAvailable() == isAvailable
+                && gameInShop.getDiscountPrice().toString().equals(discountPrice)
+                && gameInShop.getPrice().toString().equals(price);
+    }
+
+    private GameInShop setChangedFields(GameInShop gameInShop, WebElement element) {
+        log.info(String.format("Set changes for game '%s' in gamazey store", gameInShop.getNameInStore()));
+
+        String discountPrice = element.findElement(By.className("rm-module-price-new")).getText();
+        String price = element.findElement(By.className("rm-module-price-old")).getText();
+        boolean isAvailable = element.findElements(By.className("rm-account-text")).get(1)
+                .findElement(By.tagName("span")).getText().equals("В наличии");
+        int discountPriceInt = Integer.parseInt(getIntFromString(discountPrice));
+        int priceInt = Integer.parseInt(getIntFromString(price));
+        int discount = 100 - (int) ((discountPriceInt * 100.0f) / priceInt);
+        ;
+
+        gameInShop.setDiscountPrice(new BigDecimal(discountPriceInt));
+        gameInShop.setPrice(new BigDecimal(priceInt));
+        gameInShop.setAvailable(isAvailable);
+        gameInShop.setDiscount(discount);
+
+        return gameInShop;
+    }
+
     private WebDriver login(String url) {
         log.info("Login in gamazey store");
 
@@ -142,8 +203,8 @@ public class GamazeyStoreService implements StoreService {
         driver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
 
         driver.findElements(By.cssSelector(".d-flex.align-items-center")).get(3).click();
-        driver.findElement(By.id("emailLoginInput")).sendKeys("jediks22@gmail.com");
-        driver.findElement(By.id("passwordLoginInput")).sendKeys("11dra12kon22");
+        driver.findElement(By.id("emailLoginInput")).sendKeys(login);
+        driver.findElement(By.id("passwordLoginInput")).sendKeys(password);
         WebElement element = driver.findElement(By.id("popup-login-button"));
         JavascriptExecutor executor = (JavascriptExecutor) driver;
         executor.executeScript("arguments[0].click();", element);

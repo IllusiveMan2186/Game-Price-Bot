@@ -11,3 +11,5 @@ Add Environment variables fro running project locally
 * POSTGRES_DB_URL;
 * POSTGRES_DB_USERNAME;
 * POSTGRES_DB_PASSWORD;
+* GAMEZEY_LOGIN;
+* GAMEZEY_PASSWORD;

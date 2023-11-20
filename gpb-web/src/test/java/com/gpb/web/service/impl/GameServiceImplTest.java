@@ -27,6 +27,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class GameServiceImplTest {
@@ -194,5 +195,24 @@ class GameServiceImplTest {
         when(repository.findByName(name)).thenReturn(game);
 
         assertThrows(GameAlreadyRegisteredException.class, () -> gameService.create(game), "Game with this url already exist");
+    }
+
+    @Test
+    void getSubscribedGamesSuccessfullyGameList() {
+        List<GameInShop> games = new ArrayList<>();
+        when(gameInShopRepository.findSubscribedGames()).thenReturn(games);
+
+        List<GameInShop> result = gameService.getSubscribedGames();
+
+        assertEquals(games, result);
+    }
+
+    @Test
+    void changeInfoSuccessfullySaveChanges() {
+        List<GameInShop> changedGames = new ArrayList<>();
+
+        gameService.changeInfo(changedGames);
+
+        verify(gameInShopRepository).saveAll(changedGames);
     }
 }

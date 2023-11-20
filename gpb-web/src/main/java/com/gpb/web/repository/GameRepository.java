@@ -3,7 +3,6 @@ package com.gpb.web.repository;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.user.BasicUser;
-import com.gpb.web.bean.user.WebUser;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

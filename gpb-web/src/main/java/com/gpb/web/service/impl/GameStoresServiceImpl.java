@@ -98,6 +98,34 @@ public class GameStoresServiceImpl implements GameStoresService {
         }
     }
 
+    @Override
+    public List<GameInShop> checkGameInStoreForChange(List<GameInShop> games) {
+        log.info(String.format("Check %s games from wishlist in stores for changes ", games.size()));
+        List<GameInShop> changedGameInShopList = new ArrayList<>();
+
+        for (String host : storeServices.keySet()) {
+            List<GameInShop> gameInShopListForHost = games.stream()
+                    .filter(g -> isNeededHost(host, g.getUrl()))
+                    .toList();
+
+            StoreService storeService = storeServices.get(host);
+            changedGameInShopList.addAll(storeService.checkGameInStoreForChange(gameInShopListForHost));
+        }
+
+        return changedGameInShopList;
+    }
+
+    private boolean isNeededHost(String storeHost, String gameUrl) {
+        try {
+            URL url = new URL(gameUrl);
+            return storeHost.equals(url.getHost());
+        } catch (MalformedURLException e) {
+            log.info(String.format("Game with url '%s' not found during comparison with host '%s' " +
+                    "cause of exception : '%s'", gameUrl, storeHost, e.getMessage()));
+        }
+        return false;
+    }
+
     private void setGameFromAllStores(Game game, StoreService serviceToSkip) {
         log.info(String.format("Set game from all stores for  : '%s'", game.getName()));
         ArrayList<StoreService> services = new ArrayList<>(storeServices.values());
