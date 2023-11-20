@@ -1,6 +1,7 @@
 package com.gpb.web.service;
 
 import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.GameInShop;
 
 import java.util.List;
 
@@ -38,4 +39,12 @@ public interface GameStoresService {
      * @param game game
      */
     void unsubscribeFromGame(Game game);
+
+    /**
+     * Check games from wishlist for changing
+     *
+     * @param gameInShops games that need to be checked
+     * @return games that changed
+     */
+    List<GameInShop>  checkGameInStoreForChange(List<GameInShop> gameInShops);
 }

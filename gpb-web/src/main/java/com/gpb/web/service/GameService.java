@@ -1,6 +1,7 @@
 package com.gpb.web.service;
 
 import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
@@ -83,4 +84,18 @@ public interface GameService {
      * @return created game
      */
     Game create(Game game);
+
+    /**
+     * Get game for which subscribe users
+     *
+     * @return game for which subscribe users
+     */
+    List<GameInShop> getSubscribedGames();
+
+    /**
+     * Save game info changes
+     *
+     * @param changedGames game that change info
+     */
+    void changeInfo(List<GameInShop> changedGames);
 }
