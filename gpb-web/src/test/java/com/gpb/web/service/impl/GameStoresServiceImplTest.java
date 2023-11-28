@@ -7,13 +7,14 @@ import com.gpb.web.service.GameStoresService;
 import com.gpb.web.service.StoreService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,12 +42,12 @@ class GameStoresServiceImplTest {
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
         final GameInShop gameInShop2 = new GameInShop();
-        game.setGamesInShop(Collections.singletonList(gameInShop2));
+        game.setGamesInShop(Collections.singleton(gameInShop2));
 
         when(storeService2.findUncreatedGameByName(name)).thenReturn(List.of(game));
         when(storeService1.findUncreatedGameByName(name)).thenReturn(new ArrayList<>());
         when(storeService1.findByName(name)).thenReturn(gameInShop1);
-        List<GameInShop> copyOfList = new ArrayList<>(Collections.singletonList(gameInShop2));
+        Set<GameInShop> copyOfList = new HashSet<>(Collections.singletonList(gameInShop2));
         copyOfList.add(gameInShop1);
         game.setGamesInShop(copyOfList);
 
@@ -59,7 +60,7 @@ class GameStoresServiceImplTest {
     void getGameByNameThatNotFoundShouldThrowException() {
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
-        game.setGamesInShop(List.of(gameInShop1));
+        game.setGamesInShop(Set.of(gameInShop1));
         String name = "name";
         when(storeService2.findUncreatedGameByName(name)).thenReturn(new ArrayList<>());
 
@@ -71,11 +72,11 @@ class GameStoresServiceImplTest {
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
         final GameInShop gameInShop2 = new GameInShop();
-        game.setGamesInShop(Collections.singletonList(gameInShop2));
+        game.setGamesInShop(Collections.singleton(gameInShop2));
         String url = "https://gamazey.com.ua/games/steam/sid-meiers-civilization-vi";
         when(storeService2.findUncreatedGameByUrl(url)).thenReturn(game);
         when(storeService1.findByUrl(url)).thenReturn(gameInShop1);
-        List<GameInShop> copyOfList = new ArrayList<>(Collections.singletonList(gameInShop2));
+        Set<GameInShop> copyOfList = new HashSet<>(Collections.singletonList(gameInShop2));
         copyOfList.add(gameInShop1);
         game.setGamesInShop(copyOfList);
 
@@ -88,7 +89,7 @@ class GameStoresServiceImplTest {
     void getGameByUrlThatNotFoundShouldThrowException() {
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
-        game.setGamesInShop(List.of(gameInShop1));
+        game.setGamesInShop(Set.of(gameInShop1));
         String url = "url";
         when(storeService2.findUncreatedGameByUrl(url)).thenReturn(null);
 
@@ -104,7 +105,7 @@ class GameStoresServiceImplTest {
         gameInShop1.setUrl(url1);
         final GameInShop gameInShop2 = new GameInShop();
         gameInShop2.setUrl(url2);
-        game.setGamesInShop(List.of(gameInShop1, gameInShop2));
+        game.setGamesInShop(Set.of(gameInShop1, gameInShop2));
 
 
         gameStoresService.subscribeToGame(game);
@@ -122,7 +123,7 @@ class GameStoresServiceImplTest {
         gameInShop1.setUrl(url1);
         final GameInShop gameInShop2 = new GameInShop();
         gameInShop2.setUrl(url2);
-        game.setGamesInShop(List.of(gameInShop1, gameInShop2));
+        game.setGamesInShop(Set.of(gameInShop1, gameInShop2));
 
         gameStoresService.unsubscribeFromGame(game);
 

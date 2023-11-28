@@ -1,8 +1,12 @@
 package com.gpb.web.service;
 
+import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.user.Credentials;
+import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
+
+import java.util.List;
 
 /**
  * Class for handling users
@@ -37,7 +41,7 @@ public interface UserService {
      * Update registered user email
      *
      * @param newEmail new version of email
-     * @param user current user
+     * @param user     current user
      * @return updated user
      */
     UserDto updateUserEmail(String newEmail, UserDto user);
@@ -46,7 +50,7 @@ public interface UserService {
      * Update registered user password
      *
      * @param password new version of password
-     * @param user current user
+     * @param user     current user
      * @return updated user
      */
     UserDto updateUserPassword(char[] password, UserDto user);
@@ -74,4 +78,12 @@ public interface UserService {
      * @return founded user
      */
     UserDto login(Credentials credentials);
+
+    /**
+     *
+     *
+     * @param changedGames changed games
+     * @return users that subscribe to changed game
+     */
+    List<WebUser> getUsersOfChangedGameInfo(List<GameInShop> changedGames);
 }

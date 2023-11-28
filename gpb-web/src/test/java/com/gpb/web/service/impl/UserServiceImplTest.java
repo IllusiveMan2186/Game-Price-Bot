@@ -1,6 +1,7 @@
 package com.gpb.web.service.impl;
 
 import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.user.Credentials;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
@@ -252,5 +253,17 @@ class UserServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> userService.getUserByEmail(user.getEmail()),
                 "User with email 'email' not found");
+    }
+
+    @Test
+    void getUsersChangedGamesSuccessfullyShouldGetUsers() {
+        List<WebUser> users = new ArrayList<>();
+        GameInShop gameInShop1 = GameInShop.builder().id(0).build();
+        GameInShop gameInShop2 = GameInShop.builder().id(1).build();
+        when(repository.findSubscribedUserForChangedGames(List.of(0L, 1L))).thenReturn(users);
+
+        List<WebUser> result = userService.getUsersOfChangedGameInfo(List.of(gameInShop1, gameInShop2));
+
+        assertEquals(users, result);
     }
 }

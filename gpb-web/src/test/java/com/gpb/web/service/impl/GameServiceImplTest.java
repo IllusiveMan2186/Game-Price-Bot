@@ -7,6 +7,7 @@ import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.user.BasicUser;
+import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.configuration.MapperConfig;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.NotFoundException;
@@ -47,7 +48,7 @@ class GameServiceImplTest {
             .build();
 
 
-    private final Game game = Game.builder().gamesInShop(Collections.singletonList(gameInShop)).build();
+    private final Game game = Game.builder().gamesInShop(Collections.singleton(gameInShop)).build();
 
 
     @Test
@@ -214,5 +215,19 @@ class GameServiceImplTest {
         gameService.changeInfo(changedGames);
 
         verify(gameInShopRepository).saveAll(changedGames);
+    }
+
+    @Test
+    void getUsersChangedGamesSuccessfullyShouldGetGames() {
+        List<GameInShop> changedGames = new ArrayList<>();
+        GameInShop gameInShop1 = GameInShop.builder().id(0).build();
+        GameInShop gameInShop2 = GameInShop.builder().id(1).build();
+        WebUser user = new WebUser();
+        user.setId(1);
+        when(gameInShopRepository.findSubscribedGames(user.getId(), List.of(0L, 1L))).thenReturn(changedGames);
+
+        List<GameInShop> result = gameService.getUsersChangedGames(user, List.of(gameInShop1, gameInShop2));
+
+        assertEquals(changedGames, result);
     }
 }

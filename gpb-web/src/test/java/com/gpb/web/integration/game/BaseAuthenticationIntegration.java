@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
@@ -79,7 +80,7 @@ public class BaseAuthenticationIntegration {
     void userCreationForAuthBeforeAllTests() {
 
         userService.createUser(new UserRegistration(userList.get(0)));
-
+        System.out.println(3);
         gameRepository.save(games.get(0));
         gameRepository.save(games.get(1));
         gameRepository.save(games.get(2));
@@ -108,7 +109,7 @@ public class BaseAuthenticationIntegration {
             throws ParseException {
         Game game = Game.builder()
                 .name(name)
-                .gamesInShop(List.of(gameInShopCreation(url, price, discountPrice)))
+                .gamesInShop(Set.of(gameInShopCreation(url, price, discountPrice)))
                 .genres(Collections.singletonList(genre)).build();
         game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));
         return game;

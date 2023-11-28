@@ -3,14 +3,13 @@ package com.gpb.web.integration.game;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
-import com.gpb.web.bean.user.UserRegistration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.context.SecurityContextImpl;
 
 import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -41,9 +40,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @Test
     void getGameByUrlSuccessfullyShouldReturnGame() throws Exception {
-        GameInShop gameInShop = games.get(0).getGamesInShop().get(0);
-
-        mockMvc.perform(get("/game/url?url={url}", games.get(0).getGamesInShop().get(0).getUrl()))
+        mockMvc.perform(get("/game/url?url={url}", games.get(0).getGamesInShop().stream().toList().get(0).getUrl()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -104,7 +101,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
 
         Game game = Game.builder()
                 .name("testGame")
-                .gamesInShop(List.of(gameInShop1, gameInShop2, gameInShop3))
+                .gamesInShop(Set.of(gameInShop1, gameInShop2, gameInShop3))
                 .genres(Collections.singletonList(Genre.STRATEGIES)).build();
         game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));
         gameRepository.save(game);

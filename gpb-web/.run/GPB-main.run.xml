@@ -3,6 +3,8 @@
     <envs>
       <env name="GAMEZEY_LOGIN" value="REDACTED" />
       <env name="GAMEZEY_PASSWORD" value="REDACTED" />
+      <env name="MAIL_PASSWORD" value="REDACTED" />
+      <env name="MAIL_USERNAME" value="REDACTED" />
       <env name="POSTGRES_DB_PASSWORD" value="REDACTED" />
       <env name="POSTGRES_DB_URL" value="jdbc:postgresql://localhost:5432/postgres" />
       <env name="POSTGRES_DB_USERNAME" value="postgres" />

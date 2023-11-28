@@ -5,6 +5,7 @@ import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.user.WebUser;
 import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
@@ -98,4 +99,13 @@ public interface GameService {
      * @param changedGames game that change info
      */
     void changeInfo(List<GameInShop> changedGames);
+
+    /**
+     * Get changed games for that user subscribed on
+     *
+     * @param user user
+     * @param changedGames list of all changed games
+     * @return changed games for that user subscribed on
+     */
+    List<GameInShop> getUsersChangedGames(WebUser user, List<GameInShop> changedGames);
 }
