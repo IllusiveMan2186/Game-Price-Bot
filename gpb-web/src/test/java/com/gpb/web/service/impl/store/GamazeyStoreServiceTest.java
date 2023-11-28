@@ -47,18 +47,16 @@ class GamazeyStoreServiceTest {
         final GameInShop gameInShop = getGameInStore();
         final Game game = Game.builder()
                 .name(gameInShop.getNameInStore())
-                .gamesInShop(Collections.singletonList(gameInShop))
+                .gamesInShop(Collections.singleton(gameInShop))
                 .build();
         gameInShop.setGame(game);
         String url = "url";
-
-        Document page = getDocumentForUncreatedGameByUrl(gameInShop, url, game);
 
         Game result = storeService.findUncreatedGameByUrl(url);
 
         assertEquals(game.getName(), result.getName());
         assertEquals(game.getGamesInShop().size(), result.getGamesInShop().size());
-        GameInShop resulGameInStore = game.getGamesInShop().get(0);
+        GameInShop resulGameInStore = game.getGamesInShop().stream().toList().get(0);
         assertEquals(gameInShop.getNameInStore(), resulGameInStore.getNameInStore());
         assertEquals(gameInShop.getDiscount(), resulGameInStore.getDiscount());
         assertEquals(gameInShop.getUrl(), resulGameInStore.getUrl());
@@ -105,7 +103,7 @@ class GamazeyStoreServiceTest {
         final GameInShop gameInShop = getGameInStore();
         final Game game = Game.builder()
                 .name(gameInShop.getNameInStore())
-                .gamesInShop(Collections.singletonList(gameInShop))
+                .gamesInShop(Collections.singleton(gameInShop))
                 .build();
         gameInShop.setGame(game);
         String url = "url";
@@ -129,7 +127,7 @@ class GamazeyStoreServiceTest {
 
         assertEquals(game.getName(), result.getName());
         assertEquals(game.getGamesInShop().size(), result.getGamesInShop().size());
-        GameInShop resulGameInStore = game.getGamesInShop().get(0);
+        GameInShop resulGameInStore = game.getGamesInShop().stream().toList().get(0);
         assertEquals(gameInShop.getNameInStore(), resulGameInStore.getNameInStore());
         assertEquals(gameInShop.getDiscount(), resulGameInStore.getDiscount());
         assertEquals(gameInShop.getUrl(), resulGameInStore.getUrl());

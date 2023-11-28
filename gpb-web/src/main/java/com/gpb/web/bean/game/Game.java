@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -41,7 +42,7 @@ public class Game {
     private List<Genre> genres;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
-    private List<GameInShop> gamesInShop;
+    private Set<GameInShop> gamesInShop;
 
     @ManyToMany
     @JoinTable(

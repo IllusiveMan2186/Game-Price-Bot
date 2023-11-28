@@ -1,5 +1,6 @@
 package com.gpb.web.service.impl;
 
+import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.user.Credentials;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.nio.CharBuffer;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -132,6 +134,14 @@ public class UserServiceImpl implements UserService {
         }
         failedLoginAttempt(user);
         throw new LoginFailedException();
+    }
+
+    @Override
+    public List<WebUser> getUsersOfChangedGameInfo(List<GameInShop> changedGames) {
+        List<Long> changedGamesIds = changedGames.stream()
+                .map(GameInShop::getId)
+                .toList();
+        return userRepository.findSubscribedUserForChangedGames(changedGamesIds);
     }
 
     private void failedLoginAttempt(WebUser user) {

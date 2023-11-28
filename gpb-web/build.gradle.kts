@@ -20,18 +20,20 @@ configurations.all {
 dependencies {
 	implementation("com.auth0:java-jwt:4.3.0")
 	implementation("org.jsoup:jsoup:1.15.3")
+	implementation("com.sun.mail:jakarta.mail:2.0.1")
 	implementation("com.google.guava:guava:32.1.2-jre")
 	implementation("org.modelmapper:modelmapper:3.2.0")
-
 	implementation("org.seleniumhq.selenium:selenium-java:4.15.0")
 
-	compileOnly("org.projectlombok:lombok:1.18.24")
+    compileOnly("org.projectlombok:lombok:1.18.24")
 	annotationProcessor("org.projectlombok:lombok:1.18.24")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-log4j2:3.1.3")
+	implementation("org.springframework.boot:spring-boot-starter-mail")
+	implementation("org.springframework.boot:spring-boot-starter-web")
 	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.security:spring-security-config")
 

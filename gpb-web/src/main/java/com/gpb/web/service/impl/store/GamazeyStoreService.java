@@ -23,7 +23,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -78,7 +77,7 @@ public class GamazeyStoreService implements StoreService {
 
         Game game = Game.builder()
                 .name(gameInShop.getNameInStore())
-                .gamesInShop(Collections.singletonList(gameInShop))
+                .gamesInShop(Collections.singleton(gameInShop))
                 .genres(genres)
                 .build();
         gameInShop.setGame(game);
@@ -181,7 +180,6 @@ public class GamazeyStoreService implements StoreService {
         int discountPriceInt = Integer.parseInt(getIntFromString(discountPrice));
         int priceInt = Integer.parseInt(getIntFromString(price));
         int discount = 100 - (int) ((discountPriceInt * 100.0f) / priceInt);
-        ;
 
         gameInShop.setDiscountPrice(new BigDecimal(discountPriceInt));
         gameInShop.setPrice(new BigDecimal(priceInt));

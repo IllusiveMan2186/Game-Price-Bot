@@ -8,6 +8,7 @@ import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.user.BasicUser;
+import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.repository.GameInShopRepository;
@@ -166,6 +167,14 @@ public class GameServiceImpl implements GameService {
         log.info(String.format("Save games in store changes for %s elements", changedGames.size()));
 
         gameInShopRepository.saveAll(changedGames);
+    }
+
+    @Override
+    public List<GameInShop> getUsersChangedGames(WebUser user, List<GameInShop> changedGames) {
+        List<Long> changedGamesIds = changedGames.stream()
+                .map(GameInShop::getId)
+                .toList();
+        return gameInShopRepository.findSubscribedGames(user.getId(), changedGamesIds);
     }
 
     private GameDto gameMap(Game game) {

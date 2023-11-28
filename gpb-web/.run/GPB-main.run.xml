@@ -3,6 +3,8 @@
     <envs>
       <env name="GAMEZEY_LOGIN" value="jediks22@gmail.com" />
       <env name="GAMEZEY_PASSWORD" value="11dra12kon22" />
+      <env name="MAIL_PASSWORD" value="qywt dvml hpdk yfub" />
+      <env name="MAIL_USERNAME" value="jediks22@gmail.com" />
       <env name="POSTGRES_DB_PASSWORD" value="3224" />
       <env name="POSTGRES_DB_URL" value="jdbc:postgresql://localhost:5432/postgres" />
       <env name="POSTGRES_DB_USERNAME" value="postgres" />

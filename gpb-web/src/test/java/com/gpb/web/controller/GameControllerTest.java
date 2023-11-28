@@ -42,7 +42,7 @@ class GameControllerTest {
             .build();
 
     private final Game game = Game.builder()
-            .gamesInShop(Collections.singletonList(gameInShop))
+            .gamesInShop(Collections.singleton(gameInShop))
             .build();
 
     @BeforeAll

@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -42,7 +44,7 @@ class MapperConfigTest {
                 .price(new BigDecimal(5))
                 .discountPrice(new BigDecimal(3))
                 .build();
-        Game game = Game.builder().gamesInShop((List.of(gameInShop, gameInShop2))).build();
+        Game game = Game.builder().gamesInShop((Set.of(gameInShop, gameInShop2))).build();
         GameDto expected = new GameDto();
         expected.setMinPrice(new BigDecimal(1));
         expected.setMaxPrice(new BigDecimal(3));
@@ -74,7 +76,10 @@ class MapperConfigTest {
                 .price(new BigDecimal(5))
                 .discountPrice(new BigDecimal(3))
                 .build();
-        Game game = Game.builder().name("name").id(1).gamesInShop((List.of(gameInShop, gameInShop2))).build();
+        Set<GameInShop> games = new LinkedHashSet<>();
+        games.add(gameInShop);
+        games.add(gameInShop2);
+        Game game = Game.builder().name("name").id(1).gamesInShop(games).build();
 
         GameInfoDto expected = new GameInfoDto();
         expected.setUserSubscribed(false);
