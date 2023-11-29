@@ -1,5 +1,6 @@
 package com.gpb.web.configuration;
 
+import com.gpb.web.controller.RestResponseEntityExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

@@ -3,6 +3,7 @@ import Buttons from './Buttons';
 import { useNavigate } from "react-router-dom";
 import { setAuthHeader } from '../helpers/axios_helper';
 import logo from '../logo.svg';
+import './Notifications.css';
 
 export default function Header() {
   const navigate = useNavigate();
