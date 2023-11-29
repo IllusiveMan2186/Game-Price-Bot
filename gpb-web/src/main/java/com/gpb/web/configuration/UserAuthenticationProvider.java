@@ -22,6 +22,8 @@ import java.util.Date;
 @Component
 public class UserAuthenticationProvider {
 
+    private static final int KEY_EXPIRATION = 3600000;//3600000 1 hour
+
     @Value("${security.jwt.token.secret-key:secret-key}")
     private String secretKey;
 
@@ -36,7 +38,7 @@ public class UserAuthenticationProvider {
 
     public String createToken(String login) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 3600000); // 1 hour
+        Date validity = new Date(now.getTime() + KEY_EXPIRATION);
 
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
         return JWT.create()

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { request } from '../helpers/axios_helper';
+import { request, defaultRequestErrorCheck } from '../helpers/axios_helper';
 import { useLocation, useParams, useNavigate } from 'react-router-dom'
 
 import Select from "react-select";
@@ -92,8 +92,6 @@ export default function GameList(props) {
     const [isList, setIsList] = React.useState(props.mode === "list");
     const [isSearch, setIsSearch] = React.useState(props.mode === "search");
     const [isUserGameList, setIsUserGameList] = React.useState(props.mode === "usersGames");
-
-    console.info(props.mode)
 
     const parameterSetOrRemove = (parameter, value, defaultValue) => {
         if (value !== defaultValue) {
@@ -212,6 +210,12 @@ export default function GameList(props) {
         navigate(0)
     };
 
+    const handleError = (error) => {
+        defaultRequestErrorCheck(error)
+        if (error.response.status === 401) {
+            navigate(0);
+        }
+    };
 
     setParameters()
     React.useEffect(() => {
@@ -226,7 +230,11 @@ export default function GameList(props) {
                         setElementAmount(response.data.elementAmount)
                         setGames(response.data.games);
                         setFormChanged(false)
-                    })
+                    }).catch(
+                        (error) => {
+                            handleError(error)
+                        }
+                    )
                 break;
             case "search":
                 request(
@@ -237,7 +245,11 @@ export default function GameList(props) {
                         setElementAmount(response.data.elementAmount)
                         setGames(response.data.games);
                         setFormChanged(false)
-                    })
+                    }).catch(
+                        (error) => {
+                            handleError(error)
+                        }
+                    )
                 break;
             default:
                 request(
@@ -248,7 +260,11 @@ export default function GameList(props) {
                         setElementAmount(response.data.elementAmount)
                         setGames(response.data.games);
                         setFormChanged(false)
-                    })
+                    }).catch(
+                        (error) => {
+                            handleError(error)
+                        }
+                    )
                 break;
         }
     }, []);
@@ -291,7 +307,7 @@ export default function GameList(props) {
                         </div>
                     </div>
                     <Loading games={games} elementAmount={elementAmount} page={page}
-                            pageSize={pageSize} onPageClick={handlePageChange}/>
+                        pageSize={pageSize} onPageClick={handlePageChange} />
                 </div>
             </div >
         </>
@@ -303,9 +319,9 @@ function Loading(props) {
 
     let image = require(`../img/load.png`)
 
-    if(!props.games){
-        return(
-            <img class="App-game-content-list-loading" src={image} on/>
+    if (!props.games) {
+        return (
+            <img class="App-game-content-list-loading" src={image} on />
         )
     }
 

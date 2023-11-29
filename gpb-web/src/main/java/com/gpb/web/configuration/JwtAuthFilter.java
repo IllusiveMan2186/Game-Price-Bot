@@ -1,6 +1,7 @@
 package com.gpb.web.configuration;
 
-import jakarta.servlet.Filter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,8 +29,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (header != null) {
             String[] authElements = header.split(" ");
 
-            if (authElements.length == 2
-                    && "Bearer".equals(authElements[0])) {
+            if (authElements.length == 2 && "Bearer".equals(authElements[0])) {
                 try {
                     SecurityContextHolder.getContext().setAuthentication(
                             userAuthenticationProvider.validateToken(authElements[1]));
@@ -39,7 +39,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
         }
-
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 }

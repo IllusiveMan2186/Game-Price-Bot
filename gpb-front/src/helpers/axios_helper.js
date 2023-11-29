@@ -4,8 +4,8 @@ export const getAuthToken = () => {
     return window.localStorage.getItem('auth_token');
 };
 
-export function isUserAuth () {
-    return getAuthToken() !== null && getAuthToken() !== "null"? true : false;
+export function isUserAuth() {
+    return getAuthToken() !== null && getAuthToken() !== "null" ? true : false;
 };
 
 export const setAuthHeader = (token) => {
@@ -13,12 +13,19 @@ export const setAuthHeader = (token) => {
 };
 
 export const setEmailHeader = (email) => {
-    window.localStorage.removeItem('email');
     window.localStorage.setItem('email', email);
 };
 
 export const getEmail = () => {
     return window.localStorage.getItem('email');
+};
+
+export const defaultRequestErrorCheck = (error) => {
+    console.log(error.response.status)
+    console.log(error.response.data.error)
+    if (error.response.status === 401) {
+        setAuthHeader(null);
+    }
 };
 
 axios.defaults.baseURL = 'http://localhost:8080';
@@ -28,12 +35,13 @@ export const request = (method, url, data) => {
 
     let headers = {};
     if (getAuthToken() !== null && getAuthToken() !== "null") {
-        headers = {'Authorization': `Bearer ${getAuthToken()}`};
+        headers = { 'Authorization': `Bearer ${getAuthToken()}` };
     }
 
     return axios({
         method: method,
         url: url,
         headers: headers,
-        data: data});
+        data: data
+    });
 };

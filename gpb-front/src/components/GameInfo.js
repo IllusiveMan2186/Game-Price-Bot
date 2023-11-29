@@ -3,32 +3,50 @@ import Message from './Message';
 import { GameImage, GameAvailability } from './GameImage';
 import { useParams } from 'react-router-dom'
 import { request } from '../helpers/axios_helper';
-import { isUserAuth } from '../helpers/axios_helper';
-import { useNavigate } from 'react-router-dom'
+import { isUserAuth, defaultRequestErrorCheck } from '../helpers/axios_helper';
+import { useNavigate } from 'react-router-dom';
 
 export default function GameInfo(props) {
 
     const [game, setGame] = React.useState(null);
+    const navigate = useNavigate();
+
+    const handleError = (error) => {
+        defaultRequestErrorCheck(error)
+        if (error.response.status === 401) {
+            navigate(0);
+        }
+    };
 
     let { gameId } = useParams();
     React.useEffect(() => {
         request('GET', '/game/' + gameId).then((response) => {
             setGame(response.data);
-        });
+        }).catch(
+            (error) => {
+                handleError(error)
+            }
+        );
     }, []);
-
-    const navigate = useNavigate();
 
     const subscribe = () => {
         request('POST', '/user/games/' + gameId, {}).then((response) => {
             navigate(0)
-        });
+        }).catch(
+            (error) => {
+                handleError(error)
+            }
+        );
     }
 
     const unsubscribe = () => {
         request('DELETE', '/user/games/' + gameId, {}).then((response) => {
             navigate(0)
-        });
+        }).catch(
+            (error) => {
+                handleError(error)
+            }
+        );
     }
 
     if (!game) return null;
