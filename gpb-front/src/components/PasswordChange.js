@@ -1,8 +1,7 @@
 import * as React from 'react'
 import classNames from 'classnames'
 import Message from './Message';
-import { request } from '../helpers/axios_helper';
-import { setEmailHeader } from '../helpers/axios_helper';
+import { request, defaultRequestErrorCheck } from '../helpers/axios_helper';
 import { useNavigate } from 'react-router-dom'
 
 export default function PasswordChange(props) {
@@ -67,6 +66,10 @@ export default function PasswordChange(props) {
                     navigate("/")
                 }).catch(
                     (error) => {
+                        defaultRequestErrorCheck(error)
+                        if (error.response.status === 401) {
+                            navigate("/login")
+                        }
                         setErrorMessage(error.response.data)
                     }
                 );

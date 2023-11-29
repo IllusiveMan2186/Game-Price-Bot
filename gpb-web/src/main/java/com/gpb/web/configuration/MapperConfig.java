@@ -30,12 +30,14 @@ public class MapperConfig {
 
         modelMapper.createTypeMap(Game.class, GameDto.class)
                 .addMappings(mapper -> mapper.skip(GameDto::setMinPrice)).setPostConverter(toGameDtoConverter())
-                .addMappings(mapper -> mapper.skip(GameDto::setMaxPrice)).setPostConverter(toGameDtoConverter());
+                .addMappings(mapper -> mapper.skip(GameDto::setMaxPrice)).setPostConverter(toGameDtoConverter())
+                .addMappings(mapper -> mapper.skip(GameDto::setAvailable)).setPostConverter(toGameDtoConverter());
 
         modelMapper.createTypeMap(Game.class, GameInfoDto.class)
                 .addMappings(mapper -> mapper.skip(GameDto::setMinPrice)).setPostConverter(toGameInfoDtoConverter())
                 .addMappings(mapper -> mapper.skip(GameDto::setMaxPrice)).setPostConverter(toGameInfoDtoConverter())
-                .addMappings(mapper -> mapper.skip(GameInfoDto::setGamesInShop)).setPostConverter(toGameInfoDtoConverter());
+                .addMappings(mapper -> mapper.skip(GameInfoDto::setGamesInShop)).setPostConverter(toGameInfoDtoConverter())
+                .addMappings(mapper -> mapper.skip(GameInfoDto::setAvailable)).setPostConverter(toGameInfoDtoConverter());
 
         return modelMapper;
     }
@@ -46,6 +48,7 @@ public class MapperConfig {
             GameDto destination = context.getDestination();
             mapMinPriceField(source, destination);
             mapMaxPriceField(source, destination);
+            mapAvailableField(source, destination);
             return context.getDestination();
         };
     }
@@ -66,6 +69,11 @@ public class MapperConfig {
                         .orElse(null));
     }
 
+    public void mapAvailableField(Game source, GameDto destination) {
+        destination.setAvailable(!Objects.isNull(source) && source.getGamesInShop().stream()
+                .anyMatch(GameInShop::isAvailable));
+    }
+
     public Converter<Game, GameInfoDto> toGameInfoDtoConverter() {
         return context -> {
             Game source = context.getSource();
@@ -73,6 +81,7 @@ public class MapperConfig {
             mapMinPriceField(source, destination);
             mapMaxPriceField(source, destination);
             mapGameInShopField(source, destination);
+            mapAvailableField(source, destination);
             return context.getDestination();
         };
     }

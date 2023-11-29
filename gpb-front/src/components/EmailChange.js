@@ -1,10 +1,8 @@
 import * as React from 'react'
 import classNames from 'classnames'
 import Message from './Message';
-import { GameImage, GameAvailability } from './GameImage';
-import { useParams } from 'react-router-dom'
 import { request } from '../helpers/axios_helper';
-import { setEmailHeader, setAuthHeader } from '../helpers/axios_helper';
+import { setEmailHeader, setAuthHeader, defaultRequestErrorCheck } from '../helpers/axios_helper';
 import { useNavigate } from 'react-router-dom'
 
 export default function EmailChange(props) {
@@ -54,6 +52,10 @@ export default function EmailChange(props) {
                     navigate("/")
                 }).catch(
                     (error) => {
+                        defaultRequestErrorCheck(error)
+                        if (error.response.status === 401) {
+                            navigate("/login")
+                        }
                         setErrorMessage(error.response.data)
                     }
                 );
