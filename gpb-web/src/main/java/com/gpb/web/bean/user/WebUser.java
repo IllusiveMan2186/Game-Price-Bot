@@ -33,6 +33,8 @@ public class WebUser extends BasicUser {
 
     private Date lockTime;
 
+    private String role;
+
     public void increaseFailedAttempt() {
         failedAttempt++;
     }

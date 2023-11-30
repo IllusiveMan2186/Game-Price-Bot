@@ -1,6 +1,5 @@
 package com.gpb.web.controller;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.LoginFailedException;

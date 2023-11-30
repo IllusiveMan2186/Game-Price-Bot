@@ -27,8 +27,8 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private static final int MAX_FAILED_ATTEMPTS = 3;
-
     private static final long LOCK_TIME_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+    private static final String USER_ROLE = "ROLE_USER";
 
     private final WebUserRepository userRepository;
 
@@ -174,7 +174,9 @@ public class UserServiceImpl implements UserService {
     private WebUser getWebUser(UserRegistration userRegistration) {
         return WebUser.builder()
                 .email(userRegistration.getEmail())
-                .password(passwordEncoder.encode(CharBuffer.wrap(userRegistration.getPassword()))).build();
+                .password(passwordEncoder.encode(CharBuffer.wrap(userRegistration.getPassword())))
+                .role(USER_ROLE)
+                .build();
     }
 
     private boolean matchPassword(char[] decodedPassword, String encodedPassword) {
