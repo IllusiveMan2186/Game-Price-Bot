@@ -9,6 +9,7 @@ import com.gpb.web.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
+import static com.gpb.web.util.Constants.USER_ROLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -21,7 +22,7 @@ class AuthenticationControllerTest {
 
     private final AuthenticationController controller = new AuthenticationController(service, provider);
 
-    private final WebUser user = new WebUser("email", "password", false, 0, null);
+    private final WebUser user = new WebUser("email", "password", false, 0, null, USER_ROLE);
 
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 

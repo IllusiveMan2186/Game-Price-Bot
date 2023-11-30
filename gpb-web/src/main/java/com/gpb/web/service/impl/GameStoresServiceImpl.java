@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,6 @@ public class GameStoresServiceImpl implements GameStoresService {
 
         log.info(String.format("Getting host from link : '%s'", name));
         List<Game> games = new ArrayList<>();
-        Iterator<StoreService> iterator = storeServices.values().iterator();
         for (StoreService service : storeServices.values()) {
 
             List<Game> createdGames = service.findUncreatedGameByName(name);

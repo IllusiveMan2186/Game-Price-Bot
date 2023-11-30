@@ -6,8 +6,6 @@ import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.configuration.UserAuthenticationProvider;
 import com.gpb.web.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

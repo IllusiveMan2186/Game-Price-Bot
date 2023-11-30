@@ -10,7 +10,9 @@ import com.gpb.web.service.GameService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -119,6 +121,30 @@ public class GameController {
         log.info(String.format("Get games for user '%s' with '%s' element on page for '%s' page and sort '%s' ",
                 user.getId(), pageSize, pageNum, sortBy));
         return gameService.getUserGames(user.getId(), pageSize, pageNum, getSortBy(sortBy));
+    }
+
+    /**
+     * Remove game by id
+     *
+     * @param gameId games id
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping(value = "/{gameId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void removeGameById(@PathVariable final long gameId) {
+        gameService.removeGame(gameId);
+    }
+
+    /**
+     * Remove game in store by id
+     *
+     * @param gameInStoreId games id
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping(value = "/store/{gameInStoreId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void removeGameInStoreById(@PathVariable final long gameInStoreId) {
+        gameService.removeGameInStore(gameInStoreId);
     }
 
     private Sort getSortBy(String sortBy) {

@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static com.gpb.web.util.Constants.USER_ROLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,7 +51,7 @@ class UserServiceImplTest {
 
     UserService userService = new UserServiceImpl(repository, encoder, modelMapper);
 
-    private final WebUser user = new WebUser("email", ENCODED_PASSWORD, false, 0, null);
+    private final WebUser user = new WebUser("email", ENCODED_PASSWORD, false, 0, null, USER_ROLE);
 
     @BeforeEach
     void setUp() {
@@ -82,11 +83,11 @@ class UserServiceImplTest {
 
     @Test
     void updateUserEmailSuccessfullyShouldSaveAndReturnUser() {
-        WebUser newUser = new WebUser("email2", "password2", false, 0, null);
+        WebUser newUser = new WebUser("email2", "password2", false, 0, null, USER_ROLE);
         newUser.setId(1);
         when(repository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
         when(repository.findById(user.getId())).thenReturn(Optional.of(user));
-        WebUser updatedUser = new WebUser("email2", ENCODED_PASSWORD, false, 0, null);
+        WebUser updatedUser = new WebUser("email2", ENCODED_PASSWORD, false, 0, null, USER_ROLE);
         when(repository.save(updatedUser)).thenReturn(newUser);
 
         UserDto result = userService.updateUserEmail(newUser.getEmail(), modelMapper.map(user, UserDto.class));
@@ -96,30 +97,32 @@ class UserServiceImplTest {
 
     @Test
     void updateUserEmailThatDidNotChangedInfoShouldThrowException() {
-        WebUser newUser = new WebUser("email", "pass", false, 0, null);
+        WebUser newUser = new WebUser("email", "pass", false, 0, null, USER_ROLE);
         when(repository.findById(1)).thenReturn(Optional.of(user));
 
-        assertThrows(UserDataNotChangedException.class, () -> userService.updateUserEmail(newUser.getEmail(), modelMapper.map(user, UserDto.class)),
+        assertThrows(UserDataNotChangedException.class, () -> userService
+                        .updateUserEmail(newUser.getEmail(), modelMapper.map(user, UserDto.class)),
                 "User didn't changed during update operation");
     }
 
     @Test
     void updateUserEmailWithRegisteredEmailShouldThrowException() {
-        WebUser newUser = new WebUser("email2", "password2", false, 0, null);
+        WebUser newUser = new WebUser("email2", "password2", false, 0, null, USER_ROLE);
         when(repository.findByEmail(newUser.getEmail())).thenReturn(Optional.of(new WebUser()));
         when(repository.findById(1)).thenReturn(Optional.of(user));
 
-        assertThrows(EmailAlreadyExistException.class, () -> userService.updateUserEmail(newUser.getEmail(), modelMapper.map(user, UserDto.class)),
+        assertThrows(EmailAlreadyExistException.class, () -> userService
+                        .updateUserEmail(newUser.getEmail(), modelMapper.map(user, UserDto.class)),
                 "User with this email already exist");
     }
 
     @Test
     void updateUserPasswordSuccessfullyShouldSaveAndReturnUser() {
-        WebUser newUser = new WebUser("email2", "password2", false, 0, null);
+        WebUser newUser = new WebUser("email2", "password2", false, 0, null, USER_ROLE);
         newUser.setId(1);
         when(repository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
         when(repository.findById(user.getId())).thenReturn(Optional.of(user));
-        WebUser updatedUser = new WebUser("email", newUser.getPassword(), false, 0, null);
+        WebUser updatedUser = new WebUser("email", newUser.getPassword(), false, 0, null, USER_ROLE);
         when(repository.save(updatedUser)).thenReturn(updatedUser);
         when(encoder.encode(CharBuffer.wrap(newUser.getPassword()))).thenReturn(newUser.getPassword());
 
@@ -130,7 +133,7 @@ class UserServiceImplTest {
 
     @Test
     void updateUserPasswordThatDidNotChangedInfoShouldThrowException() {
-        WebUser newUser = new WebUser("email", "pass", false, 0, null);
+        WebUser newUser = new WebUser("email", "pass", false, 0, null, USER_ROLE);
         user.setId(1);
         when(repository.findById(1)).thenReturn(Optional.of(user));
         when(encoder.matches(CharBuffer.wrap(newUser.getPassword()), user.getPassword())).thenReturn(true);
@@ -164,7 +167,7 @@ class UserServiceImplTest {
     @Test
     void loginUserSuccessfullyShouldReturnUser() {
         Credentials credentials = new Credentials("email", "pass".toCharArray());
-        WebUser user = new WebUser("email", "pass", false, 0, null);
+        WebUser user = new WebUser("email", "pass", false, 0, null, USER_ROLE);
         when(repository.findByEmail(credentials.getEmail())).thenReturn(Optional.of(user));
         when(encoder.matches(CharBuffer.wrap(credentials.getPassword()), user.getPassword()))
                 .thenReturn(true);
@@ -186,13 +189,14 @@ class UserServiceImplTest {
     @Test
     void loginUserWithWithWrongPasswordShouldThrowExceptionAndIncreaseFailedAttempt() {
         Credentials credentials = new Credentials("email", "pass".toCharArray());
-        WebUser newUser = new WebUser("email", "pass", false, 0, null);
+        WebUser newUser = new WebUser("email", "pass", false, 0, null, USER_ROLE);
         when(repository.findByEmail(credentials.getEmail())).thenReturn(Optional.of(newUser));
 
 
         assertThrows(LoginFailedException.class, () -> userService.login(new Credentials("email", "pass".toCharArray())),
                 "Invalid email or password");
-        verify(repository).save(new WebUser("email", "pass", false, 1, null));
+        verify(repository)
+                .save(new WebUser("email", "pass", false, 1, null, USER_ROLE));
     }
 
     @Test
@@ -202,9 +206,11 @@ class UserServiceImplTest {
         when(repository.findByEmail(credentials.getEmail())).thenReturn(Optional.of(user));
 
 
-        assertThrows(LoginFailedException.class, () -> userService.login(new Credentials("email", "pass".toCharArray())),
+        assertThrows(LoginFailedException.class, () -> userService
+                        .login(new Credentials("email", "pass".toCharArray())),
                 "Invalid email or password");
-        verify(repository).save(new WebUser("email", "pass", true, 5, any()));
+        verify(repository)
+                .save(new WebUser("email", "pass", true, 5, any(), USER_ROLE));
     }
 
     @Test
@@ -213,7 +219,7 @@ class UserServiceImplTest {
         Calendar lockTime = Calendar.getInstance();
         lockTime.setTime(new Date());
         lockTime.add(Calendar.DATE, -2);
-        WebUser user = new WebUser("email", "pass", true, 5, lockTime.getTime());
+        WebUser user = new WebUser("email", "pass", true, 5, lockTime.getTime(), USER_ROLE);
         when(repository.findByEmail(credentials.getEmail())).thenReturn(Optional.of(user));
         when(encoder.matches(CharBuffer.wrap(credentials.getPassword()), user.getPassword()))
                 .thenReturn(true);
@@ -221,7 +227,8 @@ class UserServiceImplTest {
         UserDto result = userService.login(credentials);
 
         assertEquals(modelMapper.map(user, UserDto.class), result);
-        verify(repository, times(2)).save(new WebUser("email", "pass", false, 0, null));
+        verify(repository, times(2))
+                .save(new WebUser("email", "pass", false, 0, null, USER_ROLE));
     }
 
     @Test
@@ -229,7 +236,7 @@ class UserServiceImplTest {
         Credentials credentials = new Credentials("email", "pass".toCharArray());
         Calendar lockTime = Calendar.getInstance();
         lockTime.setTime(new Date());
-        WebUser user = new WebUser("email", "pass", true, 5, lockTime.getTime());
+        WebUser user = new WebUser("email", "pass", true, 5, lockTime.getTime(), USER_ROLE);
         when(repository.findByEmail(credentials.getEmail())).thenReturn(Optional.of(user));
         when(encoder.matches(CharBuffer.wrap(credentials.getPassword()), user.getPassword()))
                 .thenReturn(true);

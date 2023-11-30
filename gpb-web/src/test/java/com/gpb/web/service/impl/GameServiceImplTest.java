@@ -230,4 +230,22 @@ class GameServiceImplTest {
 
         assertEquals(changedGames, result);
     }
+
+    @Test
+    void removeGameSuccessfullyShouldRemoveGame() {
+        long gameId = 1L;
+
+        gameService.removeGame(gameId);
+
+        verify(repository).deleteById(gameId);
+    }
+
+    @Test
+    void removeGameInStoreSuccessfullyShouldRemoveGameInStore() {
+        long gameInStoreId = 1L;
+
+        gameService.removeGameInStore(gameInStoreId);
+
+        verify(gameInShopRepository).deleteById(gameInStoreId);
+    }
 }

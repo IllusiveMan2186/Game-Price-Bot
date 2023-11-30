@@ -5,6 +5,8 @@ import com.gpb.web.bean.game.GameDto;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameInStoreDto;
+import com.gpb.web.bean.user.UserDto;
+import com.gpb.web.bean.user.WebUser;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -39,6 +41,12 @@ public class MapperConfig {
                 .addMappings(mapper -> mapper.skip(GameInfoDto::setGamesInShop)).setPostConverter(toGameInfoDtoConverter())
                 .addMappings(mapper -> mapper.skip(GameInfoDto::setAvailable)).setPostConverter(toGameInfoDtoConverter());
 
+        modelMapper.createTypeMap(WebUser.class, UserDto.class)
+                .setProvider(request -> {
+                    WebUser source = WebUser.class.cast(request.getSource());
+                    return new UserDto(source.getEmail(), source.getPassword(), "", source.getRole());
+                });
+
         return modelMapper;
     }
 
@@ -56,9 +64,9 @@ public class MapperConfig {
     public void mapMinPriceField(Game source, GameDto destination) {
         destination.setMinPrice(Objects.isNull(source) ? null :
                 source.getGamesInShop().stream()
-                .map(GameInShop::getDiscountPrice)
-                .min(Comparator.naturalOrder())
-                .orElse(null));
+                        .map(GameInShop::getDiscountPrice)
+                        .min(Comparator.naturalOrder())
+                        .orElse(null));
     }
 
     public void mapMaxPriceField(Game source, GameDto destination) {

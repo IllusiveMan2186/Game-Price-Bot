@@ -52,6 +52,8 @@ class GamazeyStoreServiceTest {
         gameInShop.setGame(game);
         String url = "url";
 
+        getDocumentForUncreatedGameByUrl(gameInShop,url,game);
+
         Game result = storeService.findUncreatedGameByUrl(url);
 
         assertEquals(game.getName(), result.getName());

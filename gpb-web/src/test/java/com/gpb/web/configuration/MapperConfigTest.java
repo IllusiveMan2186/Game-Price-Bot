@@ -19,15 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MapperConfigTest {
 
+    private static final String USER_ROLE = "ROLE_USER";
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
     @Test
     public void mapWebUserToUserDtoSuccessfullyShouldReturnUserDto() {
-        WebUser user = new WebUser("email", "pass", false, 0, null);
-        UserDto expected = UserDto.builder()
-                .email("email")
-                .id(0)
-                .build();
+        WebUser user = new WebUser("email", "pass", false, 0, null, USER_ROLE);
+        UserDto expected = new UserDto("email", "", "", USER_ROLE);
 
         UserDto result = modelMapper.map(user, UserDto.class);
 
