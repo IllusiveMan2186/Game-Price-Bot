@@ -108,4 +108,18 @@ public interface GameService {
      * @return changed games for that user subscribed on
      */
     List<GameInShop> getUsersChangedGames(WebUser user, List<GameInShop> changedGames);
+
+    /**
+     * Remove game by id
+     *
+     * @param gameId games id
+     */
+    void removeGame(long gameId);
+
+    /**
+     * Remove game in store by id
+     *
+     * @param gameInStoreId games id
+     */
+    void removeGameInStore(long gameInStoreId);
 }

@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gpb.web.util.Constants.USER_ROLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -34,11 +35,11 @@ class UserControllerTest {
     private final UserController controller = new UserController(service, gameStoresService, gameService, provider);
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
-    private final WebUser user = new WebUser("email", "password", false, 0, null);
+    private final WebUser user = new WebUser("email", "password", false, 0, null, USER_ROLE);
 
     @Test
     void updateUserEmailSuccessfullyShouldReturnUser() {
-        WebUser newUser = new WebUser("email2", "password2", false, 0, null);
+        WebUser newUser = new WebUser("email2", "password2", false, 0, null, USER_ROLE);
         newUser.setId(1);
         UserDto expected = modelMapper.map(newUser, UserDto.class);
         UserDto userDto = modelMapper.map(user, UserDto.class);
@@ -53,7 +54,7 @@ class UserControllerTest {
 
     @Test
     void updateUserPasswordSuccessfullyShouldReturnUser() {
-        WebUser newUser = new WebUser("email2", "password2", false, 0, null);
+        WebUser newUser = new WebUser("email2", "password2", false, 0, null, USER_ROLE);
         newUser.setId(1);
         UserDto expected = modelMapper.map(newUser, UserDto.class);
         UserDto userDto = modelMapper.map(user, UserDto.class);
@@ -68,7 +69,7 @@ class UserControllerTest {
 
     @Test
     void addGameToUserListOfGamesShouldCallServiceAndReturnUser() {
-        WebUser user = new WebUser("email", "password", false, 0, null);
+        WebUser user = new WebUser("email", "password", false, 0, null, USER_ROLE);
         user.setId(1);
         UserDto expected = modelMapper.map(user, UserDto.class);
         when(service.getUserById(1)).thenReturn(expected);
@@ -85,7 +86,7 @@ class UserControllerTest {
 
     @Test
     void removeGameFromUserListOfGamesShouldCallServiceAndReturnUser() {
-        WebUser user = new WebUser("email", "password", false, 0, null);
+        WebUser user = new WebUser("email", "password", false, 0, null, USER_ROLE);
         user.setId(1);
         UserDto expected = modelMapper.map(user, UserDto.class);
         when(service.getUserById(1)).thenReturn(expected);

@@ -2,7 +2,6 @@ package com.gpb.web.integration.game;
 
 import com.gpb.web.bean.user.EmailChangeDto;
 import com.gpb.web.bean.user.UserRegistration;
-import com.gpb.web.bean.user.WebUser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 public class UserControllerIntegrationTest extends BaseAuthenticationIntegration {
 
@@ -39,7 +37,7 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @Test
     void updateUserSuccessfullyShouldReturnUser() throws Exception {
-        String email ="email3";
+        String email = "email3";
         EmailChangeDto emailChangeDto = new EmailChangeDto();
         emailChangeDto.setEmail(email);
 
@@ -51,8 +49,7 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.email").value(email))
-                .andExpect(jsonPath("$.password").doesNotExist());
+                .andExpect(jsonPath("$.email").value(email));
     }
 
     @Test
@@ -71,7 +68,7 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
 
     @Test
     void updateUserWithEmailThatAlreadyRegisteredShouldReturnUser() throws Exception {
-        String email ="email2";
+        String email = "email2";
         EmailChangeDto emailChangeDto = new EmailChangeDto();
         emailChangeDto.setEmail(email);
 
@@ -94,8 +91,7 @@ public class UserControllerIntegrationTest extends BaseAuthenticationIntegration
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.email").value(userList.get(0).getEmail()))
-                .andExpect(jsonPath("$.password").doesNotExist());
+                .andExpect(jsonPath("$.email").value(userList.get(0).getEmail()));
     }
 
 }

@@ -1,19 +1,51 @@
 package com.gpb.web.bean.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class UserDto {
+import java.util.ArrayList;
+import java.util.Collections;
+
+public class UserDto extends User {
 
     private long id;
 
     private String email;
 
     private String token;
+
+    public UserDto() {
+        super("", "", new ArrayList<>());
+    }
+
+    public UserDto(String username, String password, String token, String role) {
+        super(username, password, Collections.singletonList(new SimpleGrantedAuthority(role)));
+        eraseCredentials();
+        this.email = username;
+        this.token = token;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }
