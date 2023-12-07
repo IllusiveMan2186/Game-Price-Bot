@@ -55,5 +55,6 @@
     "app.game.not.available": "Out of stock",
     "app.game.info.subscribe": "Subscribe",
     "app.game.info.unsubscribe": "Unsubscribe",
-    "app.game.info.need.auth": "You must be logged in to be able to subscribe"
+    "app.game.info.need.auth": "You must be logged in to be able to subscribe",
+    "app.game.info.remove": "Remove"
 }

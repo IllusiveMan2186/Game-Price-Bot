@@ -20,11 +20,24 @@ export const getEmail = () => {
     return window.localStorage.getItem('email');
 };
 
+export const setRoleHeader = (role) => {
+    window.localStorage.setItem('role', role);
+};
+
+export const getRole = () => {
+    return window.localStorage.getItem('role');
+};
+
+export function isUserAdmin() {
+    return getRole() !== null && getRole() === "ROLE_ADMIN" ? true : false;
+};
+
 export const defaultRequestErrorCheck = (error) => {
     console.log(error.response.status)
     console.log(error.response.data.error)
     if (error.response.status === 401) {
         setAuthHeader(null);
+        setRoleHeader(null);
     }
 };
 

@@ -56,5 +56,6 @@
     "app.game.not.available": "Немає в наявності",
     "app.game.info.subscribe": "Відстежувати",
     "app.game.info.unsubscribe": "Не відстежувати",
-    "app.game.info.need.auth": "Ви повинні увійти в систему, щоб мати можливість відстежувати"
+    "app.game.info.need.auth": "Ви повинні увійти в систему, щоб мати можливість відстежувати",
+    "app.game.info.remove": "Видалити"
 }

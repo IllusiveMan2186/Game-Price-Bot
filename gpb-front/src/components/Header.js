@@ -1,16 +1,16 @@
 import * as React from 'react';
 import Buttons from './Buttons';
 import { useNavigate } from "react-router-dom";
-import { setAuthHeader } from '../helpers/axios_helper';
+import { setAuthHeader, setRoleHeader } from '../helpers/axios_helper';
 import logo from '../logo.svg';
-import './Notifications.css';
 
 export default function Header() {
   const navigate = useNavigate();
 
   const logout = () => {
-    navigate("/")
     setAuthHeader(null);
+    setRoleHeader(null);
+    navigate(0)
   };
 
   const defaultPage = () => {

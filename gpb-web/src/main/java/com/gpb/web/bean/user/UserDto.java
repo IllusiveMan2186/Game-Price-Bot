@@ -1,5 +1,6 @@
 package com.gpb.web.bean.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
@@ -47,5 +48,11 @@ public class UserDto extends User {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getPassword() {
+        return super.getPassword();
     }
 }
