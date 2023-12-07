@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -60,41 +59,5 @@ public class AuthenticationControllerIntegrationTest extends BaseAuthenticationI
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.email").value(userList.get(0).getEmail()));
         ;
-    }
-
-    @Test
-    void removeGameWithAdminUserSuccessfullyShouldRemoveGame() throws Exception {
-        mockMvc.perform(delete("/game/1")
-                        .contentType(APPLICATION_JSON)
-                .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void removeGameWithNotAdminUserUnsuccessfullyShouldForbidAccess() throws Exception {
-        mockMvc.perform(delete("/game/1")
-                        .contentType(APPLICATION_JSON)
-                        .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext(1)))
-                .andDo(print())
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void removeGameInStoreWithAdminUserSuccessfullyShouldRemoveGame() throws Exception {
-        mockMvc.perform(delete("/game/store/1")
-                        .contentType(APPLICATION_JSON)
-                        .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void removeGameInStoreWithNotAdminUserUnsuccessfullyShouldForbidAccess() throws Exception {
-        mockMvc.perform(delete("/game/store/1")
-                        .contentType(APPLICATION_JSON)
-                        .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext(1)))
-                .andDo(print())
-                .andExpect(status().isForbidden());
     }
 }

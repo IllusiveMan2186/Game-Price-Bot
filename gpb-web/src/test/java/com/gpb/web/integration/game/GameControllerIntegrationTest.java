@@ -3,9 +3,11 @@ package com.gpb.web.integration.game;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.user.UserRegistration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -13,6 +15,7 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,10 +30,10 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
     }
 
     @Test
+    @WithMockUser(username = "email1")
     void getGameByIdSuccessfullyShouldReturnGame() throws Exception {
 
-        mockMvc.perform(get("/game/{id}", games.get(0).getId())
-                        .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
+        mockMvc.perform(get("/game/{id}", games.get(0).getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -137,7 +140,6 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
         SecurityContextImpl securityContext = getSecurityContext();
         mockMvc.perform(post("/user/games/{gameId}", games.get(1).getId())
                 .contentType(APPLICATION_JSON)
-                .content(objectToJson(1))
                 .sessionAttr("SPRING_SECURITY_CONTEXT", securityContext));
 
         mockMvc.perform(get("/game/user/games")
@@ -152,14 +154,55 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
     }
 
     @Test
+    @WithMockUser(username = "email1")
     void getUserByNotExistingIdShouldReturnError() throws Exception {
         int notExistingGameId = games.size() + 1;
 
-        mockMvc.perform(get("/game/{id}", notExistingGameId)
-                        .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
+        mockMvc.perform(get("/game/{id}", notExistingGameId))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").value("app.game.error.id.not.found"));
     }
 
+    @WithMockUser(username = "email1", roles = { "ADMIN" })
+    @Test
+    void removeGameWithAdminUserSuccessfullyShouldRemoveGame() throws Exception {
+        mockMvc.perform(delete("/game/1")
+                        .contentType(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @WithMockUser(username = "email2")
+    @Test
+    void removeGameWithNotAdminUserUnsuccessfullyShouldForbidAccess() throws Exception {
+        userList.add(userCreation("email2", DECODE_PASSWORD));
+        userService.createUser(new UserRegistration(userList.get(1)));
+
+        mockMvc.perform(delete("/game/1")
+                        .contentType(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @WithMockUser(username = "email1", roles = { "ADMIN" })
+    @Test
+    void removeGameInStoreWithAdminUserSuccessfullyShouldRemoveGame() throws Exception {
+        mockMvc.perform(delete("/game/store/1")
+                        .contentType(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @WithMockUser(username = "email2")
+    @Test
+    void removeGameInStoreWithNotAdminUserUnsuccessfullyShouldForbidAccess() throws Exception {
+        userList.add(userCreation("email2", DECODE_PASSWORD));
+        userService.createUser(new UserRegistration(userList.get(1)));
+
+        mockMvc.perform(delete("/game/store/1")
+                        .contentType(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
 }
