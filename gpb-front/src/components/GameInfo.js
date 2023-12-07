@@ -2,7 +2,7 @@ import * as React from 'react'
 import Message from './Message';
 import { GameImage, GameAvailability } from './GameImage';
 import { useParams } from 'react-router-dom'
-import { request } from '../helpers/axios_helper';
+import { request, isUserAdmin } from '../helpers/axios_helper';
 import { isUserAuth, defaultRequestErrorCheck } from '../helpers/axios_helper';
 import { useNavigate } from 'react-router-dom';
 
@@ -49,6 +49,16 @@ export default function GameInfo(props) {
         );
     }
 
+    const removeGame = () => {
+        request('DELETE', '/game/' + gameId, {}).then((response) => {
+            navigate("/")
+        }).catch(
+            (error) => {
+                handleError(error)
+            }
+        );
+    }
+
     if (!game) return null;
 
     return (
@@ -80,6 +90,7 @@ export default function GameInfo(props) {
                             </div>
                             <SubscribeButton isSubscribed={game.userSubscribed} subscribe={subscribe}
                                 unsubscribe={unsubscribe} />
+                                {isUserAdmin() && <RemoveButton removeGame={removeGame} /> }
                             <div class="App-game-page-info-storeList">
                                 <GameInStoreList stores={game.gamesInShop} />
                             </div>
@@ -131,6 +142,17 @@ function SubscribeButton(props) {
                 {props.isSubscribed ? <Message string={'app.game.info.unsubscribe'} /> : <Message string={'app.game.info.subscribe'} />}
             </button>
             <span>{!isUserAuth() && <Message string={'app.game.info.need.auth'} />}</span>
+        </div>
+    )
+}
+
+function RemoveButton(props) {
+
+    return (
+        <div class="App-game-page-info-subscribe">
+            <button type="submit" className="btn btn-primary btn-block mb-3 App-game-page-info-remove" onClick={props.removeGame}>
+                <Message string={'app.game.info.remove'} />
+            </button>
         </div>
     )
 }

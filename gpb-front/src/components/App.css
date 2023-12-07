@@ -426,6 +426,11 @@ select:focus {
   align-items: center;
 }
 
+.App-game-page-info-remove {
+  background-color: #ff0000 !important;
+  border-color: #ff0000 !important;
+}
+
 .App-game-page-info-storeList {
   margin-top: 30px;
   flex: 0 0 100%;

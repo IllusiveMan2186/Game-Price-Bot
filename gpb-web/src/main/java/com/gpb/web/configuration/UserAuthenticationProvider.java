@@ -58,7 +58,7 @@ public class UserAuthenticationProvider {
 
         UserDto user = userService.getUserByEmail(decoded.getSubject());
 
-        return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+        return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
     }
 
 }

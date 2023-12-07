@@ -2,7 +2,7 @@ import * as React from 'react'
 import classNames from 'classnames'
 import Message from './Message';
 import { useNavigate } from 'react-router-dom'
-import { request, setAuthHeader, setEmailHeader } from '../helpers/axios_helper';
+import { request, setAuthHeader, setEmailHeader, setRoleHeader } from '../helpers/axios_helper';
 
 export default function Login() {
 
@@ -143,6 +143,7 @@ export default function Login() {
                 (response) => {
                     setAuthHeader(response.data.token)
                     setEmailHeader(response.data.email)
+                    setRoleHeader(response.data.authorities[0].authority)
                     navigate("/")
                 }).catch(
                     (error) => {
@@ -161,8 +162,9 @@ export default function Login() {
                 password: password
             }).then(
                 (response) => {
-                    setAuthHeader(response.data.token);
+                    setAuthHeader(response.data.token)
                     setEmailHeader(response.data.email)
+                    setRoleHeader(response.data.authorities[0].authority)
                     navigate("/")
                 }).catch(
                     (error) => {

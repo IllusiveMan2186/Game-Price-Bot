@@ -128,7 +128,7 @@ public class GameController {
      *
      * @param gameId games id
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{gameId}")
     @ResponseStatus(HttpStatus.OK)
     public void removeGameById(@PathVariable final long gameId) {
