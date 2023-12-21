@@ -1,7 +1,8 @@
 import * as React from 'react'
 import classNames from 'classnames'
-import Message from './Message';
-import { request, defaultRequestErrorCheck } from '../helpers/axios_helper';
+import Message from '../../util/message';
+import { passwordChangeRequest } from '../../request/userRequests';
+import { validateUserFieldInput } from '../../util/validation';
 import { useNavigate } from 'react-router-dom'
 
 export default function PasswordChange(props) {
@@ -33,7 +34,7 @@ export default function PasswordChange(props) {
     };
 
     const onSubmitPasswordChange = (e) => {
-        onPasswordChange(e, password)
+        passwordChangeRequest(e, password, setErrorMessage, navigate)
     };
 
     const isFormValid = () => {
@@ -54,55 +55,8 @@ export default function PasswordChange(props) {
         return string.length == 0;
     }
 
-    const onPasswordChange = (event, password) => {
-        event.preventDefault();
-        request(
-            "PUT",
-            "/user/password",
-            {
-                password: password
-            }).then(
-                (response) => {
-                    navigate("/")
-                }).catch(
-                    (error) => {
-                        defaultRequestErrorCheck(error)
-                        if (error.response.status === 401) {
-                            navigate("/login")
-                        }
-                        setErrorMessage(error.response.data)
-                    }
-                );
-    };
-
     const validateInput = e => {
-        let name = e.target.name;
-        let value = e.target.value;
-
-        switch (name) {
-            case "password":
-                if (!value) {
-                    setErrorPassword(<Message string={'app.login.form.error.empty.password'} />)
-                } else if (value !== password) {
-                    setErrorPassword(<Message string={'app.registr.form.error.not.match.pass.conf'} />)
-                } else {
-                    setErrorPassword("")
-                }
-                break;
-
-            case "confirmPassword":
-                if (!value) {
-                    setErrorConfirmPassword(<Message string={'app.registr.form.error.empty.pass.conf'} />)
-                } else if (password && value !== password) {
-                    setErrorConfirmPassword(<Message string={'app.registr.form.error.not.match.pass.conf'} />)
-                } else {
-                    setErrorConfirmPassword("")
-                }
-                break;
-
-            default:
-                break;
-        }
+        validateUserFieldInput(e, password, null, setErrorPassword, setErrorConfirmPassword)
     }
 
     return (

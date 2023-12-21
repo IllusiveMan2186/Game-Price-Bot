@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { changeLanguage } from 'i18next';
-import Message from './Message';
-
+import Message from '../../util/message';
 
 export default class Localization extends React.Component {
 

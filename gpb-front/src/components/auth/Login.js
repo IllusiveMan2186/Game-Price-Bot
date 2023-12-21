@@ -1,8 +1,9 @@
 import * as React from 'react'
 import classNames from 'classnames'
-import Message from './Message';
+import Message from '../../util/message';
 import { useNavigate } from 'react-router-dom'
-import { request, setAuthHeader, setEmailHeader, setRoleHeader } from '../helpers/axios_helper';
+import { loginRequest, registerRequest } from '../../request/userRequests';
+import { validateUserFieldInput } from '../../util/validation';
 
 export default function Login() {
 
@@ -25,15 +26,12 @@ export default function Login() {
             case "email":
                 setEmail(event.target.value)
                 break;
-
             case "password":
                 setPassword(event.target.value)
                 break;
-
             case "confirmPassword":
                 setConfirmPassword(event.target.value)
                 break;
-
             default:
                 break;
         }
@@ -41,12 +39,12 @@ export default function Login() {
     };
 
     const onSubmitLogin = (e) => {
-        onLogin(e, email, password)
+        loginRequest(e, email, password, setErrorMessage, navigate)
     };
 
     const onSubmitRegistration = (e) => {
         if (isRegistrationFormValid()) {
-            onRegister(e, email, password);
+            registerRequest(e, email, password, setErrorMessage, navigate);
         }
 
     }
@@ -83,95 +81,13 @@ export default function Login() {
             && !isEmptyString(confirmPassword);
     }
 
-    const isValidEmail = (email) => {
-        return /\S+@\S+\.\S+/.test(email);
-    }
-
     const isEmptyString = (string) => {
         return string.length == 0;
     }
 
     const validateInput = e => {
-        let name = e.target.name;
-        let value = e.target.value;
-
-        switch (name) {
-            case "email":
-                if (!value) {
-                    setErrorEmail(<Message string={'app.login.form.error.empty.email'} />)
-                } else if (!isValidEmail(value)) {
-                    setErrorEmail(<Message string={'app.login.form.error.wrong.email'} />)
-                } else {
-                    setErrorEmail("")
-                }
-                break;
-
-            case "password":
-                if (!value) {
-                    setErrorPassword(<Message string={'app.login.form.error.empty.password'} />)
-                } else if (value !== password) {
-                    setErrorPassword(<Message string={'app.registr.form.error.not.match.pass.conf'} />)
-                } else {
-                    setErrorPassword("")
-                }
-                break;
-
-            case "confirmPassword":
-                if (!value) {
-                    setErrorConfirmPassword(<Message string={'app.registr.form.error.empty.pass.conf'} />)
-                } else if (password && value !== password) {
-                    setErrorConfirmPassword(<Message string={'app.registr.form.error.not.match.pass.conf'} />)
-                } else {
-                    setErrorConfirmPassword("")
-                }
-                break;
-
-            default:
-                break;
-        }
+        validateUserFieldInput(e, password, setErrorEmail, setErrorPassword, setErrorConfirmPassword)
     }
-
-    const onLogin = (e, email, password) => {
-        e.preventDefault();
-        request(
-            "POST",
-            "/login",
-            {
-                email: email,
-                password: password
-            }).then(
-                (response) => {
-                    setAuthHeader(response.data.token)
-                    setEmailHeader(response.data.email)
-                    setRoleHeader(response.data.authorities[0].authority)
-                    navigate("/")
-                }).catch(
-                    (error) => {
-                        setErrorMessage(error.response.data)
-                    }
-                );
-    };
-
-    const onRegister = (event, email, password) => {
-        event.preventDefault();
-        request(
-            "POST",
-            "/registration",
-            {
-                email: email,
-                password: password
-            }).then(
-                (response) => {
-                    setAuthHeader(response.data.token)
-                    setEmailHeader(response.data.email)
-                    setRoleHeader(response.data.authorities[0].authority)
-                    navigate("/")
-                }).catch(
-                    (error) => {
-                        setErrorMessage(error.response.data)
-                    }
-                );
-    };
 
     return (
         <div className="row justify-content-center">
@@ -208,7 +124,6 @@ export default function Login() {
                     </div>
                     <div className={classNames("tab-pane", "fade", active === "register" ? "show active" : "")} id="pills-register" >
                         <form onSubmit={onSubmitRegistration}>
-
 
                             <div className="form-outline mb-4">
                                 <label className="form-label" htmlFor="email"><Message string={'app.login.form.email'} /></label>

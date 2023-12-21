@@ -1,6 +1,3 @@
-import * as React from 'react'
-
-
 export default function Pagination(props) {
     const listItems = [];
     let lastPage = Math.ceil(props.elementAmount / props.pageSize);

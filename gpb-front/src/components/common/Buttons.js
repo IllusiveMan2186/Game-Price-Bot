@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { isUserAuth } from '../helpers/axios_helper';
-import { useTranslation } from "react-i18next";
+import { isUserAuth } from '../../util/axios_helper';
 import { useNavigate } from "react-router-dom";
-import Message from './Message';
+import Message from '../../util/message';
 
 export default function Buttons(props) {
   const navigate = useNavigate();
