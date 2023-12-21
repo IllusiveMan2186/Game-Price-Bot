@@ -1,0 +1,138 @@
+html,
+body {
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+}
+
+
+.App {
+  text-align: center;
+  color: white;
+  background-color: rgb(39, 47, 71);
+  flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.App-logo {
+  height: 100%;
+  pointer-events: none;
+  position: relative;
+}
+
+.App-footer {
+  background-color: #000000;
+  min-height: 8vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.App-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  cursor:pointer;
+  background-color: #000000;
+  min-height: 8vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: calc(5px + 2vmin);
+  color: white;
+}
+
+.App-logo {
+  height: 5vmin;
+  pointer-events: none;
+  position: relative;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.Error {
+  color: #911010;
+}
+
+
+.dropdown {
+  margin: 15px;
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  width: 100%;
+  display: none;
+  position: absolute;
+  background-color: #000000;
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  font-size: 12px;
+  color: rgb(255, 255, 255);
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: rgb(56, 113, 219);}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+.App-user-info {
+  background-color: #13538881;
+  box-sizing: border-box;
+  width: 100%;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-top: 20px;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1140px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.App-user-info-title {
+  font-size: 2.5rem;
+}
+

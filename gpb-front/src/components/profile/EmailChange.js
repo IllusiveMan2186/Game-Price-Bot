@@ -1,8 +1,7 @@
 import * as React from 'react'
 import classNames from 'classnames'
-import Message from './Message';
-import { request } from '../helpers/axios_helper';
-import { setEmailHeader, setAuthHeader, defaultRequestErrorCheck } from '../helpers/axios_helper';
+import Message from '../../util/message';
+import { emailChangeRequest } from '../../request/userRequests';
 import { useNavigate } from 'react-router-dom'
 
 export default function EmailChange(props) {
@@ -35,30 +34,7 @@ export default function EmailChange(props) {
     }
 
     const onSubmitEmailChange = (e) => {
-        onEmailChange(e, email)
-    };
-
-    const onEmailChange = (event, email) => {
-        event.preventDefault();
-        request(
-            "PUT",
-            "/user/email",
-            {
-                email: email
-            }).then(
-                (response) => {
-                    setEmailHeader(response.data.email)
-                    setAuthHeader(response.data.token)
-                    navigate("/")
-                }).catch(
-                    (error) => {
-                        defaultRequestErrorCheck(error)
-                        if (error.response.status === 401) {
-                            navigate("/login")
-                        }
-                        setErrorMessage(error.response.data)
-                    }
-                );
+        emailChangeRequest(e, email, setErrorMessage, navigate)
     };
 
     const validateInput = e => {

@@ -1,6 +1,5 @@
-import './App.css';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AppContent from './AppContent';
+import '../../styles/app.css'
+import Router from './Router';
 import Footer from './Footer';
 
 function App() {
@@ -8,9 +7,9 @@ function App() {
     <div className="App">
       <div className="row">
         <div className="col">
-          <AppContent />
+          <Router />
         </div>
-      </div>
+      </div> 
       <Footer />
     </div>
   );
