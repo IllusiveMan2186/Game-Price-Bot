@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import Header from './Header';
-import Login from './Login';
-import GameList from './GameList'
-import GameInfo from './GameInfo';
-import PasswordChange from './PasswordChange';
-import EmailChange from './EmailChange';
+import Login from '../auth/Login';
+import GameList from '../game/GameList'
+import GameInfo from '../game/GameInfo';
+import PasswordChange from '../profile/PasswordChange';
+import EmailChange from '../profile/EmailChange';
 
 export default function AppContent() {
 
