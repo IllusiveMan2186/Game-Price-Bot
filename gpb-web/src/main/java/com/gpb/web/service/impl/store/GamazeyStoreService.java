@@ -3,6 +3,7 @@ package com.gpb.web.service.impl.store;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.configuration.ResourceConfiguration;
 import com.gpb.web.service.StoreService;
 import com.gpb.web.parser.StorePageParser;
 import lombok.extern.log4j.Log4j2;
@@ -36,6 +37,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 
+import static com.gpb.web.util.Constants.IMG_FILE_EXTENSION;
+
 @Service(value = "gamazey.com.ua")
 @Log4j2
 public class GamazeyStoreService implements StoreService {
@@ -47,8 +50,6 @@ public class GamazeyStoreService implements StoreService {
     private static final String GAME_PAGE_IS_AVAILABLE = "rm-module-stock rm-out-of-stock";
     private static final String GAME_PAGE_CHARACTERISTICS = "rm-product-attr-list-item d-flex d-sm-block";
     private static final String GAME_IMG_CLASS = "img-fluid";
-    private static final String IMG_FOLDER = "E:\\Work\\Pet\\GPB\\Game-Price-Bot\\gpb-front\\src\\img\\games\\";
-    private static final String IMG_FILE_EXTENSION = ".jpg";
     private static final String GAMEZEY_SEARCH_URL = "https://gamazey.com.ua/search?search=";
     private static final String GAMEZEY_WISHLIST = "https://gamazey.com.ua/wishlist";
 
@@ -56,14 +57,18 @@ public class GamazeyStoreService implements StoreService {
 
     private final Map<String, Genre> genreMap;
 
+    private final ResourceConfiguration resourceConfiguration;
+
     @Value("${GAMEZEY_LOGIN}")
     private String login;
     @Value("${GAMEZEY_PASSWORD}")
     private String password;
 
-    public GamazeyStoreService(StorePageParser parser, Map<String, Genre> genreMap) {
+    public GamazeyStoreService(StorePageParser parser, Map<String, Genre> genreMap,
+                               ResourceConfiguration resourceConfiguration) {
         this.parser = parser;
         this.genreMap = genreMap;
+        this.resourceConfiguration = resourceConfiguration;
     }
 
     @Override
@@ -251,7 +256,7 @@ public class GamazeyStoreService implements StoreService {
     private void saveImage(Document document, String gameName) {
         Element element = document.getElementsByClass(GAME_IMG_CLASS).get(1);
         String imgUrl = element.attr("src");
-        String filePath = IMG_FOLDER + gameName + IMG_FILE_EXTENSION;
+        String filePath = resourceConfiguration.getImageFolder() + "\\" + gameName + IMG_FILE_EXTENSION;
         try {
             URL url = new URL(imgUrl);
 

@@ -5,14 +5,7 @@ import GameContent from './GameContent';
 import Pagination from './Pagination';
 
 export function GameImage(props) {
-  let image
-  try {
-    image = require(`../../img/games/${props.gameName}.jpg`)
-  } catch {
-    image = defaultImage
-  }
-
-  return (<img class={props.className} src={image} on ></img>);
+  return (<img class={props.className} src={`http://localhost:8080/game/image/${props.gameName}`} on ></img>);
 }
 
 export function GameAvailability(props) {
