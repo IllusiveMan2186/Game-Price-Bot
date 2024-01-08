@@ -2,6 +2,7 @@ package com.gpb.web.controller;
 
 import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
+import com.gpb.web.exception.GameImageNotFoundException;
 import com.gpb.web.exception.LoginFailedException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.exception.PriceRangeException;
@@ -25,7 +26,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(value = {NotFoundException.class, UsernameNotFoundException.class})
+    @ExceptionHandler(value = {NotFoundException.class, UsernameNotFoundException.class
+            , GameImageNotFoundException.class})
     protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }

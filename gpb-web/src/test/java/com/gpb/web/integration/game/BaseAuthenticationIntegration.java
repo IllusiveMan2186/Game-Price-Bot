@@ -84,6 +84,7 @@ public class BaseAuthenticationIntegration {
         games.add(gameCreation("name3", "url3", Genre.STRATEGIES, new BigDecimal("1000.0"), new BigDecimal("800.0")));
         System.setProperty("GAMEZEY_LOGIN", "");
         System.setProperty("GAMEZEY_PASSWORD", "");
+        System.setProperty("IMAGE_FOLDER", "");
     }
 
     @BeforeEach

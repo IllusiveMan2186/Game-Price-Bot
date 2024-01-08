@@ -8,6 +8,7 @@
       <env name="POSTGRES_DB_PASSWORD" value="3224" />
       <env name="POSTGRES_DB_URL" value="jdbc:postgresql://localhost:5432/postgres" />
       <env name="POSTGRES_DB_USERNAME" value="postgres" />
+      <env name="IMAGE_FOLDER" value="E:\Work\Pet\GPB\images" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="com.gpb.web.GpbWebApplication" />
     <module name="gpb-web.main" />

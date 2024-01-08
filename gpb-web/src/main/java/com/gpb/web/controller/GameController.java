@@ -4,10 +4,13 @@ import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.user.UserDto;
+import com.gpb.web.configuration.ResourceConfiguration;
 import com.gpb.web.exception.PriceRangeException;
 import com.gpb.web.exception.SortParamException;
 import com.gpb.web.service.GameService;
+import com.gpb.web.service.ResourceService;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.IOUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,10 +23,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.gpb.web.util.Constants.IMG_FILE_EXTENSION;
 
 @Log4j2
 @RestController
@@ -32,8 +39,11 @@ public class GameController {
 
     private final GameService gameService;
 
-    public GameController(GameService gameService) {
+    private final ResourceService resourceService;
+
+    public GameController(GameService gameService, ResourceService resourceService) {
         this.gameService = gameService;
+        this.resourceService = resourceService;
     }
 
     /**
@@ -83,7 +93,7 @@ public class GameController {
      * @param pageNum  page number
      * @param minPrice minimal price
      * @param maxPrice maximal price
-     * @param sortBy sort parameter
+     * @param sortBy   sort parameter
      * @return list of games
      */
     @GetMapping(value = "/genre")
@@ -108,8 +118,8 @@ public class GameController {
      *
      * @param pageSize amount of elements on page
      * @param pageNum  page number
-     * @param user current user
-     * @param sortBy sort parameter
+     * @param user     current user
+     * @param sortBy   sort parameter
      * @return list of games
      */
     @GetMapping(value = "/user/games")
@@ -145,6 +155,19 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     public void removeGameInStoreById(@PathVariable final long gameInStoreId) {
         gameService.removeGameInStore(gameInStoreId);
+    }
+
+
+    /**
+     * Get game images from folder
+     *
+     * @param gameName game name
+     * @return image in byte array
+     */
+    @GetMapping(value = "/image/{gameName}")
+    @ResponseStatus(HttpStatus.OK)
+    public byte[] getGameImage(@PathVariable final String gameName) {
+        return resourceService.getGameImage(gameName);
     }
 
     private Sort getSortBy(String sortBy) {

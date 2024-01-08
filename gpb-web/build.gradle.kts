@@ -18,6 +18,7 @@ configurations.all {
 }
 
 dependencies {
+	implementation("commons-io:commons-io:2.11.0")
 	implementation("com.auth0:java-jwt:4.3.0")
 	implementation("org.jsoup:jsoup:1.15.3")
 	implementation("com.sun.mail:jakarta.mail:2.0.1")
