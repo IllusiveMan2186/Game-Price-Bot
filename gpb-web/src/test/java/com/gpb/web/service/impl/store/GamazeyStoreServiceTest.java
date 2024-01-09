@@ -59,7 +59,7 @@ class GamazeyStoreServiceTest {
 
         Game result = storeService.findUncreatedGameByUrl(url);
 
-        assertEquals(game.getName(), result.getName());
+        assertEquals("Game", result.getName());
         assertEquals(game.getGamesInShop().size(), result.getGamesInShop().size());
         GameInShop resulGameInStore = game.getGamesInShop().stream().toList().get(0);
         assertEquals(gameInShop.getNameInStore(), resulGameInStore.getNameInStore());
@@ -71,7 +71,6 @@ class GamazeyStoreServiceTest {
     @Test
     void getGameInStoreByUrlSuccessfullyShouldReturnNewGameInStore() {
         final GameInShop gameInShop = getGameInStore();
-
 
         Document page = mock(Document.class);
         String url = "url";
@@ -97,6 +96,7 @@ class GamazeyStoreServiceTest {
         when(discountPriceFieldElements.get(0)).thenReturn(discountPriceFieldElement);
         when(discountPriceFieldElement.child(1)).thenReturn(discountPriceFieldElementChild);
         when(discountPriceFieldElementChild.text()).thenReturn(gameInShop.getDiscountPrice().toString());
+        gameInShop.setNameInStore("Game");
 
         GameInShop result = storeService.findByUrl(url);
 
@@ -130,7 +130,7 @@ class GamazeyStoreServiceTest {
         List<Game> resultList = storeService.findUncreatedGameByName(name);
         Game result = resultList.get(0);
 
-        assertEquals(game.getName(), result.getName());
+        assertEquals("Game", result.getName());
         assertEquals(game.getGamesInShop().size(), result.getGamesInShop().size());
         GameInShop resulGameInStore = game.getGamesInShop().stream().toList().get(0);
         assertEquals(gameInShop.getNameInStore(), resulGameInStore.getNameInStore());
@@ -179,7 +179,7 @@ class GamazeyStoreServiceTest {
 
     private GameInShop getGameInStore() {
         return GameInShop.builder()
-                .nameInStore("name")
+                .nameInStore("Гра Game для ПК (Ключ активації Steam)")
                 .price(new BigDecimal(10))
                 .discountPrice(new BigDecimal(9))
                 .url("url")
