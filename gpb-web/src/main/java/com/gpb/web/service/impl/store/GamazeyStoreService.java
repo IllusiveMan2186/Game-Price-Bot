@@ -52,6 +52,8 @@ public class GamazeyStoreService implements StoreService {
     private static final String GAME_IMG_CLASS = "img-fluid";
     private static final String GAMEZEY_SEARCH_URL = "https://gamazey.com.ua/search?search=";
     private static final String GAMEZEY_WISHLIST = "https://gamazey.com.ua/wishlist";
+    private static final String GAME_NAME_PRODUCT_TYPE_PART = "(Гра|Ігрова валюта|Доповнення) ";
+    private static final String GAME_NAME_SPECIFICATION_PART = " для .+ \\(Ключ активації .+\\)";
 
     private final StorePageParser parser;
 
@@ -224,7 +226,7 @@ public class GamazeyStoreService implements StoreService {
         boolean isAvailable = page.getElementsByClass(GAME_PAGE_IS_AVAILABLE).isEmpty();
 
         return GameInShop.builder()
-                .nameInStore(nameField)
+                .nameInStore(removeUnnecessaryInfoFromGameName(nameField))
                 .price(new BigDecimal(getIntFromString(priceField)))
                 .discountPrice(new BigDecimal(getIntFromString(discountPriceField)))
                 .discount(Integer.parseInt(getIntFromString(discountField)))
@@ -280,5 +282,11 @@ public class GamazeyStoreService implements StoreService {
         BufferedImage image = ImageIO.read(new File(filePath));
         BufferedImage crop = image.getSubimage(68, 0, 560, 700);
         ImageIO.write(crop, "JPG", new File(filePath));
+    }
+
+    private String removeUnnecessaryInfoFromGameName(String originalName) {
+        return originalName
+                .replaceAll(GAME_NAME_PRODUCT_TYPE_PART, "")
+                .replaceAll(GAME_NAME_SPECIFICATION_PART, "");
     }
 }
