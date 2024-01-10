@@ -202,6 +202,12 @@
     font-size: 0.8rem;
     margin-bottom: 0;
   }
+
+  .App-game-content-list-game-info-type {
+    color: #8a9cff;
+    font-size: 1rem;
+    margin-bottom: 0;
+  }
   
   .App-game-content-list-loading {
     width: 30%;

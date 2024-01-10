@@ -16,6 +16,17 @@ export function GameAvailability(props) {
   )
 }
 
+export function ProductType(props) {
+  if (props.type) {
+    return (
+      <div class="App-game-content-list-game-info-type">
+        <Message string={'app.game.info.type.' + props.type.toLowerCase()} />
+      </div>
+    )
+  }
+
+}
+
 export function Loading(props) {
 
   let image = require(`../../img/load.png`)
