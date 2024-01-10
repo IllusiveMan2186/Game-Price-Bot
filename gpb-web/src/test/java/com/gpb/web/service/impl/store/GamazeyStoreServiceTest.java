@@ -3,6 +3,7 @@ package com.gpb.web.service.impl.store;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.game.ProductType;
 import com.gpb.web.configuration.ResourceConfiguration;
 import com.gpb.web.parser.StorePageParser;
 import org.jsoup.nodes.Document;
@@ -41,15 +42,18 @@ class GamazeyStoreServiceTest {
 
     Map<String, Genre> genereMap = new HashMap<>();
 
+    Map<String, ProductType> productTypeMap = Collections.singletonMap("Гра", ProductType.GAME);
+
     ResourceConfiguration resourceConfiguration = new ResourceConfiguration();
 
-    GamazeyStoreService storeService = new GamazeyStoreService(parser, genereMap, resourceConfiguration);
+    GamazeyStoreService storeService = new GamazeyStoreService(parser, genereMap, productTypeMap, resourceConfiguration);
 
     @Test
     void getUncreatedGameByUrlSuccessfullyShouldReturnNewGame() {
         final GameInShop gameInShop = getGameInStore();
         final Game game = Game.builder()
                 .name(gameInShop.getNameInStore())
+                .type(ProductType.GAME)
                 .gamesInShop(Collections.singleton(gameInShop))
                 .build();
         gameInShop.setGame(game);
@@ -61,6 +65,7 @@ class GamazeyStoreServiceTest {
 
         assertEquals("Game", result.getName());
         assertEquals(game.getGamesInShop().size(), result.getGamesInShop().size());
+        assertEquals(game.getType(), result.getType());
         GameInShop resulGameInStore = game.getGamesInShop().stream().toList().get(0);
         assertEquals(gameInShop.getNameInStore(), resulGameInStore.getNameInStore());
         assertEquals(gameInShop.getDiscount(), resulGameInStore.getDiscount());

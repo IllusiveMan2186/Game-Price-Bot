@@ -41,6 +41,9 @@ public class Game {
     @ElementCollection(targetClass = Genre.class)
     private List<Genre> genres;
 
+    @Enumerated(EnumType.STRING)
+    private ProductType type;
+
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private Set<GameInShop> gamesInShop;
 

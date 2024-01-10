@@ -3,7 +3,7 @@ import '../../styles/gameList.css';
 import { getGamesRequest } from '../../request/gameRequests';
 import * as constants from '../../util/constants';
 import { useParams, useNavigate } from 'react-router-dom'
-import { Loading, Search } from './GameImage';
+import { Loading, Search } from './GameHelper';
 import Select from "react-select";
 import GameListFilter from './GameListFilter';
 
