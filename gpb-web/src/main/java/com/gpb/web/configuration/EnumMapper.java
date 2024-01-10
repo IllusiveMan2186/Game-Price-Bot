@@ -1,6 +1,7 @@
 package com.gpb.web.configuration;
 
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.game.ProductType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class GenreMapper {
+public class EnumMapper {
 
     @Bean
     public Map<String, Genre> genereMap() {
@@ -24,5 +25,16 @@ public class GenreMapper {
         genereMap.put("Стратегии", Genre.STRATEGIES);
         genereMap.put("Спорт", Genre.SPORT);
         return genereMap;
+    }
+
+    @Bean
+    public Map<String, ProductType> productTypeMap() {
+        Map<String, ProductType> productTypeMap = new HashMap<>();
+        productTypeMap.put("Гра", ProductType.GAME);
+        productTypeMap.put("Ігрова валюта", ProductType.CURRENCY);
+        productTypeMap.put("місяців", ProductType.SUBSCRIPTION);
+        productTypeMap.put("підписка", ProductType.SUBSCRIPTION);
+        productTypeMap.put("Доповнення ", ProductType.ADDITION);
+        return productTypeMap;
     }
 }

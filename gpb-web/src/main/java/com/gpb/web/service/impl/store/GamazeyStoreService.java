@@ -3,6 +3,7 @@ package com.gpb.web.service.impl.store;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.game.ProductType;
 import com.gpb.web.configuration.ResourceConfiguration;
 import com.gpb.web.service.StoreService;
 import com.gpb.web.parser.StorePageParser;
@@ -59,6 +60,8 @@ public class GamazeyStoreService implements StoreService {
 
     private final Map<String, Genre> genreMap;
 
+    private final Map<String, ProductType> productTypeMap;
+
     private final ResourceConfiguration resourceConfiguration;
 
     @Value("${GAMEZEY_LOGIN}")
@@ -66,10 +69,11 @@ public class GamazeyStoreService implements StoreService {
     @Value("${GAMEZEY_PASSWORD}")
     private String password;
 
-    public GamazeyStoreService(StorePageParser parser, Map<String, Genre> genreMap,
+    public GamazeyStoreService(StorePageParser parser, Map<String, Genre> genreMap, Map<String, ProductType> productTypeMap,
                                ResourceConfiguration resourceConfiguration) {
         this.parser = parser;
         this.genreMap = genreMap;
+        this.productTypeMap = productTypeMap;
         this.resourceConfiguration = resourceConfiguration;
     }
 
@@ -78,7 +82,11 @@ public class GamazeyStoreService implements StoreService {
         log.info(String.format("Searching uncreated game with url : '%s' in gamazey store", url));
         Document page = parser.getPage(url);
         GameInShop gameInShop = getGameInShop(page);
-        List<Genre> genres = getGenres(page.getElementsByClass(GAME_PAGE_CHARACTERISTICS).get(3));
+        Elements characteristic = page.getElementsByClass(GAME_PAGE_CHARACTERISTICS);
+        List<Genre> genres = new ArrayList<>();
+        if (!characteristic.isEmpty()) {
+            genres = getGenres(characteristic.get(3));
+        }
         saveImage(page, gameInShop.getNameInStore());
         gameInShop.setUrl(url);
 
@@ -86,6 +94,7 @@ public class GamazeyStoreService implements StoreService {
                 .name(gameInShop.getNameInStore())
                 .gamesInShop(Collections.singleton(gameInShop))
                 .genres(genres)
+                .type(getProductType(page))
                 .build();
         gameInShop.setGame(game);
         return game;
@@ -288,5 +297,15 @@ public class GamazeyStoreService implements StoreService {
         return originalName
                 .replaceAll(GAME_NAME_PRODUCT_TYPE_PART, "")
                 .replaceAll(GAME_NAME_SPECIFICATION_PART, "");
+    }
+
+    private ProductType getProductType(Document page) {
+        String originalName = page.getElementsByClass(GAME_PAGE_NAME_FIELD).text();
+        for (String productType : productTypeMap.keySet()) {
+            if (originalName.contains(productType)) {
+                return productTypeMap.get(productType);
+            }
+        }
+        return null;
     }
 }

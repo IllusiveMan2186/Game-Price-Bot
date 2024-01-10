@@ -3,7 +3,7 @@ import * as React from 'react'
 import '../../styles/gameInfo.css';
 
 import Message from '../../util/message';
-import { GameImage, GameAvailability } from './GameImage';
+import { GameImage, GameAvailability, ProductType } from './GameHelper';
 import { useParams } from 'react-router-dom'
 import { isUserAdmin, isUserAuth } from '../../util/axios_helper';
 import { getGameRequest, subscribeForGameRequest, unsubscribeForGameRequest, removeGameRequest } from '../../request/gameRequests';
@@ -35,6 +35,7 @@ export default function GameInfo(props) {
                             </div>
                             <div class="App-game-page-info-common  ">
                                 <div class="App-game-page-info-common-price">
+                                    <ProductType type={game.type} />
                                     <GameAvailability available={game.available} />
                                     <div class="App-game-content-list-game-info-price">
                                         {game.minPrice} - {game.maxPrice} ₴

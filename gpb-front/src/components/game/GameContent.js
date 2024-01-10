@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { GameImage, GameAvailability } from './GameImage';
+import { GameImage, GameAvailability, ProductType } from './GameHelper';
 import { useNavigate } from "react-router-dom";
 
 
@@ -19,6 +19,7 @@ export default function GameContent(props) {
                             {game.name}
                         </div>
                         <div class="App-game-content-list-game-info-bottom">
+                            <ProductType type={game.type} />
                             <GameAvailability available={game.available} />
                             <div class="App-game-content-list-game-info-price">
                                 {game.minPrice} - {game.maxPrice} ₴

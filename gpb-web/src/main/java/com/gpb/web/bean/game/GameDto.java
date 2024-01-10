@@ -25,4 +25,6 @@ public class GameDto {
     private boolean isAvailable;
 
     private List<Genre> genres;
+
+    private ProductType type;
 }

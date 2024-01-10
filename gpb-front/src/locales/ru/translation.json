@@ -57,5 +57,9 @@
     "app.game.info.subscribe": "Отслеживать",
     "app.game.info.unsubscribe": "Не отслеживать",
     "app.game.info.need.auth": "Вы должны войти в систему, чтобы иметь возможность отслеживать",
-    "app.game.info.remove": "Удалить"
+    "app.game.info.remove": "Удалить",
+    "app.game.info.type.game": "Игра",
+    "app.game.info.type.currency": "Игровая валюта",
+    "app.game.info.type.subscription": "Подписка",
+    "app.game.info.type.addition": "Дополнение"
 }
