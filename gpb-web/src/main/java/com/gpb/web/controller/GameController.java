@@ -4,13 +4,11 @@ import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.user.UserDto;
-import com.gpb.web.configuration.ResourceConfiguration;
 import com.gpb.web.exception.PriceRangeException;
 import com.gpb.web.exception.SortParamException;
 import com.gpb.web.service.GameService;
 import com.gpb.web.service.ResourceService;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.IOUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,14 +21,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.gpb.web.util.Constants.IMG_FILE_EXTENSION;
 
 @Log4j2
 @RestController

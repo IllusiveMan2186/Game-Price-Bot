@@ -8,10 +8,10 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
-import static com.gpb.web.util.Constants.IMG_FILE_EXTENSION;
+import static com.gpb.web.util.Constants.JPG_IMG_FILE_EXTENSION;
+import static com.gpb.web.util.Constants.PNG_IMG_FILE_EXTENSION;
 
 @Log4j2
 @Service
@@ -24,7 +24,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     public byte[] getGameImage(final String gameName) {
-        String gameImageFullPath = resourceConfiguration.getImageFolder() + "\\" + gameName + IMG_FILE_EXTENSION;
+        String gameImageFullPath = resourceConfiguration.getImageFolder() + "\\" + gameName + JPG_IMG_FILE_EXTENSION;
         try {
             InputStream in = new FileInputStream(gameImageFullPath);
             return IOUtils.toByteArray(in);
@@ -34,7 +34,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     private byte[] getDefaultGameImage() {
-        String gameImageFullPath = resourceConfiguration.getImageFolder() + "\\defaultImage"  + IMG_FILE_EXTENSION;
+        String gameImageFullPath = resourceConfiguration.getImageFolder() + "\\defaultImage"  + PNG_IMG_FILE_EXTENSION;
         try {
             InputStream in = new FileInputStream(gameImageFullPath);
             return IOUtils.toByteArray(in);
