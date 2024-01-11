@@ -24,6 +24,7 @@ public class GameInStoreDto {
         this.discount = gameInShop.getDiscount();
         this.discountDate = gameInShop.getDiscountDate();
         this.discountPrice = gameInShop.getDiscountPrice();
+        this.clientType = gameInShop.getClientType();
     }
 
     private long id;
@@ -41,4 +42,6 @@ public class GameInStoreDto {
     private int discount;
 
     private Date discountDate;
+
+    private ClientActivationType clientType;
 }

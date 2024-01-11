@@ -1,5 +1,6 @@
 package com.gpb.web.configuration;
 
+import com.gpb.web.bean.game.ClientActivationType;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.game.ProductType;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,20 @@ public class EnumMapper {
         genereMap.put("Стратегии", Genre.STRATEGIES);
         genereMap.put("Спорт", Genre.SPORT);
         return genereMap;
+    }
+
+    @Bean
+    public Map<String, ClientActivationType> clientActtivationMap() {
+        Map<String, ClientActivationType> clientActivationTypeMap = new HashMap<>();
+        clientActivationTypeMap.put("EA App", ClientActivationType.EA);
+        clientActivationTypeMap.put("Epic Games", ClientActivationType.EPIC);
+        clientActivationTypeMap.put("Microsoft", ClientActivationType.MICROSOFT);
+        clientActivationTypeMap.put("Steam", ClientActivationType.STEAM);
+        clientActivationTypeMap.put("Ubisoft Connect", ClientActivationType.UBISOFT);
+        clientActivationTypeMap.put("Rockstar", ClientActivationType.ROCKSTAR);
+        clientActivationTypeMap.put("GOG", ClientActivationType.GOG);
+        clientActivationTypeMap.put("Battle net", ClientActivationType.BATTLENET);
+        return clientActivationTypeMap;
     }
 
     @Bean

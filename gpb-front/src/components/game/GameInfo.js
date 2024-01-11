@@ -72,8 +72,10 @@ function GameInStoreList(props) {
     props.stores.map(gameInStore => {
         let domain = (new URL(gameInStore.url)).hostname;
         let image = require(`../../img/${domain}.png`)
+        console.info(gameInStore.clientType)
         listItems.push(<a class="App-game-page-info-storeList-store " href={gameInStore.url} target="_blank">
             <img src={image} />
+            <ClientActivationType clientType={gameInStore.clientType} />
             <div class="">{domain}</div>
             <GameAvailability available={gameInStore.available} />
             <div class="App-game-page-info-storeList-store-price-section">
@@ -96,6 +98,15 @@ function SubscribeButton(props) {
             <span>{!isUserAuth() && <Message string={'app.game.info.need.auth'} />}</span>
         </div>
     )
+}
+
+function ClientActivationType(props) {
+    if (props.clientType) {
+        let image = require(`../../img/${props.clientType.toLowerCase()}.png`)
+        return (
+            <img src={image} />
+        )
+    }
 }
 
 function RemoveButton(props) {
