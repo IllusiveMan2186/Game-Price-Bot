@@ -39,7 +39,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 
-import static com.gpb.web.util.Constants.IMG_FILE_EXTENSION;
+import static com.gpb.web.util.Constants.JPG_IMG_FILE_EXTENSION;
 
 @Service(value = "gamazey.com.ua")
 @Log4j2
@@ -272,7 +272,7 @@ public class GamazeyStoreService implements StoreService {
     private void saveImage(Document document, String gameName) {
         Element element = document.getElementsByClass(GAME_IMG_CLASS).get(1);
         String imgUrl = element.attr("src");
-        String filePath = resourceConfiguration.getImageFolder() + "\\" + gameName + IMG_FILE_EXTENSION;
+        String filePath = resourceConfiguration.getImageFolder() + "\\" + gameName + JPG_IMG_FILE_EXTENSION;
         try {
             URL url = new URL(imgUrl);
 
