@@ -1,5 +1,4 @@
 import * as React from 'react'
-import defaultImage from '../../img/defaultGameImage.jpg';
 import Message from '../../util/message';
 import GameContent from './GameContent';
 import Pagination from './Pagination';
