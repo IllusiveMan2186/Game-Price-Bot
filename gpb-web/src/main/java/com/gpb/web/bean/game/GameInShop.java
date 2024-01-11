@@ -3,6 +3,8 @@ package com.gpb.web.bean.game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -60,6 +62,11 @@ public class GameInShop {
     @Getter
     @Setter
     private Date discountDate;
+
+    @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private ClientActivationType clientType;
 
     @Getter
     @Setter

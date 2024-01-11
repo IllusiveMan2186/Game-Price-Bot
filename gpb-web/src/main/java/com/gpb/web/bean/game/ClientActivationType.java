@@ -1,11 +1,13 @@
 package com.gpb.web.bean.game;
 
-public enum ClientType {
+public enum ClientActivationType {
 
     STEAM,
     EA,
     MICROSOFT,
     ROCKSTAR,
     EPIC,
-    UBISOFT
+    UBISOFT,
+    GOG,
+    BATTLENET
 }
