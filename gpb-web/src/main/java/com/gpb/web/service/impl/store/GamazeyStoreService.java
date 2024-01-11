@@ -1,5 +1,6 @@
 package com.gpb.web.service.impl.store;
 
+import com.gpb.web.bean.game.ClientActivationType;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
@@ -62,6 +63,8 @@ public class GamazeyStoreService implements StoreService {
 
     private final Map<String, ProductType> productTypeMap;
 
+    private final Map<String, ClientActivationType> clientActivationTypeMap;
+
     private final ResourceConfiguration resourceConfiguration;
 
     @Value("${GAMEZEY_LOGIN}")
@@ -70,11 +73,12 @@ public class GamazeyStoreService implements StoreService {
     private String password;
 
     public GamazeyStoreService(StorePageParser parser, Map<String, Genre> genreMap, Map<String, ProductType> productTypeMap,
-                               ResourceConfiguration resourceConfiguration) {
+                               Map<String, ClientActivationType> clientActivationTypeMap, ResourceConfiguration resourceConfiguration) {
         this.parser = parser;
         this.genreMap = genreMap;
         this.productTypeMap = productTypeMap;
         this.resourceConfiguration = resourceConfiguration;
+        this.clientActivationTypeMap = clientActivationTypeMap;
     }
 
     @Override
@@ -240,6 +244,7 @@ public class GamazeyStoreService implements StoreService {
                 .discountPrice(new BigDecimal(getIntFromString(discountPriceField)))
                 .discount(Integer.parseInt(getIntFromString(discountField)))
                 .isAvailable(isAvailable)
+                .clientType(getClientActivationTypeFromGameName(nameField))
                 .build();
     }
 
@@ -304,6 +309,15 @@ public class GamazeyStoreService implements StoreService {
         for (String productType : productTypeMap.keySet()) {
             if (originalName.contains(productType)) {
                 return productTypeMap.get(productType);
+            }
+        }
+        return null;
+    }
+
+    private ClientActivationType getClientActivationTypeFromGameName(String originalName) {
+        for (String clientActivationType : clientActivationTypeMap.keySet()) {
+            if (originalName.contains(clientActivationType)) {
+                return clientActivationTypeMap.get(clientActivationType);
             }
         }
         return null;
