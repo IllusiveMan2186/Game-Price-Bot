@@ -3,6 +3,7 @@ package com.gpb.web.controller;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.game.ProductType;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.exception.PriceRangeException;
 import com.gpb.web.exception.SortParamException;
@@ -83,6 +84,7 @@ public class GameController {
      * Get games by genre
      *
      * @param genre    genres of the game
+     * @param type    types of product to exclude from search
      * @param pageSize amount of elements on page
      * @param pageNum  page number
      * @param minPrice minimal price
@@ -93,18 +95,20 @@ public class GameController {
     @GetMapping(value = "/genre")
     @ResponseStatus(HttpStatus.OK)
     public GameListPageDto getGamesForGenre(@RequestParam(required = false) final List<Genre> genre,
+                                            @RequestParam(required = false) final List<ProductType> type,
                                             @RequestParam(required = false, defaultValue = "25") final int pageSize,
                                             @RequestParam(required = false, defaultValue = "1") final int pageNum,
                                             @RequestParam(required = false, defaultValue = "0") final BigDecimal minPrice,
                                             @RequestParam(required = false, defaultValue = "10000") final BigDecimal maxPrice,
                                             @RequestParam(required = false, defaultValue = "gamesInShop.price-ASC") final String sortBy) {
-        log.info(String.format("Get games by genres : '%s',price '%s' - '%s' with '%s' element on page for '%s' page and sort '%s' ",
-                genre, minPrice, maxPrice, pageSize, pageNum, sortBy));
+        log.info(String.format("Get games by genres : '%s',types to exclude - '%s',price '%s' - '%s' with '%s' " +
+                        "element on page for '%s' page and sort '%s' ",
+                genre, type, minPrice, maxPrice, pageSize, pageNum, sortBy));
         if (maxPrice.compareTo(minPrice) < 0) {
             log.info(String.format("Invalid price range '%s' - '%s'", minPrice, maxPrice));
             throw new PriceRangeException();
         }
-        return gameService.getByGenre(genre, pageSize, pageNum, minPrice, maxPrice, getSortBy(sortBy));
+        return gameService.getByGenre(genre, type, pageSize, pageNum, minPrice, maxPrice, getSortBy(sortBy));
     }
 
     /**

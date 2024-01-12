@@ -57,6 +57,7 @@
     "app.game.info.unsubscribe": "Unsubscribe",
     "app.game.info.need.auth": "You must be logged in to be able to subscribe",
     "app.game.info.remove": "Remove",
+    "app.game.info.type": "Product type",
     "app.game.info.type.game": "Game",
     "app.game.info.type.currency": "Game currency",
     "app.game.info.type.subscription": "Subscription",

@@ -7,6 +7,7 @@ import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.game.ProductType;
 import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -105,20 +107,23 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameListPageDto getByGenre(List<Genre> genre, final int pageSize, final int pageNum, BigDecimal minPrice,
-                                      BigDecimal maxPrice, Sort sort) {
-        log.info(String.format("Get games by genres : '%s',price '%s' - '%s' with '%s' element on page for '%s' page ",
-                genre, minPrice, maxPrice, pageSize, pageNum));
+    public GameListPageDto getByGenre(List<Genre> genre, List<ProductType> typesToExclude, final int pageSize, final int pageNum
+            , BigDecimal minPrice, BigDecimal maxPrice, Sort sort) {
+        log.info(String.format("Get games by genres : '%s',types to exclude - '%s',price '%s' - '%s' with '%s' element on page for '%s' page ",
+                genre, typesToExclude, minPrice, maxPrice, pageSize, pageNum));
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
         List<Game> games;
         long elementAmount;
+        List<ProductType> types = getProductTypeThatNotExcluded(typesToExclude);
 
         if (genre == null) {
-            games = gameRepository.findAllByGamesInShop_DiscountPriceBetween(pageRequest, minPrice, maxPrice);
-            elementAmount = gameRepository.countAllByGamesInShop_DiscountPriceBetween(minPrice, maxPrice);
+            games = gameRepository.findAllByTypeInAndGamesInShop_DiscountPriceBetween(pageRequest, types, minPrice
+                    , maxPrice);
+            elementAmount = gameRepository.countAllByTypeInAndGamesInShop_DiscountPriceBetween(types, minPrice, maxPrice);
         } else {
-            games = gameRepository.findByGenresInAndGamesInShop_DiscountPriceBetween(genre, pageRequest, minPrice, maxPrice);
-            elementAmount = gameRepository.countByGenresIn(genre);
+            games = gameRepository.findByGenresInAndTypeInAndGamesInShop_DiscountPriceBetween(genre, types, pageRequest
+                    , minPrice, maxPrice);
+            elementAmount = gameRepository.countByGenresInAndTypeIn(genre, types);
         }
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)
@@ -204,5 +209,15 @@ public class GameServiceImpl implements GameService {
         gameDto.setMinPrice(minPrice);
         gameDto.setMaxPrice(maxPrice);
         return gameDto;
+    }
+
+    private List<ProductType> getProductTypeThatNotExcluded(List<ProductType> typesToExclude) {
+        List<ProductType> types = new ArrayList<>();
+        for (ProductType type : ProductType.values()) {
+            if (typesToExclude == null || !typesToExclude.contains(type)) {
+                types.add(type);
+            }
+        }
+        return types;
     }
 }

@@ -58,6 +58,7 @@
     "app.game.info.unsubscribe": "Не відстежувати",
     "app.game.info.need.auth": "Ви повинні увійти в систему, щоб мати можливість відстежувати",
     "app.game.info.remove": "Видалити",
+    "app.game.info.type": "Тип продукту",
     "app.game.info.type.game": "Гра",
     "app.game.info.type.currency": "Валюта гри",
     "app.game.info.type.subscription": "Підписка",

@@ -6,6 +6,7 @@ import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.game.ProductType;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.configuration.MapperConfig;
@@ -99,17 +100,18 @@ class GameControllerTest {
     @Test
     void findByGenreSuccessfullyShouldReturnGameList() {
         List<Genre> genre = Collections.singletonList(Genre.STRATEGIES);
+        List<ProductType> types = Collections.singletonList(ProductType.GAME);
         int pageSize = 2;
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        when(service.getByGenre(genre, pageNum, pageSize, new BigDecimal(0), new BigDecimal(1), sort))
+        when(service.getByGenre(genre, types, pageNum, pageSize, new BigDecimal(0), new BigDecimal(1), sort))
                 .thenReturn(new GameListPageDto(1, gameDtoList));
 
         GameListPageDto result = controller
-                .getGamesForGenre(genre, pageSize, pageNum, new BigDecimal(0), new BigDecimal(1), "name-ASC");
+                .getGamesForGenre(genre, types, pageSize, pageNum, new BigDecimal(0), new BigDecimal(1), "name-ASC");
 
         assertEquals(gameListPageDto, result);
     }
@@ -136,13 +138,15 @@ class GameControllerTest {
     @Test
     void getGameByInvalidPriceRangeUnsuccessfullyShouldThrowException() {
         assertThrows(PriceRangeException.class, () -> controller
-                .getGamesForGenre(new ArrayList<>(), 1, 1, new BigDecimal(10), new BigDecimal(1), "name-ASC"));
+                .getGamesForGenre(new ArrayList<>(), new ArrayList<>(), 1, 1, new BigDecimal(10)
+                        , new BigDecimal(1), "name-ASC"));
     }
 
     @Test
     void getGameByInvalidSortByUnsuccessfullyShouldThrowException() {
         assertThrows(SortParamException.class, () -> controller
-                .getGamesForGenre(new ArrayList<>(), 1, 1, new BigDecimal(1), new BigDecimal(1), "name"));
+                .getGamesForGenre(new ArrayList<>(), new ArrayList<>(), 1, 1, new BigDecimal(1)
+                        , new BigDecimal(1), "name"));
     }
 
     @Test

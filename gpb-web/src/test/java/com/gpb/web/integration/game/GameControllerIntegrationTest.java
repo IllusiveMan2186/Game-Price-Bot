@@ -3,6 +3,7 @@ package com.gpb.web.integration.game;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.game.ProductType;
 import com.gpb.web.bean.user.UserRegistration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -107,6 +108,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
                 .gamesInShop(Set.of(gameInShop1, gameInShop2, gameInShop3))
                 .genres(Collections.singletonList(Genre.STRATEGIES)).build();
         game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));
+        game.setType(ProductType.ADDITION);
         gameRepository.save(game);
         game.getGamesInShop().forEach(gameInShop -> gameInShopRepository.save(gameInShop));
 
