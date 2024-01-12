@@ -5,6 +5,7 @@ import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.game.ProductType;
 import com.gpb.web.bean.user.WebUser;
 import org.springframework.data.domain.Sort;
 
@@ -55,15 +56,17 @@ public interface GameService {
     /**
      * Get games by genre
      *
-     * @param genre    genres of the game
-     * @param pageSize amount of elements on page
-     * @param pageNum  page number
-     * @param minPrice minimal price
-     * @param maxPrice maximal price
-     * @param sort     sort parameters
+     * @param genre          genres of the game
+     * @param typesToExclude types of the product to exclude from search
+     * @param pageSize       amount of elements on page
+     * @param pageNum        page number
+     * @param minPrice       minimal price
+     * @param maxPrice       maximal price
+     * @param sort           sort parameters
      * @return list of games with all amount
      */
-    GameListPageDto getByGenre(List<Genre> genre, int pageSize, int pageNum, BigDecimal minPrice, BigDecimal maxPrice,
+    GameListPageDto getByGenre(List<Genre> genre, List<ProductType> typesToExclude, int pageSize, int pageNum,
+                               BigDecimal minPrice, BigDecimal maxPrice,
                                Sort sort);
 
     /**
@@ -103,7 +106,7 @@ public interface GameService {
     /**
      * Get changed games for that user subscribed on
      *
-     * @param user user
+     * @param user         user
      * @param changedGames list of all changed games
      * @return changed games for that user subscribed on
      */

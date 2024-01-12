@@ -1,5 +1,6 @@
 package com.gpb.web.service.impl.store;
 
+import com.gpb.web.bean.game.ClientActivationType;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
@@ -44,9 +45,13 @@ class GamazeyStoreServiceTest {
 
     Map<String, ProductType> productTypeMap = Collections.singletonMap("Гра", ProductType.GAME);
 
+    Map<String, ClientActivationType> clientActivationTypeMap
+            = Collections.singletonMap("steam", ClientActivationType.STEAM);
+
     ResourceConfiguration resourceConfiguration = new ResourceConfiguration();
 
-    GamazeyStoreService storeService = new GamazeyStoreService(parser, genereMap, productTypeMap, resourceConfiguration);
+    GamazeyStoreService storeService = new GamazeyStoreService(parser, genereMap, productTypeMap,
+            clientActivationTypeMap, resourceConfiguration);
 
     @Test
     void getUncreatedGameByUrlSuccessfullyShouldReturnNewGame() {
