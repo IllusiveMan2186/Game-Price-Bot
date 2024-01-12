@@ -34,19 +34,19 @@ export default function GameListFilter(props) {
         }
     };
 
-    const isChecked = (genre) => {
-        return props.searchParams.has("genre", genre.toUpperCase())
+    const isChecked = (genre, field, isNotExcludedFieldType) => {
+        return props.searchParams.has(field, genre.toUpperCase()) === isNotExcludedFieldType
     }
 
     const isFilterFormReadyToAccept = () => {
         return !isFilterFormError && isFormChanged
     }
 
-    const handleGenreChange = (event) => {
-        if (event.target.checked) {
-            props.searchParams.append("genre", event.target.value.toUpperCase());
+    const handleCheckboxChange = (event, isNotExcludedFieldType) => {
+        if ((event.target.checked && isNotExcludedFieldType) || (!event.target.checked && !isNotExcludedFieldType)) {
+            props.searchParams.append(event.target.name, event.target.value.toUpperCase());
         } else {
-            props.searchParams.delete("genre", event.target.value.toUpperCase());
+            props.searchParams.delete(event.target.name, event.target.value.toUpperCase());
         }
         props.setPage(1)
         setFormChanged(true)
@@ -79,7 +79,6 @@ export default function GameListFilter(props) {
                     </div>
                 </div>
 
-
                 <div class=" App-game-filter-section">
                     <div class="App-game-filter-title"><Message string={'app.game.filter.genre.title'} /></div>
                     <div class="App-game-filter-genre">
@@ -88,8 +87,8 @@ export default function GameListFilter(props) {
                                 return (
                                     <label class="App-game-filter-genre-button"  >
                                         <input type="checkbox" class="App-game-filter-genre-button-checkbox"
-                                            value={ganre.value} onChange={handleGenreChange}
-                                            defaultChecked={isChecked(ganre.value)}></input>
+                                            name='genre' value={ganre.value} onChange={(event) => handleCheckboxChange(event, true)}
+                                            defaultChecked={isChecked(ganre.value, "genre", true)}></input>
                                         <span class="App-game-filter-genre-button-text">{ganre.label}</span>
                                     </label>)
                             })
@@ -97,6 +96,25 @@ export default function GameListFilter(props) {
 
                     </div>
                 </div>
+
+                <div class=" App-game-filter-section">
+                    <div class="App-game-filter-title"><Message string={'app.game.info.type'} /></div>
+                    <div class="App-game-filter-genre">
+                        {
+                            constants.productTypesOptions.map(type => {
+                                return (
+                                    <label class="App-game-filter-genre-button"  >
+                                        <input type="checkbox" class="App-game-filter-genre-button-checkbox"
+                                            name='type' value={type.value} onChange={(event) => handleCheckboxChange(event, false)}
+                                            defaultChecked={isChecked(type.value, "type", false)}></input>
+                                        <span class="App-game-filter-genre-button-text">{type.label}</span>
+                                    </label>)
+                            })
+                        }
+
+                    </div>
+                </div>
+
                 <button type="submit" className="btn btn-primary btn-block mb-3"
                     disabled={!isFilterFormReadyToAccept()} onClick={handleFilterButtonClick}>
                     <Message string={'app.game.filter.accept.button'} /> </button>

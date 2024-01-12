@@ -6,6 +6,7 @@ import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.game.ProductType;
 import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.configuration.MapperConfig;
@@ -140,19 +141,21 @@ class GameServiceImplTest {
 
     @Test
     void findByGenreSuccessfullyShouldReturnGameList() {
-        Genre genre = Genre.STRATEGIES;
+        List<Genre> genre = Collections.singletonList(Genre.STRATEGIES);
         int pageSize = 2;
+        List<ProductType> types = Collections.singletonList(ProductType.GAME);
+        List<ProductType> typesToExclude= List.of(ProductType.ADDITION,ProductType.CURRENCY,ProductType.SUBSCRIPTION);
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        when(repository.findByGenresInAndGamesInShop_DiscountPriceBetween(Collections.singletonList(genre),
+        when(repository.findByGenresInAndTypeInAndGamesInShop_DiscountPriceBetween(genre, types,
                 PageRequest.of(pageNum - 1, pageSize, sort), new BigDecimal(0), new BigDecimal(1)))
                 .thenReturn(gameList);
-        when(repository.countByGenresIn(Collections.singletonList(genre))).thenReturn(1L);
+        when(repository.countByGenresInAndTypeIn(genre, types)).thenReturn(1L);
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
 
-        GameListPageDto result = gameService.getByGenre(Collections.singletonList(genre), pageSize, pageNum,
+        GameListPageDto result = gameService.getByGenre(genre, typesToExclude, pageSize, pageNum,
                 new BigDecimal(0), new BigDecimal(1), sort);
 
         assertEquals(gameListPageDto, result);

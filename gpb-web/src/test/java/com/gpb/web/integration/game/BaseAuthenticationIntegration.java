@@ -6,6 +6,7 @@ import com.gpb.web.GpbWebApplication;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
+import com.gpb.web.bean.game.ProductType;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.repository.GameInShopRepository;
@@ -140,6 +141,7 @@ public class BaseAuthenticationIntegration {
             throws ParseException {
         Game game = Game.builder()
                 .name(name)
+                .type(ProductType.GAME)
                 .gamesInShop(Set.of(gameInShopCreation(url, price, discountPrice)))
                 .genres(Collections.singletonList(genre)).build();
         game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));

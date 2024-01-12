@@ -29,6 +29,13 @@ export const ganresOptions = [
     { value: "sport", label: <Message string={'app.game.genre.sport'} /> }
 ];
 
+export const productTypesOptions = [
+    { value: "game", label: <Message string={'app.game.info.type.game'} /> },
+    { value: "currency", label: <Message string={'app.game.info.type.currency'} /> },
+    { value: "subscription", label: <Message string={'app.game.info.type.subscription'} /> },
+    { value: "addition", label: <Message string={'app.game.info.type.addition'} /> }
+];
+
 export const selectStyles = {
     control: styles => ({
         ...styles,
