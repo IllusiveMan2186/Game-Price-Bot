@@ -90,7 +90,7 @@ export default function Login() {
     }
 
     return (
-        <div className="row justify-content-center">
+        <div className="row justify-content-center login-form">
             <div className="col-4">
                 <ul className="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
                     <li className="nav-item" role="presentation">
