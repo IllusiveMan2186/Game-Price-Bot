@@ -62,7 +62,7 @@ export default function GameInfo(props) {
 function GenreList(props) {
     const listItems = [];
     props.genres.map(genre => {
-        listItems.push(<div class="App-game-page-info-common-genre"><Message string={'app.game.genre.' + genre.toLowerCase()} /></div>)
+        listItems.push(<div className="App-game-page-info-common-genre genre-subtext"><Message string={'app.game.genre.' + genre.toLowerCase()} /></div>)
     })
     return listItems
 }
