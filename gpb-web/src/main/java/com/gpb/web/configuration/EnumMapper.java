@@ -15,15 +15,15 @@ public class EnumMapper {
     @Bean
     public Map<String, Genre> genereMap() {
         Map<String, Genre> genereMap = new HashMap<>();
-        genereMap.put("Экшен", Genre.ACTION);
-        genereMap.put("Приключения", Genre.ADVENTURES);
-        genereMap.put("Казуальные", Genre.CASUAL);
+        genereMap.put("Екшен", Genre.ACTION);
+        genereMap.put("Пригоди", Genre.ADVENTURES);
+        genereMap.put("Казуальні", Genre.CASUAL);
         genereMap.put("Гонки", Genre.RACE);
-        genereMap.put("Ролевые", Genre.RPG);
-        genereMap.put("Инди", Genre.INDIE);
+        genereMap.put("Рольові", Genre.RPG);
+        genereMap.put("Інді", Genre.INDIE);
         genereMap.put("Онлайн", Genre.ONLINE);
-        genereMap.put("Симуляторы", Genre.SIMULATORS);
-        genereMap.put("Стратегии", Genre.STRATEGIES);
+        genereMap.put("Симулятори", Genre.SIMULATORS);
+        genereMap.put("Стратегії", Genre.STRATEGIES);
         genereMap.put("Спорт", Genre.SPORT);
         return genereMap;
     }
