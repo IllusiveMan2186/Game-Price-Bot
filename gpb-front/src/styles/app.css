@@ -3,12 +3,16 @@ body {
   height: 100%;
 }
 
-#root {
+.root {
   height: 100%;
 }
 
+.row {
+  --bs-gutter-x: 0 !important;
+}
 
 .App {
+  height: 100%;
   text-align: center;
   color: white;
   background-color: rgb(39, 47, 71);
