@@ -57,6 +57,10 @@ public class GamazeyStoreService implements StoreService {
     private static final String GAME_NAME_PRODUCT_TYPE_PART = "(Гра|Ігрова валюта|Доповнення) ";
     private static final String GAME_NAME_SPECIFICATION_PART = " для .+ \\(Ключ активації .+\\)";
 
+    private static final int GAME_IMAGE_CROP_WIDTH_START = 20;
+    private static final int GAME_IMAGE_CROP_WIDTH_LONG = 320;
+    private static final int GAME_IMAGE_HEIGHT = 400;
+
     private final StorePageParser parser;
 
     private final Map<String, Genre> genreMap;
@@ -294,7 +298,8 @@ public class GamazeyStoreService implements StoreService {
 
     private void cropImage(String filePath) throws IOException {
         BufferedImage image = ImageIO.read(new File(filePath));
-        BufferedImage crop = image.getSubimage(68, 0, 560, 700);
+        BufferedImage crop = image.getSubimage(GAME_IMAGE_CROP_WIDTH_START, 0, GAME_IMAGE_CROP_WIDTH_LONG,
+                GAME_IMAGE_HEIGHT);
         ImageIO.write(crop, "JPG", new File(filePath));
     }
 
