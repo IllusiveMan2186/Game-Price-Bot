@@ -3,20 +3,23 @@ body {
   height: 100%;
 }
 
-.root {
+#root {
   height: 100%;
 }
 
+
 .row {
+
   --bs-gutter-x: 0 !important;
 }
 
 .App {
   height: 100%;
+  display: block;
+  overflow: auto;
   text-align: center;
   color: white;
   background-color: rgb(39, 47, 71);
-  flex-direction: column;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -49,7 +52,7 @@ body {
 }
 
 .App-header {
-  cursor:pointer;
+  cursor: pointer;
   background-color: #000000;
   min-height: 8vh;
   display: flex;
@@ -108,13 +111,19 @@ body {
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: rgb(56, 113, 219);}
+.dropdown-content a:hover {
+  background-color: rgb(56, 113, 219);
+}
 
 /* Show the dropdown menu on hover */
-.dropdown:hover .dropdown-content {display: block;}
+.dropdown:hover .dropdown-content {
+  display: block;
+}
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
-.dropdown:hover .dropbtn {background-color: #3e8e41;}
+.dropdown:hover .dropbtn {
+  background-color: #3e8e41;
+}
 
 .App-user-info {
   background-color: #13538881;
@@ -140,3 +149,6 @@ body {
   font-size: 2.5rem;
 }
 
+.login-form {
+  margin-top: 20px !important;
+}
