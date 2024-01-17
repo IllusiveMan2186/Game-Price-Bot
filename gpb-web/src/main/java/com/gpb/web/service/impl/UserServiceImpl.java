@@ -21,6 +21,7 @@ import java.nio.CharBuffer;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @Slf4j
@@ -142,6 +143,17 @@ public class UserServiceImpl implements UserService {
                 .map(GameInShop::getId)
                 .toList();
         return userRepository.findSubscribedUserForChangedGames(changedGamesIds);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void updateLocale(String locale, long userId) {
+        log.info(String.format("Change locale for user '%s' into '%s'", userId, locale));
+
+        WebUser webUser = getWebUserById(userId);
+        webUser.setLocale(new Locale(locale));
+
+        userRepository.save(webUser);
     }
 
     private void failedLoginAttempt(WebUser user) {

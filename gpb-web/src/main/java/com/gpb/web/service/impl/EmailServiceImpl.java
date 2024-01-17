@@ -32,6 +32,7 @@ public class EmailServiceImpl implements EmailService {
     public void gameInfoChange(WebUser user, List<GameInShop> gameInShopList) {
         Context context = new Context();
         context.setVariable("games", gameInShopList);
+        context.setLocale(user.getLocale());
         sendEmail(user.getEmail(), "Game info changes", context, "email-info-changed-template");
     }
 

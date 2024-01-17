@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Locale;
 
 @Data
 @Entity
@@ -40,5 +41,7 @@ public class BasicUser {
     @JsonIgnore
     @ToString.Exclude
     private List<Game> gameList;
+
+    private Locale locale;
 }
     

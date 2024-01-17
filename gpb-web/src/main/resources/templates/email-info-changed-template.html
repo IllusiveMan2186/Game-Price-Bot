@@ -3,7 +3,7 @@
 <body>
 <div style="text-align:center;color:white;background-color:rgb(39,47,71);">
     <h1 style="margin-top: 10px;flex: 0 0 100%;max-width: 100%;font-size: 2.5rem;">
-        Game data changed
+        <th:block th:text="#{email.data.change.title}"></th:block>
     </h1>
     <div style="border: 1px solid rgb(0, 0, 0);margin-top: 30px;flex: 0 0 100%;width: 100%;max-width: 600px;
   display: flex;flex-direction: column;justify-content: space-evenly;align-items: center;">
@@ -17,12 +17,12 @@
                             <div>
                         <span th:if="${game.isAvailable }">
                             <div style="color: #62f14f;font-size: 0.8rem;margin-bottom: 0;">
-                                Available
+                                <span th:text="#{email.data.change.game.available}"></span>
                             </div>
                         </span>
-                        <span th:unless="${game.isAvailable }">
+                                <span th:unless="${game.isAvailable }">
                             <div style="color: #ff0000;font-size: 0.8rem;margin-bottom: 0;">
-                                Not available
+                                <span th:text="#{email.data.change.game.not.available}"></span>
                             </div>
                         </span>
                             </div>
