@@ -1,4 +1,5 @@
-import { request, setAuthHeader, setEmailHeader, setRoleHeader, defaultRequestErrorCheck } from '../util/axios_helper';
+import { request, setAuthHeader, setEmailHeader, setRoleHeader, setLocaleHeader, defaultRequestErrorCheck } from '../util/axios_helper';
+import { changeLanguage } from 'i18next';
 
 export const loginRequest = (e, email, password, setErrorMessage, navigate) => {
     e.preventDefault();
@@ -13,6 +14,8 @@ export const loginRequest = (e, email, password, setErrorMessage, navigate) => {
                 setAuthHeader(response.data.token)
                 setEmailHeader(response.data.email)
                 setRoleHeader(response.data.authorities[0].authority)
+                setLocaleHeader(response.data.locale)
+                changeLanguage(response.data.locale);
                 navigate("/")
             }).catch(
                 (error) => {
@@ -84,4 +87,10 @@ export const passwordChangeRequest = (event, password, setErrorMessage, navigate
                     setErrorMessage(error.response.data)
                 }
             );
+};
+
+export const localeChangeRequest = (locale) => {
+    request(
+        "PUT",
+        "/user/locale/" + locale)
 };

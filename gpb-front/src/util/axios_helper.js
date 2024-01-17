@@ -28,6 +28,20 @@ export const getRole = () => {
     return window.localStorage.getItem('role');
 };
 
+
+export const setLocaleHeader = (locale) => {
+    console.info("locale = " + locale)
+    window.localStorage.setItem('locale', locale);
+};
+
+export const getLocale  = () => {
+    if(isUserAuth()){
+        console.info("locales = " + window.localStorage.getItem('locale'))
+        return window.localStorage.getItem('locale');
+    }
+    return "ua";
+};
+
 export function isUserAdmin() {
     return getRole() !== null && getRole() === "ROLE_ADMIN" ? true : false;
 };

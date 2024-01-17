@@ -15,6 +15,8 @@ public class UserDto extends User {
 
     private String token;
 
+    private String locale;
+
     public UserDto() {
         super("", "", new ArrayList<>());
     }
@@ -48,6 +50,14 @@ public class UserDto extends User {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 
     @Override

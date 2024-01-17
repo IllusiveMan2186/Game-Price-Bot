@@ -1,20 +1,24 @@
 import * as React from 'react';
 import { changeLanguage } from 'i18next';
 import Message from '../../util/message';
+import { localeChangeRequest } from '../../request/userRequests';
+import { isUserAuth, getLocale } from '../../util/axios_helper'
 
 export default class Localization extends React.Component {
 
     constructor() {
         super(null);
         this.state = {
-            locale: "ru"
+            locale: getLocale()
         };
     };
-
 
     onChangeHandler = (value) => {
         this.setState({ ['locale']: value });
         changeLanguage(value);
+        if (isUserAuth()) {
+            localeChangeRequest(value)
+        }
     };
 
     render() {
@@ -22,7 +26,7 @@ export default class Localization extends React.Component {
 
             <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
                 <h6 className="text-uppercase mb-4 font-weight-bold">
-                <Message string={'app.footer.language'} />
+                    <Message string={'app.footer.language'} />
                 </h6>
                 {/* Google */}
                 <button

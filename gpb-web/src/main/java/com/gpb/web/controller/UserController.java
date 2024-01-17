@@ -85,7 +85,7 @@ public class UserController {
     public UserDto addGameToUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
         userService.subscribeToGame(user.getId(), gameId);
         Game game = gameService.getById(gameId);
-        if(game.getUserList().size() < 2){
+        if (game.getUserList().size() < 2) {
             storesService.subscribeToGame(gameService.getById(gameId));
         }
         return userService.getUserById(user.getId());
@@ -104,9 +104,16 @@ public class UserController {
     public UserDto removeGameFromUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
         userService.unsubscribeFromGame(user.getId(), gameId);
         Game game = gameService.getById(gameId);
-        if(game.getUserList().size() < 1){
+        if (game.getUserList().size() < 1) {
             storesService.unsubscribeFromGame(gameService.getById(gameId));
         }
         return userService.getUserById(user.getId());
+    }
+
+    @PutMapping("/locale/{locale}")
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    public void updateUserEmail(@PathVariable final String locale, @AuthenticationPrincipal UserDto user) {
+        userService.updateLocale(locale, user.getId());
     }
 }

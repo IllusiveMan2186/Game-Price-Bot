@@ -80,10 +80,16 @@ public interface UserService {
     UserDto login(Credentials credentials);
 
     /**
-     *
-     *
      * @param changedGames changed games
      * @return users that subscribe to changed game
      */
     List<WebUser> getUsersOfChangedGameInfo(List<GameInShop> changedGames);
+
+    /**
+     * Change user locale
+     *
+     * @param locale new locale
+     * @param userId users id
+     */
+    void updateLocale(String locale, long userId);
 }
