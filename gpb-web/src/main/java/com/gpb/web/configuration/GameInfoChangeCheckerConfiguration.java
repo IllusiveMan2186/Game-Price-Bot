@@ -48,7 +48,7 @@ public class GameInfoChangeCheckerConfiguration {
         List<WebUser> users = userService.getUsersOfChangedGameInfo(changedGames);
         for (WebUser user : users) {
             List<GameInShop> usersChangedGames = gameService.getUsersChangedGames(users.get(0), changedGames);
-            emailService.gameInfoChange(user, usersChangedGames);
+            emailService.sendGameInfoChange(user, usersChangedGames);
         }
     }
 }

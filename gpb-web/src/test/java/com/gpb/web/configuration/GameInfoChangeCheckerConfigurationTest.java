@@ -44,6 +44,6 @@ class GameInfoChangeCheckerConfigurationTest {
         changeCheckerConfiguration.scheduleSubscribedGameInfoChange();
 
         verify(gameService).changeInfo(changedGames);
-        verify(emailService).gameInfoChange(user, usersChangedGames);
+        verify(emailService).sendGameInfoChange(user, usersChangedGames);
     }
 }

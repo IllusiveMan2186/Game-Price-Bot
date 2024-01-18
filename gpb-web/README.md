@@ -15,3 +15,4 @@ Add Environment variables fro running project locally
 * GAMEZEY_PASSWORD;
 * MAIL_USERNAME;
 * MAIL_PASSWORD;
+* WEB_SERVICE_URL;

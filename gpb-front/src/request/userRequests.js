@@ -1,5 +1,6 @@
-import { request, setAuthHeader, setEmailHeader, setRoleHeader, setLocaleHeader, defaultRequestErrorCheck } from '../util/axios_helper';
+import { request, setAuthHeader, setEmailHeader, setRoleHeader, setLocaleHeader, defaultRequestErrorCheck, getLocale } from '../util/axios_helper';
 import { changeLanguage } from 'i18next';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 export const loginRequest = (e, email, password, setErrorMessage, navigate) => {
     e.preventDefault();
@@ -31,12 +32,11 @@ export const registerRequest = (event, email, password, setErrorMessage, navigat
         "/registration",
         {
             email: email,
-            password: password
+            password: password,
+            locale: getLocale()
         }).then(
             (response) => {
-                setAuthHeader(response.data.token)
-                setEmailHeader(response.data.email)
-                setRoleHeader(response.data.authorities[0].authority)
+                NotificationManager.success('Success message', 'Title here');
                 navigate("/")
             }).catch(
                 (error) => {

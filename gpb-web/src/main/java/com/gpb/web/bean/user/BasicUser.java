@@ -16,6 +16,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 import java.util.Locale;
@@ -26,6 +27,7 @@ import java.util.Locale;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@SuperBuilder
 public class BasicUser {
 
     @Id

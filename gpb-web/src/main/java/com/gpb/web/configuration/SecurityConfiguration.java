@@ -32,6 +32,7 @@ public class SecurityConfiguration {
                 .csrf().disable()
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.POST, "/login", "/registration").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/email/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/game/**").permitAll()
                         .anyRequest().authenticated());
         return http.build();

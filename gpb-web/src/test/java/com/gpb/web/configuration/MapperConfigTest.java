@@ -24,7 +24,7 @@ class MapperConfigTest {
 
     @Test
     public void mapWebUserToUserDtoSuccessfullyShouldReturnUserDto() {
-        WebUser user = new WebUser("email", "pass", false, 0, null, USER_ROLE);
+        WebUser user = new WebUser("email", "pass", false, false, 0, null, USER_ROLE);
         UserDto expected = new UserDto("email", "", "", USER_ROLE);
 
         UserDto result = modelMapper.map(user, UserDto.class);

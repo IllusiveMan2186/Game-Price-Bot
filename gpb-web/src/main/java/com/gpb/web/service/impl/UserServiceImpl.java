@@ -10,6 +10,7 @@ import com.gpb.web.exception.LoginFailedException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.exception.UserDataNotChangedException;
 import com.gpb.web.exception.UserLockedException;
+import com.gpb.web.exception.UserNotActivatedException;
 import com.gpb.web.repository.WebUserRepository;
 import com.gpb.web.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -58,15 +59,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(final UserRegistration userRegistration) {
+    public WebUser createUser(final UserRegistration userRegistration) {
         log.info(String.format("Create user : %s", userRegistration.getEmail()));
         if (userRepository.findByEmail(userRegistration.getEmail()).isPresent()) {
             log.info(String.format("User with email : '%s' already registered", userRegistration.getEmail()));
             throw new EmailAlreadyExistException();
         }
         WebUser user = getWebUser(userRegistration);
-        user = userRepository.save(user);
-        return modelMapper.map(user, UserDto.class);
+        user.setActivated(false);
+        return userRepository.save(user);
     }
 
     @Override
@@ -119,6 +120,10 @@ public class UserServiceImpl implements UserService {
         final WebUser user = userRepository.findByEmail(credentials.getEmail())
                 .orElseThrow(LoginFailedException::new);
 
+        if (!user.isActivated()){
+            throw new UserNotActivatedException();
+        }
+
         if (user.isLocked()) {
             long lockTimeInMillis = user.getLockTime().getTime();
             long currentTimeInMillis = System.currentTimeMillis();
@@ -156,6 +161,15 @@ public class UserServiceImpl implements UserService {
         userRepository.save(webUser);
     }
 
+    @Override
+    public void activateUser(Long userId) {
+        log.info(String.format("Activate user '%s'", userId));
+
+        WebUser webUser = getWebUserById(userId);
+        webUser.setActivated(true);
+        userRepository.save(webUser);
+    }
+
     private void failedLoginAttempt(WebUser user) {
         user.increaseFailedAttempt();
         if (user.getFailedAttempt() >= MAX_FAILED_ATTEMPTS) {
@@ -188,6 +202,7 @@ public class UserServiceImpl implements UserService {
                 .email(userRegistration.getEmail())
                 .password(passwordEncoder.encode(CharBuffer.wrap(userRegistration.getPassword())))
                 .role(USER_ROLE)
+                .locale(new Locale(userRegistration.getLocale()))
                 .build();
     }
 
