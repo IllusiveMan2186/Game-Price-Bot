@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import static com.gpb.web.util.Constants.ADMIN_ROLE;
@@ -86,6 +87,7 @@ public class BaseAuthenticationIntegration {
         System.setProperty("GAMEZEY_LOGIN", "");
         System.setProperty("GAMEZEY_PASSWORD", "");
         System.setProperty("IMAGE_FOLDER", "");
+        System.setProperty("WEB_SERVICE_URL", "");
     }
 
     @BeforeEach
@@ -104,6 +106,8 @@ public class BaseAuthenticationIntegration {
                 .email(email)
                 .password(password)
                 .role(USER_ROLE)
+                .isActivated(true)
+                .locale(new Locale("ua"))
                 .build();
     }
 
@@ -112,6 +116,8 @@ public class BaseAuthenticationIntegration {
                 .email(email)
                 .password(password)
                 .role(role)
+                .isActivated(true)
+                .locale(new Locale("ua"))
                 .build();
     }
 

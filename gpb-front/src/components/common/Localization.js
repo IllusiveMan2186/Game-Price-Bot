@@ -2,7 +2,7 @@ import * as React from 'react';
 import { changeLanguage } from 'i18next';
 import Message from '../../util/message';
 import { localeChangeRequest } from '../../request/userRequests';
-import { isUserAuth, getLocale } from '../../util/axios_helper'
+import { isUserAuth, getLocale, setLocaleHeader } from '../../util/axios_helper'
 
 export default class Localization extends React.Component {
 
@@ -16,6 +16,7 @@ export default class Localization extends React.Component {
     onChangeHandler = (value) => {
         this.setState({ ['locale']: value });
         changeLanguage(value);
+        setLocaleHeader(value)
         if (isUserAuth()) {
             localeChangeRequest(value)
         }

@@ -1,9 +1,13 @@
 package com.gpb.web.controller;
 
 import com.gpb.web.bean.user.Credentials;
+import com.gpb.web.bean.user.UserActivation;
 import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.UserDto;
+import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.configuration.UserAuthenticationProvider;
+import com.gpb.web.service.EmailService;
+import com.gpb.web.service.UserActivationService;
 import com.gpb.web.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -20,9 +24,15 @@ public class AuthenticationController {
     private final UserService userService;
     private final UserAuthenticationProvider userAuthenticationProvider;
 
-    public AuthenticationController(UserService userService, UserAuthenticationProvider userAuthenticationProvider) {
+    private final UserActivationService userActivationService;
+    private final EmailService emailService;
+
+    public AuthenticationController(UserService userService, UserAuthenticationProvider userAuthenticationProvider,
+                                    UserActivationService userActivationService, EmailService emailService) {
         this.userService = userService;
         this.userAuthenticationProvider = userAuthenticationProvider;
+        this.userActivationService = userActivationService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/login")
@@ -36,14 +46,13 @@ public class AuthenticationController {
      * Create new user
      *
      * @param user user that would be registered in system
-     * @return created user
      */
     @PostMapping(value = "/registration")
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto userRegistration(@RequestBody final UserRegistration user) {
-        UserDto userDto = userService.createUser(user);
-        userDto.setToken(userAuthenticationProvider.createToken(userDto.getEmail()));
-        return userDto;
+    public void userRegistration(@RequestBody final UserRegistration user) {
+        WebUser webUser = userService.createUser(user);
+        UserActivation activation = userActivationService.createUserActivation(webUser);
+        emailService.sendEmailVerification(activation);
     }
 }

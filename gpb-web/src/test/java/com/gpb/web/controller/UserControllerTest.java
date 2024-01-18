@@ -35,11 +35,11 @@ class UserControllerTest {
     private final UserController controller = new UserController(service, gameStoresService, gameService, provider);
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
-    private final WebUser user = new WebUser("email", "password", false, 0, null, USER_ROLE);
+    private final WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
 
     @Test
     void updateUserEmailSuccessfullyShouldReturnUser() {
-        WebUser newUser = new WebUser("email2", "password2", false, 0, null, USER_ROLE);
+        WebUser newUser = new WebUser("email2", "password2", false, false, 0, null, USER_ROLE);
         newUser.setId(1);
         UserDto expected = modelMapper.map(newUser, UserDto.class);
         UserDto userDto = modelMapper.map(user, UserDto.class);
@@ -54,7 +54,7 @@ class UserControllerTest {
 
     @Test
     void updateUserPasswordSuccessfullyShouldReturnUser() {
-        WebUser newUser = new WebUser("email2", "password2", false, 0, null, USER_ROLE);
+        WebUser newUser = new WebUser("email2", "password2", false, false, 0, null, USER_ROLE);
         newUser.setId(1);
         UserDto expected = modelMapper.map(newUser, UserDto.class);
         UserDto userDto = modelMapper.map(user, UserDto.class);
@@ -69,7 +69,7 @@ class UserControllerTest {
 
     @Test
     void addGameToUserListOfGamesShouldCallServiceAndReturnUser() {
-        WebUser user = new WebUser("email", "password", false, 0, null, USER_ROLE);
+        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
         user.setId(1);
         UserDto expected = modelMapper.map(user, UserDto.class);
         when(service.getUserById(1)).thenReturn(expected);
@@ -86,7 +86,7 @@ class UserControllerTest {
 
     @Test
     void removeGameFromUserListOfGamesShouldCallServiceAndReturnUser() {
-        WebUser user = new WebUser("email", "password", false, 0, null, USER_ROLE);
+        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
         user.setId(1);
         UserDto expected = modelMapper.map(user, UserDto.class);
         when(service.getUserById(1)).thenReturn(expected);

@@ -35,7 +35,7 @@ public interface UserService {
      * @param user user that would be registered in system
      * @return created user
      */
-    UserDto createUser(UserRegistration user);
+    WebUser createUser(UserRegistration user);
 
     /**
      * Update registered user email
@@ -92,4 +92,11 @@ public interface UserService {
      * @param userId users id
      */
     void updateLocale(String locale, long userId);
+
+    /**
+     * Activate user wby id
+     *
+     * @param userId user id
+     */
+    void activateUser(Long userId);
 }

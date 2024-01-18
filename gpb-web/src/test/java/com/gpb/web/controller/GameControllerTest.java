@@ -60,7 +60,7 @@ class GameControllerTest {
     void getGameByIdSuccessfullyShouldReturnGame() {
         int id = 1;
         int userId = 1;
-        WebUser user = new WebUser("email", "password", false, 0, null, USER_ROLE);
+        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
         user.setId(userId);
         GameInfoDto gameInfoDto = modelMapper.map(game, GameInfoDto.class);
         when(service.getById(id, userId)).thenReturn(gameInfoDto);
@@ -121,7 +121,7 @@ class GameControllerTest {
         int userId = 1;
         int pageSize = 2;
         int pageNum = 2;
-        WebUser user = new WebUser("email", "password", false, 0, null, USER_ROLE);
+        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
         user.setId(userId);
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();

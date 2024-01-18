@@ -1,11 +1,13 @@
 package com.gpb.web.service.impl;
 
 import com.gpb.web.bean.game.GameInShop;
+import com.gpb.web.bean.user.UserActivation;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -23,17 +25,28 @@ public class EmailServiceImpl implements EmailService {
 
     private final TemplateEngine templateEngine;
 
+    @Value("${WEB_SERVICE_URL}")
+    private String webServiceUrl;
+
     public EmailServiceImpl(JavaMailSender mailSender, TemplateEngine templateEngine) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
     }
 
     @Override
-    public void gameInfoChange(WebUser user, List<GameInShop> gameInShopList) {
+    public void sendGameInfoChange(WebUser user, List<GameInShop> gameInShopList) {
         Context context = new Context();
         context.setVariable("games", gameInShopList);
         context.setLocale(user.getLocale());
         sendEmail(user.getEmail(), "Game info changes", context, "email-info-changed-template");
+    }
+
+    @Override
+    public void sendEmailVerification(UserActivation userActivation) {
+        Context context = new Context();
+        context.setVariable("url", webServiceUrl + "/email/" + userActivation.getToken());
+        context.setLocale(userActivation.getUser().getLocale());
+        sendEmail(userActivation.getUser().getEmail(), "User verification", context, "email-user-verification");
     }
 
     private void sendEmail(String to, String subject, Context context, String templateName) {
