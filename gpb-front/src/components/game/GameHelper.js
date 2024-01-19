@@ -2,6 +2,7 @@ import * as React from 'react'
 import Message from '../../util/message';
 import GameContent from './GameContent';
 import Pagination from './Pagination';
+import { useTranslation } from "react-i18next";
 
 export function GameImage(props) {
   return (<img class={props.className} src={`http://localhost:8080/game/image/${props.gameName}`} on ></img>);
@@ -50,9 +51,13 @@ export function Loading(props) {
 
 export function Search(props) {
 
+  const { t } = useTranslation();
+
+  let placeholder = t('app.game.filter.search.title');
+
   return (
     <div class="App-game-content-header-search ">
-      <input type="search" placeholder={<Message string={'app.game.filter.search.title'} />}
+      <input type="search" placeholder={placeholder}
         onChange={props.handleSearchChange} />
       <button onClick={props.handleSearch}>
         <Message string={'app.game.filter.search.button'} />
