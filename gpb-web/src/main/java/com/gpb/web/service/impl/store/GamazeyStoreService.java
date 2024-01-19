@@ -171,7 +171,7 @@ public class GamazeyStoreService implements StoreService {
 
         for (WebElement element : elements) {
             String name = element.findElement(By.className("rm-content-title")).getText();
-            Optional<GameInShop> game = gameInShops.stream().filter(s -> s.getNameInStore().equals(name)).findFirst();
+            Optional<GameInShop> game = gameInShops.stream().filter(s -> name.contains(s.getNameInStore())).findFirst();
 
             if (game.isPresent() && isGameInfoChanged(game.get(), element)) {
                 changedGames.add(setChangedFields(game.get(), element));
