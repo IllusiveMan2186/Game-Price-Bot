@@ -4,6 +4,7 @@ import com.gpb.web.bean.user.UserActivation;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.exception.NotExistingTokenException;
 import com.gpb.web.repository.UserActivationRepository;
+import com.gpb.web.service.EmailService;
 import com.gpb.web.service.UserActivationService;
 import com.gpb.web.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,9 @@ class UserActivationServiceImplTest {
 
     UserService userService = mock(UserService.class);
 
-    UserActivationService userActivationService = new UserActivationServiceImpl(userActivationRepository, userService);
+    EmailService emailService = mock(EmailService.class);
+
+    UserActivationService userActivationService = new UserActivationServiceImpl(userActivationRepository, userService, emailService);
 
     @Test
     void createUserActivationSuccessfullyShouldReturnUserActivationAccount() {
@@ -56,5 +59,20 @@ class UserActivationServiceImplTest {
 
         assertThrows(NotExistingTokenException.class, () -> userActivationService.activateUserAccount(token),
                 "app.user.error.token.not.exist");
+    }
+
+    @Test
+    void resendActivationEmailSuccessfullyShouldSendEmail() {
+        String email = "email";
+        WebUser user = new WebUser();
+        UserActivation userActivation = UserActivation.builder()
+                .user(user)
+                .build();
+        when(userService.getWebUserByEmail(email)).thenReturn(user);
+        when(userActivationRepository.findByUser(user)).thenReturn(userActivation);
+
+        userActivationService.resendActivationEmail(email);
+
+        verify(emailService).sendEmailVerification(userActivation);
     }
 }

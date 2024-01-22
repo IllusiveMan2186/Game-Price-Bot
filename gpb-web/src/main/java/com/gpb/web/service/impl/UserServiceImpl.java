@@ -59,6 +59,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public WebUser getWebUserByEmail(String email) {
+        log.info(String.format("Get web user by email : %s", email));
+
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(
+                "app.user.error.email.not.found"));
+    }
+
+    @Override
     public WebUser createUser(final UserRegistration userRegistration) {
         log.info(String.format("Create user : %s", userRegistration.getEmail()));
         if (userRepository.findByEmail(userRegistration.getEmail()).isPresent()) {

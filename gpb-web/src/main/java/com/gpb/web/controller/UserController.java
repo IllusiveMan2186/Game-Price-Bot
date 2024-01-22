@@ -7,6 +7,7 @@ import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.configuration.UserAuthenticationProvider;
 import com.gpb.web.service.GameService;
 import com.gpb.web.service.GameStoresService;
+import com.gpb.web.service.UserActivationService;
 import com.gpb.web.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,18 +29,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
-
     private final GameService gameService;
-
     private final GameStoresService storesService;
-
+    private final UserActivationService userActivationService;
     private final UserAuthenticationProvider userAuthenticationProvider;
 
     public UserController(UserService userService, GameStoresService storesService,
-                          GameService gameService, UserAuthenticationProvider userAuthenticationProvider) {
+                          GameService gameService, UserActivationService userActivationService, UserAuthenticationProvider userAuthenticationProvider) {
         this.userService = userService;
         this.gameService = gameService;
         this.storesService = storesService;
+        this.userActivationService = userActivationService;
         this.userAuthenticationProvider = userAuthenticationProvider;
     }
 
@@ -53,7 +53,7 @@ public class UserController {
      */
     @PutMapping("/email")
     @Transactional
-    public UserDto updateUserEmail(@RequestBody final EmailChangeDto emailChangeDto, @AuthenticationPrincipal UserDto user) {
+    public UserDto updateUserLocale(@RequestBody final EmailChangeDto emailChangeDto, @AuthenticationPrincipal UserDto user) {
         UserDto userDto = userService.updateUserEmail(emailChangeDto.getEmail(), user);
         userDto.setToken(userAuthenticationProvider.createToken(userDto.getEmail()));
         return userDto;
@@ -92,6 +92,18 @@ public class UserController {
     }
 
     /**
+     * Resend the activation email to the user
+     *
+     * @param email user email
+     */
+    @PostMapping(value = "/resend/email/{email}")
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    public void resendUserActivationEmail(@PathVariable final String email) {
+        userActivationService.resendActivationEmail(email);
+    }
+
+    /**
      * Add game to user list of games
      *
      * @param gameId games id
@@ -110,10 +122,15 @@ public class UserController {
         return userService.getUserById(user.getId());
     }
 
+    /**
+     * Update user locale
+     * @param locale new locale
+     * @param user user
+     */
     @PutMapping("/locale/{locale}")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public void updateUserEmail(@PathVariable final String locale, @AuthenticationPrincipal UserDto user) {
+    public void updateUserLocale(@PathVariable final String locale, @AuthenticationPrincipal UserDto user) {
         userService.updateLocale(locale, user.getId());
     }
 }

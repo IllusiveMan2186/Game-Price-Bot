@@ -9,12 +9,14 @@ import com.gpb.web.configuration.MapperConfig;
 import com.gpb.web.configuration.UserAuthenticationProvider;
 import com.gpb.web.service.GameService;
 import com.gpb.web.service.GameStoresService;
+import com.gpb.web.service.UserActivationService;
 import com.gpb.web.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static com.gpb.web.util.Constants.USER_ROLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,15 +26,17 @@ import static org.mockito.Mockito.when;
 
 class UserControllerTest {
 
-    UserService service = mock(UserService.class);
+    UserService userService = mock(UserService.class);
 
     GameService gameService = mock(GameService.class);
 
     GameStoresService gameStoresService = mock(GameStoresService.class);
 
+    UserActivationService userActivationService = mock(UserActivationService.class);
+
     UserAuthenticationProvider provider = mock(UserAuthenticationProvider.class);
 
-    private final UserController controller = new UserController(service, gameStoresService, gameService, provider);
+    private final UserController controller = new UserController(userService, gameStoresService, gameService, userActivationService, provider);
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
     private final WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
@@ -45,9 +49,9 @@ class UserControllerTest {
         UserDto userDto = modelMapper.map(user, UserDto.class);
         EmailChangeDto emailChangeDto = new EmailChangeDto();
         emailChangeDto.setEmail(newUser.getEmail());
-        when(service.updateUserEmail(newUser.getEmail(), userDto)).thenReturn(expected);
+        when(userService.updateUserEmail(newUser.getEmail(), userDto)).thenReturn(expected);
 
-        UserDto result = controller.updateUserEmail(emailChangeDto, userDto);
+        UserDto result = controller.updateUserLocale(emailChangeDto, userDto);
 
         assertEquals(expected, result);
     }
@@ -60,7 +64,7 @@ class UserControllerTest {
         UserDto userDto = modelMapper.map(user, UserDto.class);
         PasswordChangeDto passwordChangeDto = new PasswordChangeDto();
         passwordChangeDto.setPassword(newUser.getPassword().toCharArray());
-        when(service.updateUserPassword(newUser.getPassword().toCharArray(), userDto)).thenReturn(expected);
+        when(userService.updateUserPassword(newUser.getPassword().toCharArray(), userDto)).thenReturn(expected);
 
         UserDto result = controller.updateUserPassword(passwordChangeDto, userDto);
 
@@ -72,7 +76,7 @@ class UserControllerTest {
         WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
         user.setId(1);
         UserDto expected = modelMapper.map(user, UserDto.class);
-        when(service.getUserById(1)).thenReturn(expected);
+        when(userService.getUserById(1)).thenReturn(expected);
         Game game = new Game();
         game.setUserList(List.of(new WebUser()));
         when(gameService.getById(1)).thenReturn(game);
@@ -81,7 +85,7 @@ class UserControllerTest {
 
         assertEquals(expected, result);
         verify(gameStoresService).subscribeToGame(game);
-        verify(service).subscribeToGame(1, 1);
+        verify(userService).subscribeToGame(1, 1);
     }
 
     @Test
@@ -89,7 +93,7 @@ class UserControllerTest {
         WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
         user.setId(1);
         UserDto expected = modelMapper.map(user, UserDto.class);
-        when(service.getUserById(1)).thenReturn(expected);
+        when(userService.getUserById(1)).thenReturn(expected);
         Game game = new Game();
         game.setUserList(new ArrayList<>());
         when(gameService.getById(1)).thenReturn(game);
@@ -98,6 +102,27 @@ class UserControllerTest {
 
         assertEquals(expected, result);
         verify(gameStoresService).unsubscribeFromGame(game);
-        verify(service).unsubscribeFromGame(1, 1);
+        verify(userService).unsubscribeFromGame(1, 1);
+    }
+
+    @Test
+    void updateUserLocaleSuccessfullyShouldCallUserServiceMethod() {
+        String stringLocale = "locale";
+        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
+        user.setId(1);
+        UserDto userDto = modelMapper.map(user, UserDto.class);
+
+        controller.updateUserLocale(stringLocale, userDto);
+
+        verify(userService).updateLocale(stringLocale,user.getId());
+    }
+
+    @Test
+    void resendUserActivationEmailSuccessfullyShouldCallUserActivationServiceMethod() {
+        String email = "email";
+
+        controller.resendUserActivationEmail(email);
+
+        verify(userActivationService).resendActivationEmail(email);
     }
 }
