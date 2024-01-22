@@ -62,5 +62,7 @@
     "app.game.info.type.game": "Игра",
     "app.game.info.type.currency": "Игровая валюта",
     "app.game.info.type.subscription": "Подписка",
-    "app.game.info.type.addition": "Дополнение"
+    "app.game.info.type.addition": "Дополнение",
+    "app.user.error.account.not.activated": "Пользователь не активирован. Пожалуйста, активируйте пользователя по ссылке, отправленной по электронной почте",
+    "app.user.error.account.not.activated.send": "Отправьте электронное письмо еще раз"
 }

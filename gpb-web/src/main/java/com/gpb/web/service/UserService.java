@@ -30,6 +30,14 @@ public interface UserService {
     UserDto getUserByEmail(String email);
 
     /**
+     * Get web user by email
+     *
+     * @param email users email
+     * @return user
+     */
+    WebUser getWebUserByEmail(String email);
+
+    /**
      * Create new user
      *
      * @param user user that would be registered in system

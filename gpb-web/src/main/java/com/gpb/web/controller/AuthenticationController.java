@@ -23,7 +23,6 @@ public class AuthenticationController {
 
     private final UserService userService;
     private final UserAuthenticationProvider userAuthenticationProvider;
-
     private final UserActivationService userActivationService;
     private final EmailService emailService;
 
