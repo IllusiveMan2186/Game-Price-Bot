@@ -45,11 +45,20 @@ export const registerRequest = (event, email, password, setErrorMessage, navigat
             );
 };
 
+export const resendActivationEmailRequest = (event, email, navigate) => {
+    event.preventDefault();
+    request(
+        "POST",
+        "/user/resend/email/" + email
+    )
+    navigate(0)
+};
+
 export const emailChangeRequest = (event, email, setErrorMessage, navigate) => {
     event.preventDefault();
     request(
         "PUT",
-        "/user/email",
+        "/user/email/" + email,
         {
             email: email
         }).then(

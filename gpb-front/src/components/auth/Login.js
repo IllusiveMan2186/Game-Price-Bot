@@ -2,7 +2,7 @@ import * as React from 'react'
 import classNames from 'classnames'
 import Message from '../../util/message';
 import { useNavigate } from 'react-router-dom'
-import { loginRequest, registerRequest } from '../../request/userRequests';
+import { loginRequest, registerRequest, resendActivationEmailRequest } from '../../request/userRequests';
 import { validateUserFieldInput } from '../../util/validation';
 
 export default function Login() {
@@ -41,6 +41,10 @@ export default function Login() {
     const onSubmitLogin = (e) => {
         loginRequest(e, email, password, setErrorMessage, navigate)
     };
+
+    const onSubmitResendEmail = e => {
+        resendActivationEmailRequest(e, email, navigate)
+    }
 
     const onSubmitRegistration = (e) => {
         if (isRegistrationFormValid()) {
@@ -91,7 +95,7 @@ export default function Login() {
 
     return (
         <div className="row justify-content-center login-form">
-            <div className="col-4">
+            <div className="col-4 ">
                 <ul className="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
                     <li className="nav-item" role="presentation">
                         <button className={classNames("nav-link", active === "login" ? "active" : "")} id="tab-login"
@@ -103,7 +107,6 @@ export default function Login() {
                     </li>
                 </ul>
 
-                <span className='Error'><Message string={errorMessage} /> </span>
                 <div className="tab-content">
                     <div className={classNames("tab-pane", "fade", active === "login" ? "show active" : "")} id="pills-login" >
                         <form onSubmit={onSubmitLogin}>
@@ -117,6 +120,11 @@ export default function Login() {
                                 <label className="form-label" htmlFor="loginPassword"><Message string={'app.login.form.password'} /></label>
                                 <input type="password" id="2" name="password" className="form-control" onChange={onChangeHandler} />
                             </div>
+
+                            <span className='Error'><Message string={errorMessage} /> </span>
+
+                            {(errorMessage === "app.user.error.account.not.activated") && 
+                            <span className='Resend-link nav mb-3' onClick={onSubmitResendEmail}><Message string={'app.user.error.account.not.activated.send'} /> </span>}
 
                             <button type="submit" className="btn btn-primary btn-block mb-4" disabled={!isLoginFormValid()}><Message string={'app.login.form.singup'} /></button>
 
@@ -145,6 +153,8 @@ export default function Login() {
                                     onChange={onChangeHandler} onBlur={validateInput} />
                                 <span className='Error'>{errorConfirmPassword}</span>
                             </div>
+
+                            <span className='Error'><Message string={errorMessage} /> </span>
 
                             <button type="submit" className="btn btn-primary btn-block mb-3" disabled={!isRegistrationFormValid()}><Message string={'app.registr.form.reg.buttom'} /></button>
                         </form>

@@ -61,5 +61,7 @@
     "app.game.info.type.game": "Game",
     "app.game.info.type.currency": "Game currency",
     "app.game.info.type.subscription": "Subscription",
-    "app.game.info.type.addition": "Addition"
+    "app.game.info.type.addition": "Addition",
+    "app.user.error.account.not.activated": "User not activated. Please activate user by link sended on email",
+    "app.user.error.account.not.activated.send": "Send email again"
 }
