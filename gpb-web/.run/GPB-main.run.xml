@@ -4,6 +4,7 @@
       <env name="GAMEZEY_LOGIN" value="jediks22@gmail.com" />
       <env name="GAMEZEY_PASSWORD" value="11dra12kon22" />
       <env name="IMAGE_FOLDER" value="E:\Work\Pet\GPB\images" />
+      <env name="KAFKA_SERVER_URL" value="localhost:9092" />
       <env name="MAIL_PASSWORD" value="qywt dvml hpdk yfub" />
       <env name="MAIL_USERNAME" value="jediks22@gmail.com" />
       <env name="POSTGRES_DB_PASSWORD" value="3224" />
@@ -16,5 +17,4 @@
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
-  </configuration>
-</component>
+  </configur

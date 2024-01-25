@@ -88,6 +88,7 @@ public class BaseAuthenticationIntegration {
         System.setProperty("GAMEZEY_PASSWORD", "");
         System.setProperty("IMAGE_FOLDER", "");
         System.setProperty("WEB_SERVICE_URL", "");
+        System.setProperty("KAFKA_SERVER_URL", "");
     }
 
     @BeforeEach

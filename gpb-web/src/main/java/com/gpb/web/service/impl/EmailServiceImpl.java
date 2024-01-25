@@ -1,36 +1,33 @@
 package com.gpb.web.service.impl;
 
+import com.gpb.web.bean.EmailEvent;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.user.UserActivation;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.service.EmailService;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailAuthenticationException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.util.List;
+
+import static com.gpb.web.util.Constants.EMAIL_SERVICE_TOPIC;
 
 @Service
 @Slf4j
 public class EmailServiceImpl implements EmailService {
 
-    private final JavaMailSender mailSender;
 
-    private final TemplateEngine templateEngine;
+    private KafkaTemplate<Long, EmailEvent> kafkaTemplate;
 
     @Value("${WEB_SERVICE_URL}")
     private String webServiceUrl;
-
-    public EmailServiceImpl(JavaMailSender mailSender, TemplateEngine templateEngine) {
-        this.mailSender = mailSender;
-        this.templateEngine = templateEngine;
+    
+    public EmailServiceImpl(KafkaTemplate<Long, EmailEvent> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -49,21 +46,12 @@ public class EmailServiceImpl implements EmailService {
         sendEmail(userActivation.getUser().getEmail(), "User verification", context, "email-user-verification");
     }
 
+    @PostConstruct
+    void post() {
+        sendEmail("jediks22@gmail.com", "sadsa", new Context(), "email-user-verification");
+    }
     private void sendEmail(String to, String subject, Context context, String templateName) {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
-
-        try {
-            helper.setTo(to);
-            helper.setSubject(subject);
-            String htmlContent = templateEngine.process(templateName, context);
-            helper.setText(htmlContent, true);
-            mailSender.send(mimeMessage);
-            log.info("Send changed info about subscribed game for user " + to);
-        } catch (MessagingException e) {
-            log.error("Error during email sending : " + e.getMessage());
-        } catch (MailAuthenticationException e) {
-            log.error("GPB mail credential error : " + e.getMessage());
-        }
+        log.info(String.format("Email event for recipient '%s' about '%s'", to, subject));
+        kafkaTemplate.send(EMAIL_SERVICE_TOPIC,1L, new EmailEvent(to, subject, context, templateName));
     }
 }
