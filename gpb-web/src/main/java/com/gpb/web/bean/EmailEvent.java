@@ -3,7 +3,9 @@ package com.gpb.web.bean;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.thymeleaf.context.Context;
+
+import java.util.Locale;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -14,7 +16,9 @@ public class EmailEvent {
 
     private String subject;
 
-    private Context context;
+    private Map<String, Object> variables;
+
+    private Locale locale;
 
     private String templateName;
 }

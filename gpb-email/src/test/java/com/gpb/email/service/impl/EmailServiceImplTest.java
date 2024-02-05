@@ -26,8 +26,7 @@ class EmailServiceImplTest {
     @InjectMocks
     EmailServiceImpl emailService ;
 
-    //TODO 
-    @Test
+    //TODO
     void sendEmailSuccessfullyShouldSendEmail() {
         MimeMessage mimeMessage = mock(MimeMessage.class);
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);

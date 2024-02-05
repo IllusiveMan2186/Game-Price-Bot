@@ -13,6 +13,6 @@ Add Environment variables fro running project locally
 * POSTGRES_DB_PASSWORD;
 * GAMEZEY_LOGIN;
 * GAMEZEY_PASSWORD;
-* MAIL_USERNAME;
-* MAIL_PASSWORD;
+* KAFKA_SERVER_URL;
 * WEB_SERVICE_URL;
+* IMAGE_FOLDER;
