@@ -10,4 +10,5 @@ The following was discovered as part of building this project:
 Add Environment variables for running project locally
 * MAIL_USERNAME;
 * MAIL_PASSWORD;
-* WEB_SERVICE_URL;
+* KAFKA_GROUP_ID;
+* KAFKA_SERVER_URL;
