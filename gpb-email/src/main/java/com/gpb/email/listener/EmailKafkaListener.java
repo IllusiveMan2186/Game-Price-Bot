@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.context.Context;
 
 @Slf4j
 @Component
@@ -23,7 +24,11 @@ public class EmailKafkaListener {
         log.info(String.format("Email event '%s' for recipient '%s' about '%s'", eventRecord.key(),
                 emailEvent.getRecipient(), emailEvent.getSubject()));
 
-        emailService.sendEmail(emailEvent.getRecipient(), emailEvent.getSubject(), emailEvent.getContext(),
+        Context context = new Context();
+        context.setLocale(emailEvent.getLocale());
+        context.setVariables(emailEvent.getVariables());
+
+        emailService.sendEmail(emailEvent.getRecipient(), emailEvent.getSubject(), context,
                 emailEvent.getTemplateName());
     }
 }

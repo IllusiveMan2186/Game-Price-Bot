@@ -1,7 +1,9 @@
 package com.gpb.email.bean;
 
 import lombok.Data;
-import org.thymeleaf.context.Context;
+
+import java.util.Locale;
+import java.util.Map;
 
 @Data
 public class EmailEvent {
@@ -10,7 +12,9 @@ public class EmailEvent {
 
     private String subject;
 
-    private Context context;
+    private Map<String, Object> variables;
+
+    private Locale locale;
 
     private String templateName;
 }
