@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: ${POSTGRES_JDBC_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:REDACTED}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      schema: public
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate.default_schema: ${POSTGRES_SCHEMA:public}
+  flyway:
+    schemas: public
+    locations: classpath:db/migration
+
+bot:
+  name: "GamingPriceBot"
+  token: {$BOT_TOKEN:}
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
