@@ -150,6 +150,7 @@ public class BaseAuthenticationIntegration {
                 .name(name)
                 .type(ProductType.GAME)
                 .gamesInShop(Set.of(gameInShopCreation(url, price, discountPrice)))
+                .isFollowed(true)
                 .genres(Collections.singletonList(genre)).build();
         game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));
         return game;

@@ -36,6 +36,7 @@ dependencies {
 	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework:spring-context")
 	implementation("org.springframework.security:spring-security-config")
 	implementation("org.springframework.kafka:spring-kafka:3.1.1")
 

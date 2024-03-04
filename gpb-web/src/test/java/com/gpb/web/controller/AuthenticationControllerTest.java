@@ -11,6 +11,8 @@ import com.gpb.web.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
+import java.util.Locale;
+
 import static com.gpb.web.util.Constants.USER_ROLE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -28,7 +30,8 @@ class AuthenticationControllerTest {
 
     private final AuthenticationController controller = new AuthenticationController(service, provider, userActivationService, emailService);
 
-    private final WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
+    private final WebUser user = new WebUser("email", "password", false, false,
+            0, null, USER_ROLE, new Locale("ua"));
 
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 

@@ -27,4 +27,3 @@ public interface WebUserRepository extends CrudRepository<WebUser, Long> {
     @Query(value = "SELECT u FROM WebUser u join fetch u.gameList g join fetch g.gamesInShop gs WHERE gs.id in :ids")
     List<WebUser> findSubscribedUserForChangedGames(@Param("ids") List<Long> changedGamesIds);
 }
-//94 40

@@ -1,6 +1,7 @@
-package com.gpb.web.configuration;
+package com.gpb.web.schedule;
 
 import com.gpb.web.bean.game.GameInShop;
+import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.service.EmailService;
 import com.gpb.web.service.GameService;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @Slf4j
@@ -45,8 +47,11 @@ public class GameInfoChangeCheckerConfiguration {
         List<GameInShop> changedGames = gameStoresService.checkGameInStoreForChange(subscribedGame);
         gameService.changeInfo(changedGames);
 
-        List<WebUser> users = userService.getUsersOfChangedGameInfo(changedGames);
-        for (WebUser user : users) {
+        List<BasicUser> users = userService.getUsersOfChangedGameInfo(changedGames);
+        List<Long> ids = users.stream()
+                .map(BasicUser::getId)
+                .toList();
+        for (WebUser user : userService.getWebUsers(ids)) {
             List<GameInShop> usersChangedGames = gameService.getUsersChangedGames(users.get(0), changedGames);
             emailService.sendGameInfoChange(user, usersChangedGames);
         }

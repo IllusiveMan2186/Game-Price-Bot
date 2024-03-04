@@ -1,154 +1,89 @@
 package com.gpb.web.service.impl;
 
 import com.gpb.web.bean.game.Game;
-import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.exception.NotFoundException;
-import com.gpb.web.service.GameStoresService;
-import com.gpb.web.service.StoreService;
+import com.gpb.web.service.impl.GameStoresServiceImpl;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.kafka.core.KafkaTemplate;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-class GameStoresServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+public class GameStoresServiceImplTest {
 
-    StoreService storeService1 = mock(StoreService.class);
-    StoreService storeService2 = mock(StoreService.class);
-    GameStoresService gameStoresService;
+    @Mock
+    private KafkaTemplate<String, String> kafkaGameSearchTemplate;
+
+    @Mock
+    private KafkaTemplate<String, Long> kafkaFollowTemplate;
+
+    @InjectMocks
+    private GameStoresServiceImpl gameStoresService;
+
+    private static final String CORRELATION_ID = UUID.randomUUID().toString();
 
     @BeforeEach
-    void beforeAllGame() {
-        Map<String, StoreService> storeServiceMap = new HashMap<>();
-        storeServiceMap.put("storeService1", storeService1);
-        storeServiceMap.put("gamazey.com.ua", storeService2);
-        gameStoresService = new GameStoresServiceImpl(storeServiceMap);
+    void setUp() {
+        reset(kafkaGameSearchTemplate);
     }
 
     @Test
-    void getGameByNameSuccessfullyShouldReturnNewGame() {
-        String name = "name";
-        final Game game = new Game();
-        final GameInShop gameInShop1 = new GameInShop();
-        final GameInShop gameInShop2 = new GameInShop();
-        game.setGamesInShop(Collections.singleton(gameInShop2));
+    public void testFindGameByName_Success_Should() throws InterruptedException {
+        String name = "Test Game";
+        List<Game> expectedGames = Collections.singletonList(new Game());
 
-        when(storeService2.findUncreatedGameByName(name)).thenReturn(List.of(game));
-        when(storeService1.findUncreatedGameByName(name)).thenReturn(new ArrayList<>());
-        when(storeService1.findByName(name)).thenReturn(gameInShop1);
-        Set<GameInShop> copyOfList = new HashSet<>(Collections.singletonList(gameInShop2));
-        copyOfList.add(gameInShop1);
-        game.setGamesInShop(copyOfList);
+        CountDownLatch latch = new CountDownLatch(1);
+        ArgumentCaptor<ProducerRecord<String, String>> captor = ArgumentCaptor.forClass(ProducerRecord.class);
 
-        List<Game> result = gameStoresService.findGameByName(name);
+        doAnswer(invocation -> {
+            ProducerRecord<String, String> record = invocation.getArgument(0);
+            assertEquals("gpb_game_name_search_request", record.topic());
+            assertNotNull(record.key());
+            assertEquals(name, record.value());
+            latch.countDown();
+            return null;
+        }).when(kafkaGameSearchTemplate).send(captor.capture());
 
-        assertEquals(List.of(game), result);
+        assertThrows(NotFoundException.class, () -> gameStoresService.findGameByName(name));
+
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
-    void getGameByNameThatNotFoundShouldThrowException() {
-        final Game game = new Game();
-        final GameInShop gameInShop1 = new GameInShop();
-        game.setGamesInShop(Set.of(gameInShop1));
-        String name = "name";
-        when(storeService2.findUncreatedGameByName(name)).thenReturn(new ArrayList<>());
+    public void testFindGameByName_NotFound() throws InterruptedException {
+        String name = "Test Game";
 
-        assertThrows(NotFoundException.class, () -> gameStoresService.findGameByName(name), "app.game.error.name.not.found");
+        CountDownLatch latch = new CountDownLatch(1);
+        ArgumentCaptor<ProducerRecord<String, String>> captor = ArgumentCaptor.forClass(ProducerRecord.class);
+
+        doAnswer(invocation -> {
+            ProducerRecord<String, String> record = invocation.getArgument(0);
+            assertEquals("gpb_game_name_search_request", record.topic());
+            assertNotNull(record.key());
+            assertEquals(name, record.value());
+            latch.countDown();
+            return null;
+        }).when(kafkaGameSearchTemplate).send(captor.capture());
+
+        assertThrows(NotFoundException.class, () -> gameStoresService.findGameByName(name));
+
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
-    @Test
-    void getGameByUrlSuccessfullyShouldReturnNewGame() {
-        final Game game = new Game();
-        final GameInShop gameInShop1 = new GameInShop();
-        final GameInShop gameInShop2 = new GameInShop();
-        game.setGamesInShop(Collections.singleton(gameInShop2));
-        String url = "https://gamazey.com.ua/games/steam/sid-meiers-civilization-vi";
-        when(storeService2.findUncreatedGameByUrl(url)).thenReturn(game);
-        when(storeService1.findByUrl(url)).thenReturn(gameInShop1);
-        Set<GameInShop> copyOfList = new HashSet<>(Collections.singletonList(gameInShop2));
-        copyOfList.add(gameInShop1);
-        game.setGamesInShop(copyOfList);
 
-        Game result = gameStoresService.findGameByUrl(url);
-
-        assertEquals(game, result);
-    }
-
-    @Test
-    void getGameByUrlThatNotFoundShouldThrowException() {
-        final Game game = new Game();
-        final GameInShop gameInShop1 = new GameInShop();
-        game.setGamesInShop(Set.of(gameInShop1));
-        String url = "url";
-        when(storeService2.findUncreatedGameByUrl(url)).thenReturn(null);
-
-        assertThrows(NotFoundException.class, () -> gameStoresService.findGameByUrl(url), "");
-    }
-
-    @Test
-    void subscribeToGameSuccessfullyShouldSubscribeToGame() {
-        final Game game = new Game();
-        String url1 = "https://storeService1/games";
-        String url2 = "https://gamazey.com.ua/games";
-        final GameInShop gameInShop1 = new GameInShop();
-        gameInShop1.setUrl(url1);
-        final GameInShop gameInShop2 = new GameInShop();
-        gameInShop2.setUrl(url2);
-        game.setGamesInShop(Set.of(gameInShop1, gameInShop2));
-
-
-        gameStoresService.subscribeToGame(game);
-
-        verify(storeService1).subscribeToGame(gameInShop1);
-        verify(storeService2).subscribeToGame(gameInShop2);
-    }
-
-    @Test
-    void unsubscribeToGameSuccessfullyShouldSubscribeToGame() {
-        final Game game = new Game();
-        String url1 = "https://storeService1/games";
-        String url2 = "https://gamazey.com.ua/games";
-        final GameInShop gameInShop1 = new GameInShop();
-        gameInShop1.setUrl(url1);
-        final GameInShop gameInShop2 = new GameInShop();
-        gameInShop2.setUrl(url2);
-        game.setGamesInShop(Set.of(gameInShop1, gameInShop2));
-
-        gameStoresService.unsubscribeFromGame(game);
-
-        verify(storeService1).unsubscribeFromGame(gameInShop1);
-        verify(storeService2).unsubscribeFromGame(gameInShop2);
-    }
-
-    @Test
-    void checkGamesInStoreForChangeSuccessfullyShouldReturn() {
-        String url1 = "https://storeService1/games";
-        String url2 = "https://gamazey.com.ua/games";
-        final GameInShop gameInShop1 = new GameInShop();
-        gameInShop1.setUrl(url1);
-        final GameInShop gameInShop2 = new GameInShop();
-        gameInShop2.setUrl(url2);
-        final GameInShop gameInShop3 = new GameInShop();
-        gameInShop3.setUrl(url2);
-        final GameInShop gameInShop4 = new GameInShop();
-        List<GameInShop> expected = Collections.singletonList(gameInShop4);
-        when(storeService1.checkGameInStoreForChange(List.of(gameInShop1))).thenReturn(new ArrayList<>());
-        when(storeService2.checkGameInStoreForChange(List.of(gameInShop2, gameInShop3))).thenReturn(expected);
-
-        List<GameInShop> result = gameStoresService
-                .checkGameInStoreForChange(List.of(gameInShop1, gameInShop2, gameInShop3));
-
-        assertEquals(expected, result);
-    }
 }
