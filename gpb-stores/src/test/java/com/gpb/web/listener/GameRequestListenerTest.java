@@ -3,25 +3,27 @@ package com.gpb.web.listener;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.service.GameService;
 import com.gpb.web.service.GameStoresService;
+import com.gpb.web.util.Constants;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.KafkaHeaders;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class GameRequestListenerTest {
+class GameRequestListenerTest {
 
     @Mock
     private GameStoresService gameStoresService;
@@ -30,39 +32,58 @@ public class GameRequestListenerTest {
     private GameService gameService;
 
     @Mock
-    private KafkaTemplate<String, List<Game>> responseKafkaTemplate;
+    private KafkaTemplate<String, List<String>> responseKafkaTemplate;
 
     @InjectMocks
     private GameRequestListener gameRequestListener;
 
     @Test
-    public void testListenGameNameSearchSuccessfullyShouldSendResponse() {
+    void testListenGameNameSearch_whenSuccessfully_shouldSendResponse() {
         String gameName = "Test Game";
         List<Game> games = Collections.singletonList(new Game());
-        ConsumerRecord<String, String> record = new ConsumerRecord<>("topic", 0, 0, "key", gameName);
-        when(gameStoresService.findGameByName(gameName)).thenReturn(games);
 
-        gameRequestListener.listenGameNameSearch(record);
+        ConsumerRecord<String, String> requestRecord = new ConsumerRecord<>("topic", 0, 0, "key", gameName);
+        requestRecord.headers().add(KafkaHeaders.CORRELATION_ID, "1".getBytes());
+
+        ProducerRecord<String, List<String>> expectedResponse
+                = new ProducerRecord<>(Constants.GAME_SEARCH_RESPONSE_TOPIC, requestRecord.key(), Collections.singletonList("1"));
+        expectedResponse.headers().add(KafkaHeaders.CORRELATION_ID, requestRecord.headers().lastHeader(KafkaHeaders.CORRELATION_ID).value());
+
+        when(gameStoresService.findGameByName(gameName)).thenReturn(games);
+        when(gameService.addGames(games)).thenReturn(Collections.singletonList(1L));
+
+
+        gameRequestListener.listenGameNameSearch(requestRecord);
+
 
         verify(gameStoresService, times(1)).findGameByName(gameName);
-        verify(responseKafkaTemplate, times(1)).send(any(), any(), eq(games));
+        verify(responseKafkaTemplate, times(1)).send(expectedResponse);
     }
 
     @Test
-    public void testListenGameUrlSearchSuccessfullyShouldSendResponse() {
+    void testListenGameUrlSearch_whenSuccessfully_shouldSendResponse() {
         String gameUrl = "http://example.com/game";
         Game game = new Game();
-        ConsumerRecord<String, String> record = new ConsumerRecord<>("topic", 0, 0, "key", gameUrl);
+
+        ConsumerRecord<String, String> requestRecord = new ConsumerRecord<>("topic", 0, 0, "key", gameUrl);
+        requestRecord.headers().add(KafkaHeaders.CORRELATION_ID, "1".getBytes());
+
+        ProducerRecord<String, List<String>> expectedResponse
+                = new ProducerRecord<>(Constants.GAME_SEARCH_RESPONSE_TOPIC, requestRecord.key(), Collections.singletonList("1"));
+        expectedResponse.headers().add(KafkaHeaders.CORRELATION_ID, requestRecord.headers().lastHeader(KafkaHeaders.CORRELATION_ID).value());
+
         when(gameStoresService.findGameByUrl(gameUrl)).thenReturn(game);
+        when(gameService.addGames(Collections.singletonList(game))).thenReturn(Collections.singletonList(1L));
 
-        gameRequestListener.listenGameUrlSearch(record);
 
-        verify(gameStoresService, times(1)).findGameByUrl(gameUrl);
-        verify(responseKafkaTemplate, times(1)).send(any(), any(), eq(Collections.singletonList(game)));
+        gameRequestListener.listenGameUrlSearch(requestRecord);
+
+
+        verify(responseKafkaTemplate, times(1)).send(eq(expectedResponse));
     }
 
     @Test
-    public void testListenGameFollowSuccessfullyShouldCallMethodSubscribe() {
+    void testListenGameFollow_whenSuccessfully_shouldCallMethodSubscribe() {
         long gameId = 123L;
         Game game = new Game();
         ConsumerRecord<String, Long> record = new ConsumerRecord<>("topic", 0, 0, "key", gameId);
@@ -75,7 +96,7 @@ public class GameRequestListenerTest {
     }
 
     @Test
-    public void testListenGameUnfollowSuccessfullyShouldCallMethodUnsubscribe() {
+    void testListenGameUnfollow_whenSuccessfully_shouldCallMethodUnsubscribe() {
         long gameId = 123L;
         Game game = new Game();
         ConsumerRecord<String, Long> record = new ConsumerRecord<>("topic", 0, 0, "key", gameId);

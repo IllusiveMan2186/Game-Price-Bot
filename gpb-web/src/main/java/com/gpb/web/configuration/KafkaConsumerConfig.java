@@ -30,7 +30,7 @@ public class KafkaConsumerConfig {
     private String kafkaServer;
 
     @Bean
-    public Map < String, Object > consumerConfigs() {
+    public Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "gpb");
@@ -41,24 +41,15 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConsumerFactory < String, List<Long>> replyConsumerFactory() {
-        return new DefaultKafkaConsumerFactory < > (consumerConfigs(), new StringDeserializer(),
-                new JsonDeserializer<>());
+    public ConsumerFactory<String, List<String>> replyConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(),
+                new JsonDeserializer<>(List.class));
     }
 
     @Bean
-    public KafkaMessageListenerContainer < String, List<Long> > replyListenerContainer() {
+    public KafkaMessageListenerContainer<String, List<String>> replyListenerContainer(
+            ConsumerFactory<String, List<String>> consumerFactory) {
         ContainerProperties containerProperties = new ContainerProperties(Constants.GAME_SEARCH_RESPONSE_TOPIC);
-        return new KafkaMessageListenerContainer< >(replyConsumerFactory(), containerProperties);
-    }
-
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, List<Long>> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, List<Long>> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(replyConsumerFactory());
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
-        factory.getContainerProperties().setPollTimeout(3000);
-        return factory;
+        return new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
     }
 }

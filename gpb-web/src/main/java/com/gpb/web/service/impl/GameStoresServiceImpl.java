@@ -31,6 +31,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -43,7 +44,7 @@ public class GameStoresServiceImpl implements GameStoresService {
     private KafkaTemplate<String, Long> kafkaFollowTemplate;
 
     @Autowired
-    private ReplyingKafkaTemplate<String, String, List<Long>> requestReplyKafkaTemplate;
+    private ReplyingKafkaTemplate<String, String, List<String>> requestReplyKafkaTemplate;
 
     @Override
     public List<Long> findGameByName(String name) {
@@ -74,19 +75,21 @@ public class GameStoresServiceImpl implements GameStoresService {
         log.info(String.format("Send request '%s' for searching of game into topic '%s' with parameter '%s'",
                 correlationId, topic, parameter));
 
-        ProducerRecord<String, String> record = new ProducerRecord<>(topic, parameter);
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic, correlationId, parameter);
         //record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
         //record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, Constants.GAME_SEARCH_RESPONSE_TOPIC.getBytes()));
 
         System.out.println(record);
-        RequestReplyFuture<String, String, List<Long>> requestReplyFuture = requestReplyKafkaTemplate.sendAndReceive(record);
+        RequestReplyFuture<String, String, List<String>> requestReplyFuture = requestReplyKafkaTemplate.sendAndReceive(record);
         //CompletableFuture<List<Long>> completableFuture = new CompletableFuture<>();
-        List<Long> games;
+        List<Long> games = new ArrayList<>();
         try {
             //requestReplyFuture.getSendFuture().get(Constants.SEARCH_REQUEST_WAITING_TIME, TimeUnit.SECONDS); // send ok
             SendResult<String, String> sendResult = requestReplyFuture.getSendFuture().get(Constants.SEARCH_REQUEST_WAITING_TIME, TimeUnit.SECONDS);
             System.out.println("Sent ok: " + sendResult.getRecordMetadata());
-            games = requestReplyFuture.get().value();
+            games = requestReplyFuture.get().value().stream()
+                    .map(Long::valueOf)
+                    .collect(Collectors.toList());;
             log.info("Received response for request with correlationId: " + correlationId);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             log.error("Error while waiting for response", e);

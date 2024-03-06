@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,7 +39,7 @@ class GameServiceImplTest {
     private final Game game = Game.builder().gamesInShop(Collections.singleton(gameInShop)).build();
 
     @Test
-    public void testGetByIdGameSuccessfullyShouldReturnGame() {
+    void testGetByIdGame_whenSuccessfully_shouldReturnGame() {
         long gameId = 123L;
         Game expectedGame = new Game();
         when(repository.findById(gameId)).thenReturn(expectedGame);
@@ -50,16 +51,16 @@ class GameServiceImplTest {
     }
 
     @Test
-    public void testGetByIdGameThatNotExistNullShouldThrowException() {
+    void testGetByIdGame_whenNotExist_ShouldThrowException() {
         long gameId = 123L;
         when(repository.findById(gameId)).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> gameService.getById(gameId),"app.game.error.id.not.found");
+        assertThrows(NotFoundException.class, () -> gameService.getById(gameId), "app.game.error.id.not.found");
         verify(repository, times(1)).findById(gameId);
     }
 
     @Test
-    void getSubscribedGamesSuccessfullyGameList() {
+    void testGetSubscribedGames_whenSuccessfully_thenShouldGetGames() {
         List<GameInShop> games = new ArrayList<>();
         when(gameInShopRepository.findSubscribedGames()).thenReturn(games);
 
@@ -69,7 +70,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void changeInfoSuccessfullySaveChanges() {
+    void testChangeInfo_whenSuccessfully_thenSaveChanges() {
         List<GameInShop> changedGames = new ArrayList<>();
 
         gameService.changeInfo(changedGames);
@@ -78,7 +79,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void getUsersChangedGamesSuccessfullyShouldGetGames() {
+    void testGetUsersChangedGames_whenSuccessfully_thenShouldGetGames() {
         List<GameInShop> changedGames = new ArrayList<>();
         GameInShop gameInShop1 = GameInShop.builder().id(0).build();
         GameInShop gameInShop2 = GameInShop.builder().id(1).build();
@@ -89,5 +90,19 @@ class GameServiceImplTest {
         List<GameInShop> result = gameService.getUsersChangedGames(user, List.of(gameInShop1, gameInShop2));
 
         assertEquals(changedGames, result);
+    }
+
+    @Test
+    public void testAddGames_whenSuccessfully_thenShouldGetGameIds() {
+        List<Game> gamesToAdd = List.of(new Game());
+        when(repository.saveAll(gamesToAdd)).thenReturn(gamesToAdd);
+
+        List<Long> result = gameService.addGames(gamesToAdd);
+
+        verify(repository).saveAll(gamesToAdd);
+        List<Long> expectedIds = gamesToAdd.stream()
+                .map(Game::getId)
+                .toList();
+        assertEquals(expectedIds, result);
     }
 }

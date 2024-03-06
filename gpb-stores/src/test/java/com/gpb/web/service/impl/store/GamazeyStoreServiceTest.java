@@ -54,7 +54,7 @@ class GamazeyStoreServiceTest {
             clientActivationTypeMap, resourceConfiguration);
 
     @Test
-    void getUncreatedGameByUrlSuccessfullyShouldReturnNewGame() {
+    void testGetUncreatedGameByUrl_whenSuccessfully_thenShouldReturnNewGame() {
         final GameInShop gameInShop = getGameInStore();
         final Game game = Game.builder()
                 .name(gameInShop.getNameInStore())
@@ -79,7 +79,7 @@ class GamazeyStoreServiceTest {
     }
 
     @Test
-    void getGameInStoreByUrlSuccessfullyShouldReturnNewGameInStore() {
+    void testGetGameInStoreByUrl_whenSuccessfully_thenShouldReturnNewGameInStore() {
         final GameInShop gameInShop = getGameInStore();
 
         Document page = mock(Document.class);
@@ -114,7 +114,7 @@ class GamazeyStoreServiceTest {
     }
 
     @Test
-    void findUncreatedGameByNameSuccessfullyShouldReturnGameList() {
+    void testFindUncreatedGameByName_whenSuccessfully_thenShouldReturnGameList() {
         final GameInShop gameInShop = getGameInStore();
         final Game game = Game.builder()
                 .name(gameInShop.getNameInStore())

@@ -22,7 +22,7 @@ import static com.gpb.web.util.Constants.EMAIL_SERVICE_TOPIC;
 public class EmailServiceImpl implements EmailService {
 
 
-    private KafkaTemplate<Long, EmailEvent> kafkaTemplate;
+    private final KafkaTemplate<Long, EmailEvent> kafkaTemplate;
 
     @Value("${WEB_SERVICE_URL}")
     private String webServiceUrl;

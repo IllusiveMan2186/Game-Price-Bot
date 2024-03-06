@@ -6,64 +6,81 @@ import com.gpb.web.service.GameStoresService;
 import com.gpb.web.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class GameRequestListener {
 
-    @Autowired
-    private GameStoresService gameStoresService;
-    @Autowired
-    private GameService gameService;
-    //private KafkaTemplate<String, List<Long>> responseKafkaTemplate;
+
+    private final GameStoresService gameStoresService;
+
+    private final GameService gameService;
+
+    private final KafkaTemplate<String, List<String>> responseKafkaTemplate;
+
+    public GameRequestListener(GameStoresService gameStoresService, GameService gameService, KafkaTemplate<String,
+            List<String>> responseKafkaTemplate) {
+        this.gameStoresService = gameStoresService;
+        this.gameService = gameService;
+        this.responseKafkaTemplate = responseKafkaTemplate;
+    }
 
     @KafkaListener(topics = Constants.GAME_NAME_SEARCH_TOPIC, groupId = Constants.GPB_KAFKA_GROUP_ID,
             containerFactory = Constants.RESPONSE_CONTAINER_FACTORY)
-    @SendTo//(Constants.GAME_SEARCH_RESPONSE_TOPIC)
-    public List<Long> listenGameNameSearch(ConsumerRecord<String, String> record,@Header(KafkaHeaders.CORRELATION_ID) String correlationId) {
-        log.info(String.format("Request '%s' for searching of game with name '%s'", record.key(), record.value()));
-        //record.headers().headers(KafkaHeaders.CORRELATION_ID)
-        //String correlationId2 = new String(record.headers().lastHeader(KafkaHeaders.CORRELATION_ID).value());
-        //System.out.println(Arrays.toString(record.headers().lastHeader(KafkaHeaders.CORRELATION_ID).value()));
-        List<Game> games = gameStoresService.findGameByName(record.value());
+    public void listenGameNameSearch(ConsumerRecord<String, String> requestRecord) {
+        log.info(String.format("Request '%s' for searching of game with name '%s'", requestRecord.key(), requestRecord.value()));
+        List<Game> games = gameStoresService.findGameByName(requestRecord.value());
         List<Long> gamesId = gameService.addGames(games);
-
-        System.out.println(gamesId);
-        return gamesId;
+        sendGamesSearchResponse(gamesId, requestRecord);
     }
 
     @KafkaListener(topics = Constants.GAME_URL_SEARCH_TOPIC, groupId = Constants.GPB_KAFKA_GROUP_ID,
             containerFactory = Constants.RESPONSE_CONTAINER_FACTORY)
-    @SendTo(Constants.GAME_SEARCH_RESPONSE_TOPIC)
-    public List<Long>  listenGameUrlSearch(ConsumerRecord<String, String> record) {
-        log.info(String.format("Request '%s' for searching of game with url '%s'", record.key(), record.value()));
-        Game game = gameStoresService.findGameByUrl(record.value());
-        return gameService.addGames(Collections.singletonList(game));
-        //responseKafkaTemplate.send(Constants.GAME_SEARCH_RESPONSE_TOPIC, record.key(), gamesId);
+    public void listenGameUrlSearch(ConsumerRecord<String, String> requestRecord) {
+        log.info(String.format("Request '%s' for searching of game with url '%s'", requestRecord.key(), requestRecord.value()));
+        Game game = gameStoresService.findGameByUrl(requestRecord.value());
+        List<Long> gamesId =  gameService.addGames(Collections.singletonList(game));
+        sendGamesSearchResponse(gamesId, requestRecord);
     }
 
-    //@KafkaListener(topics = "gpb_game_follow", groupId = "gpb")
-    public void listenGameFollow(ConsumerRecord<String, Long> record) {
-        log.info(String.format("Request '%s' for follow for game '%s'", record.key(), record.value()));
-        Game game = gameService.getById(record.value());
+    private void sendGamesSearchResponse(List<Long> gameIds, ConsumerRecord<String, String> requestRecord) {
+        List<String> gamesId = gameIds.stream()
+                .map(Object::toString)
+                .toList();
+
+        ProducerRecord<String, List<String>> response
+                = new ProducerRecord<>(Constants.GAME_SEARCH_RESPONSE_TOPIC, requestRecord.key(), gamesId);
+        response.headers().add(KafkaHeaders.CORRELATION_ID, requestRecord.headers().lastHeader(KafkaHeaders.CORRELATION_ID).value());
+
+        responseKafkaTemplate.send(response);
+    }
+
+    @KafkaListener(topics = "gpb_game_follow", groupId = "gpb")
+    public void listenGameFollow(ConsumerRecord<String, Long> followRecord) {
+        log.info(String.format("Request '%s' for follow for game '%s'", followRecord.key(), followRecord.value()));
+        Game game = gameService.getById(followRecord.value());
         gameStoresService.subscribeToGame(game);
     }
 
 
-    //@KafkaListener(topics = "gpb_game_unfollow", groupId = "gpb")
-    public void listenGameUnfollow(ConsumerRecord<String, Long> record) {
-        log.info(String.format("Request '%s' for unfollow for game '%s'", record.key(), record.value()));
-        Game game = gameService.getById(record.value());
+    @KafkaListener(topics = "gpb_game_unfollow", groupId = "gpb")
+    public void listenGameUnfollow(ConsumerRecord<String, Long> unfollowRecord) {
+        log.info(String.format("Request '%s' for unfollow for game '%s'", unfollowRecord.key(), unfollowRecord.value()));
+        Game game = gameService.getById(unfollowRecord.value());
         gameStoresService.unsubscribeFromGame(game);
     }
 }

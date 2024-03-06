@@ -3,6 +3,7 @@ package com.gpb.web.configuration;
 import com.gpb.web.bean.EmailEvent;
 import com.gpb.web.util.Constants;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,9 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.support.converter.MessagingMessageConverter;
+import org.springframework.kafka.support.converter.RecordMessageConverter;
+import org.springframework.kafka.support.converter.StringJsonMessageConverter;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 
@@ -62,17 +66,20 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ReplyingKafkaTemplate<String, String, List<Long>> kafkaResponseTemplate(
-            KafkaMessageListenerContainer<String, List<Long>> consumerFactory) {
-        ReplyingKafkaTemplate<String, String, List<Long>> template =
-                new ReplyingKafkaTemplate<>(producerResponseFactory(), consumerFactory);
-        template.setDefaultReplyTimeout(Duration.ofSeconds(Constants.SEARCH_REQUEST_WAITING_TIME));
-        template.setBinaryCorrelation(false);
-        return template;
+    public ReplyingKafkaTemplate<String, String, List<String>> kafkaResponseTemplate(
+            KafkaMessageListenerContainer<String, List<String>> lc,
+            ProducerFactory<String, String> producerFactory) {
+        RecordMessageConverter converter = new StringJsonMessageConverter(); // or another implementation you prefer
+
+        ReplyingKafkaTemplate<String, String, List<String>> replyingKafkaTemplate
+                = new ReplyingKafkaTemplate<>(producerFactory, lc);
+        replyingKafkaTemplate.setDefaultReplyTimeout(Duration.ofSeconds(Constants.SEARCH_REQUEST_WAITING_TIME));
+        replyingKafkaTemplate.setMessageConverter(converter);
+        return replyingKafkaTemplate;
     }
 
     @Bean
-    public KafkaTemplate<String, Long> kafkaFollowTemplate() {
-        return new KafkaTemplate<>(producerFollowFactory());
+    public KafkaTemplate<String, Long> kafkaFollowTemplate(ProducerFactory<String, Long> producerFactory) {
+        return new KafkaTemplate<>(producerFactory);
     }
 }

@@ -19,17 +19,17 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GameInfoChangeCheckerConfiguration {
 
-    @Autowired
-    private GameService gameService;
 
-    @Autowired
-    private GameStoresService gameStoresService;
+    private final GameService gameService;
 
-    @Autowired
-    private EmailService emailService;
 
-    @Autowired
-    private UserService userService;
+    private final GameStoresService gameStoresService;
+
+
+    private final EmailService emailService;
+
+
+    private final UserService userService;
 
     public GameInfoChangeCheckerConfiguration(GameService gameService, GameStoresService gameStoresService,
                                               EmailService emailService, UserService userService) {

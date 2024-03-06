@@ -1,9 +1,6 @@
 package com.gpb.web.configuration;
 
 import com.gpb.web.bean.EmailEvent;
-import com.gpb.web.bean.game.Game;
-import com.gpb.web.util.Constants;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongSerializer;
@@ -12,23 +9,16 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.config.KafkaListenerContainerFactory;
-import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
-import org.springframework.kafka.listener.ContainerProperties;
-import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +41,7 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, List<Long>> producerFactory() {
+    public ProducerFactory<String, List<String>> producerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -61,26 +51,18 @@ public class KafkaProducerConfig {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, String> replyListenerContainerFactory
-            (ConsumerFactory<String, String> consumerFactory) {
+            (ConsumerFactory<String, String> consumerFactory,
+             KafkaTemplate<String, List<String>> kafkaTemplate) {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
-        factory.setReplyTemplate(new KafkaTemplate<>(producerFactory()));
+        factory.setReplyTemplate(kafkaTemplate);
         return factory;
     }
 
 
-    //@Bean
-    public ReplyingKafkaTemplate<String, List<Long>, String> replyingKafkaTemplate(ProducerFactory<String, List<Long>> producerFactory,
-                                                                                   ConcurrentKafkaListenerContainerFactory<String, String> factory) {
-        ContainerProperties containerProperties =
-                new ContainerProperties(Constants.GAME_SEARCH_RESPONSE_TOPIC);
-        containerProperties.setGroupId("gpb");
-
-        ConcurrentMessageListenerContainer<String, String> replyContainer
-                = new ConcurrentMessageListenerContainer<>(consumerFactory(), containerProperties);
-        replyContainer.getContainerProperties().setMissingTopicsFatal(false);
-
-        return new ReplyingKafkaTemplate<>(producerFactory, replyContainer);
+    @Bean
+    public KafkaTemplate<String, List<String>> replyingKafkaTemplate(ProducerFactory<String, List<String>> producerFactory) {
+        return new KafkaTemplate<>(producerFactory);
     }
 
     @Bean

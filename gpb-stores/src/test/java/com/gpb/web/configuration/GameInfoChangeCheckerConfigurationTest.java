@@ -32,7 +32,7 @@ class GameInfoChangeCheckerConfigurationTest {
             = new GameInfoChangeCheckerConfiguration(gameService, gameStoresService, emailService, userService);
 
     @Test
-    void createUserSuccessfullyShouldReturnUser() {
+    void testCreateUser_whenSuccessfully_shouldReturnUser() {
         List<GameInShop> subscribedGame = new ArrayList<>();
         when(gameService.getSubscribedGames()).thenReturn(subscribedGame);
         List<GameInShop> changedGames = new ArrayList<>();

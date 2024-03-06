@@ -101,7 +101,7 @@ class GameServiceImplTest {
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         when(repository.findByNameContainingIgnoreCase(name, PageRequest.of(pageNum - 1, pageSize, sort)))
                 .thenReturn(new ArrayList<>());
-        when(gameStoresService.findGameByName(name)).thenReturn(gameList);
+        when(gameStoresService.findGameByName(name)).thenReturn(Collections.singletonList(1L));
         when(repository.findByName(name)).thenReturn(null);
         when(repository.saveAll(gameList)).thenReturn(gameList);
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);

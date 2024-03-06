@@ -22,7 +22,7 @@ class EmailServiceImplTest {
     EmailService emailService = new EmailServiceImpl(kafkaTemplate);
 
     @Test
-    public void sendGameInfoChangeSuccessfullyShouldSendEmailEvent() {
+    void testSendGameInfoChange_whenSuccessfully_thenShouldSendEmailEvent() {
         String to = "email";
         WebUser user = WebUser.builder()
                 .email(to)

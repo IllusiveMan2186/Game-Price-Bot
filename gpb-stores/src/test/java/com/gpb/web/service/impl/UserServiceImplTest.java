@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static com.gpb.web.util.Constants.USER_ROLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,10 +25,10 @@ class UserServiceImplTest {
     WebUserRepository webUserRepository = mock(WebUserRepository.class);
     UserRepository userRepository = mock(UserRepository.class);
     UserService userService = new UserServiceImpl(userRepository, webUserRepository);
-    private final WebUser user = new WebUser("email", "", true, false, 0, null, USER_ROLE,null);
+    private final WebUser user = new WebUser("email", new Locale("ua"));
 
     @Test
-    void getUsersChangedGamesSuccessfullyShouldGetUsers() {
+    void testGetUsersChangedGames_whenSuccessfully_thenShouldGetUsers() {
         List<BasicUser> users = new ArrayList<>();
         GameInShop gameInShop1 = GameInShop.builder().id(0).build();
         GameInShop gameInShop2 = GameInShop.builder().id(1).build();
@@ -39,7 +40,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getWebUsersSuccessfullyShouldGetUsers() {
+    void testGetWebUsers_whenSuccessfully_thenShouldGetUsers() {
         List<WebUser> users = new ArrayList<>();
         List<Long> ids = List.of(0L);
         when(webUserRepository.findAllByIdIn(ids)).thenReturn(users);
