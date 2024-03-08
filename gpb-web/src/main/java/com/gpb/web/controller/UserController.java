@@ -85,8 +85,9 @@ public class UserController {
     public UserDto addGameToUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
         userService.subscribeToGame(user.getId(), gameId);
         Game game = gameService.getById(gameId);
-        if (game.getUserList().size() < 2) {
-            storesService.subscribeToGame(gameService.getById(gameId));
+        if (!game.isFollowed()) {
+            game.setFollowed(true);
+            storesService.subscribeToGame(gameId);
         }
         return userService.getUserById(user.getId());
     }
@@ -116,16 +117,17 @@ public class UserController {
     public UserDto removeGameFromUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
         userService.unsubscribeFromGame(user.getId(), gameId);
         Game game = gameService.getById(gameId);
-        if (game.getUserList().size() < 1) {
-            storesService.unsubscribeFromGame(gameService.getById(gameId));
+        if (game.isFollowed() && game.getUserList().size() < 1) {
+            storesService.unsubscribeFromGame(gameId);
         }
         return userService.getUserById(user.getId());
     }
 
     /**
      * Update user locale
+     *
      * @param locale new locale
-     * @param user user
+     * @param user   user
      */
     @PutMapping("/locale/{locale}")
     @Transactional

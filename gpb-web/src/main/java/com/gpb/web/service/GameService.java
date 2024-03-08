@@ -125,4 +125,18 @@ public interface GameService {
      * @param gameInStoreId games id
      */
     void removeGameInStore(long gameInStoreId);
+
+    /**
+     * Begins to follow game for information changing if still not follows
+     *
+     * @param gameId games id
+     */
+    void followGame(long gameId);
+
+    /**
+     * Stops to follow game for information changing if any user not subscribed to it
+     *
+     * @param gameId games id
+     */
+    void unfollowGame(long gameId);
 }

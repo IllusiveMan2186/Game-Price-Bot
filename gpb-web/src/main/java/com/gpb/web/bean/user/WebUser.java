@@ -11,6 +11,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
+import java.util.Locale;
 
 @Data
 @Entity
@@ -36,6 +37,8 @@ public class WebUser extends BasicUser {
     private Date lockTime;
 
     private String role;
+
+    private Locale locale;
 
     public void increaseFailedAttempt() {
         failedAttempt++;

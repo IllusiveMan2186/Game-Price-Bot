@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,8 +25,9 @@ class MapperConfigTest {
 
     @Test
     public void mapWebUserToUserDtoSuccessfullyShouldReturnUserDto() {
-        WebUser user = new WebUser("email", "pass", false, false, 0, null, USER_ROLE);
-        UserDto expected = new UserDto("email", "", "", USER_ROLE);
+        WebUser user = new WebUser("email", "pass", false, false, 0,
+                null, USER_ROLE, new Locale("ua"));
+        UserDto expected = new UserDto("email", "", "", USER_ROLE,"ua");
 
         UserDto result = modelMapper.map(user, UserDto.class);
 

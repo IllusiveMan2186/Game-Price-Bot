@@ -22,7 +22,7 @@ import static com.gpb.web.util.Constants.EMAIL_SERVICE_TOPIC;
 public class EmailServiceImpl implements EmailService {
 
 
-    private KafkaTemplate<Long, EmailEvent> kafkaTemplate;
+    private final KafkaTemplate<Long, EmailEvent> kafkaTemplate;
 
     @Value("${WEB_SERVICE_URL}")
     private String webServiceUrl;
@@ -43,7 +43,9 @@ public class EmailServiceImpl implements EmailService {
     public void sendEmailVerification(UserActivation userActivation) {
         Map<String, Object> variables = new LinkedHashMap<>();
         variables.put("url", webServiceUrl + "/email/" + userActivation.getToken());
-        Locale locale = userActivation.getUser().getLocale();
+        Locale locale = userActivation.getUser().getLocale() != null
+                ? userActivation.getUser().getLocale()
+                : Locale.getDefault();
         sendEmail(userActivation.getUser().getEmail(), "User verification", variables, locale,
                 "email-user-verification");
     }

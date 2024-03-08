@@ -14,37 +14,26 @@ public interface GameStoresService {
      * Find game by name from all stores in system
      *
      * @param name name of the game
-     * @return game
+     * @return games ids
      */
-    List<Game> findGameByName(String name);
+    List<Long> findGameByName(String name);
 
     /**
      * Find game by url from all stores in system
      *
      * @param url url of the game
-     * @return game
+     * @return game id
      */
-    Game findGameByUrl(String url);
+    Long findGameByUrl(String url);
 
     /**
      * Add to wishlist in store
-     *
-     * @param game game
      */
-    void subscribeToGame(Game game);
+    void subscribeToGame(long gameId);
 
     /**
      * Remove from wishlist in store
-     *
-     * @param game game
      */
-    void unsubscribeFromGame(Game game);
+    void unsubscribeFromGame(long gameId);
 
-    /**
-     * Check games from wishlist for changing
-     *
-     * @param gameInShops games that need to be checked
-     * @return games that changed
-     */
-    List<GameInShop>  checkGameInStoreForChange(List<GameInShop> gameInShops);
 }

@@ -21,9 +21,6 @@ public class KafkaConsumerConfig {
     @Value("${KAFKA_SERVER_URL}")
     private String kafkaServer;
 
-    @Value("${KAFKA_GROUP_ID}")
-    private String kafkaGroupId;
-
     @Bean
     public Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>();
@@ -33,7 +30,7 @@ public class KafkaConsumerConfig {
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.gpb.email.bean.EmailEvent");
         props.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaGroupId);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "gpb");
         return props;
     }
 

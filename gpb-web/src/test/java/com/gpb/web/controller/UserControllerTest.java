@@ -39,11 +39,11 @@ class UserControllerTest {
     private final UserController controller = new UserController(userService, gameStoresService, gameService, userActivationService, provider);
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
-    private final WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
+    private final WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE, new Locale("ua"));
 
     @Test
     void updateUserEmailSuccessfullyShouldReturnUser() {
-        WebUser newUser = new WebUser("email2", "password2", false, false, 0, null, USER_ROLE);
+        WebUser newUser = new WebUser("email2", "password2", false, false, 0, null, USER_ROLE, new Locale("ua"));
         newUser.setId(1);
         UserDto expected = modelMapper.map(newUser, UserDto.class);
         UserDto userDto = modelMapper.map(user, UserDto.class);
@@ -58,7 +58,7 @@ class UserControllerTest {
 
     @Test
     void updateUserPasswordSuccessfullyShouldReturnUser() {
-        WebUser newUser = new WebUser("email2", "password2", false, false, 0, null, USER_ROLE);
+        WebUser newUser = new WebUser("email2", "password2", false, false, 0, null, USER_ROLE, new Locale("ua"));
         newUser.setId(1);
         UserDto expected = modelMapper.map(newUser, UserDto.class);
         UserDto userDto = modelMapper.map(user, UserDto.class);
@@ -73,7 +73,7 @@ class UserControllerTest {
 
     @Test
     void addGameToUserListOfGamesShouldCallServiceAndReturnUser() {
-        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
+        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE, new Locale("ua"));
         user.setId(1);
         UserDto expected = modelMapper.map(user, UserDto.class);
         when(userService.getUserById(1)).thenReturn(expected);
@@ -84,31 +84,32 @@ class UserControllerTest {
         UserDto result = controller.addGameToUserListOfGames(1, expected);
 
         assertEquals(expected, result);
-        verify(gameStoresService).subscribeToGame(game);
+        verify(gameStoresService).subscribeToGame(1);
         verify(userService).subscribeToGame(1, 1);
     }
 
     @Test
     void removeGameFromUserListOfGamesShouldCallServiceAndReturnUser() {
-        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
+        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE, new Locale("ua"));
         user.setId(1);
         UserDto expected = modelMapper.map(user, UserDto.class);
         when(userService.getUserById(1)).thenReturn(expected);
         Game game = new Game();
         game.setUserList(new ArrayList<>());
+        game.setFollowed(true);
         when(gameService.getById(1)).thenReturn(game);
 
         UserDto result = controller.removeGameFromUserListOfGames(1, expected);
 
         assertEquals(expected, result);
-        verify(gameStoresService).unsubscribeFromGame(game);
+        verify(gameStoresService).unsubscribeFromGame(1);
         verify(userService).unsubscribeFromGame(1, 1);
     }
 
     @Test
     void updateUserLocaleSuccessfullyShouldCallUserServiceMethod() {
         String stringLocale = "locale";
-        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE);
+        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE, new Locale("ua"));
         user.setId(1);
         UserDto userDto = modelMapper.map(user, UserDto.class);
 
