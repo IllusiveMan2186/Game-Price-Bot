@@ -1,154 +1,132 @@
 package com.gpb.web.service.impl;
 
-import com.gpb.web.bean.game.Game;
-import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.exception.NotFoundException;
-import com.gpb.web.service.GameStoresService;
-import com.gpb.web.service.StoreService;
-import org.junit.jupiter.api.BeforeEach;
+import com.gpb.web.util.Constants;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.requestreply.RequestReplyFuture;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class GameStoresServiceImplTest {
 
-    StoreService storeService1 = mock(StoreService.class);
-    StoreService storeService2 = mock(StoreService.class);
-    GameStoresService gameStoresService;
+    @Mock
+    private KafkaTemplate<String, Long> kafkaFollowTemplate;
 
-    @BeforeEach
-    void beforeAllGame() {
-        Map<String, StoreService> storeServiceMap = new HashMap<>();
-        storeServiceMap.put("storeService1", storeService1);
-        storeServiceMap.put("gamazey.com.ua", storeService2);
-        gameStoresService = new GameStoresServiceImpl(storeServiceMap);
+    @Mock
+    private ReplyingKafkaTemplate<String, String, List<String>> requestReplyKafkaTemplate;
+
+    @InjectMocks
+    private GameStoresServiceImpl gameStoresService;
+
+    @Test
+    void findGameByName_Success() throws InterruptedException, ExecutionException {
+        String gameName = "Test Game";
+        List<String> gameIdList = Collections.singletonList("123");
+        List<Long> expectedGameIds = Collections.singletonList(123L);
+        RequestReplyFuture<String, String, List<String>> requestReplyFuture = mock(RequestReplyFuture.class);
+        ConsumerRecord<String, List<String>> response =
+                new ConsumerRecord<>("", 1, 1L, "key", gameIdList);
+         when(requestReplyKafkaTemplate.sendAndReceive(argThat((ProducerRecord<String, String> record) ->
+                Constants.GAME_NAME_SEARCH_TOPIC.equals(record.topic()) && gameName.equals(record.value()))))
+                .thenReturn(requestReplyFuture);
+        when(requestReplyFuture.get()).thenReturn(response);
+
+
+        List<Long> actualGameIds = gameStoresService.findGameByName(gameName);
+
+        assertEquals(expectedGameIds, actualGameIds);
     }
 
     @Test
-    void getGameByNameSuccessfullyShouldReturnNewGame() {
-        String name = "name";
-        final Game game = new Game();
-        final GameInShop gameInShop1 = new GameInShop();
-        final GameInShop gameInShop2 = new GameInShop();
-        game.setGamesInShop(Collections.singleton(gameInShop2));
+    void findGameByName_ExceptionThrown() throws InterruptedException, ExecutionException {
+        String gameName = "Test Game";
+        List<String> gameIdList = Collections.singletonList("123");
+        List<Long> expectedGameIds = Collections.singletonList(123L);
+        RequestReplyFuture<String, String, List<String>> requestReplyFuture = mock(RequestReplyFuture.class);
+        ConsumerRecord<String, List<String>> response =
+                new ConsumerRecord<>("", 1, 1L, "key", gameIdList);
+         when(requestReplyKafkaTemplate.sendAndReceive(argThat((ProducerRecord<String, String> record) ->
+                Constants.GAME_NAME_SEARCH_TOPIC.equals(record.topic()) && gameName.equals(record.value()))))
+                .thenReturn(requestReplyFuture);
+        when(requestReplyFuture.get()).thenThrow(new InterruptedException());
 
-        when(storeService2.findUncreatedGameByName(name)).thenReturn(List.of(game));
-        when(storeService1.findUncreatedGameByName(name)).thenReturn(new ArrayList<>());
-        when(storeService1.findByName(name)).thenReturn(gameInShop1);
-        Set<GameInShop> copyOfList = new HashSet<>(Collections.singletonList(gameInShop2));
-        copyOfList.add(gameInShop1);
-        game.setGamesInShop(copyOfList);
-
-        List<Game> result = gameStoresService.findGameByName(name);
-
-        assertEquals(List.of(game), result);
+        assertThrows(NotFoundException.class, () -> gameStoresService.findGameByName(gameName),
+                "Error while sending request '%s' for searching of game into topic '%s' with parameter '%s'");
     }
 
     @Test
-    void getGameByNameThatNotFoundShouldThrowException() {
-        final Game game = new Game();
-        final GameInShop gameInShop1 = new GameInShop();
-        game.setGamesInShop(Set.of(gameInShop1));
-        String name = "name";
-        when(storeService2.findUncreatedGameByName(name)).thenReturn(new ArrayList<>());
+    void findGameByUrl_Success() throws InterruptedException, ExecutionException {
+        String gameUrl = "http://example.com";
+        List<String> gameIdList = Collections.singletonList("123");
+        List<Long> expectedGameIds = Collections.singletonList(123L);
+        RequestReplyFuture<String, String, List<String>> requestReplyFuture = mock(RequestReplyFuture.class);
+        ConsumerRecord<String, List<String>> response =
+                new ConsumerRecord<>("", 1, 1L, "key", gameIdList);
+         when(requestReplyKafkaTemplate.sendAndReceive(argThat((ProducerRecord<String, String> record) ->
+                Constants.GAME_URL_SEARCH_TOPIC.equals(record.topic()) && gameUrl.equals(record.value()))))
+                .thenReturn(requestReplyFuture);
+        when(requestReplyFuture.get()).thenReturn(response);
 
-        assertThrows(NotFoundException.class, () -> gameStoresService.findGameByName(name), "app.game.error.name.not.found");
+
+        Long actualGameId = gameStoresService.findGameByUrl(gameUrl);
+
+        assertEquals(expectedGameIds.get(0), actualGameId);
     }
 
     @Test
-    void getGameByUrlSuccessfullyShouldReturnNewGame() {
-        final Game game = new Game();
-        final GameInShop gameInShop1 = new GameInShop();
-        final GameInShop gameInShop2 = new GameInShop();
-        game.setGamesInShop(Collections.singleton(gameInShop2));
-        String url = "https://gamazey.com.ua/games/steam/sid-meiers-civilization-vi";
-        when(storeService2.findUncreatedGameByUrl(url)).thenReturn(game);
-        when(storeService1.findByUrl(url)).thenReturn(gameInShop1);
-        Set<GameInShop> copyOfList = new HashSet<>(Collections.singletonList(gameInShop2));
-        copyOfList.add(gameInShop1);
-        game.setGamesInShop(copyOfList);
+    void findGameByUrl_ExceptionThrown() throws InterruptedException, ExecutionException {
+        String gameUrl = "http://example.com";
+        List<String> gameIdList = Collections.singletonList("123");
+        RequestReplyFuture<String, String, List<String>> requestReplyFuture = mock(RequestReplyFuture.class);
+        ConsumerRecord<String, List<String>> response =
+                new ConsumerRecord<>("", 1, 1L, "key", gameIdList);
+        when(requestReplyKafkaTemplate.sendAndReceive(argThat((ProducerRecord<String, String> record) ->
+                Constants.GAME_URL_SEARCH_TOPIC.equals(record.topic()) && gameUrl.equals(record.value()))))
+                .thenReturn(requestReplyFuture);
+        when(requestReplyFuture.get()).thenThrow(new InterruptedException());
 
-        Game result = gameStoresService.findGameByUrl(url);
-
-        assertEquals(game, result);
+        assertThrows(NotFoundException.class, () -> gameStoresService.findGameByUrl(gameUrl),
+                "Error while sending request '%s' for searching of game into topic '%s' with parameter '%s'");
     }
 
     @Test
-    void getGameByUrlThatNotFoundShouldThrowException() {
-        final Game game = new Game();
-        final GameInShop gameInShop1 = new GameInShop();
-        game.setGamesInShop(Set.of(gameInShop1));
-        String url = "url";
-        when(storeService2.findUncreatedGameByUrl(url)).thenReturn(null);
+    void subscribeToGame_Success() {
+        long gameId = 1L;
 
-        assertThrows(NotFoundException.class, () -> gameStoresService.findGameByUrl(url), "");
+        gameStoresService.subscribeToGame(gameId);
+
+        verify(kafkaFollowTemplate).send(argThat((ProducerRecord<String, Long> record) ->
+                Constants.GAME_FOLLOW_TOPIC.equals(record.topic()) && record.value() == gameId));
     }
 
     @Test
-    void subscribeToGameSuccessfullyShouldSubscribeToGame() {
-        final Game game = new Game();
-        String url1 = "https://storeService1/games";
-        String url2 = "https://gamazey.com.ua/games";
-        final GameInShop gameInShop1 = new GameInShop();
-        gameInShop1.setUrl(url1);
-        final GameInShop gameInShop2 = new GameInShop();
-        gameInShop2.setUrl(url2);
-        game.setGamesInShop(Set.of(gameInShop1, gameInShop2));
+    void unsubscribeToGame_Success() {
+        long gameId = 1L;
 
+        gameStoresService.unsubscribeFromGame(gameId);
 
-        gameStoresService.subscribeToGame(game);
-
-        verify(storeService1).subscribeToGame(gameInShop1);
-        verify(storeService2).subscribeToGame(gameInShop2);
-    }
-
-    @Test
-    void unsubscribeToGameSuccessfullyShouldSubscribeToGame() {
-        final Game game = new Game();
-        String url1 = "https://storeService1/games";
-        String url2 = "https://gamazey.com.ua/games";
-        final GameInShop gameInShop1 = new GameInShop();
-        gameInShop1.setUrl(url1);
-        final GameInShop gameInShop2 = new GameInShop();
-        gameInShop2.setUrl(url2);
-        game.setGamesInShop(Set.of(gameInShop1, gameInShop2));
-
-        gameStoresService.unsubscribeFromGame(game);
-
-        verify(storeService1).unsubscribeFromGame(gameInShop1);
-        verify(storeService2).unsubscribeFromGame(gameInShop2);
-    }
-
-    @Test
-    void checkGamesInStoreForChangeSuccessfullyShouldReturn() {
-        String url1 = "https://storeService1/games";
-        String url2 = "https://gamazey.com.ua/games";
-        final GameInShop gameInShop1 = new GameInShop();
-        gameInShop1.setUrl(url1);
-        final GameInShop gameInShop2 = new GameInShop();
-        gameInShop2.setUrl(url2);
-        final GameInShop gameInShop3 = new GameInShop();
-        gameInShop3.setUrl(url2);
-        final GameInShop gameInShop4 = new GameInShop();
-        List<GameInShop> expected = Collections.singletonList(gameInShop4);
-        when(storeService1.checkGameInStoreForChange(List.of(gameInShop1))).thenReturn(new ArrayList<>());
-        when(storeService2.checkGameInStoreForChange(List.of(gameInShop2, gameInShop3))).thenReturn(expected);
-
-        List<GameInShop> result = gameStoresService
-                .checkGameInStoreForChange(List.of(gameInShop1, gameInShop2, gameInShop3));
-
-        assertEquals(expected, result);
+        verify(kafkaFollowTemplate).send(argThat((ProducerRecord<String, Long> record) ->
+                Constants.GAME_UNFOLLOW_TOPIC.equals(record.topic()) && record.value() == gameId));
     }
 }

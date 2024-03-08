@@ -79,9 +79,9 @@ public class GameServiceImpl implements GameService {
 
         List<Game> games = gameRepository.findByNameContainingIgnoreCase(name, pageRequest);
         if (games.isEmpty()) {
-            List<Game> createdGames = gameStoresService.findGameByName(name);
-            elementAmount = createdGames.size();
-            games = Lists.newArrayList(gameRepository.saveAll(createdGames));
+            List<Long> createdGamesIds = gameStoresService.findGameByName(name);
+            elementAmount = createdGamesIds.size();
+            games = Lists.newArrayList(gameRepository.findAllById(createdGamesIds));
         } else {
             elementAmount = gameRepository.countAllByNameContainingIgnoreCase(name);
         }
@@ -93,24 +93,25 @@ public class GameServiceImpl implements GameService {
         return new GameListPageDto(elementAmount, gameDtos);
     }
 
+
     @Override
     public GameInfoDto getByUrl(String url) {
         log.info(String.format("Get game by url : %s", url));
 
         final GameInShop gameInShop = gameInShopRepository.findByUrl(url);
         if (gameInShop == null) {
-            Game game = gameStoresService.findGameByUrl(url);
-            return modelMapper.map(create(game), GameInfoDto.class);
+            Long gameId = gameStoresService.findGameByUrl(url);
+            return modelMapper.map(getById(gameId), GameInfoDto.class);
         }
 
         return modelMapper.map(gameInShop.getGame(), GameInfoDto.class);
     }
 
     @Override
-    public GameListPageDto getByGenre(List<Genre> genre, List<ProductType> typesToExclude, final int pageSize, final int pageNum
-            , BigDecimal minPrice, BigDecimal maxPrice, Sort sort) {
-        log.info(String.format("Get games by genres : '%s',types to exclude - '%s',price '%s' - '%s' with '%s' element on page for '%s' page ",
-                genre, typesToExclude, minPrice, maxPrice, pageSize, pageNum));
+    public GameListPageDto getByGenre(List<Genre> genre, List<ProductType> typesToExclude, final int pageSize,
+                                      final int pageNum, BigDecimal minPrice, BigDecimal maxPrice, Sort sort) {
+        log.info(String.format("Get games by genres : '%s',types to exclude - '%s',price '%s' - '%s' with '%s' " +
+                        "element on page for '%s' page ", genre, typesToExclude, minPrice, maxPrice, pageSize, pageNum));
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
         List<Game> games;
         long elementAmount;
@@ -127,7 +128,7 @@ public class GameServiceImpl implements GameService {
         }
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)
-                .collect(Collectors.toList());
+                .toList();
 
         return new GameListPageDto(elementAmount, gameDtos);
     }
@@ -145,7 +146,7 @@ public class GameServiceImpl implements GameService {
 
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)
-                .collect(Collectors.toList());
+                .toList();
 
         return new GameListPageDto(elementAmount, gameDtos);
     }
@@ -194,6 +195,27 @@ public class GameServiceImpl implements GameService {
         log.info(String.format("Remove game in store by id : %s", gameInStoreId));
 
         gameInShopRepository.deleteById(gameInStoreId);
+    }
+
+    @Override
+    public void followGame(long gameId) {
+        log.info(String.format("Follow game with id : %s", gameId));
+
+        Game game = getById(gameId);
+        if (!game.isFollowed()) {
+            game.setFollowed(true);
+            gameStoresService.subscribeToGame(gameId);
+        }
+    }
+
+    @Override
+    public void unfollowGame(long gameId) {
+        log.info(String.format("Unfollow game with id : %s", gameId));
+
+        Game game = getById(gameId);
+        if (game.isFollowed() && game.getUserList().isEmpty()) {
+            gameStoresService.unsubscribeFromGame(gameId);
+        }
     }
 
     private GameDto gameMap(Game game) {

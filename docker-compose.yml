@@ -19,7 +19,7 @@ services:
       KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_CREATE_TOPICS: "gpb-email:1:1"
+      KAFKA_CREATE_TOPICS: "gpb_email_event:1:1,gpb_game_name_search_request:1:1,gpb_game_url_search_request:1:1,gpb_game_follow:1:1,gpb_game_unfollow:1:1"
     networks:
       - gpb-network
 

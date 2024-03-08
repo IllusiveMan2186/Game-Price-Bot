@@ -21,11 +21,12 @@ public class UserDto extends User {
         super("", "", new ArrayList<>());
     }
 
-    public UserDto(String username, String password, String token, String role) {
+    public UserDto(String username, String password, String token, String role, String locale) {
         super(username, password, Collections.singletonList(new SimpleGrantedAuthority(role)));
         eraseCredentials();
         this.email = username;
         this.token = token;
+        this.locale = locale;
     }
 
     public long getId() {

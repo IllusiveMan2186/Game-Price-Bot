@@ -44,7 +44,7 @@ public class MapperConfig {
         modelMapper.createTypeMap(WebUser.class, UserDto.class)
                 .setProvider(request -> {
                     WebUser source = WebUser.class.cast(request.getSource());
-                    return new UserDto(source.getEmail(), source.getPassword(), "", source.getRole());
+                    return new UserDto(source.getEmail(), source.getPassword(), "", source.getRole(),"ua");
                 });
 
         return modelMapper;

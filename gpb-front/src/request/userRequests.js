@@ -1,6 +1,6 @@
 import { request, setAuthHeader, setEmailHeader, setRoleHeader, setLocaleHeader, defaultRequestErrorCheck, getLocale } from '../util/axios_helper';
 import { changeLanguage } from 'i18next';
-import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { NotificationManager } from 'react-notifications';
 
 export const loginRequest = (e, email, password, setErrorMessage, navigate) => {
     e.preventDefault();
@@ -47,11 +47,12 @@ export const registerRequest = (event, email, password, setErrorMessage, navigat
 
 export const resendActivationEmailRequest = (event, email, navigate) => {
     event.preventDefault();
+    console.info(email)
     request(
         "POST",
         "/user/resend/email/" + email
     )
-    navigate(0)
+    navigate("/login")
 };
 
 export const emailChangeRequest = (event, email, setErrorMessage, navigate) => {
