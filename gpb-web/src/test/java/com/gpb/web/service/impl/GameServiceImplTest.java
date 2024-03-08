@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -97,13 +98,14 @@ class GameServiceImplTest {
         int pageNum = 2;
         game.setName(name);
         List<Game> gameList = Collections.singletonList(game);
+        List<Long> gameIds = Collections.singletonList(1L);
         List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         when(repository.findByNameContainingIgnoreCase(name, PageRequest.of(pageNum - 1, pageSize, sort)))
                 .thenReturn(new ArrayList<>());
-        when(gameStoresService.findGameByName(name)).thenReturn(Collections.singletonList(1L));
+        when(gameStoresService.findGameByName(name)).thenReturn(gameIds);
         when(repository.findByName(name)).thenReturn(null);
-        when(repository.saveAll(gameList)).thenReturn(gameList);
+        when(repository.findAllById(gameIds)).thenReturn(gameList);
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
 
         GameListPageDto result = gameService.getByName(name, pageSize, pageNum, sort);
@@ -126,12 +128,12 @@ class GameServiceImplTest {
     @Test
     void getGameByUrlThatNotRegisteredShouldFindGameFromStoresService() {
         String url = "url";
+        long gameId = 1L;
         when(gameInShopRepository.findByUrl(url)).thenReturn(null);
-        when(gameStoresService.findGameByUrl(url)).thenReturn(game);
+        when(gameStoresService.findGameByUrl(url)).thenReturn(gameId);
         String name = "name";
         game.setName(name);
-        when(repository.findByName(name)).thenReturn(null);
-        when(repository.save(game)).thenReturn(game);
+        when(repository.findById(gameId)).thenReturn(game);
         GameInfoDto gameInfoDto = modelMapper.map(game, GameInfoDto.class);
 
         GameInfoDto result = gameService.getByUrl(url);
@@ -144,7 +146,7 @@ class GameServiceImplTest {
         List<Genre> genre = Collections.singletonList(Genre.STRATEGIES);
         int pageSize = 2;
         List<ProductType> types = Collections.singletonList(ProductType.GAME);
-        List<ProductType> typesToExclude= List.of(ProductType.ADDITION,ProductType.CURRENCY,ProductType.SUBSCRIPTION);
+        List<ProductType> typesToExclude = List.of(ProductType.ADDITION, ProductType.CURRENCY, ProductType.SUBSCRIPTION);
         int pageNum = 2;
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
@@ -250,5 +252,29 @@ class GameServiceImplTest {
         gameService.removeGameInStore(gameInStoreId);
 
         verify(gameInShopRepository).deleteById(gameInStoreId);
+    }
+
+    @Test
+    void followGameSuccessfullyShouldSubscribeForGame() {
+        long gameId = 1L;
+        when(repository.findById(gameId)).thenReturn(game);
+
+        gameService.followGame(gameId);
+
+        verify(gameStoresService).subscribeToGame(gameId);
+    }
+
+    @Test
+    void unfollowGameSuccessfullyShouldUnsubscribeForGame() {
+        long gameId = 1L;
+        Game followedGame = Game.builder()
+                .isFollowed(true)
+                .gamesInShop(Collections.singleton(gameInShop))
+                .userList(Collections.emptyList()).build();
+        when(repository.findById(gameId)).thenReturn(followedGame);
+
+        gameService.unfollowGame(gameId);
+
+        verify(gameStoresService).unsubscribeFromGame(gameId);
     }
 }

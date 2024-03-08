@@ -3,6 +3,7 @@ package com.gpb.web.configuration;
 import com.gpb.web.bean.EmailEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -41,7 +42,7 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, List<String>> producerFactory() {
+    public ProducerFactory<String, List<String>> searchResponsProducerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -50,7 +51,7 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> replyListenerContainerFactory
+    public ConcurrentKafkaListenerContainerFactory<String, String> searchReplyListenerContainerFactory
             (ConsumerFactory<String, String> consumerFactory,
              KafkaTemplate<String, List<String>> kafkaTemplate) {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
@@ -61,22 +62,45 @@ public class KafkaProducerConfig {
 
 
     @Bean
-    public KafkaTemplate<String, List<String>> replyingKafkaTemplate(ProducerFactory<String, List<String>> producerFactory) {
+    public KafkaTemplate<String, List<String>> searchReplyingKafkaTemplate(ProducerFactory<String, List<String>> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 
     @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
+    public ConsumerFactory<String, String> searchConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(searchConsumerConfigs());
     }
 
     @Bean
-    public Map<String, Object> consumerConfigs() {
+    public Map<String, Object> searchConsumerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "gpb");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        return props;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Long> followReplyListenerContainerFactory
+            (ConsumerFactory<String, Long> consumerFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, Long> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory);
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, Long> followConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(followConsumerConfigs());
+    }
+
+    @Bean
+    public Map<String, Object> followConsumerConfigs() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "gpb");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class);
         return props;
     }
 }

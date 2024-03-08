@@ -128,7 +128,7 @@ public class GameServiceImpl implements GameService {
         }
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)
-                .collect(Collectors.toList());
+                .toList();
 
         return new GameListPageDto(elementAmount, gameDtos);
     }
@@ -146,7 +146,7 @@ public class GameServiceImpl implements GameService {
 
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)
-                .collect(Collectors.toList());
+                .toList();
 
         return new GameListPageDto(elementAmount, gameDtos);
     }
@@ -213,7 +213,7 @@ public class GameServiceImpl implements GameService {
         log.info(String.format("Unfollow game with id : %s", gameId));
 
         Game game = getById(gameId);
-        if (game.isFollowed() && game.getUserList().size() < 1) {
+        if (game.isFollowed() && game.getUserList().isEmpty()) {
             gameStoresService.unsubscribeFromGame(gameId);
         }
     }

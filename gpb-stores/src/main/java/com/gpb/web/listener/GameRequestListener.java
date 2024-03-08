@@ -4,22 +4,17 @@ import com.gpb.web.bean.game.Game;
 import com.gpb.web.service.GameService;
 import com.gpb.web.service.GameStoresService;
 import com.gpb.web.util.Constants;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -40,7 +35,7 @@ public class GameRequestListener {
     }
 
     @KafkaListener(topics = Constants.GAME_NAME_SEARCH_TOPIC, groupId = Constants.GPB_KAFKA_GROUP_ID,
-            containerFactory = Constants.RESPONSE_CONTAINER_FACTORY)
+            containerFactory = Constants.SEARCH_REPLY_LISTENER_CONTAINER_FACTORY)
     public void listenGameNameSearch(ConsumerRecord<String, String> requestRecord) {
         log.info(String.format("Request '%s' for searching of game with name '%s'", requestRecord.key(), requestRecord.value()));
         List<Game> games = gameStoresService.findGameByName(requestRecord.value());
@@ -49,7 +44,7 @@ public class GameRequestListener {
     }
 
     @KafkaListener(topics = Constants.GAME_URL_SEARCH_TOPIC, groupId = Constants.GPB_KAFKA_GROUP_ID,
-            containerFactory = Constants.RESPONSE_CONTAINER_FACTORY)
+            containerFactory = Constants.SEARCH_REPLY_LISTENER_CONTAINER_FACTORY)
     public void listenGameUrlSearch(ConsumerRecord<String, String> requestRecord) {
         log.info(String.format("Request '%s' for searching of game with url '%s'", requestRecord.key(), requestRecord.value()));
         Game game = gameStoresService.findGameByUrl(requestRecord.value());
@@ -69,7 +64,9 @@ public class GameRequestListener {
         responseKafkaTemplate.send(response);
     }
 
-    @KafkaListener(topics = "gpb_game_follow", groupId = "gpb")
+    @KafkaListener(topics = "gpb_game_follow", groupId = "gpb",
+            containerFactory = Constants.FOLLOW_REPLY_LISTENER_CONTAINER_FACTORY)
+    @Transactional
     public void listenGameFollow(ConsumerRecord<String, Long> followRecord) {
         log.info(String.format("Request '%s' for follow for game '%s'", followRecord.key(), followRecord.value()));
         Game game = gameService.getById(followRecord.value());
@@ -77,7 +74,9 @@ public class GameRequestListener {
     }
 
 
-    @KafkaListener(topics = "gpb_game_unfollow", groupId = "gpb")
+    @KafkaListener(topics = "gpb_game_unfollow", groupId = "gpb",
+            containerFactory = Constants.FOLLOW_REPLY_LISTENER_CONTAINER_FACTORY)
+    @Transactional
     public void listenGameUnfollow(ConsumerRecord<String, Long> unfollowRecord) {
         log.info(String.format("Request '%s' for unfollow for game '%s'", unfollowRecord.key(), unfollowRecord.value()));
         Game game = gameService.getById(unfollowRecord.value());

@@ -1,37 +1,19 @@
 package com.gpb.web.service.impl;
 
-import com.gpb.web.bean.game.Game;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.service.GameStoresService;
 import com.gpb.web.util.Constants;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.header.internals.RecordHeader;
-import org.openqa.selenium.devtools.Reply;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
-import org.springframework.util.concurrent.SettableListenableFuture;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -40,11 +22,15 @@ public class GameStoresServiceImpl implements GameStoresService {
     private static final String REQUEST_MESSAGE_ERROR = "Error while sending request '%s' for searching of game into " +
             "topic '%s' with parameter '%s'";
 
-    @Autowired
-    private KafkaTemplate<String, Long> kafkaFollowTemplate;
+    private final KafkaTemplate<String, Long> kafkaFollowTemplate;
 
-    @Autowired
-    private ReplyingKafkaTemplate<String, String, List<String>> requestReplyKafkaTemplate;
+    private final ReplyingKafkaTemplate<String, String, List<String>> requestReplyKafkaTemplate;
+
+    public GameStoresServiceImpl(KafkaTemplate<String, Long> kafkaFollowTemplate,
+                                 ReplyingKafkaTemplate<String, String, List<String>> requestReplyKafkaTemplate) {
+        this.kafkaFollowTemplate = kafkaFollowTemplate;
+        this.requestReplyKafkaTemplate = requestReplyKafkaTemplate;
+    }
 
     @Override
     public List<Long> findGameByName(String name) {
@@ -71,30 +57,23 @@ public class GameStoresServiceImpl implements GameStoresService {
      * @return list of games
      */
     private List<Long> searchForGameRequest(String topic, String parameter, String exceptionMessage) {
-        String correlationId = UUID.randomUUID().toString();
+        String key = UUID.randomUUID().toString();
         log.info(String.format("Send request '%s' for searching of game into topic '%s' with parameter '%s'",
-                correlationId, topic, parameter));
+                key, topic, parameter));
 
-        ProducerRecord<String, String> record = new ProducerRecord<>(topic, correlationId, parameter);
-        //record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
-        //record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, Constants.GAME_SEARCH_RESPONSE_TOPIC.getBytes()));
+        ProducerRecord<String, String> searchRequestRecord = new ProducerRecord<>(topic, key, parameter);
 
-        System.out.println(record);
-        RequestReplyFuture<String, String, List<String>> requestReplyFuture = requestReplyKafkaTemplate.sendAndReceive(record);
-        //CompletableFuture<List<Long>> completableFuture = new CompletableFuture<>();
-        List<Long> games = new ArrayList<>();
+        RequestReplyFuture<String, String, List<String>> requestReplyFuture =
+                requestReplyKafkaTemplate.sendAndReceive(searchRequestRecord);
+        List<Long> games = Collections.emptyList();
         try {
-            //requestReplyFuture.getSendFuture().get(Constants.SEARCH_REQUEST_WAITING_TIME, TimeUnit.SECONDS); // send ok
-            SendResult<String, String> sendResult = requestReplyFuture.getSendFuture().get(Constants.SEARCH_REQUEST_WAITING_TIME, TimeUnit.SECONDS);
-            System.out.println("Sent ok: " + sendResult.getRecordMetadata());
             games = requestReplyFuture.get().value().stream()
                     .map(Long::valueOf)
-                    .collect(Collectors.toList());;
-            log.info("Received response for request with correlationId: " + correlationId);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                    .toList();
+            log.info("Received response for request with key: " + key);
+        } catch (InterruptedException | ExecutionException e) {
             log.error("Error while waiting for response", e);
-            throwNotFoundException(exceptionMessage, String.format(REQUEST_MESSAGE_ERROR, correlationId, topic, parameter));
-            return null;
+            throwNotFoundException(exceptionMessage, String.format(REQUEST_MESSAGE_ERROR, key, topic, parameter));
         }
 
         return games;
@@ -107,19 +86,15 @@ public class GameStoresServiceImpl implements GameStoresService {
 
     @Override
     public void subscribeToGame(long gameId) {
-        kafkaFollowTemplate.send(new ProducerRecord<>(Constants.GAME_FOLLOW_TOPIC, UUID.randomUUID().toString(), gameId));
+        String key = UUID.randomUUID().toString();
+        log.info(String.format("Send request '%s' for follow of game '%s' ", key, gameId));
+        kafkaFollowTemplate.send(new ProducerRecord<>(Constants.GAME_FOLLOW_TOPIC, key, gameId));
     }
 
     @Override
     public void unsubscribeFromGame(long gameId) {
-        kafkaFollowTemplate.send(new ProducerRecord<>(Constants.GAME_UNFOLLOW_TOPIC, UUID.randomUUID().toString(), gameId));
-    }
-
-    @KafkaListener(topics = Constants.GAME_SEARCH_RESPONSE_TOPIC, groupId = "gpb")
-    public void listen(ConsumerRecord<String, List<Long>> record) {
-        String correlationId = record.key();
-        List<Long> response = record.value();
-        log.info("Listen response for search request " + correlationId);
-
+        String key = UUID.randomUUID().toString();
+        log.info(String.format("Send request '%s' for unfollow of game '%s' ", key, gameId));
+        kafkaFollowTemplate.send(new ProducerRecord<>(Constants.GAME_UNFOLLOW_TOPIC, key, gameId));
     }
 }

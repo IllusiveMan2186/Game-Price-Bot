@@ -272,6 +272,24 @@ class UserServiceImplTest {
     }
 
     @Test
+    void getWebUserByEmailShouldReturnWebUser() {
+        when(repository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+
+        WebUser result = userService.getWebUserByEmail(user.getEmail());
+
+        assertEquals(user, result);
+    }
+
+    @Test
+    void getWebUserByEmailShouldTrowException() {
+        when(repository.findByEmail(user.getEmail()))
+                .thenThrow( new NotFoundException("app.user.error.email.not.found"));
+
+        assertThrows(NotFoundException.class, () -> userService.getWebUserByEmail(user.getEmail()),
+                "app.user.error.email.not.found");
+    }
+
+    @Test
     void getUserByEmailNotExistingEmailShouldThrowException() {
         when(repository.findByEmail("email")).thenReturn(Optional.empty());
 

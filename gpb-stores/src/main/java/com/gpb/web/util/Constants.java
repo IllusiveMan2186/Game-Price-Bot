@@ -12,5 +12,6 @@ public class Constants {
     public static final String GAME_URL_SEARCH_TOPIC = "gpb_game_url_search_request";
     public static final String GAME_SEARCH_RESPONSE_TOPIC = "gpb_game_search_response";
     public static final String GPB_KAFKA_GROUP_ID = "gpb";
-    public static final String RESPONSE_CONTAINER_FACTORY = "replyListenerContainerFactory";
+    public static final String SEARCH_REPLY_LISTENER_CONTAINER_FACTORY = "searchReplyListenerContainerFactory";
+    public static final String FOLLOW_REPLY_LISTENER_CONTAINER_FACTORY = "followReplyListenerContainerFactory";
 }

@@ -3,6 +3,7 @@ package com.gpb.web.integration.game;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gpb.web.GpbWebApplication;
+import com.gpb.web.bean.EmailEvent;
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
@@ -20,6 +21,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.KafkaMessageListenerContainer;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -74,6 +79,21 @@ public class BaseAuthenticationIntegration {
 
     @Autowired
     protected PasswordEncoder passwordEncoder;
+
+    @MockBean
+    protected KafkaTemplate<String, String> responseKafkaTemplate;
+
+    @MockBean
+    protected ReplyingKafkaTemplate<String, String, List<String>> replyingKafkaTemplate;
+
+    @MockBean
+    protected KafkaTemplate<Long, EmailEvent> kafkaEmailEventTemplate;
+
+    @MockBean
+    protected KafkaTemplate<String, Long> kafkaFollowTemplate;
+
+    @MockBean
+    protected KafkaMessageListenerContainer<String, List<String>> replyListenerContainer;
 
     @BeforeAll
     protected static void beforeAll() throws ParseException {

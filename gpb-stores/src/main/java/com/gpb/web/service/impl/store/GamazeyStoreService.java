@@ -76,6 +76,9 @@ public class GamazeyStoreService implements StoreService {
     @Value("${GAMEZEY_PASSWORD}")
     private String password;
 
+    @Value("${CHROME_DRIVER}")
+    private String chromeDriver;
+
     public GamazeyStoreService(StorePageParser parser, Map<String, Genre> genreMap, Map<String, ProductType> productTypeMap,
                                Map<String, ClientActivationType> clientActivationTypeMap, ResourceConfiguration resourceConfiguration) {
         this.parser = parser;
@@ -216,7 +219,7 @@ public class GamazeyStoreService implements StoreService {
     private WebDriver login(String url) {
         log.info("Login in gamazey store");
 
-        System.setProperty("webdriver.chrome.driver", "E:\\Programs\\chromedriver-win64\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", chromeDriver + "\\chromedriver.exe");
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
         WebDriver driver = new ChromeDriver(options);
