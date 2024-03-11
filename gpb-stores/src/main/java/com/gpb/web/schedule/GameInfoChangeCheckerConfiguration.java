@@ -7,13 +7,12 @@ import com.gpb.web.service.EmailService;
 import com.gpb.web.service.GameService;
 import com.gpb.web.service.GameStoresService;
 import com.gpb.web.service.UserService;
+import com.gpb.web.util.Constants;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Configuration
 @Slf4j
@@ -39,7 +38,7 @@ public class GameInfoChangeCheckerConfiguration {
         this.userService = userService;
     }
 
-    @Scheduled(cron = "0 04 00 * * *")
+    @Scheduled(cron = Constants.GAME_INFO_CHANGE_CHECKING_TIME)
     public void scheduleSubscribedGameInfoChange() {
         log.info("Check game information changing ");
 

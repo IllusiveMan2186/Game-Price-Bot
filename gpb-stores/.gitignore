@@ -1,6 +1,7 @@
 README.md
 .run
 .gradle
+logs/
 build/
 gradle/
 !gradle/wrapper/gradle-wrapper.jar
