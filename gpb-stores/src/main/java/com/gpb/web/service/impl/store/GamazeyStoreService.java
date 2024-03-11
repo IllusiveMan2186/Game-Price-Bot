@@ -8,6 +8,7 @@ import com.gpb.web.bean.game.ProductType;
 import com.gpb.web.configuration.ResourceConfiguration;
 import com.gpb.web.service.StoreService;
 import com.gpb.web.parser.StorePageParser;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -75,9 +76,6 @@ public class GamazeyStoreService implements StoreService {
     private String login;
     @Value("${GAMEZEY_PASSWORD}")
     private String password;
-
-    @Value("${CHROME_DRIVER}")
-    private String chromeDriver;
 
     public GamazeyStoreService(StorePageParser parser, Map<String, Genre> genreMap, Map<String, ProductType> productTypeMap,
                                Map<String, ClientActivationType> clientActivationTypeMap, ResourceConfiguration resourceConfiguration) {
@@ -219,7 +217,7 @@ public class GamazeyStoreService implements StoreService {
     private WebDriver login(String url) {
         log.info("Login in gamazey store");
 
-        System.setProperty("webdriver.chrome.driver", chromeDriver + "\\chromedriver.exe");
+        WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
         WebDriver driver = new ChromeDriver(options);
