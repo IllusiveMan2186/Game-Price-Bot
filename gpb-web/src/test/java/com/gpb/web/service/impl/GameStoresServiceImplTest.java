@@ -4,10 +4,6 @@ import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.util.Constants;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
@@ -19,25 +15,21 @@ import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class GameStoresServiceImplTest {
 
-    @Mock
-    private KafkaTemplate<String, Long> kafkaFollowTemplate;
+    KafkaTemplate<String, Long> kafkaFollowTemplate = mock(KafkaTemplate.class);
 
-    @Mock
-    private ReplyingKafkaTemplate<String, String, List<String>> requestReplyKafkaTemplate;
 
-    @InjectMocks
-    private GameStoresServiceImpl gameStoresService;
+    ReplyingKafkaTemplate<String, String, List<String>> requestReplyKafkaTemplate =
+            mock(ReplyingKafkaTemplate.class);
+
+    GameStoresServiceImpl gameStoresService =
+            new GameStoresServiceImpl(kafkaFollowTemplate, requestReplyKafkaTemplate);
 
     @Test
     void findGameByName_Success() throws InterruptedException, ExecutionException {
@@ -47,7 +39,7 @@ class GameStoresServiceImplTest {
         RequestReplyFuture<String, String, List<String>> requestReplyFuture = mock(RequestReplyFuture.class);
         ConsumerRecord<String, List<String>> response =
                 new ConsumerRecord<>("", 1, 1L, "key", gameIdList);
-         when(requestReplyKafkaTemplate.sendAndReceive(argThat((ProducerRecord<String, String> record) ->
+        when(requestReplyKafkaTemplate.sendAndReceive(argThat((ProducerRecord<String, String> record) ->
                 Constants.GAME_NAME_SEARCH_TOPIC.equals(record.topic()) && gameName.equals(record.value()))))
                 .thenReturn(requestReplyFuture);
         when(requestReplyFuture.get()).thenReturn(response);
@@ -66,7 +58,7 @@ class GameStoresServiceImplTest {
         RequestReplyFuture<String, String, List<String>> requestReplyFuture = mock(RequestReplyFuture.class);
         ConsumerRecord<String, List<String>> response =
                 new ConsumerRecord<>("", 1, 1L, "key", gameIdList);
-         when(requestReplyKafkaTemplate.sendAndReceive(argThat((ProducerRecord<String, String> record) ->
+        when(requestReplyKafkaTemplate.sendAndReceive(argThat((ProducerRecord<String, String> record) ->
                 Constants.GAME_NAME_SEARCH_TOPIC.equals(record.topic()) && gameName.equals(record.value()))))
                 .thenReturn(requestReplyFuture);
         when(requestReplyFuture.get()).thenThrow(new InterruptedException());
@@ -83,7 +75,7 @@ class GameStoresServiceImplTest {
         RequestReplyFuture<String, String, List<String>> requestReplyFuture = mock(RequestReplyFuture.class);
         ConsumerRecord<String, List<String>> response =
                 new ConsumerRecord<>("", 1, 1L, "key", gameIdList);
-         when(requestReplyKafkaTemplate.sendAndReceive(argThat((ProducerRecord<String, String> record) ->
+        when(requestReplyKafkaTemplate.sendAndReceive(argThat((ProducerRecord<String, String> record) ->
                 Constants.GAME_URL_SEARCH_TOPIC.equals(record.topic()) && gameUrl.equals(record.value()))))
                 .thenReturn(requestReplyFuture);
         when(requestReplyFuture.get()).thenReturn(response);

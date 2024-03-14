@@ -56,14 +56,14 @@ services:
       - gpb-network
     build: ./gpb-web
     environment:
-      - GAMEZEY_LOGIN=${GAMEZEY_LOGIN}
-      - GAMEZEY_PASSWORD=${GAMEZEY_PASSWORD}
-      - IMAGE_FOLDER=E:\Work\Pet\GPB\images
+      - IMAGE_FOLDER=/image_folder
       - KAFKA_SERVER_URL=kafka:9093
       - POSTGRES_DB_URL=jdbc:postgresql://postgres:5432/postgres
       - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
       - WEB_SERVICE_URL=http://localhost:8080
+    volumes:
+      - common_data:/image_folder
 
   email:
     container_name: gpb_email
@@ -79,7 +79,26 @@ services:
       - MAIL_USERNAME=${MAIL_USERNAME}
       - WEB_SERVICE_URL=http://localhost:8080
 
+  stores:
+    container_name: gpb_stores
+    depends_on:
+      - kafka
+    build: ./gpb-stores
+    networks:
+      - gpb-network
+    environment:
+      - GAMEZEY_LOGIN=${GAMEZEY_LOGIN}
+      - GAMEZEY_PASSWORD=${GAMEZEY_PASSWORD}
+      - IMAGE_FOLDER=/image_folder
+      - KAFKA_SERVER_URL=kafka:9093
+      - POSTGRES_DB_URL=jdbc:postgresql://postgres:5432/postgres
+      - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
+      - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
+    volumes:
+      - common_data:/image_folder
+      
 volumes:
+  common_data: 
   postgres_data:
 
 networks:

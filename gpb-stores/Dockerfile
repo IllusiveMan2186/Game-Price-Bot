@@ -1,6 +1,6 @@
 # Stage 1: Build the application
 FROM gradle:8.0.2 AS TEMP_BUILD_IMAGE
-ENV APP_HOME=/gpb/web/
+ENV APP_HOME=/gpb/stores/
 WORKDIR $APP_HOME
 COPY build.gradle.kts settings.gradle.kts $APP_HOME
 
@@ -11,8 +11,8 @@ RUN gradle clean build
 
 # Stage 2: Create the final image
 FROM openjdk:20
-ENV ARTIFACT_NAME=gpb-web-0.0.1-SNAPSHOT.war
-ENV APP_HOME=/gpb/web/
+ENV ARTIFACT_NAME=gpb-stores-0.0.1-SNAPSHOT.jar
+ENV APP_HOME=/gpb/stores/
 
 WORKDIR $APP_HOME
 
@@ -21,3 +21,5 @@ COPY --from=TEMP_BUILD_IMAGE $APP_HOME/build/libs/$ARTIFACT_NAME .
 
 # Define the command to run on container start
 CMD java -jar $ARTIFACT_NAME
+
+COPY /src/main/resources/defaultImage.png /image_folder/defaultImage.png
