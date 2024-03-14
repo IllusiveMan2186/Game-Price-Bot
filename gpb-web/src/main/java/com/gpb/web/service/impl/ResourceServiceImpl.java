@@ -24,9 +24,10 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     public byte[] getGameImage(final String gameName) {
-        String gameImageFullPath = resourceConfiguration.getImageFolder() + "\\" + gameName + JPG_IMG_FILE_EXTENSION;
+        String gameImageFullPath = resourceConfiguration.getImageFolder() + "/" + gameName + JPG_IMG_FILE_EXTENSION;
         try {
             InputStream in = new FileInputStream(gameImageFullPath);
+
             return IOUtils.toByteArray(in);
         } catch (Exception e) {
             return getDefaultGameImage();
@@ -34,7 +35,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     private byte[] getDefaultGameImage() {
-        String gameImageFullPath = resourceConfiguration.getImageFolder() + "\\defaultImage"  + PNG_IMG_FILE_EXTENSION;
+        String gameImageFullPath = resourceConfiguration.getImageFolder() + "/defaultImage"  + PNG_IMG_FILE_EXTENSION;
         try {
             InputStream in = new FileInputStream(gameImageFullPath);
             return IOUtils.toByteArray(in);

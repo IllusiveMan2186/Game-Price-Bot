@@ -1,6 +1,5 @@
 plugins {
     java
-    war
     id("org.springframework.boot") version "3.0.4"
     id("io.spring.dependency-management") version "1.1.0"
 }
@@ -19,7 +18,8 @@ configurations.all {
 
 dependencies {
     implementation("commons-io:commons-io:2.11.0")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1") // Use the appropriate version
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1")
+    runtimeOnly("com.twelvemonkeys.imageio:imageio-webp:3.10.1")
     implementation("com.auth0:java-jwt:4.3.0")
     implementation("org.jsoup:jsoup:1.15.3")
     implementation("com.sun.mail:jakarta.mail:2.0.1")
