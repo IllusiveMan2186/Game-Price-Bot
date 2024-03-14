@@ -7,12 +7,10 @@ The following was discovered as part of building this project:
 
 ### Reference Documentation
 
-Add Environment variables fro running project locally
+Add Environment variables for running project locally
 * POSTGRES_DB_URL;
 * POSTGRES_DB_USERNAME;
 * POSTGRES_DB_PASSWORD;
-* GAMEZEY_LOGIN;
-* GAMEZEY_PASSWORD;
 * KAFKA_SERVER_URL;
 * WEB_SERVICE_URL;
 * IMAGE_FOLDER;
