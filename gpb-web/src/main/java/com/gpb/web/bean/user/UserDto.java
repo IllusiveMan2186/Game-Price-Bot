@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 public class UserDto extends User {
 
@@ -65,5 +66,20 @@ public class UserDto extends User {
     @JsonIgnore
     public String getPassword() {
         return super.getPassword();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        UserDto userDto = (UserDto) o;
+        return id == userDto.id && Objects.equals(email, userDto.email) && Objects.equals(token, userDto.token)
+                && Objects.equals(locale, userDto.locale);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, email, token, locale);
     }
 }
