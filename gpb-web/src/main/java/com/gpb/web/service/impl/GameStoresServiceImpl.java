@@ -73,15 +73,10 @@ public class GameStoresServiceImpl implements GameStoresService {
             log.info("Received response for request with key: " + key);
         } catch (InterruptedException | ExecutionException e) {
             log.error("Error while waiting for response", e);
-            throwNotFoundException(exceptionMessage, String.format(REQUEST_MESSAGE_ERROR, key, topic, parameter));
+            throw new NotFoundException(String.format(REQUEST_MESSAGE_ERROR, key, topic, parameter));
         }
 
         return games;
-    }
-
-    private void throwNotFoundException(String exceptionMessage, String logMessage) {
-        log.error(logMessage);
-        throw new NotFoundException(exceptionMessage);
     }
 
     @Override

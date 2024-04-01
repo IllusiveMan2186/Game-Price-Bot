@@ -1,8 +1,5 @@
 package com.gpb.web.service;
 
-import com.gpb.web.bean.game.Game;
-import com.gpb.web.bean.game.GameInShop;
-
 import java.util.List;
 
 /**

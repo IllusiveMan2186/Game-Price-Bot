@@ -1,7 +1,6 @@
 package com.gpb.web.configuration;
 
 import com.gpb.web.filter.JwtAuthFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,11 +16,15 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableConfigurationProperties
 public class SecurityConfiguration {
 
-    @Autowired
-    private UserAuthenticationProvider userAuthenticationProvider;
+    private final UserAuthenticationProvider userAuthenticationProvider;
 
-    @Autowired
-    private UserAuthenticationEntryPoint userAuthenticationEntryPoint;
+    private final UserAuthenticationEntryPoint userAuthenticationEntryPoint;
+
+    public SecurityConfiguration(UserAuthenticationProvider userAuthenticationProvider,
+                                 UserAuthenticationEntryPoint userAuthenticationEntryPoint) {
+        this.userAuthenticationProvider = userAuthenticationProvider;
+        this.userAuthenticationEntryPoint = userAuthenticationEntryPoint;
+    }
 
     @Bean
     @Order(1)
