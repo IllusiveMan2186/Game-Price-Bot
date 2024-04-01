@@ -2,7 +2,7 @@ package com.gpb.web.service.impl;
 
 import com.gpb.web.bean.user.UserActivation;
 import com.gpb.web.bean.user.WebUser;
-import com.gpb.web.exception.NotExistingTokenException;
+import com.gpb.web.exception.NotExistingUserActivationTokenException;
 import com.gpb.web.repository.UserActivationRepository;
 import com.gpb.web.service.EmailService;
 import com.gpb.web.service.UserActivationService;
@@ -57,7 +57,7 @@ class UserActivationServiceImplTest {
         String token = "token";
         when(userActivationRepository.findByToken(token)).thenReturn(null);
 
-        assertThrows(NotExistingTokenException.class, () -> userActivationService.activateUserAccount(token),
+        assertThrows(NotExistingUserActivationTokenException.class, () -> userActivationService.activateUserAccount(token),
                 "app.user.error.token.not.exist");
     }
 

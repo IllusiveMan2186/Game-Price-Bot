@@ -5,6 +5,7 @@ import com.gpb.web.bean.game.GameDto;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInStoreDto;
 import com.gpb.web.bean.game.GameInfoDto;
+import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
 import org.junit.jupiter.api.Test;
@@ -24,10 +25,10 @@ class MapperConfigTest {
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
     @Test
-    public void mapWebUserToUserDtoSuccessfullyShouldReturnUserDto() {
-        WebUser user = new WebUser("email", "pass", false, false, 0,
-                null, USER_ROLE, new Locale("ua"));
-        UserDto expected = new UserDto("email", "", "", USER_ROLE,"ua");
+    void mapWebUserToUserDtoSuccessfullyShouldReturnUserDto() {
+        WebUser user = new WebUser(0, new BasicUser(), "email", "pass", false,
+                false, 0, null, USER_ROLE, new Locale("ua"));
+        UserDto expected = new UserDto("email", "", "", USER_ROLE, "ua");
 
         UserDto result = modelMapper.map(user, UserDto.class);
 
@@ -35,7 +36,7 @@ class MapperConfigTest {
     }
 
     @Test
-    public void mapGameToGameDtoSuccessfullyShouldReturnGameDto() {
+    void mapGameToGameDtoSuccessfullyShouldReturnGameDto() {
         GameInShop gameInShop = GameInShop.builder()
                 .price(new BigDecimal(2))
                 .discountPrice(new BigDecimal(1))
@@ -55,7 +56,7 @@ class MapperConfigTest {
     }
 
     @Test
-    public void mapGameInShopToGameInStoreDtoSuccessfullyShouldReturnGameInStoreDto() {
+    void mapGameInShopToGameInStoreDtoSuccessfullyShouldReturnGameInStoreDto() {
         GameInShop gameInShop = GameInShop.builder()
                 .price(new BigDecimal(2))
                 .discountPrice(new BigDecimal(1))
@@ -67,7 +68,7 @@ class MapperConfigTest {
     }
 
     @Test
-    public void mapGameToGameInfoDtoSuccessfullyShouldReturnGameInfoDto() {
+    void mapGameToGameInfoDtoSuccessfullyShouldReturnGameInfoDto() {
         GameInShop gameInShop = GameInShop.builder()
                 .price(new BigDecimal(2))
                 .discountPrice(new BigDecimal(1))

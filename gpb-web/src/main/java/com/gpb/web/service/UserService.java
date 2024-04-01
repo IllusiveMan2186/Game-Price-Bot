@@ -1,12 +1,10 @@
 package com.gpb.web.service;
 
-import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.user.Credentials;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
 
-import java.util.List;
 
 /**
  * Class for handling users
@@ -88,12 +86,6 @@ public interface UserService {
     UserDto login(Credentials credentials);
 
     /**
-     * @param changedGames changed games
-     * @return users that subscribe to changed game
-     */
-    List<WebUser> getUsersOfChangedGameInfo(List<GameInShop> changedGames);
-
-    /**
      * Change user locale
      *
      * @param locale new locale
@@ -107,4 +99,20 @@ public interface UserService {
      * @param userId user id
      */
     void activateUser(Long userId);
+
+    /**
+     * Connect telegram user to current web user
+     *
+     * @param token     token that connected to telegram user
+     * @param webUserId web user id
+     */
+    void connectTelegramUser(String token, long webUserId);
+
+    /**
+     * Get token for connect with telegram user
+     *
+     * @param webUserId web user id
+     * @return token of connector
+     */
+    String getTelegramUserConnectorToken(long webUserId);
 }

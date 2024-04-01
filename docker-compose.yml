@@ -58,7 +58,7 @@ services:
     environment:
       - IMAGE_FOLDER=/image_folder
       - KAFKA_SERVER_URL=kafka:9093
-      - POSTGRES_DB_URL=jdbc:postgresql://postgres:5432/postgres
+      - POSTGRES_DB_URL=${POSTGRES_DB_NAME}
       - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
       - WEB_SERVICE_URL=http://localhost:8080
@@ -91,7 +91,7 @@ services:
       - GAMEZEY_PASSWORD=${GAMEZEY_PASSWORD}
       - IMAGE_FOLDER=/image_folder
       - KAFKA_SERVER_URL=kafka:9093
-      - POSTGRES_DB_URL=jdbc:postgresql://postgres:5432/postgres
+      - POSTGRES_DB_URL=${POSTGRES_DB_NAME}
       - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
     volumes:

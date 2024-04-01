@@ -4,6 +4,7 @@ import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.GameAlreadyRegisteredException;
 import com.gpb.web.exception.GameImageNotFoundException;
 import com.gpb.web.exception.LoginFailedException;
+import com.gpb.web.exception.NotExistingMessengerActivationTokenException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.exception.PriceRangeException;
 import com.gpb.web.exception.UserDataNotChangedException;
@@ -29,7 +30,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
     @ExceptionHandler(value = {NotFoundException.class, UsernameNotFoundException.class
-            , GameImageNotFoundException.class})
+            , GameImageNotFoundException.class, NotExistingMessengerActivationTokenException.class})
     protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }

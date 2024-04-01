@@ -8,11 +8,13 @@ import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.game.ProductType;
+import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.repository.GameInShopRepository;
 import com.gpb.web.repository.GameRepository;
 import com.gpb.web.repository.UserRepository;
+import com.gpb.web.repository.WebUserRepository;
 import com.gpb.web.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,6 +71,9 @@ public class BaseAuthenticationIntegration {
     protected UserRepository userRepository;
 
     @Autowired
+    protected WebUserRepository webUserRepository;
+
+    @Autowired
     protected GameRepository gameRepository;
 
     @Autowired
@@ -115,9 +120,9 @@ public class BaseAuthenticationIntegration {
     void userCreationForAuthBeforeAllTests() {
 
         adminCreation(0);
-        gameRepository.save(games.get(0));
-        gameRepository.save(games.get(1));
-        gameRepository.save(games.get(2));
+        games.set(0, gameRepository.save(games.get(0)));
+        games.set(1, gameRepository.save(games.get(1)));
+        games.set(2, gameRepository.save(games.get(2)));
         games.forEach(game -> game.getGamesInShop()
                 .forEach(gameInShop -> gameInShopRepository.save(gameInShop)));
     }
@@ -143,12 +148,18 @@ public class BaseAuthenticationIntegration {
     }
 
     protected void adminCreation(int userIndex) {
+        BasicUser basicUser = new BasicUser();
+        userRepository.save(basicUser);
         WebUser user = WebUser.builder()
                 .email(userList.get(userIndex).getEmail())
                 .password(passwordEncoder.encode(CharBuffer.wrap(userList.get(userIndex).getPassword())))
                 .role(ADMIN_ROLE)
+                .isActivated(userList.get(userIndex).isActivated())
+                .basicUser(basicUser)
+                .locale(userList.get(userIndex).getLocale())
                 .build();
-        userRepository.save(user);
+        WebUser savedUser =webUserRepository.save(user);
+        userList.get(userIndex).setId(savedUser.getId());
     }
 
     protected static GameInShop gameInShopCreation(String url, BigDecimal price, BigDecimal discountPrice)
@@ -185,10 +196,11 @@ public class BaseAuthenticationIntegration {
     }
 
     protected SecurityContextImpl getSecurityContext(int userIndex) {
-        UserDto userDto = modelMapper.map(userList.get(userIndex), UserDto.class);
-        userDto.setId(1);
+        WebUser user = userList.get(userIndex);
+        UserDto userDto = modelMapper.map(user, UserDto.class);
+        userDto.setId(user.getId());
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                userDto, userList.get(userIndex).getPassword(), userDto.getAuthorities());
+                userDto, user.getPassword(), userDto.getAuthorities());
         return new SecurityContextImpl(token);
     }
 }

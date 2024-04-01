@@ -1,6 +1,7 @@
 package com.gpb.telegram.handler;
 
 import com.gpb.telegram.controller.TelegramController;
+import com.gpb.telegram.filter.FilterChain;
 import com.gpb.telegram.util.Consts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,23 +14,35 @@ import java.util.Map;
 @Slf4j
 public class ControllerHandler {
 
+    private final ExceptionHandler exceptionHandler;
     private final Map<String, TelegramController> controllers;
+    private final FilterChain filterChain;
 
-    public ControllerHandler(Map<String, TelegramController> controllers) {
+    public ControllerHandler(ExceptionHandler exceptionHandler, Map<String, TelegramController> controllers,
+                             FilterChain filterChain) {
+        this.exceptionHandler = exceptionHandler;
         this.controllers = controllers;
+        this.filterChain = filterChain;
     }
 
 
     public SendMessage handleCommands(Update update) {
         String messageText = update.getMessage().getText();
-        String commandName = messageText.split(" ")[0];
-        long chatId = update.getMessage().getChatId();
+        String commandName = messageText.split(" ")[0].replace("/","");
+        String chatId = String.valueOf(update.getMessage().getChatId());
 
         TelegramController controller = controllers.get(commandName);
         if (controller != null) {
-            return controller.apply(update);
+            try {
+                filterChain.handleFilterChain(controller, update);
+                return controller.apply(chatId, update);
+            } catch (Exception exception) {
+                log.warn("Exception during command execution:" + exception.getMessage());
+                return exceptionHandler.handleException(chatId, exception);
+            }
         } else {
-            return new SendMessage(String.valueOf(chatId), Consts.UNKNOWN_COMMAND);
+            log.info("Unknown message:" + messageText);
+            return new SendMessage(chatId, Consts.UNKNOWN_COMMAND);
         }
     }
 }

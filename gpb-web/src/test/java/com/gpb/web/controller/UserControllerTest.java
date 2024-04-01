@@ -1,6 +1,7 @@
 package com.gpb.web.controller;
 
 import com.gpb.web.bean.game.Game;
+import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.EmailChangeDto;
 import com.gpb.web.bean.user.PasswordChangeDto;
 import com.gpb.web.bean.user.UserDto;
@@ -39,11 +40,13 @@ class UserControllerTest {
     private final UserController controller = new UserController(userService, gameStoresService, gameService, userActivationService, provider);
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
-    private final WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE, new Locale("ua"));
+    private final WebUser user = new WebUser(0, new BasicUser(), "email", "password", false,
+            false, 0, null, USER_ROLE, new Locale("ua"));
 
     @Test
     void updateUserEmailSuccessfullyShouldReturnUser() {
-        WebUser newUser = new WebUser("email2", "password2", false, false, 0, null, USER_ROLE, new Locale("ua"));
+        WebUser newUser = new WebUser(0, new BasicUser(), "email2", "password2", false,
+                false, 0, null, USER_ROLE, new Locale("ua"));
         newUser.setId(1);
         UserDto expected = modelMapper.map(newUser, UserDto.class);
         UserDto userDto = modelMapper.map(user, UserDto.class);
@@ -58,7 +61,8 @@ class UserControllerTest {
 
     @Test
     void updateUserPasswordSuccessfullyShouldReturnUser() {
-        WebUser newUser = new WebUser("email2", "password2", false, false, 0, null, USER_ROLE, new Locale("ua"));
+        WebUser newUser = new WebUser(0, new BasicUser(), "email2", "password2", false,
+                false, 0, null, USER_ROLE, new Locale("ua"));
         newUser.setId(1);
         UserDto expected = modelMapper.map(newUser, UserDto.class);
         UserDto userDto = modelMapper.map(user, UserDto.class);
@@ -73,12 +77,13 @@ class UserControllerTest {
 
     @Test
     void addGameToUserListOfGamesShouldCallServiceAndReturnUser() {
-        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE, new Locale("ua"));
+        WebUser user = new WebUser(0, new BasicUser(), "email", "password", false,
+                false, 0, null, USER_ROLE, new Locale("ua"));
         user.setId(1);
         UserDto expected = modelMapper.map(user, UserDto.class);
         when(userService.getUserById(1)).thenReturn(expected);
         Game game = new Game();
-        game.setUserList(List.of(new WebUser()));
+        game.setUserList(List.of(new BasicUser()));
         when(gameService.getById(1)).thenReturn(game);
 
         UserDto result = controller.addGameToUserListOfGames(1, expected);
@@ -90,7 +95,8 @@ class UserControllerTest {
 
     @Test
     void removeGameFromUserListOfGamesShouldCallServiceAndReturnUser() {
-        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE, new Locale("ua"));
+        WebUser user = new WebUser(0, new BasicUser(), "email", "password", false,
+                false, 0, null, USER_ROLE, new Locale("ua"));
         user.setId(1);
         UserDto expected = modelMapper.map(user, UserDto.class);
         when(userService.getUserById(1)).thenReturn(expected);
@@ -109,13 +115,14 @@ class UserControllerTest {
     @Test
     void updateUserLocaleSuccessfullyShouldCallUserServiceMethod() {
         String stringLocale = "locale";
-        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE, new Locale("ua"));
+        WebUser user = new WebUser(0, new BasicUser(), "email", "password", false,
+                false, 0, null, USER_ROLE, new Locale("ua"));
         user.setId(1);
         UserDto userDto = modelMapper.map(user, UserDto.class);
 
         controller.updateUserLocale(stringLocale, userDto);
 
-        verify(userService).updateLocale(stringLocale,user.getId());
+        verify(userService).updateLocale(stringLocale, user.getId());
     }
 
     @Test

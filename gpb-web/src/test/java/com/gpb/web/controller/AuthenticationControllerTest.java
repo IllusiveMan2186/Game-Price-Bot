@@ -1,5 +1,6 @@
 package com.gpb.web.controller;
 
+import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.UserActivation;
 import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.WebUser;
@@ -30,7 +31,7 @@ class AuthenticationControllerTest {
 
     private final AuthenticationController controller = new AuthenticationController(service, provider, userActivationService, emailService);
 
-    private final WebUser user = new WebUser("email", "password", false, false,
+    private final WebUser user = new WebUser(0, new BasicUser(),"email", "password", false, false,
             0, null, USER_ROLE, new Locale("ua"));
 
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
