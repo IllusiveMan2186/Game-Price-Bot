@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -105,6 +106,32 @@ public class UserController {
     }
 
     /**
+     * Connect telegram user to current web user
+     *
+     * @param token token that connected to telegram user
+     * @param user  current user
+     */
+    @PostMapping(value = "/connect/telegram/{token}")
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    public void connectTelegramUser(@PathVariable final String token, @AuthenticationPrincipal UserDto user) {
+        userService.connectTelegramUser(token, user.getId());
+    }
+
+    /**
+     * Get token for connect with telegram user
+     *
+     * @param user  current user
+     * @return token of connector
+     */
+    @GetMapping(value = "/connect/telegram")
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    public String getTelegramUserConnectorToken(@AuthenticationPrincipal UserDto user) {
+        return userService.getTelegramUserConnectorToken(user.getId());
+    }
+
+    /**
      * Add game to user list of games
      *
      * @param gameId games id
@@ -117,7 +144,7 @@ public class UserController {
     public UserDto removeGameFromUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
         userService.unsubscribeFromGame(user.getId(), gameId);
         Game game = gameService.getById(gameId);
-        if (game.isFollowed() && game.getUserList().size() < 1) {
+        if (game.isFollowed() && game.getUserList().isEmpty()) {
             storesService.unsubscribeFromGame(gameId);
         }
         return userService.getUserById(user.getId());

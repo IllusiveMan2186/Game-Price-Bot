@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
+class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
 
     @BeforeEach
     void gameCreationBeforeAllTests() {
@@ -152,7 +152,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
                 .andExpect(jsonPath("$.elementAmount").value(1))
                 .andExpect(jsonPath("$.games").isArray())
                 .andExpect(jsonPath("$.games", hasSize(1)))
-                .andExpect(jsonPath("$.games[0].id").value(2));
+                .andExpect(jsonPath("$.games[0].id").value(games.get(1).getId()));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
                 .andExpect(jsonPath("$").value("app.game.error.id.not.found"));
     }
 
-    @WithMockUser(username = "email1", roles = { "ADMIN" })
+    @WithMockUser(username = "email1", roles = {"ADMIN"})
     @Test
     void removeGameWithAdminUserSuccessfullyShouldRemoveGame() throws Exception {
         mockMvc.perform(delete("/game/1")
@@ -187,7 +187,7 @@ public class GameControllerIntegrationTest extends BaseAuthenticationIntegration
                 .andExpect(status().isForbidden());
     }
 
-    @WithMockUser(username = "email1", roles = { "ADMIN" })
+    @WithMockUser(username = "email1", roles = {"ADMIN"})
     @Test
     void removeGameInStoreWithAdminUserSuccessfullyShouldRemoveGame() throws Exception {
         mockMvc.perform(delete("/game/store/1")

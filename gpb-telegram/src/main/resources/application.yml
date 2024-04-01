@@ -1,3 +1,6 @@
+server:
+  port: 8081
+
 spring:
   datasource:
     url: ${POSTGRES_JDBC_URL:jdbc:postgresql://localhost:5432/postgres}
@@ -9,7 +12,7 @@ spring:
       schema: public
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
       dialect: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate.default_schema: ${POSTGRES_SCHEMA:public}

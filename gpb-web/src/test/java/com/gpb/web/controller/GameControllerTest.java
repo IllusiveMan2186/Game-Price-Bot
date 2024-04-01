@@ -7,6 +7,7 @@ import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.game.ProductType;
+import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.configuration.MapperConfig;
@@ -61,7 +62,8 @@ class GameControllerTest {
     void getGameByIdSuccessfullyShouldReturnGame() {
         int id = 1;
         int userId = 1;
-        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE, new Locale("ua"));
+        WebUser user = new WebUser(0, new BasicUser(), "email", "password", false,
+                false, 0, null, USER_ROLE, new Locale("ua"));
         user.setId(userId);
         GameInfoDto gameInfoDto = modelMapper.map(game, GameInfoDto.class);
         when(service.getById(id, userId)).thenReturn(gameInfoDto);
@@ -122,7 +124,8 @@ class GameControllerTest {
         int userId = 1;
         int pageSize = 2;
         int pageNum = 2;
-        WebUser user = new WebUser("email", "password", false, false, 0, null, USER_ROLE, new Locale("ua"));
+        WebUser user = new WebUser(0, new BasicUser(), "email", "password", false,
+                false, 0, null, USER_ROLE, new Locale("ua"));
         user.setId(userId);
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();

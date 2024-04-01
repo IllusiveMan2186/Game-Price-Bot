@@ -6,30 +6,27 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @ToString
-@SuperBuilder
 public class BasicUser {
 
     @Id
@@ -44,10 +41,10 @@ public class BasicUser {
     )
     @JsonIgnore
     @ToString.Exclude
-    private List<Game> gameList;
+    private Set<Game> gameList;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = UserNotificationType.class)
-    private List<UserNotificationType> notificationTypes;
+    private Set<UserNotificationType> notificationTypes;
 }
     
