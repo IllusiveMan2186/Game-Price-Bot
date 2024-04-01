@@ -1,16 +1,20 @@
 package com.gpb.web.service.impl;
 
-import com.gpb.web.bean.game.GameInShop;
+import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.Credentials;
+import com.gpb.web.bean.user.WebMessengerConnector;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.LoginFailedException;
+import com.gpb.web.exception.NotExistingMessengerActivationTokenException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.exception.UserDataNotChangedException;
 import com.gpb.web.exception.UserLockedException;
 import com.gpb.web.exception.UserNotActivatedException;
+import com.gpb.web.repository.WebMessengerConnectorRepository;
+import com.gpb.web.repository.UserRepository;
 import com.gpb.web.repository.WebUserRepository;
 import com.gpb.web.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,19 +33,27 @@ import java.util.Locale;
 public class UserServiceImpl implements UserService {
 
     private static final int MAX_FAILED_ATTEMPTS = 3;
-    private static final long LOCK_TIME_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+    private static final long LOCK_TIME_DURATION = 86_400_000; // 24 hours
     private static final String USER_ROLE = "ROLE_USER";
 
-    private final WebUserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final WebUserRepository webUserRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     private final ModelMapper modelMapper;
 
-    public UserServiceImpl(WebUserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
+    private final WebMessengerConnectorRepository messengerConnectorRepository;
+
+    public UserServiceImpl(UserRepository userRepository, WebUserRepository webUserRepository,
+                           PasswordEncoder passwordEncoder, ModelMapper modelMapper,
+                           WebMessengerConnectorRepository messengerConnectorRepository) {
         this.userRepository = userRepository;
+        this.webUserRepository = webUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
+        this.messengerConnectorRepository = messengerConnectorRepository;
     }
 
     @Override
@@ -53,7 +65,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserByEmail(final String email) {
         log.info(String.format("Get user by email : %s", email));
 
-        final WebUser user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(
+        final WebUser user = webUserRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(
                 "app.user.error.email.not.found"));
         return modelMapper.map(user, UserDto.class);
     }
@@ -62,20 +74,23 @@ public class UserServiceImpl implements UserService {
     public WebUser getWebUserByEmail(String email) {
         log.info(String.format("Get web user by email : %s", email));
 
-        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(
+        return webUserRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(
                 "app.user.error.email.not.found"));
     }
 
     @Override
     public WebUser createUser(final UserRegistration userRegistration) {
         log.info(String.format("Create user : %s", userRegistration.getEmail()));
-        if (userRepository.findByEmail(userRegistration.getEmail()).isPresent()) {
+        if (webUserRepository.findByEmail(userRegistration.getEmail()).isPresent()) {
             log.info(String.format("User with email : '%s' already registered", userRegistration.getEmail()));
             throw new EmailAlreadyExistException();
         }
+        BasicUser basicUser = new BasicUser();
+        basicUser = userRepository.save(basicUser);
         WebUser user = getWebUser(userRegistration);
         user.setActivated(false);
-        return userRepository.save(user);
+        user.setBasicUser(basicUser);
+        return webUserRepository.save(user);
     }
 
     @Override
@@ -85,14 +100,14 @@ public class UserServiceImpl implements UserService {
         if (newEmail.equals(user.getEmail())) {
             log.info(String.format("User with id : '%s' did not changed email for update", user.getId()));
             throw new UserDataNotChangedException();
-        } else if (userRepository.findByEmail(newEmail).isPresent()) {
+        } else if (webUserRepository.findByEmail(newEmail).isPresent()) {
             log.info(String.format("User with email : '%s' already registered", newEmail));
             throw new EmailAlreadyExistException();
         }
 
         WebUser webUser = getWebUserById(user.getId());
         webUser.setEmail(newEmail);
-        WebUser updatedUser = userRepository.save(webUser);
+        WebUser updatedUser = webUserRepository.save(webUser);
         return modelMapper.map(updatedUser, UserDto.class);
     }
 
@@ -107,28 +122,30 @@ public class UserServiceImpl implements UserService {
         }
 
         webUser.setPassword(passwordEncoder.encode(CharBuffer.wrap(password)));
-        WebUser updatedUser = userRepository.save(webUser);
+        WebUser updatedUser = webUserRepository.save(webUser);
         return modelMapper.map(updatedUser, UserDto.class);
     }
 
     @Override
     public void subscribeToGame(long userId, long gameId) {
         log.info(String.format("Subscribe for game(%s) into user(%s) game list", gameId, userId));
-        userRepository.addGameToUserListOfGames(userId, gameId);
+        WebUser webUser = getWebUserById(userId);
+        userRepository.addGameToUserListOfGames(webUser.getBasicUser().getId(), gameId);
     }
 
     @Override
     public void unsubscribeFromGame(long userId, long gameId) {
         log.info(String.format("Unsubscribe game(%s) from user(%s) game list", gameId, userId));
-        userRepository.removeGameFromUserListOfGames(userId, gameId);
+        WebUser webUser = getWebUserById(userId);
+        userRepository.removeGameFromUserListOfGames(webUser.getBasicUser().getId(), gameId);
     }
 
     public UserDto login(Credentials credentials) {
         log.info(String.format("Login user : %s", credentials.getEmail()));
-        final WebUser user = userRepository.findByEmail(credentials.getEmail())
+        final WebUser user = webUserRepository.findByEmail(credentials.getEmail())
                 .orElseThrow(LoginFailedException::new);
 
-        if (!user.isActivated()){
+        if (!user.isActivated()) {
             throw new UserNotActivatedException();
         }
 
@@ -151,14 +168,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<WebUser> getUsersOfChangedGameInfo(List<GameInShop> changedGames) {
-        List<Long> changedGamesIds = changedGames.stream()
-                .map(GameInShop::getId)
-                .toList();
-        return userRepository.findSubscribedUserForChangedGames(changedGamesIds);
-    }
-
-    @Override
     @SuppressWarnings("deprecation")
     public void updateLocale(String locale, long userId) {
         log.info(String.format("Change locale for user '%s' into '%s'", userId, locale));
@@ -166,7 +175,7 @@ public class UserServiceImpl implements UserService {
         WebUser webUser = getWebUserById(userId);
         webUser.setLocale(new Locale(locale));
 
-        userRepository.save(webUser);
+        webUserRepository.save(webUser);
     }
 
     @Override
@@ -175,7 +184,34 @@ public class UserServiceImpl implements UserService {
 
         WebUser webUser = getWebUserById(userId);
         webUser.setActivated(true);
-        userRepository.save(webUser);
+        webUserRepository.save(webUser);
+    }
+
+    @Override
+    public void connectTelegramUser(String token, long webUserId) {
+
+        WebMessengerConnector connector = messengerConnectorRepository.findById(token)
+                .orElseThrow(NotExistingMessengerActivationTokenException::new);
+        BasicUser user = userRepository.findById(connector.getUserId());
+        WebUser webUser = getWebUserById(webUserId);
+        BasicUser oldUSer = webUser.getBasicUser();
+
+        user.getGameList().addAll(oldUSer.getGameList());
+        user.getNotificationTypes().addAll(oldUSer.getNotificationTypes());
+        webUser.setBasicUser(user);
+
+        webUserRepository.save(webUser);
+        messengerConnectorRepository.deleteById(token);
+        userRepository.deleteById(oldUSer.getId());
+    }
+
+    @Override
+    public String getTelegramUserConnectorToken(long webUserId) {
+        WebUser webUser = getWebUserById(webUserId);
+        WebMessengerConnector connector = WebMessengerConnector.builder()
+                .userId(webUser.getBasicUser().getId())
+                .build();
+        return messengerConnectorRepository.save(connector).getToken();
     }
 
     private void failedLoginAttempt(WebUser user) {
@@ -183,7 +219,7 @@ public class UserServiceImpl implements UserService {
         if (user.getFailedAttempt() >= MAX_FAILED_ATTEMPTS) {
             lockUser(user);
         }
-        userRepository.save(user);
+        webUserRepository.save(user);
         log.info(String.format("Failed login for user : '%s'", user.getEmail()));
     }
 
@@ -201,7 +237,7 @@ public class UserServiceImpl implements UserService {
         user.setLocked(false);
         user.setLockTime(null);
         user.setFailedAttempt(0);
-        userRepository.save(user);
+        webUserRepository.save(user);
         log.info(String.format("Lock user : '%s'", user.getEmail()));
     }
 
@@ -221,7 +257,7 @@ public class UserServiceImpl implements UserService {
     private WebUser getWebUserById(final long userId) {
         log.info(String.format("Get user by id : %s", userId));
 
-        return userRepository.findById(userId)
+        return webUserRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("app.user.error.id.not.found"));
     }
 }

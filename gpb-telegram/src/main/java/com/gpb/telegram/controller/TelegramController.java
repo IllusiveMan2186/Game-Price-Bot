@@ -5,5 +5,5 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 public interface TelegramController {
 
-    SendMessage apply(Update update);
+    SendMessage apply(String chatId, Update update);
 }

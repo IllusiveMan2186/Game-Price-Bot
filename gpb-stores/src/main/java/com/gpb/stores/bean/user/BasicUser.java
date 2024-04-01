@@ -25,11 +25,9 @@ import java.util.List;
 
 @Data
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@SuperBuilder
 public class BasicUser {
 
     @Id
