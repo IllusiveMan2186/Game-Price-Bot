@@ -58,10 +58,30 @@ services:
     environment:
       - IMAGE_FOLDER=/image_folder
       - KAFKA_SERVER_URL=kafka:9093
-      - POSTGRES_DB_URL=${POSTGRES_DB_NAME}
+      - POSTGRES_DB_URL=${POSTGRES_DB_URL}
       - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
       - WEB_SERVICE_URL=http://localhost:8080
+    volumes:
+      - common_data:/image_folder
+
+  telegram:
+    container_name: gpb_telegram
+    ports:
+      - 8081:8081
+    depends_on:
+      - kafka
+      - postgres
+    networks:
+      - gpb-network
+    build: ./gpb-telegram
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - IMAGE_FOLDER=/image_folder
+      - KAFKA_SERVER_URL=kafka:9093
+      - POSTGRES_DB_URL=${POSTGRES_DB_URL}
+      - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
+      - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
     volumes:
       - common_data:/image_folder
 
@@ -91,7 +111,7 @@ services:
       - GAMEZEY_PASSWORD=${GAMEZEY_PASSWORD}
       - IMAGE_FOLDER=/image_folder
       - KAFKA_SERVER_URL=kafka:9093
-      - POSTGRES_DB_URL=${POSTGRES_DB_NAME}
+      - POSTGRES_DB_URL=${POSTGRES_DB_URL}
       - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
     volumes:
