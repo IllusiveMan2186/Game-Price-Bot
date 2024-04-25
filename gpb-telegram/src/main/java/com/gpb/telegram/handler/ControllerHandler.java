@@ -1,6 +1,7 @@
 package com.gpb.telegram.handler;
 
 import com.gpb.telegram.controller.TelegramController;
+import com.gpb.telegram.controller.impl.HelpController;
 import com.gpb.telegram.filter.FilterChain;
 import com.gpb.telegram.util.Consts;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,8 @@ public class ControllerHandler {
     public ControllerHandler(ExceptionHandler exceptionHandler, Map<String, TelegramController> controllers,
                              FilterChain filterChain) {
         this.exceptionHandler = exceptionHandler;
+        HelpController helpController = new HelpController(controllers);
+        controllers.put("help", helpController);
         this.controllers = controllers;
         this.filterChain = filterChain;
     }
@@ -28,7 +31,7 @@ public class ControllerHandler {
 
     public SendMessage handleCommands(Update update) {
         String messageText = update.getMessage().getText();
-        String commandName = messageText.split(" ")[0].replace("/","");
+        String commandName = messageText.split(" ")[0].replace("/", "");
         String chatId = String.valueOf(update.getMessage().getChatId());
 
         TelegramController controller = controllers.get(commandName);

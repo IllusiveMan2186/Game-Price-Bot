@@ -19,6 +19,11 @@ public class GetWebConnectorTokenController implements TelegramController {
     }
 
     @Override
+    public String getDescription() {
+        return " - give you token for synchronization on web part";
+    }
+
+    @Override
     public SendMessage apply(String chatId, Update update) {
         long userId = update.getMessage().getFrom().getId();
 
