@@ -21,6 +21,13 @@ class SynchronizeToWebUserControllerTest {
     SynchronizeToWebUserController controller = new SynchronizeToWebUserController(telegramUserService);
 
     @Test
+    void testGetDescription_shouldReturnDescription() {
+        String description = controller.getDescription();
+
+        assertEquals(" {token} - synchronize telegram with web part by token", description);
+    }
+
+    @Test
     void testApply_shouldReturnMessageAndSSynchronizeAccounts() {
         long userId = 123456;
         Update update = new Update();
