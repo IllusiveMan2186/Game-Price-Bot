@@ -18,6 +18,13 @@ class GetWebConnectorTokenControllerTest {
     GetWebConnectorTokenController controller = new GetWebConnectorTokenController(telegramUserService);
 
     @Test
+    void testGetDescription_shouldReturnDescription() {
+        String description = controller.getDescription();
+
+        assertEquals(" - give you token for synchronization on web part", description);
+    }
+
+    @Test
     void testApply_shouldReturnTokenToNeededChat() {
         long userId = 123456;
         Update update = new Update();

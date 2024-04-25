@@ -18,6 +18,11 @@ public class SynchronizeToWebUserController implements TelegramController {
     }
 
     @Override
+    public String getDescription() {
+        return " {token} - synchronize telegram with web part by token";
+    }
+
+    @Override
     public SendMessage apply(String chatId, Update update) {
         long userId = update.getMessage().getFrom().getId();
         String messageText = update.getMessage().getText();

@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,10 +24,15 @@ class ControllerHandlerTest {
 
     ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
     TelegramController controller = mock(TelegramController.class);
-    Map<String, TelegramController> controllers = Collections.singletonMap("command", controller);
+    Map<String, TelegramController> controllers = new HashMap<>();
     FilterChain filterChain = mock(FilterChain.class);
 
-    ControllerHandler controllerHandler = new ControllerHandler(exceptionHandler, controllers, filterChain);
+    ControllerHandler controllerHandler;
+
+    ControllerHandlerTest() {
+        controllers.put("command", controller);
+        controllerHandler = new ControllerHandler(exceptionHandler, controllers, filterChain);
+    }
 
     @Test
     void testHandleCommands_whenExistingCommand_shouldReturnResult() {
