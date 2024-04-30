@@ -9,6 +9,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.Locale;
+
 @Order(1)
 @Component
 public class UserExistingFilter extends TelegramFilter {
@@ -28,8 +30,10 @@ public class UserExistingFilter extends TelegramFilter {
     protected void checkFilter(Update update) {
         long userId = update.getMessage().getFrom().getId();
         if (!telegramUserService.isUserRegistered(userId)) {
+            Locale locale = new Locale(update.getMessage().getFrom().getLanguageCode());
             TelegramUser newUser = TelegramUser.builder()
                     .telegramId(userId)
+                    .locale(locale)
                     .build();
             telegramUserService.createTelegramUser(newUser);
         }

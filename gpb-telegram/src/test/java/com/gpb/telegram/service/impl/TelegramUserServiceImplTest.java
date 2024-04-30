@@ -12,6 +12,7 @@ import com.gpb.telegram.service.TelegramUserService;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -127,5 +128,42 @@ class TelegramUserServiceImplTest {
 
 
         assertEquals(expectedToken, result);
+    }
+
+    @Test
+    void testChangeUserLocale_whenSuccessfully_shouldReturnNewLocale() {
+        long telegramId = 123;
+        Locale locale = new Locale("");
+        TelegramUser telegramUser = TelegramUser.builder()
+                .id(1)
+                .locale(locale)
+                .build();
+        when(telegramUserRepository.findByTelegramId(telegramId)).thenReturn(telegramUser);
+        Locale newLocale = new Locale("new");
+        telegramUser.setLocale(newLocale);
+        when(telegramUserRepository.save(telegramUser)).thenReturn(telegramUser);
+
+
+        Locale result = telegramUserService.changeUserLocale(telegramId, newLocale);
+
+
+        assertEquals(newLocale, result);
+    }
+
+    @Test
+    void testGetUserLocale_whenSuccessfully_shouldReturnUserLocale() {
+        long telegramId = 123;
+        Locale locale = new Locale("");
+        TelegramUser telegramUser = TelegramUser.builder()
+                .id(1)
+                .locale(locale)
+                .build();
+        when(telegramUserRepository.findByTelegramId(telegramId)).thenReturn(telegramUser);
+
+
+        Locale result = telegramUserService.getUserLocale(telegramId);
+
+
+        assertEquals(locale, result);
     }
 }

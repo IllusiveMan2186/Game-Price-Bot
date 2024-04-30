@@ -2,6 +2,8 @@ package com.gpb.telegram.service;
 
 import com.gpb.telegram.bean.TelegramUser;
 
+import java.util.Locale;
+
 public interface TelegramUserService {
 
     /**
@@ -35,4 +37,8 @@ public interface TelegramUserService {
      * @return token of connector
      */
     String getWebUserConnectorToken(long telegramId);
+
+    Locale changeUserLocale(long telegramId,Locale newLocale);
+
+    Locale getUserLocale(long telegramId);
 }

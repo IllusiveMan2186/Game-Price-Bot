@@ -12,7 +12,7 @@ class ExceptionHandlerTest {
     @Test
     void testHandleException_shouldReturnSendMessage() {
         String chatId = "chatId";
-        String message = "message";
+        String message = "messages";
         RuntimeException exception = new RuntimeException(message);
 
 
