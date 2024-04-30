@@ -2,10 +2,13 @@ package com.gpb.telegram.controller.impl;
 
 import com.gpb.telegram.service.TelegramUserService;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
+
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -14,21 +17,23 @@ import static org.mockito.Mockito.when;
 
 class SynchronizeToWebUserControllerTest {
 
-    private static final String SUCCESSFULLY_CONNECTED = "Successfully connected";
-
     TelegramUserService telegramUserService = mock(TelegramUserService.class);
-
-    SynchronizeToWebUserController controller = new SynchronizeToWebUserController(telegramUserService);
+    MessageSource messageSource = mock(MessageSource.class);
+    SynchronizeToWebUserController controller = new SynchronizeToWebUserController(messageSource, telegramUserService);
 
     @Test
     void testGetDescription_shouldReturnDescription() {
-        String description = controller.getDescription();
+        Locale locale = new Locale("");
+        when(messageSource.getMessage("accounts.synchronization.description", null, locale))
+                .thenReturn("messages");
+        String description = controller.getDescription(locale);
 
-        assertEquals(" {token} - synchronize telegram with web part by token", description);
+        assertEquals("messages", description);
     }
 
     @Test
     void testApply_shouldReturnMessageAndSSynchronizeAccounts() {
+        Locale locale = new Locale("");
         long userId = 123456;
         Update update = new Update();
         Message message = new Message();
@@ -38,16 +43,18 @@ class SynchronizeToWebUserControllerTest {
         message.setFrom(user);
         message.setText("/synchronizeToWeb mockToken");
         user.setId(userId);
+        when(messageSource.getMessage("accounts.synchronization.token.connected.message", null, locale))
+                .thenReturn("messages");
 
         String token = "mockToken";
         when(telegramUserService.getWebUserConnectorToken(userId)).thenReturn(token);
 
 
-        SendMessage sendMessage = controller.apply("chatId", update);
+        SendMessage sendMessage = controller.apply("chatId", update, locale);
 
 
         verify(telegramUserService).synchronizeTelegramUser(token, userId);
         assertEquals("chatId", sendMessage.getChatId());
-        assertEquals(SUCCESSFULLY_CONNECTED, sendMessage.getText());
+        assertEquals("messages", sendMessage.getText());
     }
 }
