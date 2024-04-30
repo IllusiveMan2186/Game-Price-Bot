@@ -3,6 +3,8 @@ package com.gpb.telegram.controller;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.Locale;
+
 public interface TelegramController {
 
     /**
@@ -10,7 +12,7 @@ public interface TelegramController {
      *
      * @return description
      */
-    String getDescription();
+    String getDescription(Locale locale);
 
     /**
      * Apply command from user
@@ -19,5 +21,5 @@ public interface TelegramController {
      * @param update information about request
      * @return message
      */
-    SendMessage apply(String chatId, Update update);
+    SendMessage apply(String chatId, Update update, Locale locale);
 }

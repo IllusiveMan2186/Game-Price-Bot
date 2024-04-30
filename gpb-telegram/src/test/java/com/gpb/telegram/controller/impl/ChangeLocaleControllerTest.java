@@ -14,18 +14,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class GetWebConnectorTokenControllerTest {
+class ChangeLocaleControllerTest {
 
     TelegramUserService telegramUserService = mock(TelegramUserService.class);
 
     MessageSource messageSource = mock(MessageSource.class);
 
-    GetWebConnectorTokenController controller = new GetWebConnectorTokenController(messageSource, telegramUserService);
+    ChangeLocaleController controller = new ChangeLocaleController(messageSource, telegramUserService);
 
     @Test
     void testGetDescription_shouldReturnDescription() {
         Locale locale = new Locale("");
-        when(messageSource.getMessage("accounts.synchronization.get.token.description", null, locale))
+        when(messageSource.getMessage("change.language.command.description", null, locale))
                 .thenReturn("messages");
         String description = controller.getDescription(locale);
 
@@ -33,7 +33,7 @@ class GetWebConnectorTokenControllerTest {
     }
 
     @Test
-    void testApply_shouldReturnTokenToNeededChat() {
+    void testApply_shouldReturnSuccessMessage() {
         Locale locale = new Locale("");
         long userId = 123456;
         Update update = new Update();
@@ -42,16 +42,19 @@ class GetWebConnectorTokenControllerTest {
 
         update.setMessage(message);
         message.setFrom(user);
+        message.setText("/changeLanguage language");
         user.setId(userId);
 
-        String token = "mockToken";
-        when(telegramUserService.getWebUserConnectorToken(userId)).thenReturn(token);
+        Locale newLocale = new Locale("new");
+        when(telegramUserService.changeUserLocale(userId,new Locale("language"))).thenReturn(newLocale);
+        when(messageSource.getMessage("change.language.command.successfully.message", null, newLocale))
+                .thenReturn("messages");
 
 
         SendMessage sendMessage = controller.apply("chatId", update, locale);
 
 
         assertEquals("chatId", sendMessage.getChatId());
-        assertEquals(token, sendMessage.getText());
+        assertEquals("messages", sendMessage.getText());
     }
 }

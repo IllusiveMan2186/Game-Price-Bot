@@ -7,13 +7,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
+import java.util.Locale;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 class UserExistingFilterTest {
-
-    private static final String SUCCESSFULLY_CONNECTED = "Successfully connected";
 
     TelegramUserService telegramUserService = mock(TelegramUserService.class);
 
@@ -50,9 +50,13 @@ class UserExistingFilterTest {
         update.setMessage(message);
         message.setFrom(user);
         user.setId(userId);
+        user.setLanguageCode("");
 
         when(telegramUserService.isUserRegistered(userId)).thenReturn(false);
-        TelegramUser expectedUser = TelegramUser.builder().telegramId(userId).build();
+        TelegramUser expectedUser = TelegramUser.builder()
+                .telegramId(userId)
+                .locale(new Locale(""))
+                .build();
 
 
         filter.checkFilter(update);

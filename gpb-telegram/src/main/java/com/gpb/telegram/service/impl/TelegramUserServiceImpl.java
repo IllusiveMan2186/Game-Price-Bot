@@ -12,6 +12,8 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Locale;
+
 @Component
 @Slf4j
 public class TelegramUserServiceImpl implements TelegramUserService {
@@ -71,5 +73,18 @@ public class TelegramUserServiceImpl implements TelegramUserService {
         WebMessengerConnector webMessengerConnector = WebMessengerConnector.builder()
                 .userId(telegramUser.getBasicUser().getId()).build();
         return messengerConnectorRepository.save(webMessengerConnector).getToken();
+    }
+
+    @Override
+    public Locale changeUserLocale(long telegramId, Locale newLocale) {
+        TelegramUser telegramUser = telegramUserRepository.findByTelegramId(telegramId);
+        telegramUser.setLocale(newLocale);
+
+        return telegramUserRepository.save(telegramUser).getLocale();
+    }
+
+    @Override
+    public Locale getUserLocale(long telegramId) {
+        return telegramUserRepository.findByTelegramId(telegramId).getLocale();
     }
 }
