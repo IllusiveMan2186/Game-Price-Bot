@@ -1,5 +1,6 @@
-package com.gpb.telegram.controller.impl;
+package com.gpb.telegram.command.impl;
 
+import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.service.TelegramUserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
@@ -12,20 +13,19 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ChangeLocaleControllerTest {
+class SynchronizeToWebUserCommandHandlerTest {
 
     TelegramUserService telegramUserService = mock(TelegramUserService.class);
-
     MessageSource messageSource = mock(MessageSource.class);
-
-    ChangeLocaleController controller = new ChangeLocaleController(messageSource, telegramUserService);
+    SynchronizeToWebUserCommandHandler controller = new SynchronizeToWebUserCommandHandler(messageSource, telegramUserService);
 
     @Test
     void testGetDescription_shouldReturnDescription() {
         Locale locale = new Locale("");
-        when(messageSource.getMessage("change.language.command.description", null, locale))
+        when(messageSource.getMessage("accounts.synchronization.description", null, locale))
                 .thenReturn("messages");
         String description = controller.getDescription(locale);
 
@@ -33,7 +33,7 @@ class ChangeLocaleControllerTest {
     }
 
     @Test
-    void testApply_shouldReturnSuccessMessage() {
+    void testApply_shouldReturnMessageAndSSynchronizeAccounts() {
         Locale locale = new Locale("");
         long userId = 123456;
         Update update = new Update();
@@ -42,18 +42,20 @@ class ChangeLocaleControllerTest {
 
         update.setMessage(message);
         message.setFrom(user);
-        message.setText("/changeLanguage language");
+        message.setText("/synchronizeToWeb mockToken");
         user.setId(userId);
-
-        Locale newLocale = new Locale("new");
-        when(telegramUserService.changeUserLocale(userId,new Locale("language"))).thenReturn(newLocale);
-        when(messageSource.getMessage("change.language.command.successfully.message", null, newLocale))
+        when(messageSource.getMessage("accounts.synchronization.token.connected.message", null, locale))
                 .thenReturn("messages");
 
+        String token = "mockToken";
+        when(telegramUserService.getWebUserConnectorToken(userId)).thenReturn(token);
 
-        SendMessage sendMessage = controller.apply("chatId", update, locale);
+
+        TelegramResponse response = controller.apply("chatId", update, locale);
 
 
+        SendMessage sendMessage = (SendMessage) response.getMessages().get(0);
+        verify(telegramUserService).synchronizeTelegramUser(token, userId);
         assertEquals("chatId", sendMessage.getChatId());
         assertEquals("messages", sendMessage.getText());
     }

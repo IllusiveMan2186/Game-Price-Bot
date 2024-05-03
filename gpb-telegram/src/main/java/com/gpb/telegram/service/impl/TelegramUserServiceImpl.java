@@ -9,6 +9,7 @@ import com.gpb.telegram.repository.UserRepository;
 import com.gpb.telegram.repository.WebMessengerConnectorRepository;
 import com.gpb.telegram.service.TelegramUserService;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -16,19 +17,12 @@ import java.util.Locale;
 
 @Component
 @Slf4j
+@AllArgsConstructor
 public class TelegramUserServiceImpl implements TelegramUserService {
 
     private final TelegramUserRepository telegramUserRepository;
     private final WebMessengerConnectorRepository messengerConnectorRepository;
     private final UserRepository userRepository;
-
-    public TelegramUserServiceImpl(TelegramUserRepository telegramUserRepository,
-                                   WebMessengerConnectorRepository messengerConnectorRepository,
-                                   UserRepository userRepository) {
-        this.telegramUserRepository = telegramUserRepository;
-        this.messengerConnectorRepository = messengerConnectorRepository;
-        this.userRepository = userRepository;
-    }
 
     @Override
     public boolean isUserRegistered(long telegramId) {

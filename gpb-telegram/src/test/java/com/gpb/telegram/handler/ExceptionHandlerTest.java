@@ -1,5 +1,6 @@
 package com.gpb.telegram.handler;
 
+import com.gpb.telegram.bean.TelegramResponse;
 import org.junit.jupiter.api.Test;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
@@ -16,10 +17,11 @@ class ExceptionHandlerTest {
         RuntimeException exception = new RuntimeException(message);
 
 
-        SendMessage result = exceptionHandler.handleException(chatId, exception);
+        TelegramResponse result = exceptionHandler.handleException(chatId, exception);
 
 
-        assertEquals("chatId", result.getChatId());
-        assertEquals(message, result.getText());
+        SendMessage sendMessage = (SendMessage) result.getMessages().get(0);
+        assertEquals("chatId", sendMessage.getChatId());
+        assertEquals(message, sendMessage.getText());
     }
 }
