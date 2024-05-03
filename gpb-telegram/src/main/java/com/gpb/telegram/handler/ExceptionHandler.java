@@ -1,13 +1,13 @@
 package com.gpb.telegram.handler;
 
+import com.gpb.telegram.bean.TelegramResponse;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Component
 public class ExceptionHandler {
 
-    public SendMessage handleException(String chatId, Exception e){
+    public TelegramResponse handleException(String chatId, Exception e){
 
-        return new SendMessage(chatId, e.getMessage());
+        return new TelegramResponse(chatId, e.getMessage());
     }
 }

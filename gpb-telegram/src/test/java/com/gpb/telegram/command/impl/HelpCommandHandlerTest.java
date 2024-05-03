@@ -1,6 +1,7 @@
-package com.gpb.telegram.controller.impl;
+package com.gpb.telegram.command.impl;
 
-import com.gpb.telegram.controller.TelegramController;
+import com.gpb.telegram.bean.TelegramResponse;
+import com.gpb.telegram.command.CommandHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -16,12 +17,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-class HelpControllerTest {
+class HelpCommandHandlerTest {
 
     MessageSource messageSource = mock(MessageSource.class);
-    Map<String, TelegramController> controllerMap
-            = Collections.singletonMap("synchronizeToWeb", new SynchronizeToWebUserController(messageSource, null));
-    HelpController controller = new HelpController(controllerMap, messageSource);
+    Map<String, CommandHandler> controllerMap
+            = Collections.singletonMap("synchronizeToWeb", new SynchronizeToWebUserCommandHandler(messageSource, null));
+    HelpCommandHandler controller = new HelpCommandHandler(messageSource, controllerMap);
 
     @Test
     void testGetDescription_shouldReturnDescription() {
@@ -48,9 +49,10 @@ class HelpControllerTest {
         message.setText("/synchronizeToWeb mockToken");
 
 
-        SendMessage sendMessage = controller.apply("chatId", update, locale);
+        TelegramResponse response = controller.apply("chatId", update, locale);
 
 
+        SendMessage sendMessage = (SendMessage) response.getMessages().get(0);
         assertEquals("chatId", sendMessage.getChatId());
         assertEquals("messages" + System.lineSeparator() +
                 "/synchronizeToWeb - description", sendMessage.getText());

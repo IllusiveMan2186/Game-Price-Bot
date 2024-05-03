@@ -1,5 +1,6 @@
-package com.gpb.telegram.controller.impl;
+package com.gpb.telegram.command.impl;
 
+import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.service.TelegramUserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
@@ -14,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class GetWebConnectorTokenControllerTest {
+class GetWebConnectorTokenCommandHandlerTest {
 
     TelegramUserService telegramUserService = mock(TelegramUserService.class);
 
     MessageSource messageSource = mock(MessageSource.class);
 
-    GetWebConnectorTokenController controller = new GetWebConnectorTokenController(messageSource, telegramUserService);
+    GetWebConnectorTokenCommandHandler controller = new GetWebConnectorTokenCommandHandler(messageSource, telegramUserService);
 
     @Test
     void testGetDescription_shouldReturnDescription() {
@@ -48,9 +49,10 @@ class GetWebConnectorTokenControllerTest {
         when(telegramUserService.getWebUserConnectorToken(userId)).thenReturn(token);
 
 
-        SendMessage sendMessage = controller.apply("chatId", update, locale);
+        TelegramResponse response = controller.apply("chatId", update, locale);
 
 
+        SendMessage sendMessage = (SendMessage) response.getMessages().get(0);
         assertEquals("chatId", sendMessage.getChatId());
         assertEquals(token, sendMessage.getText());
     }
