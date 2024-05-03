@@ -1,6 +1,5 @@
 package com.gpb.telegram.filter;
 
-import com.gpb.telegram.controller.TelegramController;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
@@ -14,8 +13,8 @@ public abstract class TelegramFilter {
     }
 
 
-    public void handle(TelegramController controller, Update update) {
-        FilterChainMarker marker = controller
+    public void handle(FilteredHandler handler, Update update) {
+        FilterChainMarker marker = handler
                 .getClass()
                 .getAnnotation(FilterChainMarker.class);
 
@@ -28,7 +27,7 @@ public abstract class TelegramFilter {
         }
 
         if (nextFilter != null) {
-            nextFilter.handle(controller, update);
+            nextFilter.handle(handler, update);
         }
     }
 
