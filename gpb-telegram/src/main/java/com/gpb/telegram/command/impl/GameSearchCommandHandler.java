@@ -45,6 +45,6 @@ public class GameSearchCommandHandler implements CommandHandler {
 
         long gameAmount = gameService.getGameAmountByName(gameName);
 
-        return new TelegramResponse(gameListMapper.gameListToTelegramPage(games, gameAmount, chatId, pageNum, gameName, locale));
+        return new TelegramResponse(gameListMapper.gameSearchListToTelegramPage(games, gameAmount, chatId, pageNum, gameName, locale));
     }
 }
