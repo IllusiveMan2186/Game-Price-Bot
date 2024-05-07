@@ -49,7 +49,7 @@ class GameSearchCommandHandlerTest {
         List<Game> games = Collections.singletonList(new Game());
         when(gameService.getByName(name, 1)).thenReturn(games);
         when(gameService.getGameAmountByName(name)).thenReturn(gameAmount);
-        when(gameListMapper.gameListToTelegramPage(games, gameAmount, chatId, 1, name, locale))
+        when(gameListMapper.gameSearchListToTelegramPage(games, gameAmount, chatId, 1, name, locale))
                 .thenReturn(Collections.singletonList(message));
 
 
