@@ -2,6 +2,7 @@ package com.gpb.telegram.service.impl;
 
 import com.gpb.telegram.bean.Game;
 import com.gpb.telegram.bean.GameInShop;
+import com.gpb.telegram.exception.NotFoundException;
 import com.gpb.telegram.repository.GameRepository;
 import com.gpb.telegram.service.GameService;
 import com.gpb.telegram.service.GameStoresService;
@@ -13,8 +14,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +35,26 @@ class GameServiceImplTest {
 
 
     private final Game game = Game.builder().gamesInShop(Collections.singleton(gameInShop)).build();
+
+    @Test
+    void getGameByIdSuccessfullyShouldReturnGame() {
+        long id = 1;
+        game.setUserList(new ArrayList<>());
+        when(repository.findById(id)).thenReturn(Optional.of(game));
+
+        Game result = gameService.getById(id);
+
+        assertEquals(game, result);
+    }
+
+    @Test
+    void getGameByIdThatNotFoundShouldThrowException() {
+        long id = 1;
+        when(repository.findById(id)).thenReturn(null);
+        when(repository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> gameService.getById(id));
+    }
 
     @Test
     void testGetGameByName_whenGameInRepository_shouldReturnGameList() {

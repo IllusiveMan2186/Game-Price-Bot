@@ -1,6 +1,7 @@
 package com.gpb.telegram.service.impl;
 
 import com.gpb.telegram.bean.Game;
+import com.gpb.telegram.exception.NotFoundException;
 import com.gpb.telegram.repository.GameRepository;
 import com.gpb.telegram.service.GameService;
 import com.gpb.telegram.service.GameStoresService;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
@@ -21,6 +23,18 @@ public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
     private final GameStoresService gameStoresService;
+
+    @Override
+    public Game getById(long gameId) {
+        log.info(String.format("Get game by id : %s", gameId));
+
+        final Optional<Game> game = gameRepository.findById(gameId);
+        if (game.isEmpty()) {
+            log.info(String.format("Game with id : '%s' not found", gameId));
+            throw new NotFoundException("app.game.error.id.not.found");
+        }
+        return game.get();
+    }
 
     @Override
     public List<Game> getByName(final String name, final int pageNum) {

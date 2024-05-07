@@ -61,8 +61,8 @@ public class GamazeyStoreService implements StoreService {
     private static final String GAME_NAME_PRODUCT_TYPE_PART = "(Гра|Ігрова валюта|Доповнення) ";
     private static final String GAME_NAME_SPECIFICATION_PART = " для .+ \\(Ключ активації .+\\)";
 
-    private static final int GAME_IMAGE_CROP_WIDTH_START = 55;
-    private static final int GAME_IMAGE_CROP_WIDTH_LONG = 250;
+    private static final int GAME_IMAGE_CROP_WIDTH_START = 20;
+    private static final int GAME_IMAGE_CROP_WIDTH_LONG = 320;
     private static final int GAME_IMAGE_HEIGHT = 400;
 
     private final StorePageParser parser;

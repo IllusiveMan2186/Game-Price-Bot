@@ -7,6 +7,14 @@ import java.util.List;
 public interface GameService {
 
     /**
+     * Get game by id
+     *
+     * @param gameId games id
+     * @return game
+     */
+    Game getById(long gameId);
+
+    /**
      * Get game by name
      *
      * @param name    games name

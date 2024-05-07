@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class ExceptionHandler {
 
     public TelegramResponse handleException(String chatId, Exception e){
-
+        e.printStackTrace();
         return new TelegramResponse(chatId, e.getMessage());
     }
 }

@@ -39,7 +39,7 @@ class GameSearchByPageCallbackHandlerTest {
         List<Game> games = Collections.singletonList(new Game());
         when(gameService.getByName(name, pageNum)).thenReturn(games);
         when(gameService.getGameAmountByName(name)).thenReturn(gameAmount);
-        when(gameListMapper.gameListToTelegramPage(games, gameAmount, chatId, pageNum, name, locale))
+        when(gameListMapper.gameSearchListToTelegramPage(games, gameAmount, chatId, pageNum, name, locale))
                 .thenReturn(Collections.singletonList(message));
 
 
