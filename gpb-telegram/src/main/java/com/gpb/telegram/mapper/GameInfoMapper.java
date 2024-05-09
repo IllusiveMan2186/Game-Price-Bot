@@ -2,6 +2,7 @@ package com.gpb.telegram.mapper;
 
 import com.gpb.telegram.bean.Game;
 import com.gpb.telegram.bean.GameInShop;
+import com.gpb.telegram.bean.TelegramUser;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -27,9 +28,9 @@ public class GameInfoMapper {
     private final GameListMapper gameListMapper;
 
 
-    public List<PartialBotApiMethod> gameInfoToTelegramPage(Game game, String chatId, Locale locale) {
+    public List<PartialBotApiMethod> gameInfoToTelegramPage(Game game, TelegramUser telegramUser, String chatId, Locale locale) {
         List<PartialBotApiMethod> messages = gameListMapper
-                .gameSearchListToTelegramPage(Collections.singletonList(game), 1, chatId, 1, game.getName(), locale);
+                .gameSearchListToTelegramPage(Collections.singletonList(game), telegramUser, 1, chatId, 1, game.getName(), locale);
         messages.addAll(game.getGamesInShop()
                 .stream()
                 .map(gameInShop -> getGamesInShop(chatId, gameInShop, locale))

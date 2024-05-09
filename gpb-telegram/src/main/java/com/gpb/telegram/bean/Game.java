@@ -54,4 +54,6 @@ public class Game {
     @JsonIgnore
     @ToString.Exclude
     private List<BasicUser> userList;
+
+    private boolean isFollowed;
 }

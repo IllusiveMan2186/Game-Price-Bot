@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -100,9 +101,20 @@ class GameServiceImplTest {
         when(repository.countAllByNameContainingIgnoreCase(name)).thenReturn(pageNum);
 
 
-       long result = gameService.getGameAmountByName(name);
+        long result = gameService.getGameAmountByName(name);
 
 
         assertEquals(pageNum, result);
+    }
+
+    @Test
+    void testIsSubscribed_shouldReturnResult() {
+        when(repository.existsByIdAndUserList_Id(1,2)).thenReturn(true);
+
+
+        boolean result = gameService.isSubscribed(1, 2);
+
+
+        assertTrue(result);
     }
 }

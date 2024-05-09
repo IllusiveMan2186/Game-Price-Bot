@@ -17,15 +17,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class GameStoresServiceImplTest {
 
     ReplyingKafkaTemplate<String, String, List<String>> requestReplyKafkaTemplate =
             mock(ReplyingKafkaTemplate.class);
+    KafkaTemplate<String, Long> kafkaFollowTemplate = mock(KafkaTemplate.class);
 
     GameStoresServiceImpl gameStoresService =
-            new GameStoresServiceImpl(requestReplyKafkaTemplate);
+            new GameStoresServiceImpl(requestReplyKafkaTemplate, kafkaFollowTemplate);
 
     @Test
     void findGameByName_Success() throws InterruptedException, ExecutionException {
@@ -50,10 +52,7 @@ class GameStoresServiceImplTest {
     void findGameByName_ExceptionThrown() throws InterruptedException, ExecutionException {
         String gameName = "Test Game";
         List<String> gameIdList = Collections.singletonList("123");
-        List<Long> expectedGameIds = Collections.singletonList(123L);
         RequestReplyFuture<String, String, List<String>> requestReplyFuture = mock(RequestReplyFuture.class);
-        ConsumerRecord<String, List<String>> response =
-                new ConsumerRecord<>("", 1, 1L, "key", gameIdList);
         when(requestReplyKafkaTemplate.sendAndReceive(argThat((ProducerRecord<String, String> record) ->
                 Constants.GAME_NAME_SEARCH_TOPIC.equals(record.topic()) && gameName.equals(record.value()))))
                 .thenReturn(requestReplyFuture);
@@ -63,5 +62,23 @@ class GameStoresServiceImplTest {
                 "Error while sending request '%s' for searching of game into topic '%s' with parameter '%s'");
     }
 
+    @Test
+    void subscribeToGame_Success() {
+        long gameId = 1L;
 
+        gameStoresService.subscribeToGame(gameId);
+
+        verify(kafkaFollowTemplate).send(argThat((ProducerRecord<String, Long> record) ->
+                Constants.GAME_FOLLOW_TOPIC.equals(record.topic()) && record.value() == gameId));
+    }
+
+    @Test
+    void unsubscribeToGame_Success() {
+        long gameId = 1L;
+
+        gameStoresService.unsubscribeFromGame(gameId);
+
+        verify(kafkaFollowTemplate).send(argThat((ProducerRecord<String, Long> record) ->
+                Constants.GAME_UNFOLLOW_TOPIC.equals(record.topic()) && record.value() == gameId));
+    }
 }

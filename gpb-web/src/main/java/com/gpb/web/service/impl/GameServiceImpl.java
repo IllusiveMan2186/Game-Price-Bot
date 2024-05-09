@@ -204,6 +204,7 @@ public class GameServiceImpl implements GameService {
         Game game = getById(gameId);
         if (!game.isFollowed()) {
             game.setFollowed(true);
+            gameRepository.save(game);
             gameStoresService.subscribeToGame(gameId);
         }
     }
@@ -214,6 +215,8 @@ public class GameServiceImpl implements GameService {
 
         Game game = getById(gameId);
         if (game.isFollowed() && game.getUserList().isEmpty()) {
+            game.setFollowed(true);
+            gameRepository.save(game);
             gameStoresService.unsubscribeFromGame(gameId);
         }
     }

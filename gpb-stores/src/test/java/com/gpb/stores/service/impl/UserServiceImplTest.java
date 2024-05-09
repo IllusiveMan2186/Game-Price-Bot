@@ -24,7 +24,7 @@ class UserServiceImplTest {
     WebUserRepository webUserRepository = mock(WebUserRepository.class);
     UserRepository userRepository = mock(UserRepository.class);
     UserService userService = new UserServiceImpl(userRepository, webUserRepository);
-    private final WebUser user = new WebUser("email", new Locale("ua"));
+    private final WebUser user =  WebUser.builder().email("email").locale(new Locale("ua")).build();
 
     @Test
     void testGetUsersChangedGames_whenSuccessfully_thenShouldGetUsers() {
