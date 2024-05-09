@@ -26,7 +26,9 @@ public class UserExistingFilter extends TelegramFilter {
 
     @Override
     protected void checkFilter(Update update) {
-        long userId = update.getMessage().getFrom().getId();
+        long userId = update.hasCallbackQuery()
+                ? update.getCallbackQuery().getFrom().getId()
+                : update.getMessage().getFrom().getId();
         if (!telegramUserService.isUserRegistered(userId)) {
             Locale locale = new Locale(update.getMessage().getFrom().getLanguageCode());
             TelegramUser newUser = TelegramUser.builder()

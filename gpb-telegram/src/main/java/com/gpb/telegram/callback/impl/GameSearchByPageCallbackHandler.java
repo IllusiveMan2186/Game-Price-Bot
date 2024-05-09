@@ -2,9 +2,11 @@ package com.gpb.telegram.callback.impl;
 
 import com.gpb.telegram.bean.Game;
 import com.gpb.telegram.bean.TelegramResponse;
+import com.gpb.telegram.bean.TelegramUser;
 import com.gpb.telegram.callback.CallbackHandler;
 import com.gpb.telegram.mapper.GameListMapper;
 import com.gpb.telegram.service.GameService;
+import com.gpb.telegram.service.TelegramUserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -21,6 +23,7 @@ import java.util.Locale;
 public class GameSearchByPageCallbackHandler implements CallbackHandler {
 
     private final GameService gameService;
+    private final TelegramUserService telegramUserService;
     private final MessageSource messageSource;
     private final GameListMapper gameListMapper;
 
@@ -28,6 +31,7 @@ public class GameSearchByPageCallbackHandler implements CallbackHandler {
     @Transactional
     @Override
     public TelegramResponse apply(String chatId, Update update, Locale locale) {
+        long userId = update.getCallbackQuery().getFrom().getId();
         String messageText = update.getCallbackQuery().getData();
         String gameName = update.getCallbackQuery().getData().replaceAll("/searchByPage \\d+ ", "");
         int pageNum = Integer.parseInt(messageText.split(" ")[1]);
@@ -41,7 +45,9 @@ public class GameSearchByPageCallbackHandler implements CallbackHandler {
         }
 
         long gameAmount = gameService.getGameAmountByName(gameName);
+        TelegramUser user = telegramUserService.getUserById(userId);
 
-        return new TelegramResponse(gameListMapper.gameSearchListToTelegramPage(games, gameAmount, chatId, pageNum, gameName, locale));
+        return new TelegramResponse(gameListMapper.gameSearchListToTelegramPage(games, user, gameAmount, chatId,
+                pageNum, gameName, locale));
     }
 }

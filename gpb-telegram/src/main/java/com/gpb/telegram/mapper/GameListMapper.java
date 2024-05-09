@@ -3,7 +3,9 @@ package com.gpb.telegram.mapper;
 import com.gpb.telegram.bean.Game;
 import com.gpb.telegram.bean.GameInShop;
 import com.gpb.telegram.bean.Genre;
+import com.gpb.telegram.bean.TelegramUser;
 import com.gpb.telegram.configuration.ResourceConfiguration;
+import com.gpb.telegram.service.GameService;
 import com.gpb.telegram.util.Constants;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -30,27 +32,29 @@ public class GameListMapper {
     private static final String GAME_INFO_FORM = "%s" + System.lineSeparator() + "%s" + System.lineSeparator()
             + "%s" + "%s - %s ₴";
 
-    private MessageSource messageSource;
+    private final GameService gameService;
+    private final MessageSource messageSource;
     private final TelegramKeyboardMapper telegramKeyboardMapper;
     private final ResourceConfiguration resourceConfiguration;
 
 
-    public List<PartialBotApiMethod> gameSearchListToTelegramPage(List<Game> games, long gameAmount, String chatId, int pageNum,
+    public List<PartialBotApiMethod> gameSearchListToTelegramPage(List<Game> games, TelegramUser telegramUser,
+                                                                  long gameAmount, String chatId, int pageNum,
                                                                   String gameName, Locale locale) {
         List<PartialBotApiMethod> messages = new ArrayList<>();
-        games.forEach(game -> messages.add(getPhotoMessage(chatId, game, locale)));
+        games.forEach(game -> messages.add(getPhotoMessage(telegramUser, chatId, game, locale)));
         if (gameAmount / Constants.GAMES_AMOUNT_IN_LIST > pageNum) {
             messages.add(getNextPageButton(chatId, pageNum, gameName, locale));
         }
         return messages;
     }
 
-    private SendPhoto getPhotoMessage(String chatId, Game game, Locale locale) {
+    private SendPhoto getPhotoMessage(TelegramUser telegramUser, String chatId, Game game, Locale locale) {
         return SendPhoto.builder()
                 .chatId(chatId)
                 .photo(getGameImage(game.getName()))
                 .caption(mapGameToTelegramMessage(game, locale))
-                .replyMarkup(getKeyboardForGame(game.getId(), locale))
+                .replyMarkup(getKeyboardForGame(telegramUser, game.getId(), locale))
                 .build();
     }
 
@@ -113,13 +117,26 @@ public class GameListMapper {
                 .replyMarkup(inlineKeyboardMarkup).build();
     }
 
-    private InlineKeyboardMarkup getKeyboardForGame(long gameId, Locale locale) {
-        List<List<TelegramButton>> settingList = Collections
-                .singletonList(Collections.singletonList(
-                        TelegramButton.builder()
-                                .textCode("game.search.list.next.page.more.game.info.button")
-                                .callBackData(String.format("/gameInfo %s", gameId))
-                                .locale(locale).build()));
+    private InlineKeyboardMarkup getKeyboardForGame(TelegramUser telegramUser, long gameId, Locale locale) {
+        List<List<TelegramButton>> settingList = new ArrayList<>();
+        settingList.add(Collections.singletonList(
+                TelegramButton.builder()
+                        .textCode("game.more.info.button")
+                        .callBackData(String.format("/gameInfo %s", gameId))
+                        .locale(locale).build()));
+
+        String textCodeForSubscribeSection = "game.subscribe.button";
+        String callBackDataForSubscribeSection = String.format("/subscribe %s", gameId);
+        if (telegramUser != null && gameService.isSubscribed(gameId, telegramUser.getBasicUser().getId())) {
+            textCodeForSubscribeSection = "game.unsubscribe.button";
+            callBackDataForSubscribeSection = String.format("/unsubscribe %s", gameId);
+        }
+
+        settingList.add(Collections.singletonList(
+                TelegramButton.builder()
+                        .textCode(textCodeForSubscribeSection)
+                        .callBackData(callBackDataForSubscribeSection)
+                        .locale(locale).build()));
 
         return telegramKeyboardMapper.getKeyboardMarkup(settingList);
     }

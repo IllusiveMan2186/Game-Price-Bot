@@ -87,11 +87,11 @@ class GameRequestListenerTest {
         long gameId = 123L;
         Game game = new Game();
         ConsumerRecord<String, Long> record = new ConsumerRecord<>("topic", 0, 0, "key", gameId);
-        when(gameService.getById(gameId)).thenReturn(game);
+        when(gameService.setFollowGameOption(gameId, true)).thenReturn(game);
 
         gameRequestListener.listenGameFollow(record);
 
-        verify(gameService, times(1)).getById(gameId);
+        verify(gameService, times(1)).setFollowGameOption(gameId, true);
         verify(gameStoresService, times(1)).subscribeToGame(game);
     }
 
@@ -100,11 +100,11 @@ class GameRequestListenerTest {
         long gameId = 123L;
         Game game = new Game();
         ConsumerRecord<String, Long> record = new ConsumerRecord<>("topic", 0, 0, "key", gameId);
-        when(gameService.getById(gameId)).thenReturn(game);
+        when(gameService.setFollowGameOption(gameId, false)).thenReturn(game);
 
         gameRequestListener.listenGameUnfollow(record);
 
-        verify(gameService, times(1)).getById(gameId);
+        verify(gameService, times(1)).setFollowGameOption(gameId, false);
         verify(gameStoresService, times(1)).unsubscribeFromGame(game);
     }
 }

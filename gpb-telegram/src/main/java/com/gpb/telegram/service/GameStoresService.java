@@ -15,4 +15,13 @@ public interface GameStoresService {
      */
     List<Long> findGameByName(String name);
 
+    /**
+     * Add to wishlist in store
+     */
+    void subscribeToGame(long gameId);
+
+    /**
+     * Remove from wishlist in store
+     */
+    void unsubscribeFromGame(long gameId);
 }

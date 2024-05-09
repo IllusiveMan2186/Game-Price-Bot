@@ -49,4 +49,13 @@ public interface GameService {
      * @return list of games ids
      */
     List<Long> addGames(List<Game> games);
+
+    /**
+     * Set isFollowed field in game by id
+     *
+     * @param gameId   games id
+     * @param isFollow is program would follow this game for information changing
+     * @return changed game
+     */
+    Game setFollowGameOption(long gameId, boolean isFollow);
 }

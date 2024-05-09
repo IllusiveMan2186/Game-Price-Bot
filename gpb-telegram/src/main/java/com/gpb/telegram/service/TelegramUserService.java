@@ -15,6 +15,14 @@ public interface TelegramUserService {
     boolean isUserRegistered(long telegramId);
 
     /**
+     * Get user by telegram id
+     *
+     * @param telegramId telegram id
+     * @return user
+     */
+    TelegramUser getUserById(long telegramId);
+
+    /**
      * Create new telegram user
      *
      * @param newUser new user
@@ -38,7 +46,36 @@ public interface TelegramUserService {
      */
     String getWebUserConnectorToken(long telegramId);
 
+    /**
+     * Change user locale
+     *
+     * @param telegramId user id in telegram
+     * @param newLocale new locale
+     * @return updated locale
+     */
     Locale changeUserLocale(long telegramId,Locale newLocale);
 
+    /**
+     * Get users locale
+     *
+     * @param telegramId user id in telegram
+     * @return users locale
+     */
     Locale getUserLocale(long telegramId);
+
+    /**
+     * Add game to user list of games
+     *
+     * @param userId users id
+     * @param gameId games id
+     */
+    void subscribeToGame(long userId, long gameId);
+
+    /**
+     * Add game to user list of games
+     *
+     * @param userId users id
+     * @param gameId games id
+     */
+    void unsubscribeFromGame(long userId, long gameId);
 }
