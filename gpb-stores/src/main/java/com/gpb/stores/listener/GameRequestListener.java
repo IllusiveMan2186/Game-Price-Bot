@@ -48,7 +48,7 @@ public class GameRequestListener {
     public void listenGameUrlSearch(ConsumerRecord<String, String> requestRecord) {
         log.info(String.format("Request '%s' for searching of game with url '%s'", requestRecord.key(), requestRecord.value()));
         Game game = gameStoresService.findGameByUrl(requestRecord.value());
-        List<Long> gamesId =  gameService.addGames(Collections.singletonList(game));
+        List<Long> gamesId = gameService.addGames(Collections.singletonList(game));
         sendGamesSearchResponse(gamesId, requestRecord);
     }
 
@@ -69,7 +69,7 @@ public class GameRequestListener {
     @Transactional
     public void listenGameFollow(ConsumerRecord<String, Long> followRecord) {
         log.info(String.format("Request '%s' for follow for game '%s'", followRecord.key(), followRecord.value()));
-        Game game = gameService.getById(followRecord.value());
+        Game game = gameService.setFollowGameOption(followRecord.value(), true);
         gameStoresService.subscribeToGame(game);
     }
 
@@ -79,7 +79,7 @@ public class GameRequestListener {
     @Transactional
     public void listenGameUnfollow(ConsumerRecord<String, Long> unfollowRecord) {
         log.info(String.format("Request '%s' for unfollow for game '%s'", unfollowRecord.key(), unfollowRecord.value()));
-        Game game = gameService.getById(unfollowRecord.value());
+        Game game = gameService.setFollowGameOption(unfollowRecord.value(), false);
         gameStoresService.unsubscribeFromGame(game);
     }
 }

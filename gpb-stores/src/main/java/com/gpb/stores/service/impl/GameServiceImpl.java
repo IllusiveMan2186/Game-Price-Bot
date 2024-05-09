@@ -70,4 +70,11 @@ public class GameServiceImpl implements GameService {
                 .map(Game::getId)
                 .toList();
     }
+
+    @Override
+    public Game setFollowGameOption(long gameId, boolean isFollow) {
+        Game game = getById(gameId);
+        game.setFollowed(isFollow);
+        return gameRepository.save(game);
+    }
 }

@@ -2,6 +2,7 @@ package com.gpb.telegram.mapper;
 
 import com.gpb.telegram.bean.Game;
 import com.gpb.telegram.bean.GameInShop;
+import com.gpb.telegram.bean.TelegramUser;
 import org.junit.jupiter.api.Test;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -41,9 +42,10 @@ class GameInfoMapperTest {
         Game game = Game.builder().name("name1").gamesInShop(gameInShops).genres(new ArrayList<>()).build();
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         SendMessage gameCommonInfoMessage = new SendMessage();
+        TelegramUser user = new TelegramUser();
         List<PartialBotApiMethod> gameCommonInfoMessageList = new ArrayList<>();
         gameCommonInfoMessageList.add(gameCommonInfoMessage);
-        when(gameListMapper.gameSearchListToTelegramPage(Collections.singletonList(game), 1,
+        when(gameListMapper.gameSearchListToTelegramPage(Collections.singletonList(game), user, 1,
                 chatId, 1, game.getName(), locale))
                 .thenReturn(gameCommonInfoMessageList);
         when(gameListMapper.getIsAvailableForm(true, locale)).thenReturn("available");
@@ -56,7 +58,7 @@ class GameInfoMapperTest {
         when(telegramKeyboardMapper.getKeyboardMarkup(settingList)).thenReturn(inlineKeyboardMarkup);
 
 
-        List<PartialBotApiMethod> partialBotApiMethodList = gameInfoMapper.gameInfoToTelegramPage(game, chatId, locale);
+        List<PartialBotApiMethod> partialBotApiMethodList = gameInfoMapper.gameInfoToTelegramPage(game, user, chatId, locale);
 
 
         assertEquals(2, partialBotApiMethodList.size());
@@ -79,11 +81,12 @@ class GameInfoMapperTest {
                 .url(url)
                 .isAvailable(true).build());
         Game game = Game.builder().name("name1").gamesInShop(gameInShops).genres(new ArrayList<>()).build();
+        TelegramUser user = new TelegramUser();
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         SendMessage gameCommonInfoMessage = new SendMessage();
         List<PartialBotApiMethod> gameCommonInfoMessageList = new ArrayList<>();
         gameCommonInfoMessageList.add(gameCommonInfoMessage);
-        when(gameListMapper.gameSearchListToTelegramPage(Collections.singletonList(game), 1,
+        when(gameListMapper.gameSearchListToTelegramPage(Collections.singletonList(game), user, 1,
                 chatId, 1, game.getName(), locale))
                 .thenReturn(gameCommonInfoMessageList);
         when(gameListMapper.getIsAvailableForm(true, locale)).thenReturn("available");
@@ -96,7 +99,7 @@ class GameInfoMapperTest {
         when(telegramKeyboardMapper.getKeyboardMarkup(settingList)).thenReturn(inlineKeyboardMarkup);
 
 
-        List<PartialBotApiMethod> partialBotApiMethodList = gameInfoMapper.gameInfoToTelegramPage(game, chatId, locale);
+        List<PartialBotApiMethod> partialBotApiMethodList = gameInfoMapper.gameInfoToTelegramPage(game, user, chatId, locale);
 
 
         assertEquals(2, partialBotApiMethodList.size());

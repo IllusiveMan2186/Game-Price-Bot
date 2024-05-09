@@ -15,4 +15,6 @@ public interface GameRepository extends CrudRepository<Game, Long> {
     List<Game> findByIdIn(List<Long> iidList, Pageable pageable);
 
     long countAllByNameContainingIgnoreCase(String name);
+
+    boolean existsByIdAndUserList_Id(long gameId, long userId);
 }

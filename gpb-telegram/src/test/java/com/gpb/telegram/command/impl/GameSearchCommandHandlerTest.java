@@ -2,8 +2,10 @@ package com.gpb.telegram.command.impl;
 
 import com.gpb.telegram.bean.Game;
 import com.gpb.telegram.bean.TelegramResponse;
+import com.gpb.telegram.bean.TelegramUser;
 import com.gpb.telegram.mapper.GameListMapper;
 import com.gpb.telegram.service.GameService;
+import com.gpb.telegram.service.TelegramUserService;
 import com.gpb.telegram.util.UpdateCreator;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
@@ -22,11 +24,11 @@ import static org.mockito.Mockito.when;
 class GameSearchCommandHandlerTest {
 
     GameService gameService = mock(GameService.class);
-
+    TelegramUserService telegramUserService = mock(TelegramUserService.class);
     MessageSource messageSource = mock(MessageSource.class);
     GameListMapper gameListMapper = mock(GameListMapper.class);
 
-    GameSearchCommandHandler controller = new GameSearchCommandHandler(gameService, messageSource, gameListMapper);
+    GameSearchCommandHandler controller = new GameSearchCommandHandler(gameService, telegramUserService, messageSource, gameListMapper);
 
     @Test
     void testGetDescription_shouldReturnDescription() {
@@ -47,9 +49,11 @@ class GameSearchCommandHandlerTest {
         SendMessage message = new SendMessage();
         Update update = UpdateCreator.getUpdateWithoutCallback("/search " + name, Long.parseLong(chatId));
         List<Game> games = Collections.singletonList(new Game());
+        TelegramUser user = new TelegramUser();
         when(gameService.getByName(name, 1)).thenReturn(games);
         when(gameService.getGameAmountByName(name)).thenReturn(gameAmount);
-        when(gameListMapper.gameSearchListToTelegramPage(games, gameAmount, chatId, 1, name, locale))
+        when(telegramUserService.getUserById(123456)).thenReturn(user);
+        when(gameListMapper.gameSearchListToTelegramPage(games, user, gameAmount, chatId, 1, name, locale))
                 .thenReturn(Collections.singletonList(message));
 
 

@@ -166,4 +166,47 @@ class TelegramUserServiceImplTest {
 
         assertEquals(locale, result);
     }
+
+    @Test
+    void testGetUserById_shouldReturnUser() {
+        long telegramId = 123;
+        TelegramUser telegramUser = new TelegramUser();
+        when(telegramUserRepository.findByTelegramId(telegramId)).thenReturn(telegramUser);
+
+
+        TelegramUser result = telegramUserService.getUserById(telegramId);
+
+
+        assertEquals(telegramUser, result);
+    }
+
+    @Test
+    void testSubscribeToGame_shouldAddGameToUserListOfGames() {
+        long telegramId = 123;
+        TelegramUser telegramUser = TelegramUser.builder()
+                .basicUser(BasicUser.builder().id(1).build())
+                .build();
+        when(telegramUserRepository.findByTelegramId(telegramId)).thenReturn(telegramUser);
+
+
+        telegramUserService.subscribeToGame(telegramId, 2);
+
+
+        verify(userRepository).addGameToUserListOfGames(1, 2);
+    }
+
+    @Test
+    void testUnsubscribeFromGame_shouldRemoveGameFromUserListOfGames() {
+        long telegramId = 123;
+        TelegramUser telegramUser = TelegramUser.builder()
+                .basicUser(BasicUser.builder().id(1).build())
+                .build();
+        when(telegramUserRepository.findByTelegramId(telegramId)).thenReturn(telegramUser);
+
+
+        telegramUserService.unsubscribeFromGame(telegramId, 2);
+
+
+        verify(userRepository).removeGameFromUserListOfGames(1, 2);
+    }
 }

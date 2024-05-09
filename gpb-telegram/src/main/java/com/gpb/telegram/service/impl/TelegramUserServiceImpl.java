@@ -31,6 +31,12 @@ public class TelegramUserServiceImpl implements TelegramUserService {
     }
 
     @Override
+    public TelegramUser getUserById(long telegramId) {
+        log.info(String.format("Get user by telegram id '%s'", telegramId));
+        return telegramUserRepository.findByTelegramId(telegramId);
+    }
+
+    @Override
     public TelegramUser createTelegramUser(TelegramUser newUser) {
         log.info(String.format("New user '%s' registered", newUser.getTelegramId()));
         BasicUser user = new BasicUser();
@@ -80,5 +86,19 @@ public class TelegramUserServiceImpl implements TelegramUserService {
     @Override
     public Locale getUserLocale(long telegramId) {
         return telegramUserRepository.findByTelegramId(telegramId).getLocale();
+    }
+
+    @Override
+    public void subscribeToGame(long telegramId, long gameId) {
+        log.info(String.format("Subscribe for game(%s) into user(%s) game list", gameId, telegramId));
+        TelegramUser telegramUser = telegramUserRepository.findByTelegramId(telegramId);
+        userRepository.addGameToUserListOfGames(telegramUser.getBasicUser().getId(), gameId);
+    }
+
+    @Override
+    public void unsubscribeFromGame(long telegramId, long gameId) {
+        log.info(String.format("Unsubscribe game(%s) from user(%s) game list", gameId, telegramId));
+        TelegramUser telegramUser = telegramUserRepository.findByTelegramId(telegramId);
+        userRepository.removeGameFromUserListOfGames(telegramUser.getBasicUser().getId(), gameId);
     }
 }

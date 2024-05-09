@@ -30,4 +30,13 @@ public interface GameService {
      * @return amount of games
      */
     long getGameAmountByName(final String name);
+
+    /**
+     * Check if user subscribed to the game
+     *
+     * @param gameId game id
+     * @param userId user id
+     * @return true if user subscribed to the game
+     */
+    boolean isSubscribed(long gameId,long userId);
 }

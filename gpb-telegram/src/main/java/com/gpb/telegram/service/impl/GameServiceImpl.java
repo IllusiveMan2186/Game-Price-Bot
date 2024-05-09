@@ -56,4 +56,9 @@ public class GameServiceImpl implements GameService {
     public long getGameAmountByName(String name) {
         return gameRepository.countAllByNameContainingIgnoreCase(name);
     }
+
+    @Override
+    public boolean isSubscribed(long gameId, long userId) {
+        return gameRepository.existsByIdAndUserList_Id(gameId, userId);
+    }
 }

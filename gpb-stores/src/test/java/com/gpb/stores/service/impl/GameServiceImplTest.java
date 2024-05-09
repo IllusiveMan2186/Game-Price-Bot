@@ -2,6 +2,7 @@ package com.gpb.stores.service.impl;
 
 import com.gpb.stores.bean.game.Game;
 import com.gpb.stores.bean.game.GameInShop;
+import com.gpb.stores.bean.user.BasicUser;
 import com.gpb.stores.bean.user.WebUser;
 import com.gpb.stores.exception.NotFoundException;
 import com.gpb.stores.repository.GameInShopRepository;
@@ -82,7 +83,7 @@ class GameServiceImplTest {
         List<GameInShop> changedGames = new ArrayList<>();
         GameInShop gameInShop1 = GameInShop.builder().id(0).build();
         GameInShop gameInShop2 = GameInShop.builder().id(1).build();
-        WebUser user = new WebUser();
+        BasicUser user = new BasicUser();
         user.setId(1);
         when(gameInShopRepository.findSubscribedGames(user.getId(), List.of(0L, 1L))).thenReturn(changedGames);
 
