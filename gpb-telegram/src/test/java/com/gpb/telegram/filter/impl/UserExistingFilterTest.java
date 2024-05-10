@@ -1,5 +1,6 @@
 package com.gpb.telegram.filter.impl;
 
+import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramUser;
 import com.gpb.telegram.service.TelegramUserService;
 import org.junit.jupiter.api.Test;
@@ -32,9 +33,10 @@ class UserExistingFilterTest {
 
         when(telegramUserService.isUserRegistered(userId)).thenReturn(true);
         TelegramUser expectedUser = TelegramUser.builder().telegramId(userId).build();
+        TelegramRequest request = TelegramRequest.builder().update(update).build();
 
 
-        filter.checkFilter(update);
+        filter.checkFilter(request);
 
 
         verify(telegramUserService, times(0)).createTelegramUser(expectedUser);
@@ -51,15 +53,16 @@ class UserExistingFilterTest {
         message.setFrom(user);
         user.setId(userId);
         user.setLanguageCode("");
-
+        Locale locale = new Locale("");
         when(telegramUserService.isUserRegistered(userId)).thenReturn(false);
         TelegramUser expectedUser = TelegramUser.builder()
                 .telegramId(userId)
-                .locale(new Locale(""))
+                .locale(locale)
                 .build();
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
 
 
-        filter.checkFilter(update);
+        filter.checkFilter(request);
 
 
         verify(telegramUserService, times(1)).createTelegramUser(expectedUser);

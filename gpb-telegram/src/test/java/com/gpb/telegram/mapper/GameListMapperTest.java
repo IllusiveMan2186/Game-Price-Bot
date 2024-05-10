@@ -4,14 +4,17 @@ import com.gpb.telegram.bean.BasicUser;
 import com.gpb.telegram.bean.Game;
 import com.gpb.telegram.bean.GameInShop;
 import com.gpb.telegram.bean.Genre;
+import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramUser;
 import com.gpb.telegram.configuration.ResourceConfiguration;
 import com.gpb.telegram.service.GameService;
+import com.gpb.telegram.util.UpdateCreator;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -39,9 +42,11 @@ class GameListMapperTest {
         games.add(Game.builder().name("name1").gamesInShop(gameInShops).genres(new ArrayList<>()).build());
         long gameAmount = 12;
         int pageNum = 1;
-        String chatId = "";
+        String chatId = "123";
         String gameName = "name";
         Locale locale = new Locale("");
+        Update update = UpdateCreator.getUpdateWithoutCallback("", Long.parseLong(chatId));
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
         when(messageSource.getMessage("game.search.list.next.page.more.button", null, locale)).thenReturn("button");
         when(messageSource.getMessage("game.search.list.next.page.text", null, locale)).thenReturn("text");
         when(messageSource.getMessage("game.info.available", null, locale)).thenReturn("available");
@@ -52,7 +57,7 @@ class GameListMapperTest {
 
 
         List<PartialBotApiMethod> partialBotApiMethods = gameListMapper
-                .gameSearchListToTelegramPage(games, null, gameAmount, chatId, pageNum, gameName, locale);
+                .gameSearchListToTelegramPage(games, request, gameAmount, pageNum, gameName);
 
 
         assertEquals(2, partialBotApiMethods.size());
@@ -79,9 +84,11 @@ class GameListMapperTest {
         games.add(Game.builder().id(2).name("name1").gamesInShop(gameInShops).genres(genres).build());
         long gameAmount = 4;
         int pageNum = 2;
-        String chatId = "";
+        String chatId = "123";
         String gameName = "name";
         Locale locale = new Locale("");
+        Update update = UpdateCreator.getUpdateWithoutCallback("", Long.parseLong(chatId));
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
         when(messageSource.getMessage("game.search.list.next.page.more.button", null, locale)).thenReturn("button");
         when(messageSource.getMessage("game.search.list.next.page.text", null, locale)).thenReturn("text");
         when(messageSource.getMessage("game.info.available", null, locale)).thenReturn("available");
@@ -93,7 +100,7 @@ class GameListMapperTest {
 
 
         List<PartialBotApiMethod> partialBotApiMethods = gameListMapper
-                .gameSearchListToTelegramPage(games, null, gameAmount, chatId, pageNum, gameName, locale);
+                .gameSearchListToTelegramPage(games, request, gameAmount, pageNum, gameName);
 
 
         assertEquals(1, partialBotApiMethods.size());
@@ -112,9 +119,11 @@ class GameListMapperTest {
         games.add(Game.builder().name("name1").gamesInShop(gameInShops).genres(new ArrayList<>()).build());
         long gameAmount = 4;
         int pageNum = 2;
-        String chatId = "";
+        String chatId = "123";
         String gameName = "name";
         Locale locale = new Locale("");
+        Update update = UpdateCreator.getUpdateWithoutCallback("", Long.parseLong(chatId));
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
         when(messageSource.getMessage("game.search.list.next.page.more.button", null, locale)).thenReturn("button");
         when(messageSource.getMessage("game.search.list.next.page.text", null, locale)).thenReturn("text");
         when(messageSource.getMessage("game.info.available", null, locale)).thenReturn("available");
@@ -126,7 +135,7 @@ class GameListMapperTest {
 
 
         List<PartialBotApiMethod> partialBotApiMethods = gameListMapper
-                .gameSearchListToTelegramPage(games, null, gameAmount, chatId, pageNum, gameName, locale);
+                .gameSearchListToTelegramPage(games, request, gameAmount, pageNum, gameName);
 
 
         assertEquals(1, partialBotApiMethods.size());
@@ -148,10 +157,12 @@ class GameListMapperTest {
         games.add(Game.builder().id(2).name("name1").gamesInShop(gameInShops).genres(new ArrayList<>()).build());
         long gameAmount = 4;
         int pageNum = 2;
-        String chatId = "";
+        String chatId = "123";
         String gameName = "name";
         Locale locale = new Locale("");
         TelegramUser user = TelegramUser.builder().basicUser(BasicUser.builder().id(1).build()).build();
+        Update update = UpdateCreator.getUpdateWithoutCallback("", Long.parseLong(chatId));
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).user(user).build();
         when(gameService.isSubscribed(2, 1)).thenReturn(true);
         when(messageSource.getMessage("game.search.list.next.page.more.button", null, locale)).thenReturn("button");
         when(messageSource.getMessage("game.search.list.next.page.text", null, locale)).thenReturn("text");
@@ -164,7 +175,7 @@ class GameListMapperTest {
 
 
         List<PartialBotApiMethod> partialBotApiMethods = gameListMapper
-                .gameSearchListToTelegramPage(games, user, gameAmount, chatId, pageNum, gameName, locale);
+                .gameSearchListToTelegramPage(games, request, gameAmount, pageNum, gameName);
 
 
         assertEquals(1, partialBotApiMethods.size());

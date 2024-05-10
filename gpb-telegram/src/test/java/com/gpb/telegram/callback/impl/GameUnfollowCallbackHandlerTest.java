@@ -1,6 +1,7 @@
 package com.gpb.telegram.callback.impl;
 
 import com.gpb.telegram.bean.Game;
+import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.service.GameService;
 import com.gpb.telegram.service.GameStoresService;
@@ -34,11 +35,12 @@ class GameUnfollowCallbackHandlerTest {
         Locale locale = new Locale("");
         Game game = Game.builder().name("name").isFollowed(false).build();
         Update update = UpdateCreator.getUpdateWithCallback("/subscribe " + gameId, Long.parseLong(chatId));
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
         when(gameService.getById(gameId)).thenReturn(game);
         when(messageSource.getMessage("game.unsubscribe.success.message", null, locale)).thenReturn("message");
 
 
-        TelegramResponse response = callbackHandler.apply(chatId, update, locale);
+        TelegramResponse response = callbackHandler.apply(request);
 
 
         verify(telegramUserService).unsubscribeFromGame(123456, gameId);
@@ -55,11 +57,12 @@ class GameUnfollowCallbackHandlerTest {
         Locale locale = new Locale("");
         Game game = Game.builder().name("name").userList(new ArrayList<>()).isFollowed(true).build();
         Update update = UpdateCreator.getUpdateWithCallback("/subscribe " + gameId, Long.parseLong(chatId));
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
         when(gameService.getById(gameId)).thenReturn(game);
         when(messageSource.getMessage("game.unsubscribe.success.message", null, locale)).thenReturn("message");
 
 
-        TelegramResponse response = callbackHandler.apply(chatId, update, locale);
+        TelegramResponse response = callbackHandler.apply(request);
 
 
         verify(telegramUserService).unsubscribeFromGame(123456, gameId);

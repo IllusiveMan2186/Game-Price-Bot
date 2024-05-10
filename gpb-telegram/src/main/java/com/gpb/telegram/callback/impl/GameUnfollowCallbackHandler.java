@@ -1,6 +1,7 @@
 package com.gpb.telegram.callback.impl;
 
 import com.gpb.telegram.bean.Game;
+import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.callback.CallbackHandler;
 import com.gpb.telegram.filter.FilterChainMarker;
@@ -12,9 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Update;
-
-import java.util.Locale;
 
 @Component("unsubscribe")
 @AllArgsConstructor
@@ -28,17 +26,15 @@ public class GameUnfollowCallbackHandler implements CallbackHandler {
 
     @Override
     @Transactional
-    public TelegramResponse apply(String chatId, Update update, Locale locale) {
-        long userId = update.getCallbackQuery().getFrom().getId();
-        String messageText = update.getCallbackQuery().getData();
-        long gameId = Long.parseLong(messageText.split(" ")[1]);
-        userService.unsubscribeFromGame(userId, gameId);
+    public TelegramResponse apply(TelegramRequest request) {
+        long gameId = request.getLongArgument(1);
+        userService.unsubscribeFromGame(request.getUserId(), gameId);
         Game game = gameService.getById(gameId);
 
         if (game.isFollowed() && game.getUserList().isEmpty()) {
             storesService.unsubscribeFromGame(gameId);
         }
-        return new TelegramResponse(chatId, messageSource.getMessage("game.unsubscribe.success.message",
-                null, locale) + game.getName());
+        return new TelegramResponse(request.getChatId(), messageSource.getMessage("game.unsubscribe.success.message",
+                null, request.getLocale()) + game.getName());
     }
 }

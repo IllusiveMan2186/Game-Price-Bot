@@ -1,7 +1,9 @@
 package com.gpb.telegram.command.impl;
 
+import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.command.CommandHandler;
+import com.gpb.telegram.util.UpdateCreator;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -42,18 +44,15 @@ class HelpCommandHandlerTest {
         when(messageSource.getMessage("accounts.synchronization.description", null, locale))
                 .thenReturn(" - description");
 
-        Update update = new Update();
-        Message message = new Message();
-
-        update.setMessage(message);
-        message.setText("/synchronizeToWeb mockToken");
+        Update update = UpdateCreator.getUpdateWithoutCallback("/synchronizeToWeb mockToken", 123);
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
 
 
-        TelegramResponse response = controller.apply("chatId", update, locale);
+        TelegramResponse response = controller.apply(request);
 
 
         SendMessage sendMessage = (SendMessage) response.getMessages().get(0);
-        assertEquals("chatId", sendMessage.getChatId());
+        assertEquals("123", sendMessage.getChatId());
         assertEquals("messages" + System.lineSeparator() +
                 "/synchronizeToWeb - description", sendMessage.getText());
     }

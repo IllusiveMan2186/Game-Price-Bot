@@ -1,29 +1,27 @@
 package com.gpb.telegram.command.impl;
 
 import com.gpb.telegram.bean.Game;
+import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
-import com.gpb.telegram.bean.TelegramUser;
 import com.gpb.telegram.command.CommandHandler;
+import com.gpb.telegram.filter.FilterChainMarker;
 import com.gpb.telegram.mapper.GameListMapper;
 import com.gpb.telegram.service.GameService;
-import com.gpb.telegram.service.TelegramUserService;
+import com.gpb.telegram.util.Constants;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 @Component("search")
 @AllArgsConstructor
+@FilterChainMarker(Constants.USER_EXISTING_FILTER)
 public class GameSearchCommandHandler implements CommandHandler {
 
     private final GameService gameService;
-    private final TelegramUserService telegramUserService;
     private final MessageSource messageSource;
     private final GameListMapper gameListMapper;
 
@@ -34,24 +32,21 @@ public class GameSearchCommandHandler implements CommandHandler {
 
     @Transactional
     @Override
-    public TelegramResponse apply(String chatId, Update update, Locale locale) {
-        long userId = update.getMessage().getFrom().getId();
-        String gameName = update.getMessage().getText().replace("/search ", "");
+    public TelegramResponse apply(TelegramRequest request) {
+        String gameName = request.getUpdate().getMessage().getText().replace("/search ", "");
         int pageNum = 1;
 
         List<Game> games = gameService.getByName(gameName, pageNum);
 
         if (games.isEmpty()) {
             String errorMessage = String
-                    .format(messageSource.getMessage("game.search.not.found.game", null, locale), gameName);
-            return new TelegramResponse(Collections.singletonList(new SendMessage(chatId, errorMessage)));
+                    .format(messageSource.getMessage("game.search.not.found.game", null, request.getLocale()), gameName);
+            return new TelegramResponse(request.getChatId(), errorMessage);
         }
 
         long gameAmount = gameService.getGameAmountByName(gameName);
 
-        TelegramUser user = telegramUserService.getUserById(userId);
-
-        return new TelegramResponse(gameListMapper.gameSearchListToTelegramPage(games, user, gameAmount, chatId,
-                pageNum, gameName, locale));
+        return new TelegramResponse(gameListMapper.gameSearchListToTelegramPage(games, request, gameAmount, pageNum,
+                gameName));
     }
 }

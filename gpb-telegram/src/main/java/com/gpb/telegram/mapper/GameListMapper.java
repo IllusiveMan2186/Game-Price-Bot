@@ -3,6 +3,7 @@ package com.gpb.telegram.mapper;
 import com.gpb.telegram.bean.Game;
 import com.gpb.telegram.bean.GameInShop;
 import com.gpb.telegram.bean.Genre;
+import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramUser;
 import com.gpb.telegram.configuration.ResourceConfiguration;
 import com.gpb.telegram.service.GameService;
@@ -38,23 +39,23 @@ public class GameListMapper {
     private final ResourceConfiguration resourceConfiguration;
 
 
-    public List<PartialBotApiMethod> gameSearchListToTelegramPage(List<Game> games, TelegramUser telegramUser,
-                                                                  long gameAmount, String chatId, int pageNum,
-                                                                  String gameName, Locale locale) {
+    public List<PartialBotApiMethod> gameSearchListToTelegramPage(List<Game> games, TelegramRequest request,
+                                                                  long gameAmount, int pageNum,
+                                                                  String gameName) {
         List<PartialBotApiMethod> messages = new ArrayList<>();
-        games.forEach(game -> messages.add(getPhotoMessage(telegramUser, chatId, game, locale)));
+        games.forEach(game -> messages.add(getPhotoMessage(request, game)));
         if (gameAmount / Constants.GAMES_AMOUNT_IN_LIST > pageNum) {
-            messages.add(getNextPageButton(chatId, pageNum, gameName, locale));
+            messages.add(getNextPageButton(request.getChatId(), pageNum, gameName, request.getLocale()));
         }
         return messages;
     }
 
-    private SendPhoto getPhotoMessage(TelegramUser telegramUser, String chatId, Game game, Locale locale) {
+    private SendPhoto getPhotoMessage(TelegramRequest request, Game game) {
         return SendPhoto.builder()
-                .chatId(chatId)
+                .chatId(request.getChatId())
                 .photo(getGameImage(game.getName()))
-                .caption(mapGameToTelegramMessage(game, locale))
-                .replyMarkup(getKeyboardForGame(telegramUser, game.getId(), locale))
+                .caption(mapGameToTelegramMessage(game, request.getLocale()))
+                .replyMarkup(getKeyboardForGame(request.getUser(), game.getId(), request.getLocale()))
                 .build();
     }
 

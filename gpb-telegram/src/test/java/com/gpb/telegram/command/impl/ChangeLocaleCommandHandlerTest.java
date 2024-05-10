@@ -1,7 +1,9 @@
 package com.gpb.telegram.command.impl;
 
+import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.service.TelegramUserService;
+import com.gpb.telegram.util.UpdateCreator;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -36,26 +38,18 @@ class ChangeLocaleCommandHandlerTest {
     @Test
     void testApply_shouldReturnSuccessMessage() {
         Locale locale = new Locale("");
-        long userId = 123456;
-        Update update = new Update();
-        Message message = new Message();
-        User user = new User();
-
-        update.setMessage(message);
-        message.setFrom(user);
-        message.setText("/changeLanguage language");
-        user.setId(userId);
-
+        Update update = UpdateCreator.getUpdateWithoutCallback("/changeLanguage language", 123);
         Locale newLocale = new Locale("new");
-        when(telegramUserService.changeUserLocale(userId,new Locale("language"))).thenReturn(newLocale);
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
+        when(telegramUserService.changeUserLocale(123456, new Locale("language"))).thenReturn(newLocale);
         when(messageSource.getMessage("change.language.command.successfully.message", null, newLocale))
                 .thenReturn("messages");
 
 
-        TelegramResponse response = controller.apply("chatId", update, locale);
+        TelegramResponse response = controller.apply(request);
         SendMessage sendMessage = (SendMessage) response.getMessages().get(0);
 
-        assertEquals("chatId", sendMessage.getChatId());
+        assertEquals("123", sendMessage.getChatId());
         assertEquals("messages", sendMessage.getText());
     }
 }
