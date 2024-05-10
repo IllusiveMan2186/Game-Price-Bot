@@ -1,6 +1,7 @@
 package com.gpb.telegram.callback.impl;
 
 import com.gpb.telegram.bean.Game;
+import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.bean.TelegramUser;
 import com.gpb.telegram.mapper.GameListMapper;
@@ -23,11 +24,10 @@ import static org.mockito.Mockito.when;
 
 class GameSearchByPageCallbackHandlerTest {
     GameService gameService = mock(GameService.class);
-    TelegramUserService telegramUserService = mock(TelegramUserService.class);
     MessageSource messageSource = mock(MessageSource.class);
     GameListMapper gameListMapper = mock(GameListMapper.class);
 
-    GameSearchByPageCallbackHandler controller = new GameSearchByPageCallbackHandler(gameService, telegramUserService,
+    GameSearchByPageCallbackHandler controller = new GameSearchByPageCallbackHandler(gameService,
             messageSource, gameListMapper);
 
     @Test
@@ -41,14 +41,14 @@ class GameSearchByPageCallbackHandlerTest {
         TelegramUser user = new TelegramUser();
         Update update = UpdateCreator.getUpdateWithCallback("/searchByPage " + pageNum + " " + name, Long.parseLong(chatId));
         List<Game> games = Collections.singletonList(new Game());
-        when(telegramUserService.getUserById(123456)).thenReturn(user);
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).user(user).build();
         when(gameService.getByName(name, pageNum)).thenReturn(games);
         when(gameService.getGameAmountByName(name)).thenReturn(gameAmount);
-        when(gameListMapper.gameSearchListToTelegramPage(games, user, gameAmount, chatId, pageNum, name, locale))
+        when(gameListMapper.gameSearchListToTelegramPage(games, request, gameAmount, pageNum, name))
                 .thenReturn(Collections.singletonList(message));
 
 
-        TelegramResponse response = controller.apply(chatId, update, locale);
+        TelegramResponse response = controller.apply(request);
 
 
         assertEquals(message, response.getMessages().get(0));
@@ -63,11 +63,12 @@ class GameSearchByPageCallbackHandlerTest {
         int pageNum = 12;
         SendMessage message = new SendMessage(chatId, errorMessage);
         Update update = UpdateCreator.getUpdateWithCallback("/searchByPage " + pageNum + " " + name, Long.parseLong(chatId));
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
         when(messageSource.getMessage("game.search.not.found.game", null, locale)).thenReturn(errorMessage);
         when(gameService.getByName(name, pageNum)).thenReturn(new ArrayList<>());
 
 
-        TelegramResponse response = controller.apply(chatId, update, locale);
+        TelegramResponse response = controller.apply(request);
 
 
         assertEquals(message, response.getMessages().get(0));
