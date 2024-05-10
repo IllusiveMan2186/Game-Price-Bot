@@ -1,5 +1,6 @@
 package com.gpb.telegram.handler;
 
+import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.callback.CallbackHandler;
 import com.gpb.telegram.command.CommandHandler;
@@ -40,53 +41,40 @@ public class ControllerHandler {
     }
 
 
-    public TelegramResponse handleCommands(Update update) {
-        Locale locale = getUserLocale(update);
-        String chatId = getChatId(update);
-        String commandName = getCommandName(update);
+    public TelegramResponse handleCommands(TelegramRequest request) {
+        request.setLocale(getUserLocale(request));
 
-        if (isMessageCommand(update)) {
+        if (isMessageCommand(request.getUpdate())) {
             try {
-                FilteredHandler handler = isMessageNotEmpty(update)
-                        ? controllers.get(commandName)
-                        : callbackHandlerMap.get(commandName);
+                FilteredHandler handler = isMessageNotEmpty(request.getUpdate())
+                        ? controllers.get(request.getCommandName())
+                        : callbackHandlerMap.get(request.getCommandName());
                 if (handler == null) {
-                    log.info("Unknown message:" + update.getMessage().getText());
-                    String response = messageSource.getMessage("unregistered.command.message", null, locale) +
-                            messageSource.getMessage("command.error.template.message", null, locale);
-                    return new TelegramResponse(chatId, response);
+                    log.info("Unknown message:" + request.getUpdate().getMessage().getText());
+                    String response = messageSource.getMessage("unregistered.command.message", null, request.getLocale()) +
+                            messageSource.getMessage("command.error.template.message", null, request.getLocale());
+                    return new TelegramResponse(request, response);
                 }
-                filterChain.handleFilterChain(handler, update);
+                filterChain.handleFilterChain(handler, request);
 
-                return handler.apply(chatId, update, locale);
+                return handler.apply(request);
             } catch (Exception exception) {
                 log.warn("Exception during command execution:" + exception.getMessage());
-                return exceptionHandler.handleException(chatId, exception);
+                return exceptionHandler.handleException(request, exception);
             }
         } else {
-            String response = messageSource.getMessage("command.not.found.message", null, locale) +
-                    messageSource.getMessage("command.error.template.message", null, locale);
-            return new TelegramResponse(chatId, response);
+            String response = messageSource.getMessage("command.not.found.message", null, request.getLocale()) +
+                    messageSource.getMessage("command.error.template.message", null, request.getLocale());
+            return new TelegramResponse(request, response);
         }
     }
 
-    private String getChatId(Update update) {
-        return update.hasCallbackQuery()
-                ? update.getCallbackQuery().getFrom().getId().toString()
-                : update.getMessage().getFrom().getId().toString();
-    }
+    private Locale getUserLocale(TelegramRequest request) {
+        long userId = request.getUserId();
+        return !telegramUserService.isUserRegistered(userId)
+                ? new Locale(request.getFrom().getLanguageCode())
+                : telegramUserService.getUserLocale(userId);
 
-    private Locale getUserLocale(Update update) {
-        long userId = update.hasCallbackQuery()
-                ? update.getCallbackQuery().getFrom().getId()
-                : update.getMessage().getFrom().getId();
-        if (!telegramUserService.isUserRegistered(userId)) {
-            return update.hasCallbackQuery()
-                    ? new Locale(update.getCallbackQuery().getFrom().getLanguageCode())
-                    : new Locale(update.getMessage().getFrom().getLanguageCode());
-
-        }
-        return telegramUserService.getUserLocale(userId);
 
     }
 
@@ -98,12 +86,5 @@ public class ControllerHandler {
         return update.hasCallbackQuery()
                 ? update.getCallbackQuery().getData().startsWith("/")
                 : update.getMessage().getText().startsWith("/");
-    }
-
-
-    private String getCommandName(Update update) {
-        return update.hasCallbackQuery()
-                ? update.getCallbackQuery().getData().split(" ")[0].replace("/", "")
-                : update.getMessage().getText().split(" ")[0].replace("/", "");
     }
 }

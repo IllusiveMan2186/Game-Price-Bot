@@ -1,6 +1,7 @@
 package com.gpb.telegram.command.impl;
 
 import com.gpb.telegram.bean.Game;
+import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.bean.TelegramUser;
 import com.gpb.telegram.mapper.GameListMapper;
@@ -24,11 +25,10 @@ import static org.mockito.Mockito.when;
 class GameSearchCommandHandlerTest {
 
     GameService gameService = mock(GameService.class);
-    TelegramUserService telegramUserService = mock(TelegramUserService.class);
     MessageSource messageSource = mock(MessageSource.class);
     GameListMapper gameListMapper = mock(GameListMapper.class);
 
-    GameSearchCommandHandler controller = new GameSearchCommandHandler(gameService, telegramUserService, messageSource, gameListMapper);
+    GameSearchCommandHandler controller = new GameSearchCommandHandler(gameService, messageSource, gameListMapper);
 
     @Test
     void testGetDescription_shouldReturnDescription() {
@@ -50,14 +50,14 @@ class GameSearchCommandHandlerTest {
         Update update = UpdateCreator.getUpdateWithoutCallback("/search " + name, Long.parseLong(chatId));
         List<Game> games = Collections.singletonList(new Game());
         TelegramUser user = new TelegramUser();
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).user(user).build();
         when(gameService.getByName(name, 1)).thenReturn(games);
         when(gameService.getGameAmountByName(name)).thenReturn(gameAmount);
-        when(telegramUserService.getUserById(123456)).thenReturn(user);
-        when(gameListMapper.gameSearchListToTelegramPage(games, user, gameAmount, chatId, 1, name, locale))
+        when(gameListMapper.gameSearchListToTelegramPage(games, request, gameAmount, 1, name))
                 .thenReturn(Collections.singletonList(message));
 
 
-        TelegramResponse response = controller.apply(chatId, update, locale);
+        TelegramResponse response = controller.apply(request);
 
 
         assertEquals(message, response.getMessages().get(0));
@@ -71,11 +71,12 @@ class GameSearchCommandHandlerTest {
         String errorMessage = "message";
         SendMessage message = new SendMessage(chatId, errorMessage);
         Update update = UpdateCreator.getUpdateWithoutCallback("/search " + name, Long.parseLong(chatId));
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
         when(messageSource.getMessage("game.search.not.found.game", null, locale)).thenReturn(errorMessage);
         when(gameService.getByName(name, 1)).thenReturn(new ArrayList<>());
 
 
-        TelegramResponse response = controller.apply(chatId, update, locale);
+        TelegramResponse response = controller.apply(request);
 
 
         assertEquals(message, response.getMessages().get(0));

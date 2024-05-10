@@ -1,5 +1,6 @@
 package com.gpb.telegram.filter;
 
+import com.gpb.telegram.bean.TelegramRequest;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public class FilterChain {
@@ -10,7 +11,7 @@ public class FilterChain {
         this.firstFilter = firstFilter;
     }
 
-    public void handleFilterChain(FilteredHandler handler, Update update) {
-        firstFilter.handle(handler, update);
+    public void handleFilterChain(FilteredHandler handler, TelegramRequest request) {
+        firstFilter.handle(handler, request);
     }
 }

@@ -20,5 +20,9 @@ public class TelegramResponse {
         this.messages = Collections.singletonList(new SendMessage(chatId, message));
     }
 
+    public TelegramResponse(TelegramRequest request, String message) {
+        this.messages = Collections.singletonList(new SendMessage(request.getChatId(), message));
+    }
+
     private List<PartialBotApiMethod> messages;
 }

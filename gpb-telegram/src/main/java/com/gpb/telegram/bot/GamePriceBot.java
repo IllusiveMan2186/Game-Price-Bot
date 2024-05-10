@@ -1,5 +1,6 @@
 package com.gpb.telegram.bot;
 
+import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.configuration.BotConfiguration;
 import com.gpb.telegram.handler.ControllerHandler;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,7 @@ public class GamePriceBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        commandsHandler.handleCommands(update)
+        commandsHandler.handleCommands(new TelegramRequest(update))
                 .getMessages()
                 .forEach(this::sendMessage);
     }
