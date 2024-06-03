@@ -4,8 +4,6 @@ ENV APP_HOME=/gpb/stores/
 WORKDIR $APP_HOME
 COPY build.gradle.kts settings.gradle.kts $APP_HOME
 
-COPY gradle $APP_HOME/gradle
-
 COPY . .
 RUN gradle clean build
 
