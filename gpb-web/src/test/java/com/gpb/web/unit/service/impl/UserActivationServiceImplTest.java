@@ -1,4 +1,4 @@
-package com.gpb.web.service.impl;
+package com.gpb.web.unit.service.impl;
 
 import com.gpb.web.bean.user.UserActivation;
 import com.gpb.web.bean.user.WebUser;
@@ -7,6 +7,7 @@ import com.gpb.web.repository.UserActivationRepository;
 import com.gpb.web.service.EmailService;
 import com.gpb.web.service.UserActivationService;
 import com.gpb.web.service.UserService;
+import com.gpb.web.service.impl.UserActivationServiceImpl;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

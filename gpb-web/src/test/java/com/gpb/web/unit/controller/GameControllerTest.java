@@ -1,4 +1,4 @@
-package com.gpb.web.controller;
+package com.gpb.web.unit.controller;
 
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameDto;
@@ -11,6 +11,7 @@ import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.configuration.MapperConfig;
+import com.gpb.web.controller.GameController;
 import com.gpb.web.exception.PriceRangeException;
 import com.gpb.web.exception.SortParamException;
 import com.gpb.web.service.GameService;
