@@ -1,4 +1,4 @@
-package com.gpb.web.controller;
+package com.gpb.web.unit.controller;
 
 import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.UserActivation;
@@ -6,6 +6,7 @@ import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.configuration.MapperConfig;
 import com.gpb.web.configuration.UserAuthenticationProvider;
+import com.gpb.web.controller.AuthenticationController;
 import com.gpb.web.service.EmailService;
 import com.gpb.web.service.UserActivationService;
 import com.gpb.web.service.UserService;

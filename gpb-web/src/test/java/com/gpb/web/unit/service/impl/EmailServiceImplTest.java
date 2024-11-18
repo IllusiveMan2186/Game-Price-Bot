@@ -1,9 +1,10 @@
-package com.gpb.web.service.impl;
+package com.gpb.web.unit.service.impl;
 
 import com.gpb.web.bean.EmailEvent;
 import com.gpb.web.bean.user.UserActivation;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.service.EmailService;
+import com.gpb.web.service.impl.EmailServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.kafka.core.KafkaTemplate;
 

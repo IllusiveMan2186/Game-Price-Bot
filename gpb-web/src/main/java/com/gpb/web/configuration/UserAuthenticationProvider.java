@@ -7,7 +7,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.service.UserService;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.util.Base64;
 import java.util.Date;
 
-@RequiredArgsConstructor
 @Component
 public class UserAuthenticationProvider {
 
@@ -25,9 +23,11 @@ public class UserAuthenticationProvider {
     @Value("${security.jwt.token.secret-key:secret-key}")
     private String secretKey;
 
-    private UserService userService;
+    private final UserService userService;
 
-
+    public UserAuthenticationProvider( UserService userService) {
+        this.userService = userService;
+    }
 
     @PostConstruct
     protected void init() {

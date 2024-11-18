@@ -1,4 +1,4 @@
-package com.gpb.web.service.impl;
+package com.gpb.web.unit.service.impl;
 
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameDto;
@@ -16,6 +16,7 @@ import com.gpb.web.repository.GameInShopRepository;
 import com.gpb.web.repository.GameRepository;
 import com.gpb.web.service.GameService;
 import com.gpb.web.service.GameStoresService;
+import com.gpb.web.service.impl.GameServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
