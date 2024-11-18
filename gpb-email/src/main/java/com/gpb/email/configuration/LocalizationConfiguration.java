@@ -8,13 +8,11 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 @Configuration
 public class LocalizationConfiguration {
 
-    private static final String MESSAGES_BASENAME_PATH = "/src/main/resources/messages/messages";
-
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setFallbackToSystemLocale(false);
-        messageSource.setBasenames("file:" + System.getProperty("user.dir") + MESSAGES_BASENAME_PATH);
+        messageSource.setBasenames("classpath:/messages/messages");
         return messageSource;
     }
 }

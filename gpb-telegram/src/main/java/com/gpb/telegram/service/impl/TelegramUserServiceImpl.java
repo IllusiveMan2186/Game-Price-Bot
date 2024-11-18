@@ -77,6 +77,7 @@ public class TelegramUserServiceImpl implements TelegramUserService {
 
     @Override
     public Locale changeUserLocale(long telegramId, Locale newLocale) {
+        log.info(String.format("Change locale for user '%s'", telegramId));
         TelegramUser telegramUser = telegramUserRepository.findByTelegramId(telegramId);
         telegramUser.setLocale(newLocale);
 
