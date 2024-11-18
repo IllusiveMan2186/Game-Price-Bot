@@ -1,4 +1,4 @@
-package com.gpb.web.configuration;
+package com.gpb.web.unit.configuration;
 
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameDto;
@@ -8,6 +8,7 @@ import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
+import com.gpb.web.configuration.MapperConfig;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 

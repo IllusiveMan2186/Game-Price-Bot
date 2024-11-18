@@ -1,6 +1,7 @@
-package com.gpb.web.service.impl;
+package com.gpb.web.unit.service.impl;
 
 import com.gpb.web.exception.NotFoundException;
+import com.gpb.web.service.impl.GameStoresServiceImpl;
 import com.gpb.web.util.Constants;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Test;

@@ -160,7 +160,8 @@ public class UserServiceImpl implements UserService {
         }
 
         if (matchPassword(credentials.getPassword(), user.getPassword())) {
-            unlockUser(user);
+            if (user.getFailedAttempt() > 0)
+                unlockUser(user);
             return modelMapper.map(user, UserDto.class);
         }
         failedLoginAttempt(user);
@@ -230,7 +231,7 @@ public class UserServiceImpl implements UserService {
         lockTime.setTime(new Date());
         lockTime.add(Calendar.DATE, 1);
         user.setLockTime(lockTime.getTime());
-        log.info(String.format("Unlock user : '%s'", user.getEmail()));
+        log.info(String.format("Lock user : '%s'", user.getEmail()));
     }
 
     private void unlockUser(WebUser user) {
@@ -238,7 +239,7 @@ public class UserServiceImpl implements UserService {
         user.setLockTime(null);
         user.setFailedAttempt(0);
         webUserRepository.save(user);
-        log.info(String.format("Lock user : '%s'", user.getEmail()));
+        log.info(String.format("Unlock user : '%s'", user.getEmail()));
     }
 
     private WebUser getWebUser(UserRegistration userRegistration) {
