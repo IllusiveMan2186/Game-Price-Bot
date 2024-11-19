@@ -25,8 +25,9 @@ dependencies {
 	implementation("com.google.guava:guava:32.1.2-jre")
 	implementation("org.modelmapper:modelmapper:3.2.0")
 	implementation("org.seleniumhq.selenium:selenium-java:4.16.1")
+	implementation("io.github.bonigarcia:webdrivermanager:5.7.0")
 
-    compileOnly("org.projectlombok:lombok:1.18.24")
+	compileOnly("org.projectlombok:lombok:1.18.24")
 	annotationProcessor("org.projectlombok:lombok:1.18.24")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -41,7 +42,6 @@ dependencies {
 	implementation("org.springframework.kafka:spring-kafka")
 
 	implementation("org.postgresql:postgresql:42.5.1")
-	implementation("org.flywaydb:flyway-core:8.5.13")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
