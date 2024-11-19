@@ -56,6 +56,8 @@ services:
       - gpb-network
     build: ./gpb-web
     environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - IMAGE_FOLDER=/image_folder
       - KAFKA_SERVER_URL=kafka:9093
       - POSTGRES_DB_URL=${POSTGRES_DB_URL}
