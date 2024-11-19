@@ -110,7 +110,7 @@ public class BaseAuthenticationIntegration {
         games.add(gameCreation("name2", "url2", Genre.RPG, new BigDecimal("500.0"), new BigDecimal("500.0")));
         games.add(gameCreation("name3", "url3", Genre.STRATEGIES, new BigDecimal("1000.0"), new BigDecimal("800.0")));
         System.setProperty("ADMIN_EMAIL", "");
-        System.setProperty("ADMIN_PASSWORD_HASH", "");
+        System.setProperty("ADMIN_PASSWORD", "");
         System.setProperty("GAMEZEY_LOGIN", "");
         System.setProperty("GAMEZEY_PASSWORD", "");
         System.setProperty("IMAGE_FOLDER", "");

@@ -16,9 +16,6 @@ spring:
       dialect: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate.default_schema: ${POSTGRES_SCHEMA:public}
-  flyway:
-    schemas: public
-    locations: classpath:db/migration
 
 bot:
   name: "GamingPriceBot"
