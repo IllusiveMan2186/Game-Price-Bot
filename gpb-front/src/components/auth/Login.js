@@ -113,20 +113,20 @@ export default function Login() {
 
                             <div className="form-outline mb-4">
                                 <label className="form-label" htmlFor="loginName"><Message string={'app.login.form.email'} /></label>
-                                <input type="email" id="1" name="email" className="form-control" onChange={onChangeHandler} />
+                                <input type="email" id="login-email" name="email" className="form-control" onChange={onChangeHandler} />
                             </div>
 
                             <div className="form-outline mb-4">
                                 <label className="form-label" htmlFor="loginPassword"><Message string={'app.login.form.password'} /></label>
-                                <input type="password" id="2" name="password" className="form-control" onChange={onChangeHandler} />
+                                <input type="password" id="login-password" name="password" className="form-control" onChange={onChangeHandler} />
                             </div>
 
-                            <span className='Error'><Message string={errorMessage} /> </span>
+                            <span id="login-form-error" className='Error'><Message string={errorMessage} /> </span>
 
                             {(errorMessage === "app.user.error.account.not.activated") && 
                             <span className='Resend-link nav mb-3' onClick={onSubmitResendEmail}><Message string={'app.user.error.account.not.activated.send'} /> </span>}
 
-                            <button type="submit" className="btn btn-primary btn-block mb-4" disabled={!isLoginFormValid()}><Message string={'app.login.form.singup'} /></button>
+                            <button type="submit" id ="login-form-button" className="btn btn-primary btn-block mb-4" disabled={!isLoginFormValid()}><Message string={'app.login.form.singup'} /></button>
 
                         </form>
                     </div>
