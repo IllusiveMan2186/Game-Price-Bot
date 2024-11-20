@@ -22,9 +22,11 @@ export default function Buttons(props) {
 function LoginButton(props) {
 
   return (
-    <button className={"btn btn-primary"} style={{ margin: '15px' }} onClick={props.handleClick}>
-      <Message string={'app.login'} />
-    </button>
+    <div style={{ margin: '15px' }}>
+      <button id="login-button"  className={"btn btn-primary"} onClick={props.handleClick}>
+        <Message string={'app.login'} />
+      </button>
+    </div>
   )
 }
 
@@ -46,12 +48,12 @@ function DropDown(props) {
 
   return (
     <div class="dropdown">
-      <button class="btn btn-primary"><Message string={'app.profile'} /></button>
+      <button id="profile-dropdown-button" class="btn btn-primary"><Message string={'app.profile'} /></button>
       <div class="dropdown-content">
-        <a onClick={handleChangeEmailClick}><Message string={'app.user.change.email'} /></a>
-        <a onClick={handleChangePasswordClick}><Message string={'app.user.change.password'} /></a>
-        <a onClick={handleGameListClick}><Message string={'app.profile.game.list'} /></a>
-        <a onClick={props.logout}><Message string={'app.profile.logout'} /></a>
+        <a id="change-email-button" onClick={handleChangeEmailClick}><Message string={'app.user.change.email'} /></a>
+        <a id="change-password-button" onClick={handleChangePasswordClick}><Message string={'app.user.change.password'} /></a>
+        <a id="user-gameList-button" onClick={handleGameListClick}><Message string={'app.profile.game.list'} /></a>
+        <a id="logout-button" onClick={props.logout}><Message string={'app.profile.logout'} /></a>
       </div>
     </div>
   )
