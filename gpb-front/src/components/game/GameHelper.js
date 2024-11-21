@@ -38,10 +38,10 @@ export function Loading(props) {
   }
 
   return (<div>
-    <div class="App-game-content-list ">
+    <div class="App-game-content-list">
       <GameContent games={props.games} />
     </div>
-    <div class="App-game-content-fotter  ">
+    <div class="App-game-content-fotter">
       <Pagination elementAmount={props.elementAmount} page={props.page}
         pageSize={props.pageSize} onPageClick={props.onPageClick} />
     </div>
@@ -57,9 +57,9 @@ export function Search(props) {
 
   return (
     <div class="App-game-content-header-search ">
-      <input type="search" placeholder={placeholder}
+      <input id="game-search-input-field" type="search" placeholder={placeholder}
         onChange={props.handleSearchChange} />
-      <button onClick={props.handleSearch}>
+      <button id="game-search-button" onClick={props.handleSearch}>
         <Message string={'app.game.filter.search.button'} />
       </button>
     </div>

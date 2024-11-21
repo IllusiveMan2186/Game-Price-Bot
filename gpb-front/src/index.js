@@ -10,7 +10,7 @@ import translationEN from './locales/en/translation.json';
 import translationRU from './locales/ru/translation.json';
 import translationUA from './locales/ua/translation.json';
 
-const locale = navigator.language;
+const locale = window.localStorage.getItem('locale') || navigator.language;
 
 i18n
     .use(initReactI18next) // passes i18n down to react-i18next
