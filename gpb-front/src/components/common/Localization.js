@@ -9,8 +9,10 @@ export default class Localization extends React.Component {
     constructor() {
         super(null);
         this.state = {
+            
             locale: getLocale()
         };
+        console.info(getLocale())
     };
 
     onChangeHandler = (value) => {
@@ -23,13 +25,13 @@ export default class Localization extends React.Component {
     };
 
     render() {
+
         return (
 
-            <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+            <div id="footer-language-choice" className="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
                 <h6 className="text-uppercase mb-4 font-weight-bold">
                     <Message string={'app.footer.language'} />
                 </h6>
-                {/* Google */}
                 <button
                     className="btn btn-primary btn-floating m-1"
                     style={{ backgroundColor: this.state.locale === "ru" ? "#0082ca" : "#333333" }}
@@ -37,7 +39,6 @@ export default class Localization extends React.Component {
                 >
                     RU
                 </button >
-                {/* Linkedin */}
                 <button
                     className="btn btn-primary btn-floating m-1"
                     style={{ backgroundColor: this.state.locale === "ua" ? "#0082ca" : "#333333" }}
@@ -45,7 +46,6 @@ export default class Localization extends React.Component {
                 >
                     UA
                 </button >
-                {/* Github */}
                 <button
                     className="btn btn-primary btn-floating m-1"
                     style={{ backgroundColor: this.state.locale === "en" ? "#0082ca" : "#333333" }}

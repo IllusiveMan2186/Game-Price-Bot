@@ -91,7 +91,7 @@ function GameInStoreList(props) {
 function SubscribeButton(props) {
     return (
         <div class="App-game-page-info-subscribe">
-            <button type="submit" className="btn btn-primary btn-block mb-3" disabled={!isUserAuth()}
+            <button id="subscribe-button" type="submit" className="btn btn-primary btn-block mb-3" disabled={!isUserAuth()}
                 onClick={() => props.isSubscribed ? unsubscribeForGameRequest(props.gameId, props.navigate) : subscribeForGameRequest(props.gameId, props.navigate)}>
                 {props.isSubscribed ? <Message string={'app.game.info.unsubscribe'} /> : <Message string={'app.game.info.subscribe'} />}
             </button>
@@ -113,7 +113,7 @@ function RemoveButton(props) {
     return (
         <div class="App-game-page-info-subscribe">
             <button type="submit" className="btn btn-primary btn-block mb-3 App-game-page-info-remove"
-                onClick={removeGameRequest(props.gameId, props.navigate)}>
+                onClick={() => removeGameRequest(props.gameId, props.navigate)}>
                 <Message string={'app.game.info.remove'} />
             </button>
         </div>

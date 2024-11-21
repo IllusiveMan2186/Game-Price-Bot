@@ -34,12 +34,9 @@ export const setLocaleHeader = (locale) => {
     window.localStorage.setItem('locale', locale);
 };
 
-export const getLocale  = () => {
-    if(isUserAuth()){
-        console.info("locales = " + window.localStorage.getItem('locale'))
-        return window.localStorage.getItem('locale');
-    }
-    return "ua";
+export const getLocale = () => {
+    console.info("locales = " + window.localStorage.getItem('locale'))
+    return window.localStorage.getItem('locale');
 };
 
 export function isUserAdmin() {
