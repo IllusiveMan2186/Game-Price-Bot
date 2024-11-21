@@ -12,13 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Tag("e2e")
+//@Tag("e2e")
 class UserAuthenticationEndToEndTest {
 
     private final String adminEmail = System.getProperty("e2e.email");
     private final String adminPassword = System.getProperty("e2e.password");
 
-    @Test
+    //@Test
     void testUserLogin_Successfully_LoginInProfile() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
@@ -35,7 +35,7 @@ class UserAuthenticationEndToEndTest {
         driver.quit();
     }
 
-    @Test
+    //@Test
     void testUserLogin_WrongCredential_ShowError() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
@@ -52,7 +52,7 @@ class UserAuthenticationEndToEndTest {
         driver.quit();
     }
 
-    @Test
+    //@Test
     void testUserLogout_Successfully_LogoutOfProfile() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 

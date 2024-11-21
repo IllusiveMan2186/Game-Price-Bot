@@ -12,7 +12,7 @@ export default function GameContent(props) {
     return (
         games.map(game => {
             return (
-                <div class="App-game-content-list-game " onClick={() => navigate('/game/' + game.id)}>
+                <div class="App-game-content-list-game" onClick={() => navigate('/game/' + game.id)}>
                     <GameImage className="App-game-content-list-game-info-img" gameName={game.name} />
                     <div class="App-game-content-list-game-info">
                         <div class="App-game-content-list-game-info-title">

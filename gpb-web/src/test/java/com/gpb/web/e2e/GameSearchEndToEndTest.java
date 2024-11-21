@@ -1,2 +1,120 @@
-package com.gpb.web;public class GameSearchEndToEndTest {
+package com.gpb.web.e2e;
+
+import com.gpb.web.e2e.util.EntToEndUtil;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
+import static com.gpb.web.e2e.util.EntToEndUtil.gameSearch;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@Tag("e2e")
+public class GameSearchEndToEndTest {
+
+    private static final String GAME_NAME = "Minecraft Java & Bedrock Edition";
+    private final String adminEmail = System.getProperty("e2e.email");
+    private final String adminPassword = System.getProperty("e2e.password");
+
+    @Test
+    void testGameSearch_Successfully_FindNeededGame() {
+        WebDriver driver = EntToEndUtil.getGpbWebDriver();
+
+        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+
+
+        gameSearch(driver, GAME_NAME);
+
+
+        WebElement firstGameInList = driver.findElement(By.className("App-game-content-list-game"));
+        String gameName = firstGameInList.findElement(By.className("App-game-content-list-game-info-title")).getText();
+        assertTrue(gameName.contains(GAME_NAME));
+
+        driver.quit();
+    }
+
+    @Test
+    void testGameInfoContent_Successfully_CheckGameInfo() {
+        WebDriver driver = EntToEndUtil.getGpbWebDriver();
+
+        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+
+        if (driver.findElements(By.className("App-game-content-list-game")).isEmpty()) {
+            EntToEndUtil.gameSearch(driver, GAME_NAME);
+        }
+
+
+        driver.findElement(By.className("App-game-content-list-game")).click();
+
+
+        assertTrue(driver.findElement(By.className("App-game-page")).isDisplayed());
+
+        assertTrue(driver.findElement(By.className("App-game-content-list-game-info-img")).isDisplayed());
+
+        assertTrue(driver.findElement(By.className("App-game-page-info")).isDisplayed());
+        assertTrue(driver.findElement(By.className("App-game-page-info-title")).isDisplayed());
+        assertFalse(driver.findElement(By.className("App-game-page-info-title")).getText().isEmpty());
+        assertTrue(isTextNotEmpty(driver, "App-game-page-info-title"));
+
+        assertTrue(driver.findElement(By.className("App-game-page-info-common")).isDisplayed());
+        assertTrue(isTextNotEmpty(driver, "App-game-page-info-common-price"));
+        assertTrue(isTextNotEmpty(driver, "App-game-content-list-game-info-type"));
+        assertTrue(isTextNotEmpty(driver, "App-game-content-list-game-info-available"));
+        assertTrue(isTextNotEmpty(driver, "App-game-content-list-game-info-price"));
+
+        assertTrue(driver.findElement(By.className("App-game-page-info-subscribe")).isDisplayed());
+        assertTrue(driver.findElement(By.className("App-game-page-info-storeList")).isDisplayed());
+
+        driver.quit();
+    }
+
+    @Test
+    void testGameStoreLink_Successfully_RedirectToStore() {
+        WebDriver driver = EntToEndUtil.getGpbWebDriver();
+
+        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+
+        if (driver.findElements(By.className("App-game-content-list-game")).isEmpty()) {
+            EntToEndUtil.gameSearch(driver, GAME_NAME);
+        }
+
+
+        driver.findElement(By.className("App-game-content-list-game")).click();
+
+
+        assertTrue(driver.findElement(By.className("App-game-page-info-storeList")).isDisplayed());
+        WebElement storeElement = driver.findElement(By.className("App-game-page-info-storeList-store"));
+        assertTrue(storeElement.isDisplayed());
+
+        assertTrue(isTextNotEmpty(storeElement, "App-game-content-list-game-info-available"));
+
+        WebElement priceElement = driver.findElement(By.className("App-game-page-info-storeList-store-price-section"));
+        assertTrue(storeElement.findElement(By.className("App-game-page-info-storeList-store-price-section")).isDisplayed());
+        assertTrue(isTextNotEmpty(priceElement, "App-game-page-info-storeList-store-price"));
+        assertTrue(isTextNotEmpty(priceElement, "App-game-page-info-storeList-store-discount"));
+        assertTrue(isTextNotEmpty(priceElement, "App-game-page-info-storeList-store-discountPrice"));
+
+        driver.quit();
+    }
+
+    private boolean isTextNotEmpty(WebElement element, String className) {
+        return isTextNotEmpty(element.findElement(By.className(className)));
+    }
+
+    private boolean isTextNotEmpty(WebDriver driver, String className) {
+        return isTextNotEmpty(driver.findElement(By.className(className)));
+    }
+
+    private boolean isTextNotEmpty(WebElement element) {
+        return element.isDisplayed()
+                && !element.getText().isEmpty();
+    }
 }
