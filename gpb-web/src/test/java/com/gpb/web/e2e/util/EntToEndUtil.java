@@ -24,6 +24,8 @@ public class EntToEndUtil {
         options.addArguments("--remote-allow-origins=*");
         WebDriver driver = new ChromeDriver(options);
         driver.get(GPB_URL);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(1));
         return driver;
     }
 
