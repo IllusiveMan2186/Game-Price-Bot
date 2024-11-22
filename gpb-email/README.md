@@ -1,11 +1,17 @@
-# Read Me First
-The following was discovered as part of building this project:
+# Email part
+Part of GPB application that responsible for sending emails
 
-* The JVM level was changed from '11' to '17', review the [JDK Version Range](https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-Versions#jdk-version-range) on the wiki for more details.
+### Setup for development environment:
 
-# Getting Started
+* Kafka 3.6.1 or higher
+* JDK 17 or higher
+* Gradle 8.0.2 or higher
 
-### Reference Documentation
+## Step for running in development environment:
+* Launch Kafka server message broker
+* Run service
+
+### Environments
 
 Add Environment variables for running project locally
 * MAIL_USERNAME;
