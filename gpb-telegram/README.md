@@ -1,12 +1,14 @@
-# Web part
-Backend web part of GPB application 
+
+# Telegram part
+
+Part of GPB application that responsible for interaction with telegram
 
 ### Setup for development environment:
 
 * PostgreSQL latest version
 * Kafka 3.6.1 or higher
 * JDK 17 or higher
-* Gradle 8.0.2 or higher
+* Apache Maven 3.9.0 or higher
 
 ## Step for running in development environment:
 * Launch Kafka server message broker
@@ -16,9 +18,9 @@ Backend web part of GPB application
 ### Environments
 
 Add Environment variables for running project locally
+* BOT_TOKEN;
+* IMAGE_FOLDER;
+* KAFKA_SERVER_URL;
 * POSTGRES_DB_URL;
 * POSTGRES_DB_USERNAME;
 * POSTGRES_DB_PASSWORD;
-* KAFKA_SERVER_URL;
-* WEB_SERVICE_URL;
-* IMAGE_FOLDER;
