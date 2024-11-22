@@ -6,23 +6,19 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-import java.util.concurrent.TimeUnit;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-//@Tag("e2e")
+@Tag("e2e")
 class UserAuthenticationEndToEndTest {
 
     private final String adminEmail = System.getProperty("e2e.email");
     private final String adminPassword = System.getProperty("e2e.password");
 
-    //@Test
+    @Test
     void testUserLogin_Successfully_LoginInProfile() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
-
-        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
 
 
         assertEquals(0, driver.findElements(By.id("profile-dropdown-button")).size());
@@ -35,11 +31,9 @@ class UserAuthenticationEndToEndTest {
         driver.quit();
     }
 
-    //@Test
+    @Test
     void testUserLogin_WrongCredential_ShowError() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
-
-        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
 
 
         assertEquals(0, driver.findElements(By.id("profile-dropdown-button")).size());
@@ -52,11 +46,9 @@ class UserAuthenticationEndToEndTest {
         driver.quit();
     }
 
-    //@Test
+    @Test
     void testUserLogout_Successfully_LogoutOfProfile() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
-
-        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
 
 
         EntToEndUtil.loginInToGpb(driver, adminEmail, adminPassword);

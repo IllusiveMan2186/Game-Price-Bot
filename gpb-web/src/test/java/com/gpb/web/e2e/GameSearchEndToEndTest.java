@@ -6,19 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 import static com.gpb.web.e2e.util.EntToEndUtil.gameSearch;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("e2e")
-public class GameSearchEndToEndTest {
+class GameSearchEndToEndTest {
 
     private static final String GAME_NAME = "Minecraft Java & Bedrock Edition";
     private final String adminEmail = System.getProperty("e2e.email");
@@ -27,8 +20,6 @@ public class GameSearchEndToEndTest {
     @Test
     void testGameSearch_Successfully_FindNeededGame() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
-
-        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
 
 
         gameSearch(driver, GAME_NAME);
@@ -45,8 +36,6 @@ public class GameSearchEndToEndTest {
     void testGameInfoContent_Successfully_CheckGameInfo() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
-        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
-
         if (driver.findElements(By.className("App-game-content-list-game")).isEmpty()) {
             EntToEndUtil.gameSearch(driver, GAME_NAME);
         }
@@ -60,8 +49,6 @@ public class GameSearchEndToEndTest {
         assertTrue(driver.findElement(By.className("App-game-content-list-game-info-img")).isDisplayed());
 
         assertTrue(driver.findElement(By.className("App-game-page-info")).isDisplayed());
-        assertTrue(driver.findElement(By.className("App-game-page-info-title")).isDisplayed());
-        assertFalse(driver.findElement(By.className("App-game-page-info-title")).getText().isEmpty());
         assertTrue(isTextNotEmpty(driver, "App-game-page-info-title"));
 
         assertTrue(driver.findElement(By.className("App-game-page-info-common")).isDisplayed());
@@ -79,8 +66,6 @@ public class GameSearchEndToEndTest {
     @Test
     void testGameStoreLink_Successfully_RedirectToStore() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
-
-        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
 
         if (driver.findElements(By.className("App-game-content-list-game")).isEmpty()) {
             EntToEndUtil.gameSearch(driver, GAME_NAME);
