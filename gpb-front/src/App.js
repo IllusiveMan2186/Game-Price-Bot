@@ -1,6 +1,6 @@
-import '../../styles/app.css'
-import Router from './Router';
-import Footer from './Footer';
+import './styles/app.css'
+import Router from './routes/Router';
+import Footer from './components/common/layout/Footer/Footer';
 
 function App() {
   return (

@@ -29,7 +29,7 @@ export function ProductType(props) {
 
 export function Loading(props) {
 
-  let image = require(`../../img/load.png`)
+  let image = require(`../../assets/images/load.png`)
 
   if (!props.games) {
     return (

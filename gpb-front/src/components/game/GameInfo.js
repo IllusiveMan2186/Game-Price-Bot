@@ -1,121 +1,151 @@
-import * as React from 'react'
-
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import '../../styles/gameInfo.css';
-
 import Message from '../../util/message';
 import { GameImage, GameAvailability, ProductType } from './GameHelper';
-import { useParams } from 'react-router-dom'
+import {
+  getGameRequest,
+  subscribeForGameRequest,
+  unsubscribeForGameRequest,
+  removeGameRequest,
+} from '../../request/gameRequests';
 import { isUserAdmin, isUserAuth } from '../../util/axios_helper';
-import { getGameRequest, subscribeForGameRequest, unsubscribeForGameRequest, removeGameRequest } from '../../request/gameRequests';
-import { useNavigate } from 'react-router-dom';
 
-export default function GameInfo(props) {
+const GameInfo = () => {
+  const [game, setGame] = useState(null);
+  const navigate = useNavigate();
+  const { gameId } = useParams();
 
-    const [game, setGame] = React.useState(null);
-    const navigate = useNavigate();
+  useEffect(() => {
+    const fetchGame = async () => {
+      await getGameRequest(gameId, setGame, navigate);
+    };
+    fetchGame();
+  }, [gameId, navigate]);
 
-    let { gameId } = useParams();
-    React.useEffect(() => {
-        getGameRequest(gameId, setGame, navigate)
-    }, []);
+  if (!game) return <div>Loading...</div>;
 
-    if (!game) return null;
-
-    return (
-        <div class='App-game'>
-            <div class="App-game-page-template">
-                <div class="App-game-page">
-                    <div class="App-game-page-image">
-                        <GameImage className="App-game-content-list-game-info-img" gameName={game.name} />
-                    </div>
-                    <div class="App-game-page-info-half">
-                        <div class="App-game-page-info">
-                            <div class="App-game-page-info-title">
-                                {game.name}
-                            </div>
-                            <div class="App-game-page-info-common  ">
-                                <div class="App-game-page-info-common-price">
-                                    <ProductType type={game.type} />
-                                    <GameAvailability available={game.available} />
-                                    <div class="App-game-content-list-game-info-price">
-                                        {game.minPrice} - {game.maxPrice} ₴
-                                    </div>
-                                </div>
-                                <div class="App-game-page-info-common-genre">
-                                    <Message string={'app.game.filter.genre.title'} />:
-                                    <GenreList genres={game.genres} />
-                                </div>
-                            </div>
-                            <SubscribeButton isSubscribed={game.userSubscribed} gameId={gameId} navigate={navigate} />
-                            {isUserAdmin() && <RemoveButton gameId={gameId} navigate={navigate} />}
-                            <div class="App-game-page-info-storeList">
-                                <GameInStoreList stores={game.gamesInShop} />
-                            </div>
-                        </div>
-                    </div>
-                </div >
-            </div >
-        </div >
-    );
+  return (
+    <div className="App-game">
+      <div className="App-game-page-template">
+        <div className="App-game-page">
+          <div className="App-game-page-image">
+            <GameImage className="App-game-content-list-game-info-img" gameName={game.name} />
+          </div>
+          <div className="App-game-page-info-half">
+            <GameDetails game={game} gameId={gameId} navigate={navigate} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-function GenreList(props) {
-    const listItems = [];
-    props.genres.map(genre => {
-        listItems.push(<div className="App-game-page-info-common-genre genre-subtext"><Message string={'app.game.genre.' + genre.toLowerCase()} /></div>)
-    })
-    return listItems
-}
+const GameDetails = ({ game, gameId, navigate }) => (
+  <div className="App-game-page-info">
+    <h1 className="App-game-page-info-title">{game.name}</h1>
+    <div className="App-game-page-info-common">
+      <GamePricing game={game} />
+      <GameGenres genres={game.genres} />
+    </div>
+    <SubscribeButton isSubscribed={game.userSubscribed} gameId={gameId} navigate={navigate} />
+    {isUserAdmin() && <RemoveButton gameId={gameId} navigate={navigate} />}
+    <GameStoresList stores={game.gamesInShop} />
+  </div>
+);
 
-function GameInStoreList(props) {
-    const listItems = [];
-    props.stores.map(gameInStore => {
-        let domain = (new URL(gameInStore.url)).hostname;
-        let image = require(`../../img/${domain}.png`)
-        console.info(gameInStore.clientType)
-        listItems.push(<a class="App-game-page-info-storeList-store " href={gameInStore.url} target="_blank">
-            <img src={image} />
-            <ClientActivationType clientType={gameInStore.clientType} />
-            <div class="">{domain}</div>
-            <GameAvailability available={gameInStore.available} />
-            <div class="App-game-page-info-storeList-store-price-section">
-                <div class="App-game-page-info-storeList-store-price">{gameInStore.price}</div>
-                <div class="App-game-page-info-storeList-store-discount">-{gameInStore.discount}%</div>
-                <div class="App-game-page-info-storeList-store-discountPrice">{gameInStore.discountPrice}</div>
-            </div>
-        </a>)
-    })
-    return listItems
-}
+const GamePricing = ({ game }) => (
+  <div className="App-game-page-info-common-price">
+    <ProductType type={game.type} />
+    <GameAvailability available={game.available} />
+    <div className="App-game-content-list-game-info-price">
+      {game.minPrice} - {game.maxPrice} ₴
+    </div>
+  </div>
+);
 
-function SubscribeButton(props) {
-    return (
-        <div class="App-game-page-info-subscribe">
-            <button id="subscribe-button" type="submit" className="btn btn-primary btn-block mb-3" disabled={!isUserAuth()}
-                onClick={() => props.isSubscribed ? unsubscribeForGameRequest(props.gameId, props.navigate) : subscribeForGameRequest(props.gameId, props.navigate)}>
-                {props.isSubscribed ? <Message string={'app.game.info.unsubscribe'} /> : <Message string={'app.game.info.subscribe'} />}
-            </button>
-            <span>{!isUserAuth() && <Message string={'app.game.info.need.auth'} />}</span>
-        </div>
-    )
-}
+const GameGenres = ({ genres }) => (
+  <div className="App-game-page-info-common-genre">
+    <Message string="app.game.filter.genre.title" />:
+    {genres.map((genre) => (
+      <span key={genre} className="genre-subtext">
+        <Message string={`app.game.genre.${genre.toLowerCase()}`} />
+      </span>
+    ))}
+  </div>
+);
 
-function ClientActivationType(props) {
-    if (props.clientType) {
-        let image = require(`../../img/${props.clientType.toLowerCase()}.png`)
-        return (
-            <img src={image} />
-        )
+const GameStoresList = ({ stores }) => (
+  <div className="App-game-page-info-storeList">
+    {stores.map((store) => {
+      const domain = new URL(store.url).hostname;
+      const image = require(`../../assets/images/${domain}.png`);
+      return (
+        <a
+          key={store.url}
+          className="App-game-page-info-storeList-store"
+          href={store.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src={image} alt={domain} />
+          <ClientActivationType clientType={store.clientType} />
+          <div>{domain}</div>
+          <GameAvailability available={store.available} />
+          <StorePriceInfo price={store.price} discount={store.discount} discountPrice={store.discountPrice} />
+        </a>
+      );
+    })}
+  </div>
+);
+
+const StorePriceInfo = ({ price, discount, discountPrice }) => (
+  <div className="App-game-page-info-storeList-store-price-section">
+    <div className="App-game-page-info-storeList-store-price">{price}</div>
+    <div className="App-game-page-info-storeList-store-discount">-{discount}%</div>
+    <div className="App-game-page-info-storeList-store-discountPrice">{discountPrice}</div>
+  </div>
+);
+
+const SubscribeButton = ({ isSubscribed, gameId, navigate }) => {
+  const handleSubscribe = useCallback(() => {
+    if (isSubscribed) {
+      unsubscribeForGameRequest(gameId, navigate);
+    } else {
+      subscribeForGameRequest(gameId, navigate);
     }
-}
+  }, [isSubscribed, gameId, navigate]);
 
-function RemoveButton(props) {
-    return (
-        <div class="App-game-page-info-subscribe">
-            <button type="submit" className="btn btn-primary btn-block mb-3 App-game-page-info-remove"
-                onClick={() => removeGameRequest(props.gameId, props.navigate)}>
-                <Message string={'app.game.info.remove'} />
-            </button>
-        </div>
-    )
-}
+  return (
+    <div className="App-game-page-info-subscribe">
+      <button
+        id="subscribe-button"
+        type="button"
+        className="btn btn-primary btn-block mb-3"
+        disabled={!isUserAuth()}
+        onClick={handleSubscribe}
+      >
+        <Message string={isSubscribed ? 'app.game.info.unsubscribe' : 'app.game.info.subscribe'} />
+      </button>
+      {!isUserAuth() && <Message string="app.game.info.need.auth" />}
+    </div>
+  );
+};
+
+const RemoveButton = ({ gameId, navigate }) => (
+  <button
+    type="button"
+    className="btn btn-danger btn-block mb-3 App-game-page-info-remove"
+    onClick={() => removeGameRequest(gameId, navigate)}
+  >
+    <Message string="app.game.info.remove" />
+  </button>
+);
+
+const ClientActivationType = ({ clientType }) => {
+  if (!clientType) return null;
+  const image = require(`../../assets/images/${clientType.toLowerCase()}.png`);
+  return <img src={image} alt={clientType} />;
+};
+
+export default GameInfo;

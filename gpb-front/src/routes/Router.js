@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Header from './Header';
-import Login from '../auth/Login';
-import GameList from '../game/GameList'
-import GameInfo from '../game/GameInfo';
-import PasswordChange from '../profile/PasswordChange';
-import EmailChange from '../profile/EmailChange';
+import Header from '../components/common/layout/Header/Header';
+import AuthViewSwitcher from '../components/auth/AuthViewSwitcher';
+import GameList from '../components/game/GameList'
+import GameInfo from '../components/game/GameInfo';
+import PasswordChange from '../components/profile/PasswordChange';
+import EmailChange from '../components/profile/EmailChange';
 
 export default function AppContent() {
 
@@ -20,7 +20,7 @@ export default function AppContent() {
                         <Route path="/search/:searchName/(url)?/:url?" element={<GameList mode={"search"} />} />
                         <Route path="/user/games/(url)?/:url?" element={<GameList mode={"usersGames"}/>} />
                         <Route path="/game/:gameId" element={<GameInfo />} />
-                        <Route path="/login" element={<Login />} />
+                        <Route path="/login" element={<AuthViewSwitcher />} />
                         <Route path="/change/email" element={<EmailChange />} />
                         <Route path="/change/password" element={<PasswordChange />} />
                     </Route>

@@ -1,3 +1,55 @@
+import React from 'react';
+
+export default function Pagination({ elementAmount, pageSize, page, onPageClick }) {
+    const lastPage = Math.ceil(elementAmount / pageSize);
+    const currentPage = Number(page);
+
+    const isCurrentPage = (pageNum) => pageNum === currentPage;
+
+    const renderPageButton = (pageNum) => (
+        <button
+            key={pageNum}
+            className={isCurrentPage(pageNum) ? 'active-page' : ''}
+            onClick={() => onPageClick(pageNum)}
+        >
+            {pageNum}
+        </button>
+    );
+
+    const getPageButtons = () => {
+        let startPage = Math.max(1, currentPage - 3);
+        let endPage = Math.min(lastPage, currentPage + 3);
+        const buttons = [];
+
+        for (let i = startPage; i <= endPage; i++) {
+            buttons.push(renderPageButton(i));
+        }
+
+        return buttons;
+    };
+
+    return (
+        <div className="pagination">
+            {currentPage > 1 && (
+                <>
+                    <button onClick={() => onPageClick(1)}>|&lt;</button>
+                    <button onClick={() => onPageClick(currentPage - 1)}>&lt;</button>
+                </>
+            )}
+
+            {getPageButtons()}
+
+            {currentPage < lastPage && (
+                <>
+                    <button onClick={() => onPageClick(currentPage + 1)}>&gt;</button>
+                    <button onClick={() => onPageClick(lastPage)}>&gt;|</button>
+                </>
+            )}
+        </div>
+    );
+}
+
+
 export default function Pagination(props) {
     const listItems = [];
     let lastPage = Math.ceil(props.elementAmount / props.pageSize);
