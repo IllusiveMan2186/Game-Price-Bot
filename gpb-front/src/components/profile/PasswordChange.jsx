@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 import * as Yup from 'yup';
 
-import Message from '../../util/message';
-import { passwordChangeRequest } from '../../services/userRequests';
+import Message from '@util/message';
+import { passwordChangeRequest } from '@services/userRequests';
 
 export default function PasswordChange() {
     const navigate = useNavigate();

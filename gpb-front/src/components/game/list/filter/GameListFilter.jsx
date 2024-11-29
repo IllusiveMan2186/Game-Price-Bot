@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 
-import * as constants from '../../../../util/constants';
-import Message from '../../../../util/message';
+import * as constants from '@util/constants';
+import Message from '@util/message';
 
 import './GameListFilter.css';
 
@@ -49,11 +49,18 @@ export default function GameListFilter({ searchParams, parameterSetOrRemove, rel
   const handleCheckboxChange = useCallback(
     (event, isNotExcludedFieldType) => {
       const { name, value, checked } = event.target;
-      if (checked && isNotExcludedFieldType) {
-        searchParams.append(name, value.toUpperCase());
-      } else if (!checked && !isNotExcludedFieldType) {
-        searchParams.delete(name, value.toUpperCase());
+
+      // Handle adding or removing the search parameter
+      const shouldAdd = checked === isNotExcludedFieldType;
+      const normalizedValue = value.toUpperCase();
+  
+      if (shouldAdd) {
+        searchParams.append(name, normalizedValue);
+      } else {
+        searchParams.delete(name, normalizedValue);
       }
+  
+      // Reset pagination and mark form as changed
       setPage(1);
       setFormChanged(true);
     },

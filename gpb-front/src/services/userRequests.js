@@ -1,5 +1,5 @@
-import { handleRequest } from '../util/httpHelper';
-import { setAuthHeader, setEmailHeader, defaultRequestErrorCheck } from '../util/authService';
+import { handleRequest } from '@util/httpHelper';
+import { setAuthHeader, setEmailHeader, defaultRequestErrorCheck } from '@util/authService';
 
 // Centralized API Endpoints
 const API_ENDPOINTS = {
@@ -64,7 +64,7 @@ export const localeChangeRequest = (locale) => {
         "PUT",
         API_ENDPOINTS.CHANGE_LOCALE,
         { locale },
-        () => console.info("Locale changed successfully"),
+        () => console.log("Locale changed successfully"),
         (error) => console.error("Failed to change locale", error)
     );
 };

@@ -1,18 +1,12 @@
 import React from 'react';
 
-import GameList from '../list/GameList';
-import Pagination from '../pagination/Pagination';
+import GameList from '@components/game/list/list/GameList';
+import Pagination from '@components/game/list/pagination/Pagination';
 
 import './GameListLoader.css';
 
 const GameListLoader = ({ games, elementAmount, page, updateSearchParams, pageSize, reloadPage }) => {
 
-    if (!games) {
-        let image = `/assets/images/load.png`
-        return (
-            <img class="App-game-content-list-loading" src={image} on />
-        )
-    }
     return (<div>
         <div class="App-game-content-list">
             <GameList games={games} />

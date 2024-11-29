@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import GameImage from '../../shared/GameImage';
-import { CommonGameInfo } from '../../shared/info/CommonGameInfo';
+import GameImage from '@components/game/shared/GameImage';
+import { CommonGameInfo } from '@components/game/shared/info/CommonGameInfo';
 
 import './GameList.css';
 

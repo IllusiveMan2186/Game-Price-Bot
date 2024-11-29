@@ -3,8 +3,8 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 
-import Message from '../../../util/message';
-import { registerRequest } from '../../../services/auth';
+import Message from '@util/message';
+import { registerRequest } from '@services/auth';
 
 export default function RegistrationForm() {
 

@@ -3,9 +3,9 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 
-import Message from '../../../util/message';
-import { loginRequest } from '../../../services/auth';
-import { resendActivationEmailRequest } from '../../../services/userRequests';
+import Message from '@util/message';
+import { loginRequest } from '@services/auth';
+import { resendActivationEmailRequest } from '@services/userRequests';
 
 export default function LoginForm() {
 
@@ -27,7 +27,6 @@ export default function LoginForm() {
         setConfirmedEmail(values.email);
         loginRequest(values.email, values.password, setErrorMessage, navigate);
     };
-
 
     return (
         <Formik

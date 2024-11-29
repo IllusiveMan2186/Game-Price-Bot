@@ -1,8 +1,8 @@
 import { changeLanguage } from 'i18next';
 import { NotificationManager } from 'react-notifications';
 
-import { setAuthHeader, setEmailHeader, setRoleHeader, setLocaleHeader, getLocale } from '../util/authService';
-import { handleRequest } from '../util/httpHelper';
+import { setAuthHeader, setEmailHeader, setRoleHeader, setLocaleHeader, getLocale } from '@util/authService';
+import { handleRequest } from '@util/httpHelper';
 
 
 // Centralized endpoints

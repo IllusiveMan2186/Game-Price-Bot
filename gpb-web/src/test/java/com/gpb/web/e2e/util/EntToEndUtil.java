@@ -31,9 +31,9 @@ public class EntToEndUtil {
 
     public static void loginInToGpb(WebDriver driver, String adminEmail, String adminPassword) {
         driver.findElement(By.id("login-button")).click();
-        driver.findElement(By.id("login-email")).sendKeys(adminEmail);
-        driver.findElement(By.id("login-password")).sendKeys(adminPassword);
-        driver.findElement(By.id("login-form-button")).click();
+        driver.findElement(By.name("email")).sendKeys(adminEmail);
+        driver.findElement(By.name("password")).sendKeys(adminPassword);
+        driver.findElement(By.id("pills-login")).findElement(By.className("btn")).click();
 
         choseLocale(driver, "EN");
     }

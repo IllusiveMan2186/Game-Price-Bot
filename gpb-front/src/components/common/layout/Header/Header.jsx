@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import Buttons from '../../button/Buttons';
-import { setAuthHeader, setRoleHeader } from '../../../../util/authService';
+import Buttons from '@components/common/button/Buttons';
+import { setAuthHeader, setRoleHeader } from '@util/authService';
 
-import logo from '../../../../assets/images/logo.png';
+import logo from '@assets/images/logo.png';
 import './Header.css';
 
 export default function Header() {

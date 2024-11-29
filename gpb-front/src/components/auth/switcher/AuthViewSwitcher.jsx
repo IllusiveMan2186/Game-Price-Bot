@@ -1,9 +1,9 @@
 import * as React from 'react';
 import classNames from 'classnames';
 
-import Message from '../../../util/message';
-import LoginForm from '../login/LoginForm';
-import RegistrationForm from '../registration/RegistrationForm';
+import Message from '@util/message';
+import LoginForm from '@components/auth/login/LoginForm';
+import RegistrationForm from '@components/auth/registration/RegistrationForm';
 
 import './AuthViewSwitcher.css';
 

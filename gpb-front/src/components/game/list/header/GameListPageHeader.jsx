@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Select from 'react-select';
 
-import * as constants from '../../../../util/constants';
-import Message from '../../../../util/message';
+import * as constants from '@util/constants';
+import Message from '@util/message';
 
 import './GameListPageHeader.css';
 

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { isUserAuth } from '../../../util/authService';
-import Message from '../../../util/message';
+import { isUserAuth } from '@util/authService';
+import Message from '@util/message';
 
 import './Button.css';
 

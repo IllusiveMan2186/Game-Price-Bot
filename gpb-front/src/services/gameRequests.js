@@ -1,5 +1,5 @@
-import { handleRequest } from '../util/httpHelper';
-import { defaultRequestErrorCheck } from '../util/authService';
+import { handleRequest } from '@util/httpHelper';
+import { defaultRequestErrorCheck } from '@util/authService';
 
 
 // Centralized API Endpoints
