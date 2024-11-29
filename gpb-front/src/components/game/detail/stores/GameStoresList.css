@@ -1,0 +1,25 @@
+.App-game-page-info-storeList-store-price-section {
+    width: 25%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  .App-game-page-info-storeList-store-price {
+    font-size: 0.9rem;
+    color: rgb(128, 126, 126);
+    text-decoration: line-through;
+  }
+  
+  .App-game-page-info-storeList-store-discount {
+    background-color: green;
+    height: 20px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .App-game-page-info-storeList-store-discountPrice {
+    font-size: 1.2rem;
+  }

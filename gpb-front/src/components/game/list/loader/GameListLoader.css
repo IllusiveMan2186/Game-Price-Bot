@@ -1,0 +1,45 @@
+.App-game-content-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+.App-game-content-list-loading {
+    width: 30%;
+    margin-top: 20%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .App-game-content-list-loading {
+        animation: App-logo-spin infinite 10s linear reverse;
+    }
+}
+
+.App-game-content-fotter {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+  
+  }
+
+  .App-game-content-fotter button {
+    border: none;
+    background-color: #000000;
+    margin: 20px;
+    display: inline-block;
+    border-radius: 6px;
+    line-height: 15px;
+    padding: 10px 15px;
+    font-size: 15px;
+    color: white;
+  
+  }
+  
+  .App-game-content-fotter a:hover {
+    background-color: rgb(56, 113, 219);
+  }
+  
+  .App-game-content-fotter-active {
+    background-color: rgb(56, 113, 219);
+  }
