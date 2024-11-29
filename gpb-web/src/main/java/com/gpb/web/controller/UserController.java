@@ -1,7 +1,6 @@
 package com.gpb.web.controller;
 
 import com.gpb.web.bean.game.Game;
-import com.gpb.web.bean.user.EmailChangeDto;
 import com.gpb.web.bean.user.PasswordChangeDto;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.configuration.UserAuthenticationProvider;
@@ -48,14 +47,14 @@ public class UserController {
     /**
      * Update registered user email
      *
-     * @param emailChangeDto new version of email
+     * @param email new version of email
      * @param user           current user
      * @return updated user
      */
     @PutMapping("/email")
     @Transactional
-    public UserDto updateUserLocale(@RequestBody final EmailChangeDto emailChangeDto, @AuthenticationPrincipal UserDto user) {
-        UserDto userDto = userService.updateUserEmail(emailChangeDto.getEmail(), user);
+    public UserDto updateUserEmail(@RequestBody final String email, @AuthenticationPrincipal UserDto user) {
+        UserDto userDto = userService.updateUserEmail(email, user);
         userDto.setToken(userAuthenticationProvider.createToken(userDto.getEmail()));
         return userDto;
     }
@@ -96,12 +95,12 @@ public class UserController {
     /**
      * Resend the activation email to the user
      *
-     * @param email user email
+     * @param emailDto email for resending activation message
      */
-    @PostMapping(value = "/resend/email/{email}")
+    @PostMapping(value = "/resend/email")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public void resendUserActivationEmail(@PathVariable final String email) {
+    public void resendUserActivationEmail(@RequestBody final String email) {
         userActivationService.resendActivationEmail(email);
     }
 
@@ -159,7 +158,8 @@ public class UserController {
     @PutMapping("/locale/{locale}")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public void updateUserLocale(@PathVariable final String locale, @AuthenticationPrincipal UserDto user) {
+    public void updateUserLocale(@RequestBody final String  locale,
+                                 @AuthenticationPrincipal UserDto user) {
         userService.updateLocale(locale, user.getId());
     }
 }
