@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Header from '../components/common/layout/Header/Header';
-import AuthViewSwitcher from '../components/auth/switcher/AuthViewSwitcher';
-import GameListPage from '../components/game/list/page/GameListPage';
-import GameDetailPage from '../components/game/detail/page/GameDetailPage';
-import PasswordChange from '../components/profile/PasswordChange';
-import EmailChange from '../components/profile/EmailChange';
+import Header from '@components/common/layout/Header/Header';
+import AuthViewSwitcher from '@components/auth/switcher/AuthViewSwitcher';
+import GameListPage from '@components/game/list/page/GameListPage';
+import GameDetailPage from '@components/game/detail/page/GameDetailPage';
+import PasswordChange from '@components/profile/PasswordChange';
+import EmailChange from '@components/profile/EmailChange';
 
 export default function AppContent() {
 

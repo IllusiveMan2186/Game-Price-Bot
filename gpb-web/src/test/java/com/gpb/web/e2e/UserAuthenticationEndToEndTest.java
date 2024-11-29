@@ -40,8 +40,9 @@ class UserAuthenticationEndToEndTest {
 
         EntToEndUtil.loginInToGpb(driver, "notExistingEmail@mail.com", "notExistingPassword");
 
-
-        assertFalse(driver.findElement(By.id("login-form-error")).getText().isEmpty());
+        String errorMessage = driver.findElement(By.id("pills-login"))
+                .findElement(By.className("Error")).getText();
+        assertFalse(errorMessage.isEmpty());
 
         driver.quit();
     }

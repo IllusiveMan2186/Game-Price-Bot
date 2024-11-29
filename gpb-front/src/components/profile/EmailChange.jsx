@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 import * as Yup from 'yup';
 
-import Message from '../../util/message';
-import { emailChangeRequest } from '../../services/userRequests';
+import Message from '@util/message';
+import { emailChangeRequest } from '@services/userRequests';
 
 export default function EmailChange() {
     const navigate = useNavigate();

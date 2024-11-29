@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {getAuthToken} from './authService'
+import {getAuthToken} from '@util/authService'
 
 axios.defaults.baseURL = 'http://localhost:8080';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -24,6 +24,6 @@ export const handleRequest = async (method, url, data, onSuccess, onError) => {
         const response = await request(method, url, data);
         onSuccess(response);
     } catch (error) {
-        onError(error);
+        onError(error.response.data);
     }
 };

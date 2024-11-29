@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom/client';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import App from './App';
+import App from '@root/App';
 
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import translationEN from './locales/en/translation.json';
-import translationRU from './locales/ru/translation.json';
-import translationUA from './locales/ua/translation.json';
+import translationEN from '@locales/en/translation.json';
+import translationRU from '@locales/ru/translation.json';
+import translationUA from '@locales/ua/translation.json';
 
 
 const locale = window.localStorage.getItem('locale') || navigator.language;

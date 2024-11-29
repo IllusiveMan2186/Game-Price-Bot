@@ -1,6 +1,6 @@
 import * as React from 'react';
-import Localization from '../../Localization';
-import Message from '../../../../util/message';
+import Localization from '@components/common/Localization';
+import Message from '@util/message';
 
 export default class Footer extends React.Component {
 

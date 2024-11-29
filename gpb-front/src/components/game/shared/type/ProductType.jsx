@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Message from '../../../../util/message';
+import Message from '@util/message';
 
 import './ProductType.css';
 

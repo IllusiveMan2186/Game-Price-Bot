@@ -1,16 +1,16 @@
 import React, { useCallback } from 'react';
 
-import { isUserAdmin, isUserAuth } from '../../../../util/authService';
-import Message from '../../../../util/message';
+import { isUserAdmin, isUserAuth } from '@util/authService';
+import Message from '@util/message';
 
-import { CommonGameInfo } from '../../shared/info/CommonGameInfo';
-import GameStoresList from '../stores/GameStoresList';
+import { CommonGameInfo } from '@components/game/shared/info/CommonGameInfo';
+import GameStoresList from '@components/game/detail/stores/GameStoresList';
 
 import {
     subscribeForGameRequest,
     unsubscribeForGameRequest,
     removeGameRequest,
-} from '../../../../services/gameRequests';
+} from '@services/gameRequests';
 
 import './GameDetails.css';
 

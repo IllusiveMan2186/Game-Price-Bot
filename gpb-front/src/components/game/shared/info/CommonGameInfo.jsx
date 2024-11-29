@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { ProductType } from '../type/ProductType';
-import { GameAvailability } from '../availability/GameAvailability';
+import { ProductType } from '@components/game/shared/type/ProductType';
+import { GameAvailability } from '@components/game/shared/availability/GameAvailability';
 
 export const CommonGameInfo = ({ game, className }) => (
   <div className={className}>

@@ -1,17 +1,28 @@
 import React, { useEffect, useCallback } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
-import * as constants from '../../../../util/constants';
-import { getGamesRequest } from '../../../../services/gameRequests';
+import * as constants from '@util/constants';
+import { getGamesRequest } from '@services/gameRequests';
 
-import GameListFilter from '../filter/GameListFilter';
-import GameListLoader from '../loader/GameListLoader';
-import GameListPageHeader from '../header/GameListPageHeader';
+import GameListFilter from '@components/game/list/filter/GameListFilter';
+import GameListLoader from '@components/game/list/loader/GameListLoader';
+import GameListPageHeader from '@components/game/list/header/GameListPageHeader';
+import Loading from '@components/game/shared/loading/Loading';
 
 import './GameListPage.css';
 
 const GameListPage = ({ mode: propMode }) => {
-    const location = useLocation();
+    useEffect(() => {
+        const handlePopState = () => {
+            window.location.reload();
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
+    
     const { url, searchName } = useParams(); // Extract URL params
     const mode = propMode; // Use mode passed from the route
     const navigate = useNavigate();
@@ -32,7 +43,6 @@ const GameListPage = ({ mode: propMode }) => {
 
     const parameterSetOrRemove = (parameter, value, defaultValue) => {
         if (value !== defaultValue) {
-            console.info(parameter + " " + value + " " + defaultValue)
             searchParams.set(parameter, value);
         } else {
             searchParams.delete(parameter);
@@ -49,7 +59,6 @@ const GameListPage = ({ mode: propMode }) => {
     }, [searchParams]);
 
     const reloadPage = useCallback(() => {
-        console.info(page);
         const path =
             mode === 'usersGames' ? `/user/games/` :
             mode === 'search' ? `/search/${name}/` :
@@ -82,8 +91,7 @@ const GameListPage = ({ mode: propMode }) => {
         fetchGame();
     }, [navigate, setElementAmount, setGames, getSearchParametrs()]);
 
-    if (!games) return <div>Loading...</div>;
-    console.info(searchParams)
+    if (!games) return <Loading/>;
     return (
         <>
             <div class='App-game'>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import Message from './message';
+import Message from '@util/message';
 
 export const pageSizesOptions = [
     { value: "25", label: "25" },

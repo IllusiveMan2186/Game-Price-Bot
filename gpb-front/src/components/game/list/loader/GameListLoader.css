@@ -3,18 +3,6 @@
     flex-wrap: wrap;
 }
 
-
-.App-game-content-list-loading {
-    width: 30%;
-    margin-top: 20%;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    .App-game-content-list-loading {
-        animation: App-logo-spin infinite 10s linear reverse;
-    }
-}
-
 .App-game-content-fotter {
     display: flex;
     flex-direction: row;

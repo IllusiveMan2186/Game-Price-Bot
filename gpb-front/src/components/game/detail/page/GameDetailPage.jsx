@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import { getGameRequest } from '../../../../services/gameRequests';
-import GameImage from '../../shared/GameImage';
-import GameDetails from '../details/GameDetails';
+import { getGameRequest } from '@services/gameRequests';
+import GameImage from '@components/game/shared/GameImage';
+import GameDetails from '@components/game/detail/details/GameDetails';
+import Loading from '@components/game/shared/loading/Loading';
 
 import './GameDetailPage.css';
 
@@ -24,7 +25,7 @@ const GameDetailPage = () => {
     fetchGame();
   }, [gameId, navigate]);
 
-  if (!game) return <div>Loading...</div>;
+  if (!game) return <Loading/>;
 
   return (
     <div className="App-game">

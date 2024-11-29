@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { changeLanguage } from 'i18next';
 
-import Message from '../../util/message';
-import { isUserAuth, getLocale, setLocaleHeader } from '../../util/authService';
-import { localeChangeRequest } from '../../services/userRequests';
+import Message from '@util/message';
+import { isUserAuth, getLocale, setLocaleHeader } from '@util/authService';
+import { localeChangeRequest } from '@services/userRequests';
 
 export default class Localization extends React.Component {
 

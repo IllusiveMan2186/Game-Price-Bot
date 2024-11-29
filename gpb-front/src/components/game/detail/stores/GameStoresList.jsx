@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameAvailability } from '../../shared/availability/GameAvailability';
+import { GameAvailability } from '@components/game/shared/availability/GameAvailability';
 import './GameStoresList.css'
 
 const ClientActivationType = ({ clientType }) => {
