@@ -1,6 +1,5 @@
 package com.gpb.web.integration.game;
 
-import com.gpb.web.bean.user.EmailChangeDto;
 import com.gpb.web.bean.user.UserRegistration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,12 +37,10 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration {
     @Test
     void updateUserSuccessfullyShouldReturnUser() throws Exception {
         String email = "email3";
-        EmailChangeDto emailChangeDto = new EmailChangeDto();
-        emailChangeDto.setEmail(email);
 
         mockMvc.perform(put("/user/email")
                         .contentType(APPLICATION_JSON)
-                        .content(objectToJson(emailChangeDto))
+                        .content(email)
                         .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -54,12 +51,10 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration {
 
     @Test
     void updateUserThatDidNotChangedInfoShouldReturnErrorMessage() throws Exception {
-        EmailChangeDto emailChangeDto = new EmailChangeDto();
-        emailChangeDto.setEmail(userList.get(0).getEmail());
 
         mockMvc.perform(put("/user/email")
                         .contentType(APPLICATION_JSON)
-                        .content(objectToJson(emailChangeDto))
+                        .content(userList.get(0).getEmail())
                         .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -67,14 +62,12 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration {
     }
 
     @Test
-    void updateUserWithEmailThatAlreadyRegisteredShouldReturnUser() throws Exception {
+    void updateUserWithEmailThatAlreadyRegisteredShouldReturnError() throws Exception {
         String email = "email2";
-        EmailChangeDto emailChangeDto = new EmailChangeDto();
-        emailChangeDto.setEmail(email);
 
         mockMvc.perform(put("/user/email")
                         .contentType(APPLICATION_JSON)
-                        .content(objectToJson(emailChangeDto))
+                        .content(email)
                         .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
                 .andExpect(status().isBadRequest())

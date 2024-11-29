@@ -2,7 +2,6 @@ package com.gpb.web.unit.controller;
 
 import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.user.BasicUser;
-import com.gpb.web.bean.user.EmailChangeDto;
 import com.gpb.web.bean.user.PasswordChangeDto;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
@@ -51,11 +50,9 @@ class UserControllerTest {
         newUser.setId(1);
         UserDto expected = modelMapper.map(newUser, UserDto.class);
         UserDto userDto = modelMapper.map(user, UserDto.class);
-        EmailChangeDto emailChangeDto = new EmailChangeDto();
-        emailChangeDto.setEmail(newUser.getEmail());
         when(userService.updateUserEmail(newUser.getEmail(), userDto)).thenReturn(expected);
 
-        UserDto result = controller.updateUserLocale(emailChangeDto, userDto);
+        UserDto result = controller.updateUserEmail(newUser.getEmail(), userDto);
 
         assertEquals(expected, result);
     }
@@ -129,7 +126,6 @@ class UserControllerTest {
     @Test
     void resendUserActivationEmailSuccessfullyShouldCallUserActivationServiceMethod() {
         String email = "email";
-
         controller.resendUserActivationEmail(email);
 
         verify(userActivationService).resendActivationEmail(email);
