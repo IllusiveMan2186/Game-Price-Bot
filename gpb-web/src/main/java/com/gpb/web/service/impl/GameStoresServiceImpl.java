@@ -6,6 +6,7 @@ import com.gpb.web.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.requestreply.KafkaReplyTimeoutException;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.stereotype.Service;
@@ -71,7 +72,7 @@ public class GameStoresServiceImpl implements GameStoresService {
                     .map(Long::valueOf)
                     .toList();
             log.info("Received response for request with key: " + key);
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException | KafkaReplyTimeoutException e) {
             log.error("Error while waiting for response", e);
             throw new NotFoundException(String.format(REQUEST_MESSAGE_ERROR, key, topic, parameter));
         }

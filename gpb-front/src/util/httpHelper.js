@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {getAuthToken} from '@util/authService'
+import { getAuthToken, setAuthHeader, setRoleHeader } from '@util/authService'
 
 axios.defaults.baseURL = 'http://localhost:8080';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -24,6 +24,11 @@ export const handleRequest = async (method, url, data, onSuccess, onError) => {
         const response = await request(method, url, data);
         onSuccess(response);
     } catch (error) {
+        console.info(error.response.status)
+        if (error.response.status === 401 && getAuthToken() !== null) {
+            setAuthHeader(null);
+            setRoleHeader(null);
+        }
         onError(error.response.data);
     }
 };
