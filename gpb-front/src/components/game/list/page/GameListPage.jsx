@@ -91,7 +91,6 @@ const GameListPage = ({ mode: propMode }) => {
         fetchGame();
     }, [navigate, setElementAmount, setGames, getSearchParametrs()]);
 
-    if (!games) return <Loading/>;
     return (
         <>
             <div class='App-game'>
@@ -109,18 +108,18 @@ const GameListPage = ({ mode: propMode }) => {
                     <GameListPageHeader
                         searchParams={searchParams}
                         updateSearchParams={updateSearchParams}
-                        name={name}
-                        setName={setName}
-                        reloadPage={reloadPage}
+                        nameValue={name}
                         mode={mode}
+                        reloadPage={reloadPage}
                         navigate={navigate}
                     />
                     <GameListLoader
                         games={games}
                         elementAmount={elementAmount}
                         page={page}
-                        updateSearchParams={updateSearchParams}
+                        mode={mode}
                         pageSize={pageSize}
+                        updateSearchParams={updateSearchParams}
                         reloadPage={reloadPage}
                     />
                 </div>

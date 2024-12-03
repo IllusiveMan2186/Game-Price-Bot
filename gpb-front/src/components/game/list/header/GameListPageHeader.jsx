@@ -28,9 +28,10 @@ const Search = ({ handleSearchChange, handleSearch }) => {
     );
 };
 
-const GameListPageHeader = ({ searchParams, updateSearchParams, name, setName, reloadPage, mode, pageSize }) => {
+const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, reloadPage, mode, pageSize }) => {
     const navigate = useNavigate();
     const sortBy = searchParams.get('sortBy') || 'name-ASC';
+    const [name, setName] = React.useState(nameValue);
 
     const handleSortByChange = useCallback((selectedOption) => {
         updateSearchParams('sortBy', selectedOption.value, 'name-ASC');
