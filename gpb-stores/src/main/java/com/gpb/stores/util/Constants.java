@@ -15,4 +15,5 @@ public class Constants {
     public static final String GPB_KAFKA_GROUP_ID = "gpb";
     public static final String SEARCH_REPLY_LISTENER_CONTAINER_FACTORY = "searchReplyListenerContainerFactory";
     public static final String FOLLOW_REPLY_LISTENER_CONTAINER_FACTORY = "followReplyListenerContainerFactory";
+    public static final long SEARCH_REQUEST_WAITING_TIME = 23_000;
 }

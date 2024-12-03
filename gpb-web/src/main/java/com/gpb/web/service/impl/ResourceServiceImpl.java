@@ -24,7 +24,9 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     public byte[] getGameImage(final String gameName) {
-        String gameImageFullPath = resourceConfiguration.getImageFolder() + "/" + gameName + JPG_IMG_FILE_EXTENSION;
+        String gameImageFullPath = resourceConfiguration.getImageFolder() + "/" + sanitizeFilename(gameName)
+                + JPG_IMG_FILE_EXTENSION;
+        System.out.println(gameImageFullPath);
         try {
             InputStream in = new FileInputStream(gameImageFullPath);
 
@@ -35,7 +37,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     private byte[] getDefaultGameImage() {
-        String gameImageFullPath = resourceConfiguration.getImageFolder() + "/defaultImage"  + PNG_IMG_FILE_EXTENSION;
+        String gameImageFullPath = resourceConfiguration.getImageFolder() + "/defaultImage" + PNG_IMG_FILE_EXTENSION;
         try {
             InputStream in = new FileInputStream(gameImageFullPath);
             return IOUtils.toByteArray(in);
@@ -43,5 +45,9 @@ public class ResourceServiceImpl implements ResourceService {
             log.error(String.format("Not found image by path '%s'. Full message :'%s'", gameImageFullPath, e.getMessage()));
             throw new GameImageNotFoundException(e);
         }
+    }
+
+    private String sanitizeFilename(String filename) {
+        return filename.replaceAll("[:/]", "_");
     }
 }

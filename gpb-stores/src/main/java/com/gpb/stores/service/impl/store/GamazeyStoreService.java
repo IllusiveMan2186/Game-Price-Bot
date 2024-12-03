@@ -27,6 +27,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,6 +45,7 @@ import java.io.OutputStream;
 import java.net.URL;
 
 import static com.gpb.stores.util.Constants.JPG_IMG_FILE_EXTENSION;
+import static com.gpb.stores.util.Constants.SEARCH_REQUEST_WAITING_TIME;
 
 @Service(value = "gamazey.com.ua")
 @Log4j2
@@ -60,6 +62,7 @@ public class GamazeyStoreService implements StoreService {
     private static final String GAMEZEY_WISHLIST = "https://gamazey.com.ua/wishlist";
     private static final String GAME_NAME_PRODUCT_TYPE_PART = "(Гра|Ігрова валюта|Доповнення) ";
     private static final String GAME_NAME_SPECIFICATION_PART = " для .+ \\(Ключ активації .+\\)";
+    private static final String GAME_GENRES_FIELD = "Жанр";
 
     private static final int GAME_IMAGE_CROP_WIDTH_START = 20;
     private static final int GAME_IMAGE_CROP_WIDTH_LONG = 320;
@@ -94,11 +97,8 @@ public class GamazeyStoreService implements StoreService {
         log.info(String.format("Searching uncreated game with url : '%s' in gamazey store", url));
         Document page = parser.getPage(url);
         GameInShop gameInShop = getGameInShop(page);
-        Elements characteristic = page.getElementsByClass(GAME_PAGE_CHARACTERISTICS);
-        List<Genre> genres = new ArrayList<>();
-        if (!characteristic.isEmpty()) {
-            genres = getGenres(characteristic.get(3));
-        }
+        ProductType type = getProductType(page);
+        List<Genre> genres = getGenresFromFiled(page);
         saveImage(page, gameInShop.getNameInStore());
         gameInShop.setUrl(url);
 
@@ -106,7 +106,7 @@ public class GamazeyStoreService implements StoreService {
                 .name(gameInShop.getNameInStore())
                 .gamesInShop(Collections.singleton(gameInShop))
                 .genres(genres)
-                .type(getProductType(page))
+                .type(type)
                 .build();
         gameInShop.setGame(game);
         return game;
@@ -128,8 +128,14 @@ public class GamazeyStoreService implements StoreService {
         Document page = parser.getPage(GAMEZEY_SEARCH_URL + name);
         Elements elements = page.getElementsByClass("rm-module-title");
 
+        long startTime = System.currentTimeMillis();
+
         List<Game> games = new ArrayList<>();
         for (Element element : elements) {
+            if (System.currentTimeMillis() - startTime > SEARCH_REQUEST_WAITING_TIME) {
+                log.warn("Search process exceeded the maximum allowed duration. Stopping search.");
+                break;
+            }
             String url = element.child(0).attr("href");
             games.add(findUncreatedGameByUrl(url));
         }
@@ -256,6 +262,27 @@ public class GamazeyStoreService implements StoreService {
                 .build();
     }
 
+    /**
+     * Get genres by searching needed field on page if characteristics presented
+     *
+     * @param page page
+     * @return list of genres if presented
+     */
+    private List<Genre> getGenresFromFiled(Document page) {
+        Elements characteristic = page.getElementsByClass(GAME_PAGE_CHARACTERISTICS);
+
+        if (!characteristic.isEmpty()) {
+            Optional<Element> genreField = characteristic.stream()
+                    .filter(ch -> ch.text().contains(GAME_GENRES_FIELD))
+                    .findAny();
+            if (genreField.isPresent()) {
+                return getGenres(genreField.get());
+            }
+
+        }
+        return new ArrayList<>();
+    }
+
     private String getIntFromString(String field) {
         Pattern intsOnly = Pattern.compile("\\d+");
         Matcher makeMatch = intsOnly.matcher(field);
@@ -271,6 +298,7 @@ public class GamazeyStoreService implements StoreService {
         List<Genre> genres = new ArrayList<>();
         for (Map.Entry<String, Genre> entry : genreMap.entrySet()) {
             if (genreElement.text().contains(entry.getKey())) {
+                System.out.println(entry.getKey() + " " + entry.getValue());
                 genres.add(entry.getValue());
             }
         }
@@ -280,7 +308,7 @@ public class GamazeyStoreService implements StoreService {
     private void saveImage(Document document, String gameName) {
         Element element = document.getElementsByClass(GAME_IMG_CLASS).get(1);
         String imgUrl = element.attr("src");
-        String filePath = resourceConfiguration.getImageFolder() + "/" + gameName + JPG_IMG_FILE_EXTENSION;
+        String filePath = resourceConfiguration.getImageFolder() + "/" + sanitizeFilename(gameName) + JPG_IMG_FILE_EXTENSION;
         try {
             cropImage(imgUrl, filePath);
         } catch (IOException e) {
@@ -304,6 +332,11 @@ public class GamazeyStoreService implements StoreService {
         File outputFile = new File(filePath);
         ImageIO.write(crop, "JPG", outputFile);
     }
+
+    private String sanitizeFilename(String filename) {
+        return filename.replaceAll("[:/]", "_");
+    }
+
 
     private String removeUnnecessaryInfoFromGameName(String originalName) {
         return originalName
