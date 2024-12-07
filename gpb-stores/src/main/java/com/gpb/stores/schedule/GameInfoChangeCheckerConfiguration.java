@@ -2,10 +2,9 @@ package com.gpb.stores.schedule;
 
 import com.gpb.stores.bean.game.GameInShop;
 import com.gpb.stores.bean.user.BasicUser;
-import com.gpb.stores.bean.user.WebUser;
-import com.gpb.stores.service.EmailService;
 import com.gpb.stores.service.GameService;
 import com.gpb.stores.service.GameStoresService;
+import com.gpb.stores.service.NotificationManager;
 import com.gpb.stores.service.UserService;
 import com.gpb.stores.util.Constants;
 import lombok.extern.slf4j.Slf4j;
@@ -25,16 +24,16 @@ public class GameInfoChangeCheckerConfiguration {
     private final GameStoresService gameStoresService;
 
 
-    private final EmailService emailService;
+    private final NotificationManager notificationManager;
 
 
     private final UserService userService;
 
     public GameInfoChangeCheckerConfiguration(GameService gameService, GameStoresService gameStoresService,
-                                              EmailService emailService, UserService userService) {
+                                              NotificationManager notificationManager, UserService userService) {
         this.gameService = gameService;
         this.gameStoresService = gameStoresService;
-        this.emailService = emailService;
+        this.notificationManager = notificationManager;
         this.userService = userService;
     }
 
@@ -47,12 +46,9 @@ public class GameInfoChangeCheckerConfiguration {
         gameService.changeInfo(changedGames);
 
         List<BasicUser> users = userService.getUsersOfChangedGameInfo(changedGames);
-        List<Long> ids = users.stream()
-                .map(BasicUser::getId)
-                .toList();
-        for (WebUser user : userService.getWebUsers(ids)) {
+        for (BasicUser user : users) {
             List<GameInShop> usersChangedGames = gameService.getUsersChangedGames(users.get(0), changedGames);
-            emailService.sendGameInfoChange(user, usersChangedGames);
+            notificationManager.sendGameInfoChange(user, usersChangedGames);
         }
     }
 }

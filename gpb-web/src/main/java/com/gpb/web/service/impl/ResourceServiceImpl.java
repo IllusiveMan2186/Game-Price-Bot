@@ -26,7 +26,6 @@ public class ResourceServiceImpl implements ResourceService {
     public byte[] getGameImage(final String gameName) {
         String gameImageFullPath = resourceConfiguration.getImageFolder() + "/" + sanitizeFilename(gameName)
                 + JPG_IMG_FILE_EXTENSION;
-        System.out.println(gameImageFullPath);
         try {
             InputStream in = new FileInputStream(gameImageFullPath);
 

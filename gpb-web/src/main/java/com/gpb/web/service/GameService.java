@@ -6,7 +6,7 @@ import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.game.ProductType;
-import com.gpb.web.bean.user.WebUser;
+import com.gpb.web.bean.user.BasicUser;
 import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
@@ -16,14 +16,6 @@ import java.util.List;
  * Class for handling game entity
  */
 public interface GameService {
-
-    /**
-     * Get game by id
-     *
-     * @param gameId games id
-     * @return game
-     */
-    Game getById(long gameId);
 
     /**
      * Get game by id
@@ -80,15 +72,6 @@ public interface GameService {
      */
     GameListPageDto getUserGames(long userId, int pageSize, int pageNum, Sort sort);
 
-
-    /**
-     * Create game
-     *
-     * @param game game that would be created
-     * @return created game
-     */
-    Game create(Game game);
-
     /**
      * Get game for which subscribe users
      *
@@ -110,7 +93,7 @@ public interface GameService {
      * @param changedGames list of all changed games
      * @return changed games for that user subscribed on
      */
-    List<GameInShop> getUsersChangedGames(WebUser user, List<GameInShop> changedGames);
+    List<GameInShop> getUsersChangedGames(BasicUser user, List<GameInShop> changedGames);
 
     /**
      * Remove game by id
@@ -127,16 +110,12 @@ public interface GameService {
     void removeGameInStore(long gameInStoreId);
 
     /**
-     * Begins to follow game for information changing if still not follows
+     * Set isFollowed field in game for user by game and user id
      *
-     * @param gameId games id
+     * @param gameId   games id
+     * @param userId   user id
+     * @param isFollow is program would follow this game for information changing
+     * @return changed game
      */
-    void followGame(long gameId);
-
-    /**
-     * Stops to follow game for information changing if any user not subscribed to it
-     *
-     * @param gameId games id
-     */
-    void unfollowGame(long gameId);
+    Game setFollowGameOption(long gameId, long userId, boolean isFollow);
 }

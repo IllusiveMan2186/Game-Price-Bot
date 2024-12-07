@@ -11,8 +11,6 @@ import com.gpb.web.bean.game.ProductType;
 import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
-import com.gpb.web.repository.GameInShopRepository;
-import com.gpb.web.repository.GameRepository;
 import com.gpb.web.repository.UserRepository;
 import com.gpb.web.repository.WebUserRepository;
 import com.gpb.web.service.UserService;
@@ -74,12 +72,6 @@ public class BaseAuthenticationIntegration {
     protected WebUserRepository webUserRepository;
 
     @Autowired
-    protected GameRepository gameRepository;
-
-    @Autowired
-    protected GameInShopRepository gameInShopRepository;
-
-    @Autowired
     protected ModelMapper modelMapper;
 
     @Autowired
@@ -109,24 +101,13 @@ public class BaseAuthenticationIntegration {
         games.add(gameCreation("name1", "url1", Genre.STRATEGIES, new BigDecimal("100.0"), new BigDecimal("100.0")));
         games.add(gameCreation("name2", "url2", Genre.RPG, new BigDecimal("500.0"), new BigDecimal("500.0")));
         games.add(gameCreation("name3", "url3", Genre.STRATEGIES, new BigDecimal("1000.0"), new BigDecimal("800.0")));
-        System.setProperty("ADMIN_EMAIL", "");
-        System.setProperty("ADMIN_PASSWORD", "");
+        System.setProperty("ADMIN_EMAIL", "admin@mail.com");
+        System.setProperty("ADMIN_PASSWORD", "pass");
         System.setProperty("GAMEZEY_LOGIN", "");
         System.setProperty("GAMEZEY_PASSWORD", "");
         System.setProperty("IMAGE_FOLDER", "");
         System.setProperty("WEB_SERVICE_URL", "");
         System.setProperty("KAFKA_SERVER_URL", "");
-    }
-
-    @BeforeEach
-    void userCreationForAuthBeforeAllTests() {
-
-        adminCreation(0);
-        games.set(0, gameRepository.save(games.get(0)));
-        games.set(1, gameRepository.save(games.get(1)));
-        games.set(2, gameRepository.save(games.get(2)));
-        games.forEach(game -> game.getGamesInShop()
-                .forEach(gameInShop -> gameInShopRepository.save(gameInShop)));
     }
 
     protected static WebUser userCreation(String email, String password) {

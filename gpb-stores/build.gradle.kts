@@ -21,6 +21,8 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1")
     runtimeOnly("com.twelvemonkeys.imageio:imageio-webp:3.10.1")
     implementation("com.auth0:java-jwt:4.3.0")
+    implementation("org.flywaydb:flyway-core:9.8.1")
+
     implementation("org.jsoup:jsoup:1.15.3")
     implementation("com.sun.mail:jakarta.mail:2.0.1")
     implementation("com.google.guava:guava:32.1.2-jre")
@@ -32,18 +34,14 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
 
+    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-log4j2:3.1.3")
-    implementation("org.springframework.boot:spring-boot-starter-mail")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.security:spring-security-config")
     implementation("org.springframework.kafka:spring-kafka")
 
     implementation("org.postgresql:postgresql:42.5.1")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
     testImplementation("com.h2database:h2:2.2.220")
 }

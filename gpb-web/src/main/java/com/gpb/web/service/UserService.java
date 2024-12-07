@@ -5,6 +5,8 @@ import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
 
+import java.util.List;
+
 
 /**
  * Class for handling users
@@ -62,22 +64,6 @@ public interface UserService {
     UserDto updateUserPassword(char[] password, UserDto user);
 
     /**
-     * Add game to user list of games
-     *
-     * @param userId users id
-     * @param gameId games id
-     */
-    void subscribeToGame(long userId, long gameId);
-
-    /**
-     * Add game to user list of games
-     *
-     * @param userId users id
-     * @param gameId games id
-     */
-    void unsubscribeFromGame(long userId, long gameId);
-
-    /**
      * Check user credential for authentication
      *
      * @param credentials user authentication credential
@@ -115,4 +101,6 @@ public interface UserService {
      * @return token of connector
      */
     String getTelegramUserConnectorToken(long webUserId);
+
+    List<WebUser> getWebUsers(List<Long> ids);
 }

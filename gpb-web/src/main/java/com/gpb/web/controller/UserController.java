@@ -1,11 +1,9 @@
 package com.gpb.web.controller;
 
-import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.user.PasswordChangeDto;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.configuration.UserAuthenticationProvider;
 import com.gpb.web.service.GameService;
-import com.gpb.web.service.GameStoresService;
 import com.gpb.web.service.UserActivationService;
 import com.gpb.web.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,15 +28,15 @@ public class UserController {
 
     private final UserService userService;
     private final GameService gameService;
-    private final GameStoresService storesService;
     private final UserActivationService userActivationService;
     private final UserAuthenticationProvider userAuthenticationProvider;
 
-    public UserController(UserService userService, GameStoresService storesService,
-                          GameService gameService, UserActivationService userActivationService, UserAuthenticationProvider userAuthenticationProvider) {
+    public UserController(UserService userService,
+                          GameService gameService,
+                          UserActivationService userActivationService,
+                          UserAuthenticationProvider userAuthenticationProvider) {
         this.userService = userService;
         this.gameService = gameService;
-        this.storesService = storesService;
         this.userActivationService = userActivationService;
         this.userAuthenticationProvider = userAuthenticationProvider;
     }
@@ -48,7 +46,7 @@ public class UserController {
      * Update registered user email
      *
      * @param email new version of email
-     * @param user           current user
+     * @param user  current user
      * @return updated user
      */
     @PutMapping("/email")
@@ -73,29 +71,9 @@ public class UserController {
     }
 
     /**
-     * Add game to user list of games
-     *
-     * @param gameId games id
-     * @param user   current user
-     * @return updated user
-     */
-    @PostMapping(value = "/games/{gameId}")
-    @Transactional
-    @ResponseStatus(HttpStatus.OK)
-    public UserDto addGameToUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
-        userService.subscribeToGame(user.getId(), gameId);
-        Game game = gameService.getById(gameId);
-        if (!game.isFollowed()) {
-            game.setFollowed(true);
-            storesService.subscribeToGame(gameId);
-        }
-        return userService.getUserById(user.getId());
-    }
-
-    /**
      * Resend the activation email to the user
      *
-     * @param emailDto email for resending activation message
+     * @param email email for resending activation message
      */
     @PostMapping(value = "/resend/email")
     @Transactional
@@ -120,7 +98,7 @@ public class UserController {
     /**
      * Get token for connect with telegram user
      *
-     * @param user  current user
+     * @param user current user
      * @return token of connector
      */
     @GetMapping(value = "/connect/telegram")
@@ -137,15 +115,26 @@ public class UserController {
      * @param user   current user
      * @return updated user
      */
+    @PostMapping(value = "/games/{gameId}")
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto addGameToUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
+        gameService.setFollowGameOption(user.getId(), gameId, true);
+        return userService.getUserById(user.getId());
+    }
+
+    /**
+     * Add game to user list of games
+     *
+     * @param gameId games id
+     * @param user   current user
+     * @return updated user
+     */
     @DeleteMapping(value = "/games/{gameId}")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
     public UserDto removeGameFromUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
-        userService.unsubscribeFromGame(user.getId(), gameId);
-        Game game = gameService.getById(gameId);
-        if (game.isFollowed() && game.getUserList().isEmpty()) {
-            storesService.unsubscribeFromGame(gameId);
-        }
+        gameService.setFollowGameOption(user.getId(), gameId, false);
         return userService.getUserById(user.getId());
     }
 
@@ -158,7 +147,7 @@ public class UserController {
     @PutMapping("/locale/{locale}")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public void updateUserLocale(@RequestBody final String  locale,
+    public void updateUserLocale(@RequestBody final String locale,
                                  @AuthenticationPrincipal UserDto user) {
         userService.updateLocale(locale, user.getId());
     }

@@ -14,7 +14,6 @@ import com.gpb.web.configuration.MapperConfig;
 import com.gpb.web.controller.GameController;
 import com.gpb.web.exception.PriceRangeException;
 import com.gpb.web.exception.SortParamException;
-import com.gpb.web.service.GameService;
 import com.gpb.web.service.ResourceService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -69,7 +68,7 @@ class GameControllerTest {
         GameInfoDto gameInfoDto = modelMapper.map(game, GameInfoDto.class);
         when(service.getById(id, userId)).thenReturn(gameInfoDto);
 
-        GameInfoDto result = controller.getGamerById(id, modelMapper.map(user, UserDto.class));
+        GameInfoDto result = controller.getGameById(id, modelMapper.map(user, UserDto.class));
 
         assertEquals(gameInfoDto, result);
     }

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.nio.CharBuffer;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -125,20 +126,6 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(updatedUser, UserDto.class);
     }
 
-    @Override
-    public void subscribeToGame(long userId, long gameId) {
-        log.info(String.format("Subscribe for game(%s) into user(%s) game list", gameId, userId));
-        WebUser webUser = getWebUserById(userId);
-        userRepository.addGameToUserListOfGames(webUser.getBasicUser().getId(), gameId);
-    }
-
-    @Override
-    public void unsubscribeFromGame(long userId, long gameId) {
-        log.info(String.format("Unsubscribe game(%s) from user(%s) game list", gameId, userId));
-        WebUser webUser = getWebUserById(userId);
-        userRepository.removeGameFromUserListOfGames(webUser.getBasicUser().getId(), gameId);
-    }
-
     public UserDto login(Credentials credentials) {
         log.info(String.format("Login user : %s", credentials.getEmail()));
         final WebUser user = webUserRepository.findByEmail(credentials.getEmail())
@@ -212,6 +199,11 @@ public class UserServiceImpl implements UserService {
                 .userId(webUser.getBasicUser().getId())
                 .build();
         return messengerConnectorRepository.save(connector).getToken();
+    }
+
+    @Override
+    public List<WebUser> getWebUsers(List<Long> userIds) {
+        return webUserRepository.findAllByIdIn(userIds);
     }
 
     private void failedLoginAttempt(WebUser user) {

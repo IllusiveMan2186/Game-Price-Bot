@@ -50,7 +50,7 @@ public class GameController {
      */
     @GetMapping(value = "/{gameId}")
     @ResponseStatus(HttpStatus.OK)
-    public GameInfoDto getGamerById(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
+    public GameInfoDto getGameById(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
         long userId = user == null ? -1 : user.getId();
         return gameService.getById(gameId, userId);
     }
@@ -169,7 +169,7 @@ public class GameController {
     }
 
     private Sort getSortBy(String sortBy) {
-        Pattern pattern = java.util.regex.Pattern.compile("(gamesInShop.(price)|(name))-((ASC)|(DESC))");
+        Pattern pattern = java.util.regex.Pattern.compile("(gamesInShop\\.(price|name))-(ASC|DESC)");
         Matcher matcher = pattern.matcher(sortBy);
 
         if (!matcher.matches()) {

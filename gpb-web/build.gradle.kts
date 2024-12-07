@@ -27,6 +27,7 @@ dependencies {
     implementation("org.seleniumhq.selenium:selenium-java:4.16.1")
     implementation("io.github.bonigarcia:webdrivermanager:5.7.0")
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
+    implementation("org.flywaydb:flyway-core:9.8.1")
 
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")

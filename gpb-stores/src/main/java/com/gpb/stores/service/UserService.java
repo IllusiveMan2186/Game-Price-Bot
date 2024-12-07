@@ -2,7 +2,6 @@ package com.gpb.stores.service;
 
 import com.gpb.stores.bean.game.GameInShop;
 import com.gpb.stores.bean.user.BasicUser;
-import com.gpb.stores.bean.user.WebUser;
 
 import java.util.List;
 
@@ -11,11 +10,27 @@ import java.util.List;
  */
 public interface UserService {
 
+    BasicUser createUser();
+
     /**
      * @param changedGames changed games
      * @return users that subscribe to changed game
      */
     List<BasicUser> getUsersOfChangedGameInfo(List<GameInShop> changedGames);
 
-    List<WebUser> getWebUsers(List<Long> ids);
+    /**
+     * Add game to user list of games
+     *
+     * @param userId users id
+     * @param gameId games id
+     */
+    void subscribeToGame(long userId, long gameId);
+
+    /**
+     * Add game to user list of games
+     *
+     * @param userId users id
+     * @param gameId games id
+     */
+    void unsubscribeFromGame(long userId, long gameId);
 }

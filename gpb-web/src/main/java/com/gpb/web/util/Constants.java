@@ -15,5 +15,7 @@ public class Constants {
     public static final String GAME_SEARCH_RESPONSE_TOPIC = "gpb_game_search_response";
     public static final String GAME_FOLLOW_TOPIC = "gpb_game_follow";
     public static final String GAME_UNFOLLOW_TOPIC = "gpb_game_unfollow";
+    public static final String GAME_REMOVE_TOPIC = "gpb_game_remove";
+    public static final String GAME_IN_STORE_REMOVE_TOPIC = "gpb_game_in_store_remove";
     public static final long SEARCH_REQUEST_WAITING_TIME = 30;
 }

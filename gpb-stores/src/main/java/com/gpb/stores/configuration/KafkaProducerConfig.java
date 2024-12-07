@@ -1,10 +1,11 @@
 package com.gpb.stores.configuration;
 
-import com.gpb.stores.bean.EmailEvent;
+import com.gpb.stores.bean.EmailNotificationEvent;
+import com.gpb.stores.bean.GameFollowEvent;
+import com.gpb.stores.util.Constants;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
-import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,12 +17,11 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @EnableKafka
@@ -33,74 +33,49 @@ public class KafkaProducerConfig {
 
 
     @Bean
-    public KafkaTemplate<Long, EmailEvent> emailEventKafkaTemplate() {
+    public KafkaTemplate<String, EmailNotificationEvent> emailEventKafkaTemplate() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
-        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
+        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(configs));
     }
 
     @Bean
-    public ProducerFactory<String, List<String>> searchResponsProducerFactory() {
+    public ConsumerFactory<String, GameFollowEvent> followConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return new DefaultKafkaProducerFactory<>(props);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, Constants.GPB_KAFKA_GROUP_ID);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+
+        return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> searchReplyListenerContainerFactory
-            (ConsumerFactory<String, String> consumerFactory,
-             KafkaTemplate<String, List<String>> kafkaTemplate) {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, GameFollowEvent> followReplyListenerContainerFactory
+            (ConsumerFactory<String, GameFollowEvent> consumerFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, GameFollowEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
-        factory.setReplyTemplate(kafkaTemplate);
         return factory;
     }
 
-
     @Bean
-    public KafkaTemplate<String, List<String>> searchReplyingKafkaTemplate(ProducerFactory<String, List<String>> producerFactory) {
-        return new KafkaTemplate<>(producerFactory);
-    }
-
-    @Bean
-    public ConsumerFactory<String, String> searchConsumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(searchConsumerConfigs());
-    }
-
-    @Bean
-    public Map<String, Object> searchConsumerConfigs() {
+    public ConsumerFactory<String, Long> gameEventConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "gpb");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, Constants.GPB_KAFKA_GROUP_ID);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        return props;
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class);
+
+        return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Long> followReplyListenerContainerFactory
+    public ConcurrentKafkaListenerContainerFactory<String, Long> gameEventReplyListenerContainerFactory
             (ConsumerFactory<String, Long> consumerFactory) {
         ConcurrentKafkaListenerContainerFactory<String, Long> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
         return factory;
-    }
-
-    @Bean
-    public ConsumerFactory<String, Long> followConsumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(followConsumerConfigs());
-    }
-
-    @Bean
-    public Map<String, Object> followConsumerConfigs() {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "gpb");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class);
-        return props;
     }
 }

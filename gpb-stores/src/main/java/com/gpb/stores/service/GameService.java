@@ -2,8 +2,14 @@ package com.gpb.stores.service;
 
 import com.gpb.stores.bean.game.Game;
 import com.gpb.stores.bean.game.GameInShop;
+import com.gpb.stores.bean.game.GameInfoDto;
+import com.gpb.stores.bean.game.GameListPageDto;
+import com.gpb.stores.bean.game.Genre;
+import com.gpb.stores.bean.game.ProductType;
 import com.gpb.stores.bean.user.BasicUser;
+import org.springframework.data.domain.Sort;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -18,6 +24,61 @@ public interface GameService {
      * @return game
      */
     Game getById(long gameId);
+
+    /**
+     * Get game by id
+     *
+     * @param gameId games id
+     * @param userId users id
+     * @return game
+     */
+    GameInfoDto getById(long gameId, long userId);
+
+    /**
+     * Get game by name
+     *
+     * @param name     games name
+     * @param pageSize amount of elements on page
+     * @param pageNum  page number
+     * @param sort     sort parameters
+     * @return game
+     */
+    GameListPageDto getByName(final String name, final int pageSize, final int pageNum, Sort sort);
+
+    /**
+     * Get game by url
+     *
+     * @param url game url from the store
+     * @return game
+     */
+    GameInfoDto getByUrl(String url);
+
+    /**
+     * Get games by genre
+     *
+     * @param genre          genres of the game
+     * @param typesToExclude types of the product to exclude from search
+     * @param pageSize       amount of elements on page
+     * @param pageNum        page number
+     * @param minPrice       minimal price
+     * @param maxPrice       maximal price
+     * @param sort           sort parameters
+     * @return list of games with all amount
+     */
+    GameListPageDto getByGenre(List<Genre> genre, List<ProductType> typesToExclude, int pageSize, int pageNum,
+                               BigDecimal minPrice, BigDecimal maxPrice,
+                               Sort sort);
+
+    /**
+     * Get games of user
+     *
+     * @param userId   user id
+     * @param pageSize amount of elements on page
+     * @param pageNum  page number
+     * @param sort     sort parameters
+     * @return list of user`s games with all amount
+     */
+    GameListPageDto getUserGames(long userId, int pageSize, int pageNum, Sort sort);
 
     /**
      * Get game for which subscribe users
@@ -43,12 +104,18 @@ public interface GameService {
     List<GameInShop> getUsersChangedGames(BasicUser user, List<GameInShop> changedGames);
 
     /**
-     * Add games to repository
+     * Remove game by id
      *
-     * @param games games to add
-     * @return list of games ids
+     * @param gameId games id
      */
-    List<Long> addGames(List<Game> games);
+    void removeGame(long gameId);
+
+    /**
+     * Remove game in store by id
+     *
+     * @param gameInStoreId games id
+     */
+    void removeGameInStore(long gameInStoreId);
 
     /**
      * Set isFollowed field in game by id

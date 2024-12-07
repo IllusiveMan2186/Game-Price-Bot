@@ -8,8 +8,6 @@ import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.configuration.MapperConfig;
 import com.gpb.web.configuration.UserAuthenticationProvider;
 import com.gpb.web.controller.UserController;
-import com.gpb.web.service.GameService;
-import com.gpb.web.service.GameStoresService;
 import com.gpb.web.service.UserActivationService;
 import com.gpb.web.service.UserService;
 import org.junit.jupiter.api.Test;
