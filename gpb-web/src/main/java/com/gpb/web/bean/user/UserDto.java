@@ -18,6 +18,8 @@ public class UserDto extends User {
 
     private String locale;
 
+    private long basicUserId;
+
     public UserDto() {
         super("", "", new ArrayList<>());
     }
@@ -60,6 +62,14 @@ public class UserDto extends User {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public long getBasicUserId() {
+        return basicUserId;
+    }
+
+    public void setBasicUserId(long basicUserId) {
+        this.basicUserId = basicUserId;
     }
 
     @Override

@@ -6,6 +6,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import jakarta.persistence.Entity;
@@ -28,6 +29,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 public class BasicUser {
 
     @Id

@@ -10,7 +10,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class UserControllerTest {
 
@@ -26,16 +28,29 @@ class UserControllerTest {
     }
 
     @Test
+    void createAccountLinker_ShouldReturnCreatedUserId() {
+        long userId = 1L;
+        String token = "token";
+        when(userService.getAccountLinkerToken(userId)).thenReturn(token);
+
+
+        String result = userController.createAccountLinkerToken(userId);
+
+
+        assertEquals(token, result);
+        verify(userService, times(1)).getAccountLinkerToken(userId);
+    }
+
+    @Test
     void createUser_ShouldReturnCreatedUserId() {
-        // Arrange
         BasicUser mockUser = new BasicUser();
         mockUser.setId(1L);
         when(userService.createUser()).thenReturn(mockUser);
 
-        // Act
+
         Long userId = userController.createUser();
 
-        // Assert
+
         assertEquals(1L, userId);
         verify(userService, times(1)).createUser();
     }

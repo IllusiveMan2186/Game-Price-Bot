@@ -1,11 +1,8 @@
 package com.gpb.web.unit.configuration;
 
-import com.gpb.web.bean.game.Game;
 import com.gpb.web.bean.game.GameDto;
-import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInStoreDto;
 import com.gpb.web.bean.game.GameInfoDto;
-import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.configuration.MapperConfig;

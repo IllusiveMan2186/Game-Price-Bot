@@ -22,6 +22,14 @@ public interface UserService {
     UserDto getUserById(long userId);
 
     /**
+     * Get user by basic user id
+     *
+     * @param basicUserId basic users id
+     * @return user
+     */
+    WebUser getUserBasicUserById(long basicUserId);
+
+    /**
      * Get user by email
      *
      * @param email users email

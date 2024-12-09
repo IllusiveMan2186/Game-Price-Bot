@@ -1,7 +1,7 @@
 package com.gpb.web.service.impl;
 
-import com.gpb.web.bean.EmailEvent;
-import com.gpb.web.bean.game.GameInShop;
+import com.gpb.web.bean.event.EmailEvent;
+import com.gpb.web.bean.event.EmailNotificationEvent;
 import com.gpb.web.bean.user.UserActivation;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.service.EmailService;
@@ -11,9 +11,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.gpb.web.util.Constants.EMAIL_SERVICE_TOPIC;
 
@@ -22,20 +22,18 @@ import static com.gpb.web.util.Constants.EMAIL_SERVICE_TOPIC;
 public class EmailServiceImpl implements EmailService {
 
 
-    private final KafkaTemplate<Long, EmailEvent> kafkaTemplate;
+    private final KafkaTemplate<String, EmailEvent> kafkaTemplate;
 
     @Value("${WEB_SERVICE_URL}")
     private String webServiceUrl;
 
-    public EmailServiceImpl(KafkaTemplate<Long, EmailEvent> kafkaTemplate) {
+    public EmailServiceImpl(KafkaTemplate<String, EmailEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
-    public void sendGameInfoChange(WebUser user, List<GameInShop> gameInShopList) {
-        Map<String, Object> variables = new LinkedHashMap<>();
-        variables.put("games", gameInShopList);
-        sendEmail(user.getEmail(), "Game info changes", variables, user.getLocale(),
+    public void sendGameInfoChange(WebUser user, EmailNotificationEvent emailNotificationEvent) {
+        sendEmail(user.getEmail(), "Game info changes", emailNotificationEvent.getVariables(), user.getLocale(),
                 "email-info-changed-template");
     }
 
@@ -52,6 +50,7 @@ public class EmailServiceImpl implements EmailService {
 
     private void sendEmail(String to, String subject, Map<String, Object> variables, Locale locale, String templateName) {
         log.info(String.format("Email event for recipient '%s' about '%s'", to, subject));
-        kafkaTemplate.send(EMAIL_SERVICE_TOPIC, 1L, new EmailEvent(to, subject, variables, locale, templateName));
+        String key = UUID.randomUUID().toString();
+        kafkaTemplate.send(EMAIL_SERVICE_TOPIC, key, new EmailEvent(to, subject, variables, locale, templateName));
     }
 }

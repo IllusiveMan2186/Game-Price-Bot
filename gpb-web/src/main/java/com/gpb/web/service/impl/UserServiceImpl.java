@@ -1,24 +1,26 @@
 package com.gpb.web.service.impl;
 
-import com.gpb.web.bean.user.BasicUser;
+import com.gpb.web.bean.event.AccountLinkerEvent;
 import com.gpb.web.bean.user.Credentials;
-import com.gpb.web.bean.user.WebMessengerConnector;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.exception.EmailAlreadyExistException;
 import com.gpb.web.exception.LoginFailedException;
-import com.gpb.web.exception.NotExistingMessengerActivationTokenException;
 import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.exception.UserDataNotChangedException;
 import com.gpb.web.exception.UserLockedException;
 import com.gpb.web.exception.UserNotActivatedException;
-import com.gpb.web.repository.WebMessengerConnectorRepository;
-import com.gpb.web.repository.UserRepository;
 import com.gpb.web.repository.WebUserRepository;
+import com.gpb.web.rest.RestTemplateHandler;
 import com.gpb.web.service.UserService;
+import com.gpb.web.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -36,7 +39,6 @@ public class UserServiceImpl implements UserService {
     private static final long LOCK_TIME_DURATION = 86_400_000; // 24 hours
     private static final String USER_ROLE = "ROLE_USER";
 
-    private final UserRepository userRepository;
 
     private final WebUserRepository webUserRepository;
 
@@ -44,21 +46,36 @@ public class UserServiceImpl implements UserService {
 
     private final ModelMapper modelMapper;
 
-    private final WebMessengerConnectorRepository messengerConnectorRepository;
+    private final KafkaTemplate<String, AccountLinkerEvent> userSyncAccountsEventKafkaTemplate;
 
-    public UserServiceImpl(UserRepository userRepository, WebUserRepository webUserRepository,
-                           PasswordEncoder passwordEncoder, ModelMapper modelMapper,
-                           WebMessengerConnectorRepository messengerConnectorRepository) {
-        this.userRepository = userRepository;
+    private final RestTemplateHandler restTemplateHandler;
+
+    public UserServiceImpl(WebUserRepository webUserRepository,
+                           PasswordEncoder passwordEncoder,
+                           ModelMapper modelMapper,
+                           KafkaTemplate<String, AccountLinkerEvent> userSyncAccountsEventKafkaTemplate,
+                           RestTemplateHandler restTemplateHandler,
+                           String gameServiceUrl) {
         this.webUserRepository = webUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
-        this.messengerConnectorRepository = messengerConnectorRepository;
+        this.userSyncAccountsEventKafkaTemplate = userSyncAccountsEventKafkaTemplate;
+        this.restTemplateHandler = restTemplateHandler;
+        this.gameServiceUrl = gameServiceUrl;
     }
+
+    @Value("${GAME_SERVICE_URL}")
+    private String gameServiceUrl;
+
 
     @Override
     public UserDto getUserById(long userId) {
         return modelMapper.map(getWebUserById(userId), UserDto.class);
+    }
+
+    @Override
+    public WebUser getUserBasicUserById(long basicUserId) {
+        return null;
     }
 
     @Override
@@ -85,11 +102,13 @@ public class UserServiceImpl implements UserService {
             log.info(String.format("User with email : '%s' already registered", userRegistration.getEmail()));
             throw new EmailAlreadyExistException();
         }
-        BasicUser basicUser = new BasicUser();
-        basicUser = userRepository.save(basicUser);
+
+        String url = gameServiceUrl + "/user";
+        Long createdBasicUserId = restTemplateHandler.executeRequest(url, HttpMethod.POST, null, Long.class);
+
         WebUser user = getWebUser(userRegistration);
         user.setActivated(false);
-        user.setBasicUser(basicUser);
+        user.setBasicUserId(createdBasicUserId);
         return webUserRepository.save(user);
     }
 
@@ -176,29 +195,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void connectTelegramUser(String token, long webUserId) {
-
-        WebMessengerConnector connector = messengerConnectorRepository.findById(token)
-                .orElseThrow(NotExistingMessengerActivationTokenException::new);
-        BasicUser user = userRepository.findById(connector.getUserId());
-        WebUser webUser = getWebUserById(webUserId);
-        BasicUser oldUSer = webUser.getBasicUser();
-
-        user.getGameList().addAll(oldUSer.getGameList());
-        user.getNotificationTypes().addAll(oldUSer.getNotificationTypes());
-        webUser.setBasicUser(user);
-
-        webUserRepository.save(webUser);
-        messengerConnectorRepository.deleteById(token);
-        userRepository.deleteById(oldUSer.getId());
+        String key = UUID.randomUUID().toString();
+        AccountLinkerEvent event = new AccountLinkerEvent(token, webUserId);
+        userSyncAccountsEventKafkaTemplate.send(Constants.USER_SYNCHRONIZATION_ACCOUNTS_TOPIC, key, event);
     }
 
     @Override
     public String getTelegramUserConnectorToken(long webUserId) {
-        WebUser webUser = getWebUserById(webUserId);
-        WebMessengerConnector connector = WebMessengerConnector.builder()
-                .userId(webUser.getBasicUser().getId())
-                .build();
-        return messengerConnectorRepository.save(connector).getToken();
+        String url = gameServiceUrl + "/user/token";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("BASIC-USER-ID", String.valueOf(webUserId));
+        return restTemplateHandler.executeRequest(url, HttpMethod.POST, headers, String.class);
     }
 
     @Override

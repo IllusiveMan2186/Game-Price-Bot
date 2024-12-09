@@ -1,4 +1,4 @@
-package com.gpb.stores.bean;
+package com.gpb.stores.bean.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

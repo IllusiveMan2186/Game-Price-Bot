@@ -13,6 +13,7 @@ public class Constants {
     public static final String GAME_UNFOLLOW_TOPIC = "gpb_game_unfollow";
     public static final String GAME_REMOVE_TOPIC = "gpb_game_remove";
     public static final String GAME_IN_STORE_REMOVE_TOPIC = "gpb_game_in_store_remove";
+    public static final String USER_SYNCHRONIZATION_ACCOUNTS_TOPIC = "gpb_user_synchronization_accounts";
     public static final String GPB_KAFKA_GROUP_ID = "gpb";
     public static final long SEARCH_REQUEST_WAITING_TIME = 23_000;
 }

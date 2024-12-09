@@ -1,9 +1,7 @@
 package com.gpb.stores.integration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gpb.stores.GpbStoresApplication;
-import com.gpb.stores.bean.EmailNotificationEvent;
+import com.gpb.stores.bean.event.EmailNotificationEvent;
 import com.gpb.stores.bean.game.Game;
 import com.gpb.stores.bean.game.GameInShop;
 import com.gpb.stores.bean.game.Genre;
@@ -17,7 +15,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;

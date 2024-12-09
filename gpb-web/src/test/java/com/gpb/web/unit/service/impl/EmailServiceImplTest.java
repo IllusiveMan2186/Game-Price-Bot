@@ -1,49 +1,85 @@
 package com.gpb.web.unit.service.impl;
 
-import com.gpb.web.bean.EmailEvent;
+import com.gpb.web.bean.event.EmailEvent;
+import com.gpb.web.bean.event.EmailNotificationEvent;
 import com.gpb.web.bean.user.UserActivation;
 import com.gpb.web.bean.user.WebUser;
-import com.gpb.web.service.EmailService;
 import com.gpb.web.service.impl.EmailServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.gpb.web.util.Constants.EMAIL_SERVICE_TOPIC;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 class EmailServiceImplTest {
 
-    KafkaTemplate<Long, EmailEvent> kafkaTemplate = mock(KafkaTemplate.class);
+    @Mock
+    private KafkaTemplate<String, EmailEvent> kafkaTemplate;
 
-    EmailService emailService = new EmailServiceImpl(kafkaTemplate);
+    @InjectMocks
+    private EmailServiceImpl emailService;
 
-    @Test
-    void sendGameInfoChangeSuccessfullyShouldSendEmailEvent() {
-        String to = "email";
-        WebUser user = WebUser.builder()
-                .email(to)
-                .locale(new Locale("ua")).build();
-
-        emailService.sendGameInfoChange(user, new ArrayList<>());
-
-        verify(kafkaTemplate).send(eq(EMAIL_SERVICE_TOPIC), eq(1L), any(EmailEvent.class));
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void sendEmailVerificationSuccessfullyShouldSendEmailEvent() {
-        String to = "email";
-        WebUser user = WebUser.builder()
-                .email(to)
-                .locale(new Locale("ua")).build();
+    void sendGameInfoChange_shouldSendEmailEvent() {
+        WebUser user = new WebUser();
+        user.setEmail("test@example.com");
+        user.setLocale(Locale.ENGLISH);
 
-        emailService.sendEmailVerification(new UserActivation("", user));
+        EmailNotificationEvent notificationEvent = new EmailNotificationEvent();
+        Map<String, Object> variables = new LinkedHashMap<>();
+        variables.put("key", "value");
+        notificationEvent.setVariables(variables);
 
-        verify(kafkaTemplate).send(eq(EMAIL_SERVICE_TOPIC), eq(1L), any(EmailEvent.class));
+
+        emailService.sendGameInfoChange(user, notificationEvent);
+
+
+        verify(kafkaTemplate).send(eq(EMAIL_SERVICE_TOPIC), any(String.class), any(EmailEvent.class));
+    }
+
+    @Test
+    void sendEmailVerification_shouldSendVerificationEmailEvent() throws Exception {
+        WebUser user = new WebUser();
+        user.setEmail("user@example.com");
+        user.setLocale(Locale.FRENCH);
+
+        UserActivation userActivation = new UserActivation();
+        userActivation.setToken("testToken");
+        userActivation.setUser(user);
+
+        Field webServiceUrlField = EmailServiceImpl.class.getDeclaredField("webServiceUrl");
+        webServiceUrlField.setAccessible(true);
+        webServiceUrlField.set(emailService, "http://localhost:8080");
+
+
+        emailService.sendEmailVerification(userActivation);
+
+
+        Map<String, Object> expectedVariables = new LinkedHashMap<>();
+        expectedVariables.put("url", "http://localhost:8080/email/testToken");
+
+        verify(kafkaTemplate).send(eq(EMAIL_SERVICE_TOPIC), any(String.class), argThat(emailEvent ->
+                emailEvent.getRecipient().equals("user@example.com") &&
+                        emailEvent.getSubject().equals("User verification") &&
+                        emailEvent.getVariables().equals(expectedVariables) &&
+                        emailEvent.getLocale().equals(Locale.FRENCH) &&
+                        emailEvent.getTemplateName().equals("email-user-verification")
+        ));
     }
 }

@@ -1,7 +1,5 @@
 package com.gpb.web.integration.game;
 
-import com.gpb.web.bean.game.Game;
-import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.game.ProductType;
 import com.gpb.web.bean.user.UserRegistration;

@@ -1,6 +1,5 @@
 package com.gpb.web.unit.controller;
 
-import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.UserActivation;
 import com.gpb.web.bean.user.UserRegistration;
 import com.gpb.web.bean.user.WebUser;

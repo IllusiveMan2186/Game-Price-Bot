@@ -3,19 +3,14 @@ package com.gpb.web.integration.game;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gpb.web.GpbWebApplication;
-import com.gpb.web.bean.EmailEvent;
-import com.gpb.web.bean.game.Game;
-import com.gpb.web.bean.game.GameInShop;
+import com.gpb.web.bean.event.EmailEvent;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.game.ProductType;
-import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;
-import com.gpb.web.repository.UserRepository;
 import com.gpb.web.repository.WebUserRepository;
 import com.gpb.web.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,9 +59,6 @@ public class BaseAuthenticationIntegration {
 
     @Autowired
     protected UserService userService;
-
-    @Autowired
-    protected UserRepository userRepository;
 
     @Autowired
     protected WebUserRepository webUserRepository;

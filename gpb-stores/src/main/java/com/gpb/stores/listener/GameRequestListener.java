@@ -1,6 +1,6 @@
 package com.gpb.stores.listener;
 
-import com.gpb.stores.bean.GameFollowEvent;
+import com.gpb.stores.bean.event.GameFollowEvent;
 import com.gpb.stores.bean.game.Game;
 import com.gpb.stores.service.GameService;
 import com.gpb.stores.service.GameStoresService;

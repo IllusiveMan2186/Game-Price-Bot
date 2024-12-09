@@ -1,13 +1,9 @@
 package com.gpb.web.unit.service.impl;
 
-import com.gpb.web.bean.game.Game;
-import com.gpb.web.bean.game.GameInShop;
-import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.Credentials;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.UserNotificationType;
 import com.gpb.web.bean.user.UserRegistration;
-import com.gpb.web.bean.user.WebMessengerConnector;
 import com.gpb.web.bean.user.WebUser;
 import com.gpb.web.configuration.MapperConfig;
 import com.gpb.web.exception.EmailAlreadyExistException;
@@ -16,8 +12,6 @@ import com.gpb.web.exception.NotFoundException;
 import com.gpb.web.exception.UserDataNotChangedException;
 import com.gpb.web.exception.UserLockedException;
 import com.gpb.web.exception.UserNotActivatedException;
-import com.gpb.web.repository.UserRepository;
-import com.gpb.web.repository.WebMessengerConnectorRepository;
 import com.gpb.web.repository.WebUserRepository;
 import com.gpb.web.service.UserService;
 import com.gpb.web.service.impl.UserServiceImpl;

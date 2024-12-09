@@ -1,9 +1,12 @@
-package com.gpb.web.bean.user;
+package com.gpb.stores.bean.user;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,11 +19,14 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class WebMessengerConnector {
+public class AccountLinker {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String token;
 
-    private long userId;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn
+    private BasicUser user;
 }

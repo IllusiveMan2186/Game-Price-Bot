@@ -1,7 +1,5 @@
 package com.gpb.web.unit.controller;
 
-import com.gpb.web.bean.game.Game;
-import com.gpb.web.bean.user.BasicUser;
 import com.gpb.web.bean.user.PasswordChangeDto;
 import com.gpb.web.bean.user.UserDto;
 import com.gpb.web.bean.user.WebUser;

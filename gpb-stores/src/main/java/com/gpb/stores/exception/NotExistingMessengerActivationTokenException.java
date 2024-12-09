@@ -1,4 +1,4 @@
-package com.gpb.web.exception;
+package com.gpb.stores.exception;
 
 public class NotExistingMessengerActivationTokenException extends RuntimeException{
 

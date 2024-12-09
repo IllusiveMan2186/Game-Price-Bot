@@ -1,12 +1,9 @@
 package com.gpb.web.service;
 
-import com.gpb.web.bean.game.Game;
-import com.gpb.web.bean.game.GameInShop;
 import com.gpb.web.bean.game.GameInfoDto;
 import com.gpb.web.bean.game.GameListPageDto;
 import com.gpb.web.bean.game.Genre;
 import com.gpb.web.bean.game.ProductType;
-import com.gpb.web.bean.user.BasicUser;
 import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
@@ -73,29 +70,6 @@ public interface GameService {
     GameListPageDto getUserGames(long userId, int pageSize, int pageNum, Sort sort);
 
     /**
-     * Get game for which subscribe users
-     *
-     * @return game for which subscribe users
-     */
-    List<GameInShop> getSubscribedGames();
-
-    /**
-     * Save game info changes
-     *
-     * @param changedGames game that change info
-     */
-    void changeInfo(List<GameInShop> changedGames);
-
-    /**
-     * Get changed games for that user subscribed on
-     *
-     * @param user         user
-     * @param changedGames list of all changed games
-     * @return changed games for that user subscribed on
-     */
-    List<GameInShop> getUsersChangedGames(BasicUser user, List<GameInShop> changedGames);
-
-    /**
      * Remove game by id
      *
      * @param gameId games id
@@ -115,7 +89,6 @@ public interface GameService {
      * @param gameId   games id
      * @param userId   user id
      * @param isFollow is program would follow this game for information changing
-     * @return changed game
      */
-    Game setFollowGameOption(long gameId, long userId, boolean isFollow);
+    void setFollowGameOption(long gameId, long userId, boolean isFollow);
 }

@@ -46,3 +46,10 @@ CREATE TABLE IF NOT EXISTS user_game (
     CONSTRAINT FK_user_to_game FOREIGN KEY (user_id) REFERENCES basic_user,
     CONSTRAINT FK_game_to_user FOREIGN KEY (game_id) REFERENCES game
 );
+
+CREATE TABLE IF NOT EXISTS account_linker (
+    token VARCHAR(255) NOT NULL,
+    user_id BIGINT NOT NULL,
+    PRIMARY KEY (token),
+    CONSTRAINT FK_connector_to_user FOREIGN KEY (user_id) REFERENCES basic_user
+);

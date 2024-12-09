@@ -3,7 +3,6 @@ package com.gpb.web.bean.user;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,8 +28,7 @@ public class WebUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne
-    private BasicUser basicUser;
+    private long basicUserId;
 
     private String email;
 

@@ -1,6 +1,6 @@
 package com.gpb.stores.service.impl.notification;
 
-import com.gpb.stores.bean.EmailNotificationEvent;
+import com.gpb.stores.bean.event.EmailNotificationEvent;
 import com.gpb.stores.bean.game.GameInShop;
 import com.gpb.stores.bean.user.BasicUser;
 import com.gpb.stores.service.NotificationService;
