@@ -1,19 +1,19 @@
 package com.gpb.telegram.service.impl;
 
-import com.gpb.telegram.bean.Game;
-import com.gpb.telegram.exception.NotFoundException;
-import com.gpb.telegram.repository.GameRepository;
+import com.gpb.telegram.bean.event.GameFollowEvent;
+import com.gpb.telegram.bean.game.GameInfoDto;
+import com.gpb.telegram.bean.game.GameListPageDto;
+import com.gpb.telegram.rest.RestTemplateHandler;
 import com.gpb.telegram.service.GameService;
-import com.gpb.telegram.service.GameStoresService;
 import com.gpb.telegram.util.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 
 @Slf4j
@@ -21,44 +21,39 @@ import java.util.Optional;
 @AllArgsConstructor
 public class GameServiceImpl implements GameService {
 
-    private final GameRepository gameRepository;
-    private final GameStoresService gameStoresService;
+    private final RestTemplateHandler restTemplateHandler;
+    private final KafkaTemplate<String, GameFollowEvent> gameFollowEventKafkaTemplate;
 
     @Override
-    public Game getById(long gameId) {
-        log.info(String.format("Get game by id : %s", gameId));
-
-        final Optional<Game> game = gameRepository.findById(gameId);
-        if (game.isEmpty()) {
-            log.info(String.format("Game with id : '%s' not found", gameId));
-            throw new NotFoundException("app.game.error.id.not.found");
-        }
-        return game.get();
-    }
-
-    @Override
-    public List<Game> getByName(final String name, final int pageNum) {
-
-        log.info(String.format("Get game by name : %s", name));
-        PageRequest pageRequest = PageRequest
-                .of(pageNum - 1, Constants.GAMES_AMOUNT_IN_LIST, Sort.by(Sort.Direction.ASC, "name"));
-
-        List<Game> games = gameRepository.findByNameContainingIgnoreCase(name, pageRequest);
-        if (games.isEmpty()) {
-            List<Long> createdGamesIds = gameStoresService.findGameByName(name);
-            games = gameRepository.findByIdIn(createdGamesIds, pageRequest);
+    public GameInfoDto getById(long gameId, long userId) {
+        log.info("Get game by id '{}' and '{}'", gameId, userId);
+        String url = "/game/" + gameId;
+        HttpHeaders headers = new HttpHeaders();
+        if (userId > 0) {
+            headers.add("BASIC-USER-ID", String.valueOf(userId));
         }
 
-        return games;
+        return restTemplateHandler.executeRequest(url, HttpMethod.GET, headers, GameInfoDto.class);
     }
 
     @Override
-    public long getGameAmountByName(String name) {
-        return gameRepository.countAllByNameContainingIgnoreCase(name);
+    public GameListPageDto getByName(final String name, final int pageNum) {
+
+        log.info("Get game by name : {}", name);
+        String url = "/game/name/" + name + "?pageSize=" + Constants.GAMES_AMOUNT_IN_LIST + "&pageNum=" + pageNum
+                + "&sortBy=name-ASC";
+        return restTemplateHandler.executeRequest(url, HttpMethod.GET, null, GameListPageDto.class);
     }
 
     @Override
-    public boolean isSubscribed(long gameId, long userId) {
-        return gameRepository.existsByIdAndUserList_Id(gameId, userId);
+    public void setFollowGameOption(long gameId, long userId, boolean isFollow) {
+        String key = UUID.randomUUID().toString();
+        if (isFollow) {
+            log.info("Send game follow request for game {} for user {}", userId, gameId);
+            gameFollowEventKafkaTemplate.send(Constants.GAME_FOLLOW_TOPIC, key, new GameFollowEvent(userId, gameId));
+        } else {
+            log.info("Send game unfollow request for game {} for user {}", userId, gameId);
+            gameFollowEventKafkaTemplate.send(Constants.GAME_UNFOLLOW_TOPIC, key, new GameFollowEvent(userId, gameId));
+        }
     }
 }

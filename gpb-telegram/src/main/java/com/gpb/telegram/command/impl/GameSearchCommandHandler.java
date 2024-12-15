@@ -1,8 +1,8 @@
 package com.gpb.telegram.command.impl;
 
-import com.gpb.telegram.bean.Game;
 import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
+import com.gpb.telegram.bean.game.GameListPageDto;
 import com.gpb.telegram.command.CommandHandler;
 import com.gpb.telegram.filter.FilterChainMarker;
 import com.gpb.telegram.mapper.GameListMapper;
@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Locale;
 
 @Component("search")
@@ -36,17 +35,18 @@ public class GameSearchCommandHandler implements CommandHandler {
         String gameName = request.getUpdate().getMessage().getText().replace("/search ", "");
         int pageNum = 1;
 
-        List<Game> games = gameService.getByName(gameName, pageNum);
+        GameListPageDto page = gameService.getByName(gameName, pageNum);
 
-        if (games.isEmpty()) {
+        if (page.getGames().isEmpty()) {
             String errorMessage = String
                     .format(messageSource.getMessage("game.search.not.found.game", null, request.getLocale()), gameName);
             return new TelegramResponse(request.getChatId(), errorMessage);
         }
 
-        long gameAmount = gameService.getGameAmountByName(gameName);
-
-        return new TelegramResponse(gameListMapper.gameSearchListToTelegramPage(games, request, gameAmount, pageNum,
+        return new TelegramResponse(gameListMapper.gameSearchListToTelegramPage(page.getGames(),
+                request,
+                page.getElementAmount(),
+                pageNum,
                 gameName));
     }
 }

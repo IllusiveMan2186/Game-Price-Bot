@@ -1,14 +1,12 @@
 package com.gpb.telegram.bean;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -32,6 +30,5 @@ public class TelegramUser {
 
     private long telegramId;
 
-    @OneToOne
-    private BasicUser basicUser;
+    private long basicUserId;
 }

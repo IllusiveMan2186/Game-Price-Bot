@@ -1,0 +1,66 @@
+package com.gpb.backend.integration.game;
+
+import com.gpb.backend.bean.user.Credentials;
+import com.gpb.backend.bean.user.UserRegistration;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpMethod;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+class AuthenticationControllerIntegrationTest extends BaseAuthenticationIntegration {
+
+    @Test
+    void createUserWithAlreadyRegisteredEmailShouldReturnErrorMessage() throws Exception {
+        UserRegistration userRegistration = UserRegistration.builder()
+                .email(userList.get(0).getEmail())
+                .password(userList.get(0).getPassword().toCharArray())
+                .locale(userList.get(0).getLocale().getLanguage())
+                .build();
+
+
+        mockMvc.perform(post("/registration")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectToJson(userRegistration)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("app.user.error.email.already.exists"));
+    }
+
+    //@Test TODO
+    void createUserSuccessfullyShouldReturnUser() throws Exception {
+        when(restTemplateHandler
+                .executeRequest(GAME_SERVICE_URL + "/user", HttpMethod.POST, null, Long.class))
+                .thenReturn(1L);
+        UserRegistration userRegistration = UserRegistration.builder()
+                .email("email2")
+                .password("password".toCharArray())
+                .locale("ua")
+                .build();
+
+        mockMvc.perform(post("/registration")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectToJson(userRegistration)))
+                .andDo(print())
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void loginSuccessfullyShouldSetUserInfoInSession() throws Exception {
+        mockMvc.perform(post("/login")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectToJson(new Credentials(userList.get(0).getEmail(), DECODE_PASSWORD.toCharArray()))))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(userList.get(0).getId()))
+                .andExpect(jsonPath("$.email").value(userList.get(0).getEmail()));
+        ;
+    }
+}

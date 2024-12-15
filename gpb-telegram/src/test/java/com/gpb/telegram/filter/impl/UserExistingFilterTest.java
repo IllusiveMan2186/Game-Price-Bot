@@ -4,21 +4,27 @@ import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramUser;
 import com.gpb.telegram.service.TelegramUserService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.Locale;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 class UserExistingFilterTest {
 
-    TelegramUserService telegramUserService = mock(TelegramUserService.class);
-
-    UserExistingFilter filter = new UserExistingFilter(telegramUserService);
+    @Mock
+    TelegramUserService telegramUserService;
+    @InjectMocks
+    UserExistingFilter filter;
 
     @Test
     void testApply_whenUserIsRegistered_shouldNotCreateNewUser() {

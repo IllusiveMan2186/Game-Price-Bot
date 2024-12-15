@@ -2,27 +2,33 @@ package com.gpb.telegram.command.impl;
 
 import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
-import com.gpb.telegram.service.TelegramUserService;
+import com.gpb.telegram.bean.TelegramUser;
+import com.gpb.telegram.service.UserLinkerService;
 import com.gpb.telegram.util.UpdateCreator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class SynchronizeToWebUserCommandHandlerTest {
 
-    TelegramUserService telegramUserService = mock(TelegramUserService.class);
-    MessageSource messageSource = mock(MessageSource.class);
-    SynchronizeToWebUserCommandHandler controller = new SynchronizeToWebUserCommandHandler(messageSource, telegramUserService);
+    @Mock
+    MessageSource messageSource;
+    @Mock
+    UserLinkerService userLinkerService;
+    @InjectMocks
+    SynchronizeToWebUserCommandHandler controller;
 
     @Test
     void testGetDescription_shouldReturnDescription() {
@@ -43,15 +49,15 @@ class SynchronizeToWebUserCommandHandlerTest {
                 .thenReturn("messages");
 
         String token = "mockToken";
-        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
-        when(telegramUserService.getWebUserConnectorToken(userId)).thenReturn(token);
+        TelegramUser user = TelegramUser.builder().basicUserId(123456L).build();
+        TelegramRequest request = TelegramRequest.builder().update(update).user(user).locale(locale).build();
 
 
         TelegramResponse response = controller.apply(request);
 
 
         SendMessage sendMessage = (SendMessage) response.getMessages().get(0);
-        verify(telegramUserService).synchronizeTelegramUser(token, userId);
+        verify(userLinkerService).linkAccounts(token, userId);
         assertEquals("123", sendMessage.getChatId());
         assertEquals("messages", sendMessage.getText());
     }

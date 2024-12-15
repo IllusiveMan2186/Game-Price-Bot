@@ -18,8 +18,10 @@ public class EmailKafkaListener {
         this.emailService = emailService;
     }
 
-    @KafkaListener(topics = "gpb_email_event", groupId = "gpb")
-    public void emailEventListen(ConsumerRecord<Long, EmailEvent> eventRecord) {
+    @KafkaListener(topics = "gpb_email_event",
+            groupId = "gpb",
+            containerFactory = "emailEventListener")
+    public void emailEventListen(ConsumerRecord<String, EmailEvent> eventRecord) {
         EmailEvent emailEvent = eventRecord.value();
         log.info(String.format("Email event '%s' for recipient '%s' about '%s'", eventRecord.key(),
                 emailEvent.getRecipient(), emailEvent.getSubject()));

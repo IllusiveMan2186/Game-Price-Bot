@@ -31,22 +31,6 @@ public interface TelegramUserService {
     TelegramUser createTelegramUser(TelegramUser newUser);
 
     /**
-     * Connect web user to current telegram user
-     *
-     * @param token  token that connected to telegram user
-     * @param telegramId telegram user id
-     */
-    void synchronizeTelegramUser(String token, long telegramId);
-
-    /**
-     * Get token for connect with telegram user
-     *
-     * @param telegramId telegram user id
-     * @return token of connector
-     */
-    String getWebUserConnectorToken(long telegramId);
-
-    /**
      * Change user locale
      *
      * @param telegramId user id in telegram
@@ -62,20 +46,4 @@ public interface TelegramUserService {
      * @return users locale
      */
     Locale getUserLocale(long telegramId);
-
-    /**
-     * Add game to user list of games
-     *
-     * @param userId users id
-     * @param gameId games id
-     */
-    void subscribeToGame(long userId, long gameId);
-
-    /**
-     * Add game to user list of games
-     *
-     * @param userId users id
-     * @param gameId games id
-     */
-    void unsubscribeFromGame(long userId, long gameId);
 }

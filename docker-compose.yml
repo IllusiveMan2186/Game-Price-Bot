@@ -45,16 +45,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  web:
-    container_name: gpb_web
+  backend:
+    container_name: gpb_backend
     ports:
       - 8080:8080
     depends_on:
       - kafka
       - postgres
+      - game
     networks:
       - gpb-network
-    build: ./gpb-web
+    build: ./gpb-backend
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
@@ -63,14 +64,16 @@ services:
       - POSTGRES_DB_URL=${POSTGRES_DB_URL}
       - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
-      - WEB_SERVICE_URL=http://localhost:8080
+      - BACKEND_SERVICE_URL=${BACKEND_SERVICE_URL}
+      - GAME_SERVICE_URL=${GAME_SERVICE_URL}
+      - API_KEY=${API_KEY}
     volumes:
       - common_data:/image_folder
 
   telegram:
     container_name: gpb_telegram
     ports:
-      - 8081:8081
+      - 8082:8082
     depends_on:
       - kafka
       - postgres
@@ -84,6 +87,8 @@ services:
       - POSTGRES_DB_URL=${POSTGRES_DB_URL}
       - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
+      - GAME_SERVICE_URL=${GAME_SERVICE_URL}
+      - API_KEY=${API_KEY}
     volumes:
       - common_data:/image_folder
 
@@ -95,17 +100,17 @@ services:
     networks:
       - gpb-network
     environment:
-      - KAFKA_GROUP_ID=email-event
       - KAFKA_SERVER_URL=kafka:9093
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - MAIL_USERNAME=${MAIL_USERNAME}
-      - WEB_SERVICE_URL=http://localhost:8080
 
-  stores:
-    container_name: gpb_stores
+  game:
+    container_name: gpb_game
+    ports:
+      - 8081:8081
     depends_on:
       - kafka
-    build: ./gpb-stores
+    build: ./gpb-game
     networks:
       - gpb-network
     environment:
@@ -116,6 +121,7 @@ services:
       - POSTGRES_DB_URL=${POSTGRES_DB_URL}
       - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
+      - API_KEY=${API_KEY}
     volumes:
       - common_data:/image_folder
       

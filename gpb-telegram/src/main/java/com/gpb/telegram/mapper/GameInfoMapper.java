@@ -1,9 +1,8 @@
 package com.gpb.telegram.mapper;
 
-import com.gpb.telegram.bean.Game;
-import com.gpb.telegram.bean.GameInShop;
 import com.gpb.telegram.bean.TelegramRequest;
-import com.gpb.telegram.bean.TelegramUser;
+import com.gpb.telegram.bean.game.GameInStoreDto;
+import com.gpb.telegram.bean.game.GameInfoDto;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -29,9 +28,9 @@ public class GameInfoMapper {
     private final GameListMapper gameListMapper;
 
 
-    public List<PartialBotApiMethod> gameInfoToTelegramPage(Game game, TelegramRequest request) {
+    public List<PartialBotApiMethod> gameInfoToTelegramPage(GameInfoDto game, TelegramRequest request) {
         List<PartialBotApiMethod> messages = gameListMapper
-                .gameSearchListToTelegramPage(Collections.singletonList(game),request , 1, 1, game.getName());
+                .gameSearchListToTelegramPage(Collections.singletonList(game), request, 1, 1, game.getName());
         messages.addAll(game.getGamesInShop()
                 .stream()
                 .map(gameInShop -> getGamesInShop(request.getChatId(), gameInShop, request.getLocale()))
@@ -39,7 +38,7 @@ public class GameInfoMapper {
         return messages;
     }
 
-    private SendMessage getGamesInShop(String chatId, GameInShop game, Locale locale) {
+    private SendMessage getGamesInShop(String chatId, GameInStoreDto game, Locale locale) {
         return SendMessage.builder()
                 .chatId(chatId)
                 .text(String.format(GAME_INFO_FORM, getHostnameFromUrl(game.getUrl()),
@@ -49,7 +48,7 @@ public class GameInfoMapper {
                 .build();
     }
 
-    private String getPrice(GameInShop game) {
+    private String getPrice(GameInStoreDto game) {
         return game.getDiscount() > 0
                 ? String.format(GAME_PRICE_WITH_DISCOUNT_FORM, game.getPrice(), game.getDiscount(), game.getDiscountPrice())
                 : game.getPrice().toString() + " ₴";

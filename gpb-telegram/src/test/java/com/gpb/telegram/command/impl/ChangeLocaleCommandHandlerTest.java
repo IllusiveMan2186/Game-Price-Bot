@@ -5,25 +5,28 @@ import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.service.TelegramUserService;
 import com.gpb.telegram.util.UpdateCreator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class ChangeLocaleCommandHandlerTest {
 
-    TelegramUserService telegramUserService = mock(TelegramUserService.class);
-
-    MessageSource messageSource = mock(MessageSource.class);
-
-    ChangeLocaleCommandHandler controller = new ChangeLocaleCommandHandler(messageSource, telegramUserService);
+    @Mock
+    TelegramUserService telegramUserService;
+    @Mock
+    MessageSource messageSource;
+    @InjectMocks
+    ChangeLocaleCommandHandler controller;
 
     @Test
     void testGetDescription_shouldReturnDescription() {
