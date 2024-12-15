@@ -1,12 +1,10 @@
 package com.gpb.telegram.mapper;
 
-import com.gpb.telegram.bean.Game;
-import com.gpb.telegram.bean.GameInShop;
-import com.gpb.telegram.bean.Genre;
 import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramUser;
+import com.gpb.telegram.bean.game.GameDto;
+import com.gpb.telegram.bean.game.Genre;
 import com.gpb.telegram.configuration.ResourceConfiguration;
-import com.gpb.telegram.service.GameService;
 import com.gpb.telegram.util.Constants;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -18,10 +16,8 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -33,14 +29,15 @@ public class GameListMapper {
     private static final String GAME_INFO_FORM = "%s" + System.lineSeparator() + "%s" + System.lineSeparator()
             + "%s" + "%s - %s ₴";
 
-    private final GameService gameService;
     private final MessageSource messageSource;
     private final TelegramKeyboardMapper telegramKeyboardMapper;
     private final ResourceConfiguration resourceConfiguration;
 
 
-    public List<PartialBotApiMethod> gameSearchListToTelegramPage(List<Game> games, TelegramRequest request,
-                                                                  long gameAmount, int pageNum,
+    public List<PartialBotApiMethod> gameSearchListToTelegramPage(List<GameDto> games,
+                                                                  TelegramRequest request,
+                                                                  long gameAmount,
+                                                                  int pageNum,
                                                                   String gameName) {
         List<PartialBotApiMethod> messages = new ArrayList<>();
         games.forEach(game -> messages.add(getPhotoMessage(request, game)));
@@ -50,12 +47,12 @@ public class GameListMapper {
         return messages;
     }
 
-    private SendPhoto getPhotoMessage(TelegramRequest request, Game game) {
+    private SendPhoto getPhotoMessage(TelegramRequest request, GameDto game) {
         return SendPhoto.builder()
                 .chatId(request.getChatId())
                 .photo(getGameImage(game.getName()))
                 .caption(mapGameToTelegramMessage(game, request.getLocale()))
-                .replyMarkup(getKeyboardForGame(request.getUser(), game.getId(), request.getLocale()))
+                .replyMarkup(getKeyboardForGame(request.getUser(), game, request.getLocale()))
                 .build();
     }
 
@@ -64,18 +61,9 @@ public class GameListMapper {
         return new InputFile(new File(filePath));
     }
 
-    private String mapGameToTelegramMessage(Game game, Locale locale) {
-        BigDecimal minPrice = game.getGamesInShop().stream()
-                .map(GameInShop::getDiscountPrice)
-                .max(Comparator.naturalOrder())
-                .orElse(null);
-        BigDecimal maxPrice = game.getGamesInShop().stream()
-                .map(GameInShop::getDiscountPrice)
-                .min(Comparator.naturalOrder())
-                .orElse(null);
-        boolean isAvailable = game.getGamesInShop().stream().anyMatch(GameInShop::isAvailable);
-        return String.format(GAME_INFO_FORM, game.getName(), getIsAvailableForm(isAvailable, locale),
-                getGenreForm(game.getGenres(), locale), minPrice, maxPrice);
+    private String mapGameToTelegramMessage(GameDto game, Locale locale) {
+        return String.format(GAME_INFO_FORM, game.getName(), getIsAvailableForm(game.isAvailable(), locale),
+                getGenreForm(game.getGenres(), locale), game.getMinPrice(), game.getMaxPrice());
     }
 
     public String getIsAvailableForm(boolean isAvailable, Locale locale) {
@@ -118,19 +106,19 @@ public class GameListMapper {
                 .replyMarkup(inlineKeyboardMarkup).build();
     }
 
-    private InlineKeyboardMarkup getKeyboardForGame(TelegramUser telegramUser, long gameId, Locale locale) {
+    private InlineKeyboardMarkup getKeyboardForGame(TelegramUser telegramUser, GameDto game, Locale locale) {
         List<List<TelegramButton>> settingList = new ArrayList<>();
         settingList.add(Collections.singletonList(
                 TelegramButton.builder()
                         .textCode("game.more.info.button")
-                        .callBackData(String.format("/gameInfo %s", gameId))
+                        .callBackData(String.format("/gameInfo %s", game.getId()))
                         .locale(locale).build()));
 
         String textCodeForSubscribeSection = "game.subscribe.button";
-        String callBackDataForSubscribeSection = String.format("/subscribe %s", gameId);
-        if (telegramUser != null && gameService.isSubscribed(gameId, telegramUser.getBasicUser().getId())) {
+        String callBackDataForSubscribeSection = String.format("/subscribe %s", game.getId());
+        if (telegramUser != null && game.isUserSubscribed()) {
             textCodeForSubscribeSection = "game.unsubscribe.button";
-            callBackDataForSubscribeSection = String.format("/unsubscribe %s", gameId);
+            callBackDataForSubscribeSection = String.format("/unsubscribe %s", game.getId());
         }
 
         settingList.add(Collections.singletonList(

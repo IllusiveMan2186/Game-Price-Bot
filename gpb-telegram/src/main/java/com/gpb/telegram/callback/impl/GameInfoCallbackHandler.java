@@ -1,8 +1,8 @@
 package com.gpb.telegram.callback.impl;
 
-import com.gpb.telegram.bean.Game;
 import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
+import com.gpb.telegram.bean.game.GameInfoDto;
 import com.gpb.telegram.callback.CallbackHandler;
 import com.gpb.telegram.filter.FilterChainMarker;
 import com.gpb.telegram.mapper.GameInfoMapper;
@@ -25,7 +25,7 @@ public class GameInfoCallbackHandler implements CallbackHandler {
     @Transactional
     public TelegramResponse apply(TelegramRequest request) {
 
-        Game game = gameService.getById(request.getLongArgument(1));
+        GameInfoDto game = gameService.getById(request.getLongArgument(1), request.getUserBasicId());
 
         return new TelegramResponse(gameInfoMapper.gameInfoToTelegramPage(game, request));
     }

@@ -4,10 +4,15 @@ import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.command.CommandHandler;
 import com.gpb.telegram.util.UpdateCreator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Collections;
@@ -15,16 +20,24 @@ import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
+@ExtendWith(MockitoExtension.class)
 class HelpCommandHandlerTest {
 
-    MessageSource messageSource = mock(MessageSource.class);
-    Map<String, CommandHandler> controllerMap
-            = Collections.singletonMap("synchronizeToWeb", new SynchronizeToWebUserCommandHandler(messageSource, null));
-    HelpCommandHandler controller = new HelpCommandHandler(messageSource, controllerMap);
+    @Mock
+    MessageSource messageSource;
+    Map<String, CommandHandler> controllerMap;
+
+    @InjectMocks
+    HelpCommandHandler controller;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        controllerMap = Collections.singletonMap("synchronizeToWeb", new SynchronizeToWebUserCommandHandler(messageSource, null));
+        controller = new HelpCommandHandler(messageSource, controllerMap);
+    }
 
     @Test
     void testGetDescription_shouldReturnDescription() {

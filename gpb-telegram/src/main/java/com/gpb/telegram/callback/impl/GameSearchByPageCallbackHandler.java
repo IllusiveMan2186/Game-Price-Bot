@@ -1,8 +1,8 @@
 package com.gpb.telegram.callback.impl;
 
-import com.gpb.telegram.bean.Game;
 import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
+import com.gpb.telegram.bean.game.GameListPageDto;
 import com.gpb.telegram.callback.CallbackHandler;
 import com.gpb.telegram.filter.FilterChainMarker;
 import com.gpb.telegram.mapper.GameListMapper;
@@ -12,8 +12,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component("searchByPage")
 @RequiredArgsConstructor
@@ -31,17 +29,14 @@ public class GameSearchByPageCallbackHandler implements CallbackHandler {
         String gameName = request.getUpdate().getCallbackQuery().getData().replaceAll("/searchByPage \\d+ ", "");
         int pageNum = request.getIntArgument(1);
 
-        List<Game> games = gameService.getByName(gameName, pageNum);
+        GameListPageDto page = gameService.getByName(gameName, pageNum);
 
-        if (games.isEmpty()) {
+        if (page.getElementAmount() < 1) {
             String errorMessage = String
                     .format(messageSource.getMessage("game.search.not.found.game", null, request.getLocale()), gameName);
             return new TelegramResponse(request, errorMessage);
         }
 
-        long gameAmount = gameService.getGameAmountByName(gameName);
-
-        return new TelegramResponse(gameListMapper.gameSearchListToTelegramPage(games, request, gameAmount, pageNum,
-                gameName));
+        return new TelegramResponse(gameListMapper.gameSearchListToTelegramPage(page.getGames(), request, page.getElementAmount(), pageNum, gameName));
     }
 }

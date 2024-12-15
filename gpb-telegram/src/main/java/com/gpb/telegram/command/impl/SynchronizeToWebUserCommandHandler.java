@@ -3,7 +3,9 @@ package com.gpb.telegram.command.impl;
 import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.command.CommandHandler;
-import com.gpb.telegram.service.TelegramUserService;
+import com.gpb.telegram.filter.FilterChainMarker;
+import com.gpb.telegram.service.UserLinkerService;
+import com.gpb.telegram.util.Constants;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -12,10 +14,11 @@ import java.util.Locale;
 
 @Component("synchronizeToWeb")
 @AllArgsConstructor
+@FilterChainMarker(Constants.USER_EXISTING_FILTER)
 public class SynchronizeToWebUserCommandHandler implements CommandHandler {
 
     private final MessageSource messageSource;
-    private final TelegramUserService telegramUserService;
+    private final UserLinkerService userLinkerService;
 
     @Override
     public String getDescription(Locale locale) {
@@ -26,7 +29,7 @@ public class SynchronizeToWebUserCommandHandler implements CommandHandler {
     public TelegramResponse apply(TelegramRequest request) {
         String token = request.getArgument(1);
 
-        telegramUserService.synchronizeTelegramUser(token, request.getUserId());
+        userLinkerService.linkAccounts(token, request.getUserBasicId());
 
         return new TelegramResponse(request,
                 messageSource.getMessage("accounts.synchronization.token.connected.message", null,

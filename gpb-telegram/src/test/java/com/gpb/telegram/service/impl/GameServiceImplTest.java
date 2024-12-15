@@ -1,120 +1,92 @@
 package com.gpb.telegram.service.impl;
 
-import com.gpb.telegram.bean.Game;
-import com.gpb.telegram.bean.GameInShop;
-import com.gpb.telegram.exception.NotFoundException;
-import com.gpb.telegram.repository.GameRepository;
-import com.gpb.telegram.service.GameService;
-import com.gpb.telegram.service.GameStoresService;
+import com.gpb.telegram.bean.event.GameFollowEvent;
+import com.gpb.telegram.bean.game.GameInfoDto;
+import com.gpb.telegram.bean.game.GameListPageDto;
+import com.gpb.telegram.rest.RestTemplateHandler;
+import com.gpb.telegram.util.Constants;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class GameServiceImplTest {
 
-    GameRepository repository = mock(GameRepository.class);
-    GameStoresService gameStoresService = mock(GameStoresService.class);
+    @Mock
+    private KafkaTemplate<String, GameFollowEvent> gameFollowEventKafkaTemplate;
 
-    GameService gameService = new GameServiceImpl(repository, gameStoresService);
+    @Mock
+    private RestTemplateHandler restTemplateHandler;
 
-    private final GameInShop gameInShop = GameInShop.builder()
-            .price(new BigDecimal(2))
-            .discountPrice(new BigDecimal(1))
-            .build();
-
-
-    private final Game game = Game.builder().gamesInShop(Collections.singleton(gameInShop)).build();
+    @InjectMocks
+    private GameServiceImpl gameService;
 
     @Test
-    void getGameByIdSuccessfullyShouldReturnGame() {
-        long id = 1;
-        game.setUserList(new ArrayList<>());
-        when(repository.findById(id)).thenReturn(Optional.of(game));
+    void testGetById() {
+        long gameId = 1L;
+        long userId = 123L;
+        GameInfoDto mockResponse = new GameInfoDto();
 
-        Game result = gameService.getById(id);
+        String url = "/game/" + gameId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("BASIC-USER-ID", String.valueOf(userId));
 
-        assertEquals(game, result);
+        when(restTemplateHandler.executeRequest(url, HttpMethod.GET, headers, GameInfoDto.class)).thenReturn(mockResponse);
+
+        GameInfoDto result = gameService.getById(gameId, userId);
+
+        assertEquals(mockResponse, result);
+        verify(restTemplateHandler).executeRequest(url, HttpMethod.GET, headers, GameInfoDto.class);
     }
 
     @Test
-    void getGameByIdThatNotFoundShouldThrowException() {
-        long id = 1;
-        when(repository.findById(id)).thenReturn(null);
-        when(repository.findById(id)).thenReturn(Optional.empty());
+    void testGetByName() {
+        String name = "TestGame";
+        int pageNum = 1;
+        GameListPageDto mockResponse = new GameListPageDto();
 
-        assertThrows(NotFoundException.class, () -> gameService.getById(id));
+        String url = "/game/name/" + name + "?pageSize=" + 2 + "&pageNum=" + pageNum + "&sortBy=name-ASC";
+
+        when(restTemplateHandler.executeRequest(url, HttpMethod.GET, null, GameListPageDto.class)).thenReturn(mockResponse);
+
+        GameListPageDto result = gameService.getByName(name, pageNum);
+
+        assertEquals(mockResponse, result);
+        verify(restTemplateHandler).executeRequest(url, HttpMethod.GET, null, GameListPageDto.class);
     }
 
     @Test
-    void testGetGameByName_whenGameInRepository_shouldReturnGameList() {
-        String name = "name";
-        int pageSize = 2;
-        int pageNum = 2;
-        List<Game> gameList = Collections.singletonList(game);
-        Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        when(repository.findByNameContainingIgnoreCase(name, PageRequest.of(pageNum - 1, pageSize, sort)))
-                .thenReturn(gameList);
+    void testSetFollowGameOption_whenFollowEvent_shouldCallFollowEvent() {
+        long gameId = 1L;
+        long userId = 123L;
+        boolean isFollow = true;
 
+        gameService.setFollowGameOption(gameId, userId, isFollow);
 
-        List<Game> result = gameService.getByName(name, pageNum);
-
-
-        assertEquals(gameList, result);
+        verify(gameFollowEventKafkaTemplate)
+                .send(eq(Constants.GAME_FOLLOW_TOPIC), anyString(), eq(new GameFollowEvent(userId, gameId)));
     }
 
     @Test
-    void testGetGameByName_whenGameNotFoundInRepository_shouldReturnGameListFromStoreService() {
-        String name = "name";
-        int pageSize = 2;
-        int pageNum = 2;
-        List<Game> gameList = Collections.singletonList(game);
-        List<Long> gameIds = Collections.singletonList(game.getId());
-        Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
-        when(repository.findByNameContainingIgnoreCase(name, pageRequest)).thenReturn(new ArrayList<>());
-        when(gameStoresService.findGameByName(name)).thenReturn(gameIds);
-        when(repository.findByIdIn(gameIds, pageRequest)).thenReturn(gameList);
+    void testSetFollowGameOption_whenUnfollowEvent_shouldCallUnfollowEvent() {
+        long gameId = 1L;
+        long userId = 123L;
+        boolean isFollow = false;
 
+        gameService.setFollowGameOption(gameId, userId, isFollow);
 
-        List<Game> result = gameService.getByName(name, pageNum);
-
-
-        assertEquals(gameList, result);
-    }
-
-    @Test
-    void testGetGameAmountByName_shouldReturnName() {
-        String name = "name";
-        long pageNum = 2;
-        when(repository.countAllByNameContainingIgnoreCase(name)).thenReturn(pageNum);
-
-
-        long result = gameService.getGameAmountByName(name);
-
-
-        assertEquals(pageNum, result);
-    }
-
-    @Test
-    void testIsSubscribed_shouldReturnResult() {
-        when(repository.existsByIdAndUserList_Id(1,2)).thenReturn(true);
-
-
-        boolean result = gameService.isSubscribed(1, 2);
-
-
-        assertTrue(result);
+        verify(gameFollowEventKafkaTemplate)
+                .send(eq(Constants.GAME_UNFOLLOW_TOPIC), anyString(), eq(new GameFollowEvent(userId, gameId)));
     }
 }

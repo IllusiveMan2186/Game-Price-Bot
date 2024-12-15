@@ -24,3 +24,5 @@ Add Environment variables for running project locally
 * POSTGRES_DB_URL;
 * POSTGRES_DB_USERNAME;
 * POSTGRES_DB_PASSWORD;
+* GAME_SERVICE_URL
+* API_KEY;

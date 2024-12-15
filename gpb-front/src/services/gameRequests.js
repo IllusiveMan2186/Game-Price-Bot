@@ -1,6 +1,6 @@
 import { handleRequest } from '@util/httpHelper';
 import { defaultRequestErrorCheck } from '@util/authService';
-
+import { setAuthToken, setUserRole } from '@util/authService';
 
 // Centralized API Endpoints
 const API_ENDPOINTS = {
@@ -11,7 +11,10 @@ const API_ENDPOINTS = {
 // Reusable error handler
 const handleError = (error, navigate) => {
     defaultRequestErrorCheck(error);
+    console.info(error)
     if (error?.response?.status === 401) {
+        setAuthToken(null);
+        setUserRole(null);
         navigate?.(0); // Refresh on unauthorized
     }
 };

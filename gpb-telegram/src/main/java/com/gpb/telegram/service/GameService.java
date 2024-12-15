@@ -1,8 +1,7 @@
 package com.gpb.telegram.service;
 
-import com.gpb.telegram.bean.Game;
-
-import java.util.List;
+import com.gpb.telegram.bean.game.GameInfoDto;
+import com.gpb.telegram.bean.game.GameListPageDto;
 
 public interface GameService {
 
@@ -10,33 +9,26 @@ public interface GameService {
      * Get game by id
      *
      * @param gameId games id
+     * @param userId user id
      * @return game
      */
-    Game getById(long gameId);
+    GameInfoDto getById(long gameId, long userId);
 
     /**
      * Get game by name
      *
      * @param name    games name
      * @param pageNum page number
-     * @return game
+     * @return page with all games with needed name
      */
-    List<Game> getByName(final String name, final int pageNum);
+    GameListPageDto getByName(final String name, final int pageNum);
 
     /**
-     * Get amount of games by name
+     * Set isFollowed field in game for user by game and user id
      *
-     * @param name games name
-     * @return amount of games
+     * @param gameId   games id
+     * @param userId   user id
+     * @param isFollow is program would follow this game for information changing
      */
-    long getGameAmountByName(final String name);
-
-    /**
-     * Check if user subscribed to the game
-     *
-     * @param gameId game id
-     * @param userId user id
-     * @return true if user subscribed to the game
-     */
-    boolean isSubscribed(long gameId,long userId);
+    void setFollowGameOption(long gameId, long userId, boolean isFollow);
 }

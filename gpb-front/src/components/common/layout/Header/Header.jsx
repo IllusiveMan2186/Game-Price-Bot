@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Buttons from '@components/common/button/Buttons';
-import { setAuthHeader, setRoleHeader } from '@util/authService';
+import { setAuthToken, setUserRole } from '@util/authService';
 
 import logo from '@assets/images/logo.png';
 import './Header.css';
@@ -11,8 +11,8 @@ export default function Header() {
   const navigate = useNavigate();
 
   const logout = () => {
-    setAuthHeader(null);
-    setRoleHeader(null);
+    setAuthToken(null);
+    setUserRole(null);
     navigate(0)
   };
 

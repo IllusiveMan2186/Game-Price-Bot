@@ -65,4 +65,8 @@ public class TelegramRequest {
                 ? update.getCallbackQuery().getFrom()
                 : update.getMessage().getFrom();
     }
+
+    public long getUserBasicId(){
+        return user.getBasicUserId();
+    }
 }
