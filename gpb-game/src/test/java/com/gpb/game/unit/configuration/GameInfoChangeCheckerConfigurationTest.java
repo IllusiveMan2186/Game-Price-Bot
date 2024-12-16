@@ -29,7 +29,7 @@ class GameInfoChangeCheckerConfigurationTest {
             = new GameInfoChangeCheckerConfiguration(gameService, gameStoresService, notificationManager, userService);
 
     @Test
-    void testCreateUser_whenSuccessfully_shouldReturnUser() {
+    void testScheduleSubscribedGameInfoChangeEveryDay_whenSuccessfully_shouldChangeInfoANdSendNotification() {
         List<GameInShop> subscribedGame = new ArrayList<>();
         when(gameService.getSubscribedGames()).thenReturn(subscribedGame);
         List<GameInShop> changedGames = new ArrayList<>();
@@ -40,11 +40,23 @@ class GameInfoChangeCheckerConfigurationTest {
         when(userService.getUsersOfChangedGameInfo(changedGames)).thenReturn(users);
         List<GameInShop> usersChangedGames = new ArrayList<>();
         when(gameService.getUsersChangedGames(users.get(0), changedGames)).thenReturn(usersChangedGames);
-        //when(userService.getWebUsers(Collections.singletonList(1L))).thenReturn(webUsers);
 
-        changeCheckerConfiguration.scheduleSubscribedGameInfoChange();
+        changeCheckerConfiguration.scheduleSubscribedGameInfoChangeEveryDay();
 
         verify(gameService).changeInfo(changedGames);
-        //verify(emailService).sendGameInfoChange(user, usersChangedGames);
+        verify(notificationManager).sendGameInfoChange(user, usersChangedGames);
+    }
+
+    @Test
+    void testScheduleSubscribedGameInfoChangeEveryWeak_whenSuccessfully_shouldChangeInfo() {
+        List<GameInShop> games = new ArrayList<>();
+        when(gameService.getAllGamesInShop()).thenReturn(games);
+        List<GameInShop> changedGames = new ArrayList<>();
+        when(gameStoresService.checkGameInStoreForChange(games)).thenReturn(changedGames);
+
+
+        changeCheckerConfiguration.scheduleGameInfoChangeEveryWeak();
+
+        verify(gameService).changeInfo(changedGames);
     }
 }

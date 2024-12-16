@@ -18,14 +18,13 @@ import static org.mockito.Mockito.mock;
 
 class GameRequestListenerTest {
 
-    private final GameStoresService gameStoresService = mock(GameStoresService.class);
 
     private final GameService gameService = mock(GameService.class);
 
     private final UserService userService = mock(UserService.class);
 
     private final GameRequestListener gameRequestListener
-            = new GameRequestListener(gameStoresService, gameService, userService);
+            = new GameRequestListener(gameService, userService);
 
     @Test
     void testListenGameFollow() {
@@ -44,7 +43,6 @@ class GameRequestListenerTest {
         Mockito.verify(userService).subscribeToGame(userId, gameId);
         Mockito.verify(gameService).getById(gameId);
         Mockito.verify(gameService).setFollowGameOption(gameId, true);
-        Mockito.verify(gameStoresService).subscribeToGame(game);
     }
 
     @Test
@@ -64,7 +62,6 @@ class GameRequestListenerTest {
         Mockito.verify(userService).subscribeToGame(userId, gameId);
         Mockito.verify(gameService).getById(gameId);
         Mockito.verifyNoMoreInteractions(gameService);
-        Mockito.verifyNoInteractions(gameStoresService);
     }
 
     @Test
@@ -84,7 +81,6 @@ class GameRequestListenerTest {
         Mockito.verify(userService).unsubscribeFromGame(userId, gameId);
         Mockito.verify(gameService).getById(gameId);
         Mockito.verify(gameService).setFollowGameOption(gameId, false);
-        Mockito.verify(gameStoresService).unsubscribeFromGame(game);
     }
 
     @Test
@@ -104,7 +100,6 @@ class GameRequestListenerTest {
         Mockito.verify(userService).unsubscribeFromGame(userId, gameId);
         Mockito.verify(gameService).getById(gameId);
         Mockito.verifyNoMoreInteractions(gameService);
-        Mockito.verifyNoInteractions(gameStoresService);
     }
 
     @Test
@@ -117,7 +112,6 @@ class GameRequestListenerTest {
 
 
         Mockito.verify(gameService).removeGame(gameId);
-        Mockito.verifyNoMoreInteractions(gameService, gameStoresService, userService);
     }
 
     @Test
@@ -130,6 +124,5 @@ class GameRequestListenerTest {
 
 
         Mockito.verify(gameService).removeGameInStore(gameId);
-        Mockito.verifyNoMoreInteractions(gameService, gameStoresService, userService);
     }
 }

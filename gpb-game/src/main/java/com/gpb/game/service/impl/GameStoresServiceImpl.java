@@ -5,7 +5,6 @@ import com.gpb.game.bean.game.GameInShop;
 import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.StoreService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -59,34 +58,6 @@ public class GameStoresServiceImpl implements GameStoresService {
             log.info("Game with url {} not found cause of exception : {}}", link, e.getMessage());
         }
         return null;
-    }
-
-    @Async
-    @Override
-    public void subscribeToGame(Game game) {
-        try {
-            for (GameInShop gameInShop : game.getGamesInShop()) {
-                URL url = new URL(gameInShop.getUrl());
-                StoreService storeService = storeServices.get(url.getHost());
-                storeService.subscribeToGame(gameInShop);
-            }
-        } catch (MalformedURLException e) {
-            log.info(String.format("Not found cause of exception : '%s'", e.getMessage()));
-        }
-    }
-
-    @Async
-    @Override
-    public void unsubscribeFromGame(Game game) {
-        try {
-            for (GameInShop gameInShop : game.getGamesInShop()) {
-                URL url = new URL(gameInShop.getUrl());
-                StoreService storeService = storeServices.get(url.getHost());
-                storeService.unsubscribeFromGame(gameInShop);
-            }
-        } catch (MalformedURLException e) {
-            log.info(String.format("Not found cause of exception : '%s'", e.getMessage()));
-        }
     }
 
     @Override

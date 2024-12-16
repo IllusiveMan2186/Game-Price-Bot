@@ -8,17 +8,10 @@ import com.gpb.game.bean.game.ProductType;
 import com.gpb.game.configuration.ResourceConfiguration;
 import com.gpb.game.parser.StorePageParser;
 import com.gpb.game.service.StoreService;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,7 +48,6 @@ public class GamazeyStoreService implements StoreService {
     private static final String GAME_PAGE_CHARACTERISTICS = "rm-product-attr-list-item d-flex d-sm-block";
     private static final String GAME_IMG_CLASS = "img-fluid";
     private static final String GAMEZEY_SEARCH_URL = "https://gamazey.com.ua/search?search=";
-    private static final String GAMEZEY_WISHLIST = "https://gamazey.com.ua/wishlist";
     private static final String GAME_NAME_PRODUCT_TYPE_PART = "(Гра|Ігрова валюта|Доповнення) ";
     private static final String GAME_NAME_SPECIFICATION_PART = " для .+ \\(Ключ активації .+\\)";
     private static final String GAME_GENRES_FIELD = "Жанр";
@@ -142,103 +133,49 @@ public class GamazeyStoreService implements StoreService {
 
     @Override
     public GameInShop findByName(String name) {
-        return null;
-    }
-
-    @Override
-    public void subscribeToGame(GameInShop gameInShop) {
-        String url = gameInShop.getUrl();
-        log.info(String.format("Add to wish list of gamazey store game by url :'%s'", url));
-        WebDriver driver = login(url);
-
-        driver.findElement(By.cssSelector(".rm-product-top-button-wishlist")).click();
-        driver.quit();
-    }
-
-    @Override
-    public void unsubscribeFromGame(GameInShop gameInShop) {
-        String name = gameInShop.getNameInStore();
-        log.info(String.format("Remove from wish list of gamazey store game by name :'%s'", name));
-        WebDriver driver = login(GAMEZEY_WISHLIST);
-
-        driver.navigate().refresh();
-        WebElement element = driver.findElement(By.xpath(String.format("//*[text()='%s']", name)));
-        WebElement parent = element.findElement(By.xpath("./..")).findElement(By.xpath("./.."));
-        parent.findElement(By.className("rm-btn-icon")).click();
-        driver.quit();
+        Document page = parser.getPage(GAMEZEY_SEARCH_URL + name);
+        Elements elements = page.getElementsByClass("rm-module-title");
+        String url = elements.get(0).child(0).attr("href");
+        return findByUrl(url);
     }
 
     @Override
     public List<GameInShop> checkGameInStoreForChange(List<GameInShop> gameInShops) {
-        log.info(String.format("Check %s games from wishlist in stores for changes in gamazey store", gameInShops.size()));
-        WebDriver driver = login(GAMEZEY_WISHLIST);
+        log.info("Check {} games from wishlist in stores for changes in gamazey store", gameInShops.size());
+
         List<GameInShop> changedGames = new ArrayList<>();
-        driver.navigate().refresh();
-        List<WebElement> elements = driver.findElements(By.className("rm-account-wishlist-item-info"));
 
-        for (WebElement element : elements) {
-            String name = element.findElement(By.className("rm-content-title")).getText();
-            Optional<GameInShop> game = gameInShops.stream().filter(s -> name.contains(s.getNameInStore())).findFirst();
-
-            if (game.isPresent() && isGameInfoChanged(game.get(), element)) {
-                changedGames.add(setChangedFields(game.get(), element));
+        for (GameInShop game : gameInShops) {
+            if (isGameInfoChanged(game)) {
+                changedGames.add(setChangedFields(game));
             }
         }
-        driver.quit();
         return changedGames;
     }
 
-    private boolean isGameInfoChanged(GameInShop gameInShop, WebElement element) {
+    private boolean isGameInfoChanged(GameInShop gameInShop) {
         log.info(String.format("Check for game '%s' info changing in gamazey store", gameInShop.getNameInStore()));
 
-        String discountPrice = element.findElement(By.className("rm-module-price-new")).getText();
-        String price = element.findElement(By.className("rm-module-price-old")).getText();
-        boolean isAvailable = element.findElements(By.className("rm-account-text")).get(0)
-                .findElement(By.tagName("span")).getText().equals("В наличии");
+        Document page = parser.getPage(gameInShop.getUrl());
+        GameInShop gameOnPage = getGameInShop(page);
 
-        return gameInShop.isAvailable() == isAvailable
-                && gameInShop.getDiscountPrice().toString().equals(discountPrice)
-                && gameInShop.getPrice().toString().equals(price);
+        return gameInShop.isAvailable() == gameOnPage.isAvailable()
+                && gameInShop.getDiscountPrice().equals(gameOnPage.getDiscountPrice())
+                && gameInShop.getPrice().equals(gameOnPage.getPrice());
     }
 
-    private GameInShop setChangedFields(GameInShop gameInShop, WebElement element) {
+    private GameInShop setChangedFields(GameInShop gameInShop) {
         log.info(String.format("Set changes for game '%s' in gamazey store", gameInShop.getNameInStore()));
 
-        String discountPrice = element.findElement(By.className("rm-module-price-new")).getText();
-        String price = element.findElement(By.className("rm-module-price-old")).getText();
-        boolean isAvailable = element.findElements(By.className("rm-account-text")).get(1)
-                .findElement(By.tagName("span")).getText().equals("В наличии");
-        int discountPriceInt = Integer.parseInt(getIntFromString(discountPrice));
-        int priceInt = Integer.parseInt(getIntFromString(price));
-        int discount = 100 - (int) ((discountPriceInt * 100.0f) / priceInt);
+        Document page = parser.getPage(gameInShop.getUrl());
+        GameInShop gameOnPage = getGameInShop(page);
 
-        gameInShop.setDiscountPrice(new BigDecimal(discountPriceInt));
-        gameInShop.setPrice(new BigDecimal(priceInt));
-        gameInShop.setAvailable(isAvailable);
-        gameInShop.setDiscount(discount);
+        gameInShop.setDiscountPrice(gameOnPage.getDiscountPrice());
+        gameInShop.setPrice(gameOnPage.getPrice());
+        gameInShop.setAvailable(gameOnPage.isAvailable());
+        gameInShop.setDiscount(gameOnPage.getDiscount());
 
         return gameInShop;
-    }
-
-    private WebDriver login(String url) {
-        log.info("Login in gamazey store");
-
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--remote-allow-origins=*");
-        WebDriver driver = new ChromeDriver(options);
-        driver.get(url);
-
-        driver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
-
-        driver.findElements(By.cssSelector(".d-flex.align-items-center")).get(3).click();
-        driver.findElement(By.id("emailLoginInput")).sendKeys(login);
-        driver.findElement(By.id("passwordLoginInput")).sendKeys(password);
-        WebElement element = driver.findElement(By.id("popup-login-button"));
-        JavascriptExecutor executor = (JavascriptExecutor) driver;
-        executor.executeScript("arguments[0].click();", element);
-        driver.navigate().refresh();
-        return driver;
     }
 
     private GameInShop getGameInShop(Document page) {

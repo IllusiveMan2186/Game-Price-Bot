@@ -27,9 +27,7 @@ dependencies {
     implementation("com.sun.mail:jakarta.mail:2.0.1")
     implementation("com.google.guava:guava:32.1.2-jre")
     implementation("org.modelmapper:modelmapper:3.2.0")
-    implementation("io.github.bonigarcia:webdrivermanager:5.3.2")
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
-    implementation("org.seleniumhq.selenium:selenium-java:4.16.1")
 
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")

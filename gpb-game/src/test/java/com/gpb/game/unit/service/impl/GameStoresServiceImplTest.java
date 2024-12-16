@@ -109,44 +109,6 @@ class GameStoresServiceImplTest {
     }
 
     @Test
-    void testSubscribeToGame_whenSuccessfully_thenShouldSubscribeToGame() {
-        final Game game = new Game();
-        String url1 = "https://storeService1/games";
-        String url2 = "https://gamazey.com.ua/games";
-        final GameInShop gameInShop1 = new GameInShop();
-        gameInShop1.setUrl(url1);
-        final GameInShop gameInShop2 = new GameInShop();
-        gameInShop2.setUrl(url2);
-        game.setGamesInShop(Set.of(gameInShop1, gameInShop2));
-
-
-        gameStoresService.subscribeToGame(game);
-
-
-        verify(storeService1).subscribeToGame(gameInShop1);
-        verify(storeService2).subscribeToGame(gameInShop2);
-    }
-
-    @Test
-    void testUnsubscribeToGame_whenSuccessfully_thenShouldSubscribeToGame() {
-        final Game game = new Game();
-        String url1 = "https://storeService1/games";
-        String url2 = "https://gamazey.com.ua/games";
-        final GameInShop gameInShop1 = new GameInShop();
-        gameInShop1.setUrl(url1);
-        final GameInShop gameInShop2 = new GameInShop();
-        gameInShop2.setUrl(url2);
-        game.setGamesInShop(Set.of(gameInShop1, gameInShop2));
-
-
-        gameStoresService.unsubscribeFromGame(game);
-
-
-        verify(storeService1).unsubscribeFromGame(gameInShop1);
-        verify(storeService2).unsubscribeFromGame(gameInShop2);
-    }
-
-    @Test
     void testCheckGamesInStoreForChange_whenSuccessfully_thenShouldReturnChangedGames() {
         String url1 = "https://storeService1/games";
         String url2 = "https://gamazey.com.ua/games";
