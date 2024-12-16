@@ -13,6 +13,8 @@ public interface GameInShopRepository extends CrudRepository<GameInShop, Long> {
 
     GameInShop findByUrl(String url);
 
+    List<GameInShop> findAll();
+
     @Query(value = "SELECT gs FROM GameInShop gs join fetch gs.game g join fetch g.userList u ")
     List<GameInShop> findSubscribedGames();
 

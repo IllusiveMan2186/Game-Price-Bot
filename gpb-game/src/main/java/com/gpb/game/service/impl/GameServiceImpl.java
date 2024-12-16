@@ -64,6 +64,11 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    public List<GameInShop> getAllGamesInShop() {
+        return gameInShopRepository.findAll();
+    }
+
+    @Override
     public GameListPageDto getByName(final String name, final int pageSize, final int pageNum, Sort sort) {
         log.info(String.format("Get game by name : %s", name));
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);

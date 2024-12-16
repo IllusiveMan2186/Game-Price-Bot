@@ -43,20 +43,6 @@ public interface StoreService {
     GameInShop findByName(String name);
 
     /**
-     * Add to wishlist in store
-     *
-     * @param gameInShop game
-     */
-    void subscribeToGame(GameInShop gameInShop);
-
-    /**
-     * Remove from wishlist in store
-     *
-     * @param gameInShop game
-     */
-    void unsubscribeFromGame(GameInShop gameInShop);
-
-    /**
      * Check games from wishlist for changing
      *
      * @param gameInShops games that need to be checked
