@@ -7,6 +7,7 @@ import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.UserService;
 import com.gpb.game.util.Constants;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -15,19 +16,11 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 public class GameRequestListener {
-
-
-    private final GameStoresService gameStoresService;
 
     private final GameService gameService;
     private final UserService userService;
-
-    public GameRequestListener(GameStoresService gameStoresService, GameService gameService, UserService userService) {
-        this.gameStoresService = gameStoresService;
-        this.gameService = gameService;
-        this.userService = userService;
-    }
 
     @KafkaListener(topics = Constants.GAME_FOLLOW_TOPIC,
             groupId = Constants.GPB_KAFKA_GROUP_ID,
@@ -41,7 +34,6 @@ public class GameRequestListener {
 
         if (!game.isFollowed()) {
             gameService.setFollowGameOption(followRecord.value().getGameId(), true);
-            gameStoresService.subscribeToGame(game);
         }
     }
 
@@ -59,7 +51,6 @@ public class GameRequestListener {
         if (game.isFollowed() && game.getUserList().isEmpty()) {
             log.info("Game {} have no more followers", game.getId());
             gameService.setFollowGameOption(unfollowRecord.value().getGameId(), false);
-            gameStoresService.unsubscribeFromGame(game);
         }
     }
 

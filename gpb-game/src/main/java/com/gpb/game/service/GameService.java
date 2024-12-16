@@ -34,6 +34,12 @@ public interface GameService {
     GameInfoDto getDtoById(long gameId);
 
     /**
+     * Get all games in shop info
+     * @return all games in shop
+     */
+    List<GameInShop> getAllGamesInShop();
+
+    /**
      * Get game by name
      *
      * @param name     games name
