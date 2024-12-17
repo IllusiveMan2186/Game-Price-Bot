@@ -49,7 +49,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetById() {
+    void testGetById_whenSuccess_shouldReturnGameInfoDto() {
         long gameId = 1L;
         long userId = 123L;
         GameInfoDto mockResponse = new GameInfoDto();
@@ -67,7 +67,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetByName() {
+    void testGetByName_whenSuccess_shouldReturnGameListPageDto() {
         String name = "TestGame";
         int pageSize = 10;
         int pageNum = 1;
@@ -85,7 +85,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetByUrl() {
+    void testGetByUrl_whenSuccess_shouldReturnGameInfoDto() {
         String url = "/game/genre?pageSize=10&pageNum=1&minPrice=0&" +
                 "maxPrice=100&sortBy=name-ASC&genre=ACTION&type=GAME";
         GameInfoDto mockResponse = new GameInfoDto();
@@ -128,24 +128,27 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetUserGames() {
+    void testGetUserGames_whenSuccess_shouldCallReqeust() {
         long userId = 123L;
         int pageSize = 10;
         int pageNum = 1;
         String sort = "name-ASC";
-
-
-        gameService.getUserGames(userId, pageSize, pageNum, sort);
-
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("BASIC-USER-ID", String.valueOf(userId));
+        GameListPageDto mockResponse = new GameListPageDto();
         String url = "/game/user/games?pageSize=10&pageNum=1&sortBy=name-ASC";
+        when(restTemplateHandler.executeRequest(url, HttpMethod.GET, headers, GameListPageDto.class)).thenReturn(mockResponse);
+
+
+        GameListPageDto result = gameService.getUserGames(userId, pageSize, pageNum, sort);
+
+
+        assertEquals(mockResponse, result);
         verify(restTemplateHandler).executeRequest(url, HttpMethod.GET, headers, GameListPageDto.class);
     }
 
     @Test
-    void testRemoveGame() {
+    void testRemoveGame_whenSuccess_shouldSendRemoveGameEvent() {
         long gameId = 1L;
         String expectedTopic = Constants.GAME_REMOVE_TOPIC;
 
@@ -155,7 +158,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testRemoveGameGameInStore() {
+    void testRemoveGameGameInStore_whenSuccess_shouldSendRemoveGameInStoreEvent() {
         long gameInStoreId = 1L;
         String expectedTopic = Constants.GAME_IN_STORE_REMOVE_TOPIC;
 
@@ -165,7 +168,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetByGenre_whenAllParameters_shouldCallRequest() {
+    void testGetByGenre_whenAllParameters_shouldCallRequestAndReturnGameListPageDto() {
         List<Genre> genres = List.of(Genre.ACTION);
         List<ProductType> types = List.of(ProductType.GAME);
         int pageSize = 10;
@@ -190,7 +193,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetByGenre_whenFewGenresAndZeroGenres_shouldCallRequest() {
+    void testGetByGenre_whenFewGenresAndZeroGenres_shouldCallRequestAndGameListPageDto() {
         List<Genre> genres = new ArrayList<>();
         genres.add(Genre.ACTION);
         genres.add(Genre.SIMULATORS);
@@ -215,7 +218,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetByGenre_whenFewTypesAndZeroGenres_shouldCallRequest() {
+    void testGetByGenre_whenFewTypesAndZeroGenres_shouldCallRequestAndGameListPageDto() {
         List<ProductType> genres = new ArrayList<>();
         genres.add(ProductType.GAME);
         genres.add(ProductType.ADDITION);

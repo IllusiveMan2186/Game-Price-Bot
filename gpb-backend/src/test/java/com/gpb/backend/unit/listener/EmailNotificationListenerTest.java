@@ -33,7 +33,7 @@ class EmailNotificationListenerTest {
     }
 
     @Test
-    void listenEmailNotification_shouldProcessEvent() {
+    void testListenEmailNotification_whenSuccess_shouldProcessEvent() {
         long basicUserId = 123L;
         EmailNotificationEvent event = new EmailNotificationEvent();
         event.setBasicUserId(basicUserId);

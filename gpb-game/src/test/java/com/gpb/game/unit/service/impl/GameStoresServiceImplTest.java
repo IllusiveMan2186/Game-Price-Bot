@@ -19,7 +19,6 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class GameStoresServiceImplTest {
@@ -37,7 +36,7 @@ class GameStoresServiceImplTest {
     }
 
     @Test
-    void testGetGameByName_whenSuccessfully_ShouldReturnNewGame() {
+    void testGetGameByName_whenSuccess_shouldReturnNewGame() {
         String name = "name";
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
@@ -59,7 +58,7 @@ class GameStoresServiceImplTest {
     }
 
     @Test
-    void testGetGameByName_whenNotFound_ShouldReturnNull() {
+    void testGetGameByName_whenNotFound_shouldReturnNull() {
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
         game.setGamesInShop(Set.of(gameInShop1));
@@ -74,7 +73,7 @@ class GameStoresServiceImplTest {
     }
 
     @Test
-    void testGetGameByUrl_whenSuccessfully_ShouldReturnNewGame() {
+    void testGetGameByUrl_whenSuccess_ShouldReturnNewGame() {
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
         final GameInShop gameInShop2 = new GameInShop();
@@ -94,7 +93,7 @@ class GameStoresServiceImplTest {
     }
 
     @Test
-    void testGetGameByUrl_whenNotFound_thenShouldThrowException() {
+    void testGetGameByUrl_whenNotFound_shouldThrowException() {
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
         game.setGamesInShop(Set.of(gameInShop1));
@@ -109,7 +108,7 @@ class GameStoresServiceImplTest {
     }
 
     @Test
-    void testCheckGamesInStoreForChange_whenSuccessfully_thenShouldReturnChangedGames() {
+    void testCheckGamesInStoreForChange_whenSuccess_shouldReturnChangedGames() {
         String url1 = "https://storeService1/games";
         String url2 = "https://gamazey.com.ua/games";
         final GameInShop gameInShop1 = new GameInShop();

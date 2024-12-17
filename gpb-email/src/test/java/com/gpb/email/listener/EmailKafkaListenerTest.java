@@ -13,7 +13,10 @@ import org.thymeleaf.context.Context;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class EmailKafkaListenerTest {
 
@@ -29,8 +32,7 @@ class EmailKafkaListenerTest {
     }
 
     @Test
-    void emailEventListen_shouldProcessEmailEvent() {
-        // Arrange
+    void testEmailEventListen_whenSuccess_shouldProcessEmailEvent() {
         String recipient = "test@example.com";
         String subject = "Test Subject";
         String templateName = "testTemplate";
@@ -45,10 +47,10 @@ class EmailKafkaListenerTest {
                 "gpb_email_event", 0, 0L, "eventKey", emailEvent
         );
 
-        // Act
+
         emailKafkaListener.emailEventListen(consumerRecord);
 
-        // Assert
+
         verify(emailService, times(1)).sendEmail(
                 eq(recipient),
                 eq(subject),
@@ -58,8 +60,7 @@ class EmailKafkaListenerTest {
     }
 
     @Test
-    void emailEventListen_shouldHandleNullVariables() {
-        // Arrange
+    void testEmailEventListen_whenSuccess_shouldHandleNullVariables() {
         String recipient = "test@example.com";
         String subject = "Test Subject";
         String templateName = "testTemplate";
@@ -74,10 +75,10 @@ class EmailKafkaListenerTest {
                 "gpb_email_event", 0, 0L, "eventKey", emailEvent
         );
 
-        // Act
+
         emailKafkaListener.emailEventListen(consumerRecord);
 
-        // Assert
+
         verify(emailService, times(1)).sendEmail(
                 eq(recipient),
                 eq(subject),
@@ -87,8 +88,7 @@ class EmailKafkaListenerTest {
     }
 
     @Test
-    void emailEventListen_shouldLogEmailEventDetails() {
-        // Arrange
+    void testEmailEventListen_whenSuccess_shouldLogEmailEventDetails() {
         String recipient = "test@example.com";
         String subject = "Test Subject";
         String templateName = "testTemplate";
@@ -104,11 +104,10 @@ class EmailKafkaListenerTest {
                 "gpb_email_event", 0, 0L, eventKey, emailEvent
         );
 
-        // Act
+
         emailKafkaListener.emailEventListen(consumerRecord);
 
-        // Assert
-        // Verifying logs would require a logging framework mock (e.g., using Mockito's verify with a logging wrapper)
+
         verify(emailService, times(1)).sendEmail(
                 eq(recipient),
                 eq(subject),

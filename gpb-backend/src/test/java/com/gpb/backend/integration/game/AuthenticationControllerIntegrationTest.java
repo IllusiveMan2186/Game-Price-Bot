@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthenticationControllerIntegrationTest extends BaseAuthenticationIntegration {
 
     @Test
-    void createUserWithAlreadyRegisteredEmailShouldReturnErrorMessage() throws Exception {
+    void testCreateUser_whenUSedAlreadyRegisteredEmail_shouldReturnErrorMessage() throws Exception {
         UserRegistration userRegistration = UserRegistration.builder()
                 .email(userList.get(0).getEmail())
                 .password(userList.get(0).getPassword().toCharArray())
@@ -33,10 +33,10 @@ class AuthenticationControllerIntegrationTest extends BaseAuthenticationIntegrat
                 .andExpect(jsonPath("$").value("app.user.error.email.already.exists"));
     }
 
-    //@Test TODO
-    void createUserSuccessfullyShouldReturnUser() throws Exception {
+    @Test
+    void testCreateUser_shenSuccess_shouldReturnUser() throws Exception {
         when(restTemplateHandler
-                .executeRequest(GAME_SERVICE_URL + "/user", HttpMethod.POST, null, Long.class))
+                .executeRequest("/user", HttpMethod.POST, null, Long.class))
                 .thenReturn(1L);
         UserRegistration userRegistration = UserRegistration.builder()
                 .email("email2")
@@ -52,7 +52,7 @@ class AuthenticationControllerIntegrationTest extends BaseAuthenticationIntegrat
     }
 
     @Test
-    void loginSuccessfullyShouldSetUserInfoInSession() throws Exception {
+    void testLogin_shenSuccess_shouldSetUserInfoInSession() throws Exception {
         mockMvc.perform(post("/login")
                         .contentType(APPLICATION_JSON)
                         .content(objectToJson(new Credentials(userList.get(0).getEmail(), DECODE_PASSWORD.toCharArray()))))

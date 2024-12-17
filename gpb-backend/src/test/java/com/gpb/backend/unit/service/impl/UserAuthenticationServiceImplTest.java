@@ -67,7 +67,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void testGetUserByEmail_shouldReturnUser() {
+    void testGetUserByEmail_whenSuccess_shouldReturnUser() {
         String email = "email";
         WebUser webUser = new WebUser();
         UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
@@ -83,7 +83,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void testGetUserByEmail_shouldThrowNotFoundException() {
+    void testGetUserByEmail_whenUserNotFound_shouldThrowNotFoundException() {
         String email = "email";
 
         when(webUserRepository.findByEmail(email)).thenReturn(Optional.empty());
@@ -99,7 +99,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void createUser_shouldCreateAndReturnWebUser() {
+    void testCreateUser_whenSuccess_shouldCreateAndReturnWebUser() {
         UserRegistration registration = new UserRegistration();
         registration.setEmail("test@example.com");
         registration.setPassword("password".toCharArray());
@@ -124,7 +124,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void createUser_shouldThrowEmailAlreadyExistException() {
+    void testCreateUser_whenEmailAlreadyExists_shouldThrowException() {
         UserRegistration registration = new UserRegistration();
         registration.setEmail("test@example.com");
         when(webUserRepository.findByEmail(registration.getEmail())).thenReturn(Optional.of(new WebUser()));
@@ -134,7 +134,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void updateUserPassword_shouldThrowNotFoundException_whenUserNotFound() {
+    void testUpdateUserPassword_whenUserNotFound_shouldThrowNotFoundException() {
         long userId = 1L;
         UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
         userDto.setId(userId);
@@ -150,7 +150,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void updateUserPassword_shouldThrowUserDataNotChangedException_whenPasswordIsSame() {
+    void testUpdateUserPassword_whenPasswordIsSame_shouldThrowUserDataNotChangedException() {
         long userId = 1L;
         UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
         userDto.setId(userId);
@@ -173,7 +173,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void updateUserPassword_shouldUpdatePassword_whenPasswordIsDifferent() {
+    void testUpdateUserPassword_whenPasswordIsDifferent_shouldUpdatePassword() {
         long userId = 1L;
         UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
         userDto.setId(userId);
@@ -206,7 +206,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void login_shouldReturnUserDto() {
+    void testLogin_whenSuccess_shouldReturnUserDto() {
         Credentials credentials = new Credentials("user@example.com", "password".toCharArray());
 
         WebUser user = new WebUser();
@@ -230,7 +230,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void login_shouldThrowUserNotActivatedException() {
+    void testLogin_whenUserNotActivated_shouldThrowUserNotActivatedException() {
         Credentials credentials = new Credentials("user@example.com", null);
 
         WebUser user = new WebUser();
@@ -242,7 +242,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void login_whenUserWasLocked_shouldUnlockAndReturnUserDto() {
+    void testLogin_whenUserWasLocked_shouldUnlockAndReturnUserDto() {
         Credentials credentials = new Credentials("user@example.com", "password".toCharArray());
 
         WebUser lockedUser = new WebUser();
@@ -274,7 +274,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void login_whenWrongCredential_shouldIncrementFailedAttempts() {
+    void testLogin_whenWrongCredentials_shouldIncrementFailedAttempts() {
         Credentials credentials = new Credentials("user@example.com", "password".toCharArray());
 
         WebUser user = WebUser.builder()
@@ -302,7 +302,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void login_whenWrongCredentialAndHitMAxFailedAttempts_shouldLockUSers() {
+    void testLogin_whenWrongCredentialsAndMaxFailedAttemptsReached_shouldLockUser() {
         Credentials credentials = new Credentials("user@example.com", "password".toCharArray());
 
         WebUser user = WebUser.builder()
@@ -329,7 +329,7 @@ class UserAuthenticationServiceImplTest {
         assertTrue(user.isAccountLocked());
     }
     @Test
-    void login_shouldThrowUserLockedException() {
+    void testLogin_whenUserIsLocked_shouldThrowUserLockedException() {
         Credentials credentials = new Credentials("user@example.com", null);
 
         WebUser user = new WebUser();
@@ -343,7 +343,7 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void updateUserEmail_shouldThrowEmailAlreadyExistException() {
+    void testUpdateUserEmail_whenEmailAlreadyExists_shouldThrowEmailAlreadyExistException() {
         String newEmail = "newemail@example.com";
         UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
         userDto.setId(1L);

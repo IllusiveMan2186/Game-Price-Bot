@@ -23,13 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 class UserManagementServiceTest {
-    private static final String GAME_SERVICE_URL = "gameServiceUrl";
 
     @Mock
     private WebUserRepository webUserRepository;
-
 
     @Mock
     private ModelMapper modelMapper;
@@ -43,10 +40,10 @@ class UserManagementServiceTest {
     }
 
     @Test
-    void getUserById_shouldReturnUserDto() {
+    void testGetUserById_whenSuccess_shouldReturnUserDto() {
         long userId = 1L;
         WebUser webUser = new WebUser();
-        UserDto userDto = new UserDto("username", "password", "tpken", "role", "ua");
+        UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
         when(webUserRepository.findById(userId)).thenReturn(Optional.of(webUser));
         when(modelMapper.map(webUser, UserDto.class)).thenReturn(userDto);
 
@@ -60,7 +57,7 @@ class UserManagementServiceTest {
     }
 
     @Test
-    void testGetUserByBasicUserId_shouldReturnUser() {
+    void testGetUserByBasicUserId_whenSuccess_shouldReturnUser() {
         long basicUserId = 1L;
         WebUser webUser = new WebUser();
         when(webUserRepository.findByBasicUserId(basicUserId)).thenReturn(Optional.of(webUser));
@@ -74,7 +71,7 @@ class UserManagementServiceTest {
     }
 
     @Test
-    void testGetUserByBasicUserId_shouldThrowNotFoundException() {
+    void testGetUserByBasicUserId_whenUserNotFound_shouldThrowNotFoundException() {
         long basicUserId = 1L;
 
         when(webUserRepository.findByBasicUserId(basicUserId)).thenReturn(Optional.empty());
@@ -91,7 +88,7 @@ class UserManagementServiceTest {
 
 
     @Test
-    void testGetWebUserByEmail_shouldReturnWebUser() {
+    void testGetWebUserByEmail_whenSuccess_shouldReturnWebUser() {
         String email = "email";
         WebUser webUser = new WebUser();
         when(webUserRepository.findByEmail(email)).thenReturn(Optional.of(webUser));
@@ -105,7 +102,7 @@ class UserManagementServiceTest {
     }
 
     @Test
-    void testGetWebUserByEmail_shouldThrowNotFoundException() {
+    void testGetWebUserByEmail_whenUserNotFound_shouldThrowNotFoundException() {
         String email = "email";
 
         when(webUserRepository.findByEmail(email)).thenReturn(Optional.empty());
@@ -121,7 +118,7 @@ class UserManagementServiceTest {
     }
 
     @Test
-    void getUserById_shouldThrowNotFoundException() {
+    void testGetUserById_whenUserNotFound_shouldThrowNotFoundException() {
         long userId = 1L;
         when(webUserRepository.findById(userId)).thenReturn(Optional.empty());
 
@@ -130,7 +127,7 @@ class UserManagementServiceTest {
     }
 
     @Test
-    void testUpdateLocale_shouldSaveNewLocale() {
+    void testUpdateLocale_whenSuccess_shouldSaveNewLocale() {
         WebUser webUser = new WebUser();
         long webUserId = 1L;
         String newLocale = "ua";
@@ -145,7 +142,7 @@ class UserManagementServiceTest {
     }
 
     @Test
-    void testActivateUser_shouldSaveNewUser() {
+    void testActivateUser_whenSuccess_shouldSaveNewUser() {
         WebUser webUser = new WebUser();
         long webUserId = 1L;
         when(webUserRepository.findById(webUserId)).thenReturn(Optional.of(webUser));
@@ -159,7 +156,7 @@ class UserManagementServiceTest {
     }
 
     @Test
-    void testGetWebUsers_shouldReturnWebUsers() {
+    void testGetWebUsers_whenSuccess_shouldReturnWebUsers() {
         List<Long> userIds = new ArrayList<>();
         userIds.add(1L);
         userIds.add(2L);

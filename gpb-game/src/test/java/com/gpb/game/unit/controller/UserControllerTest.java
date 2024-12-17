@@ -3,17 +3,18 @@ package com.gpb.game.unit.controller;
 import com.gpb.game.bean.user.BasicUser;
 import com.gpb.game.controller.UserController;
 import com.gpb.game.service.UserService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
     @Mock
@@ -22,13 +23,8 @@ class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
-    void createAccountLinker_ShouldReturnCreatedUserId() {
+    void testCreateAccountLinker_whenSuccess_shouldReturnCreatedUserId() {
         long userId = 1L;
         String token = "token";
         when(userService.getAccountLinkerToken(userId)).thenReturn(token);
@@ -42,7 +38,7 @@ class UserControllerTest {
     }
 
     @Test
-    void createUser_ShouldReturnCreatedUserId() {
+    void testCreateUser_whenSuccess_shouldReturnCreatedUserId() {
         BasicUser mockUser = new BasicUser();
         mockUser.setId(1L);
         when(userService.createUser()).thenReturn(mockUser);

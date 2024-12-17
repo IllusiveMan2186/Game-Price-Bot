@@ -9,10 +9,11 @@ import com.gpb.game.exception.NotExistingMessengerActivationTokenException;
 import com.gpb.game.exception.NotFoundException;
 import com.gpb.game.repository.AccountLinkerRepository;
 import com.gpb.game.repository.UserRepository;
-import com.gpb.game.service.UserService;
 import com.gpb.game.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -33,12 +33,15 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-    UserRepository userRepository = mock(UserRepository.class);
-    AccountLinkerRepository accountLinkerRepository = mock(AccountLinkerRepository.class);
-    UserService userService = new UserServiceImpl(accountLinkerRepository, userRepository);
+    @Mock
+    UserRepository userRepository;
+    @Mock
+    AccountLinkerRepository accountLinkerRepository;
+    @InjectMocks
+    UserServiceImpl userService;
 
     @Test
-    void testGetUsersChangedGames_whenSuccessfully_shouldGetUsers() {
+    void testGetUsersChangedGames_whenSuccess_shouldGetUsers() {
         List<BasicUser> users = new ArrayList<>();
         GameInShop gameInShop1 = GameInShop.builder().id(0).build();
         GameInShop gameInShop2 = GameInShop.builder().id(1).build();
@@ -50,7 +53,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testSubscribeToGame_whenSuccessfully_shouldCallRepositoryMethod() {
+    void testSubscribeToGame_whenSuccess_shouldCallRepositoryMethod() {
         long userId = 1L;
         long gameId = 101L;
 
@@ -63,7 +66,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUnsubscribeFromGame_whenSuccessfully_shouldCallRepositoryMethod() {
+    void testUnsubscribeFromGame_whenSuccess_shouldCallRepositoryMethod() {
         long userId = 1L;
         long gameId = 101L;
 
@@ -76,7 +79,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLinkUsersSuccessfully() {
+    void testLinkUsers_whenSuccess_shouldSaveUserWithNewBAsicUserId() {
         long sourceUserId = 456L;
         String token = "token";
 
@@ -105,7 +108,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void linkUsers_shouldThrowExceptionForInvalidToken() {
+    void testLinkUsers_whenInvalidToken_shouldThrowException() {
         String token = "invalidToken";
 
         when(accountLinkerRepository.findById(token)).thenReturn(Optional.empty());
@@ -114,7 +117,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getAccountLinkerToken_shouldReturnToken() {
+    void testGetAccountLinkerToken_whenSuccess_shouldReturnToken() {
         long userId = 1L;
         BasicUser user = new BasicUser();
         AccountLinker accountLinker = new AccountLinker();
@@ -131,7 +134,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLinkUsersThrowsNotFoundExceptionForTargetUser() {
+    void testLinkUsers_whenTargetUserNotFound_shouldThrowsNotFoundExceptionFor() {
         String token = "token";
         long sourceUserId = 2L;
 
@@ -147,7 +150,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLinkUsersThrowsNotFoundExceptionForSourceUser() {
+    void testLinkUsers_whenSourceUserNotFound_ThrowsNotFoundException() {
         String token = "token";
         long sourceUserId = 2L;
 

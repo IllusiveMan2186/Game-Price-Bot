@@ -36,7 +36,7 @@ class GetWebConnectorTokenCommandHandlerTest {
     }
 
     @Test
-    void testGetDescription_shouldReturnDescription() {
+    void testGetDescription_whenSuccess_shouldReturnDescription() {
         Locale locale = new Locale("");
         when(messageSource.getMessage("accounts.synchronization.get.token.description", null, locale))
                 .thenReturn("messages");
@@ -46,7 +46,7 @@ class GetWebConnectorTokenCommandHandlerTest {
     }
 
     @Test
-    void testApply_shouldReturnTokenToNeededChat() {
+    void testApply_whenSuccess_shouldReturnTokenToNeededChat() {
         Locale locale = new Locale("");
         long userId = 123456;
         Update update = UpdateCreator.getUpdateWithoutCallback("", 123);

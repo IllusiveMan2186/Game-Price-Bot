@@ -32,7 +32,7 @@ class GameInfoCallbackHandlerTest {
     GameInfoCallbackHandler callbackHandler;
 
     @Test
-    void testApply_shouldReturnCorrectMessage() {
+    void testApply_whenSuccess_shouldReturnCorrectMessage() {
         String chatId = "123456";
         int gameId = 12;
         Locale locale = new Locale("");

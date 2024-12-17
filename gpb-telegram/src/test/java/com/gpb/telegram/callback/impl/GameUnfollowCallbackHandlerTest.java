@@ -30,7 +30,7 @@ class GameUnfollowCallbackHandlerTest {
     GameUnfollowCallbackHandler callbackHandler;
 
     @Test
-    void testApply_whenSuccessfully_shouldReturnResponse() {
+    void testApply_whenSuccess_shouldReturnResponse() {
         String chatId = "123456";
         int gameId = 12;
         Locale locale = new Locale("");

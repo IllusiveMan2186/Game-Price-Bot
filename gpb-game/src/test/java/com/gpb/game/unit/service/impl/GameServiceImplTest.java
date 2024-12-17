@@ -64,7 +64,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetSubscribedGames_whenSuccessfully_thenShouldGetGames() {
+    void testGetSubscribedGames_whenSuccess_thenShouldGetGames() {
         List<GameInShop> games = new ArrayList<>();
         when(gameInShopRepository.findSubscribedGames()).thenReturn(games);
 
@@ -74,7 +74,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void getGameByIdSuccessfullyShouldReturnGame() {
+    void testGetGameById_whenSuccess_shouldReturnGame() {
         int id = 1;
         game.setUserList(new ArrayList<>());
         when(gameRepository.findById(id)).thenReturn(game);
@@ -86,7 +86,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void getGameByIdThatNotFoundShouldThrowException() {
+    void  testGetGameById_whenNotFound_shouldThrowException() {
         int id = 1;
         when(gameRepository.findById(id)).thenReturn(null);
 
@@ -94,7 +94,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetGameByName_whenSuccessfully_shouldReturnGame() {
+    void testGetGameByName_whenSuccess_shouldReturnGame() {
         String name = "name";
         int pageSize = 2;
         int pageNum = 2;
@@ -138,7 +138,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void getGameByUrlSuccessfullyShouldReturnGame() {
+    void testGetGameByUrl_whenSuccess_shouldReturnGame() {
         String url = "url";
         GameInShop gameInShop = GameInShop.builder().game(game).build();
         when(gameInShopRepository.findByUrl(url)).thenReturn(gameInShop);
@@ -150,7 +150,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void getGameByUrlThatNotRegisteredShouldFindGameFromStoresService() {
+    void testGetGameByUrl_whenNotRegistered_shouldReturnGame() {
         String url = "url";
         long gameId = 1L;
         when(gameInShopRepository.findByUrl(url)).thenReturn(null);
@@ -166,7 +166,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void findByGenreSuccessfullyShouldReturnGameList() {
+    void testFindByGenre_whenSuccess_shouldReturnGameList() {
         List<Genre> genre = Collections.singletonList(Genre.STRATEGIES);
         int pageSize = 2;
         List<ProductType> types = Collections.singletonList(ProductType.GAME);
@@ -188,7 +188,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void findUserGamesSuccessfullyShouldReturnGameList() {
+    void testFindUserGames_whenSuccess_shouldReturnGameList() {
         int pageSize = 1;
         int pageNum = 1;
         int userId = 1;
@@ -207,7 +207,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testChangeInfo_whenSuccessfully_thenSaveChanges() {
+    void testChangeInfo_whenSuccess_thenSaveChanges() {
         List<GameInShop> changedGames = new ArrayList<>();
 
         gameService.changeInfo(changedGames);
@@ -216,7 +216,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetUsersChangedGames_whenSuccessfully_thenShouldGetGames() {
+    void testGetUsersChangedGames_whenSuccess_thenShouldGetGames() {
         List<GameInShop> changedGames = new ArrayList<>();
         GameInShop gameInShop1 = GameInShop.builder().id(0).build();
         GameInShop gameInShop2 = GameInShop.builder().id(1).build();
@@ -230,7 +230,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testRemoveGame_whenSuccessfully_shouldRemoveGame() {
+    void testRemoveGame_whenSuccess_shouldRemoveGame() {
         long gameId = 1L;
 
         gameService.removeGame(gameId);
@@ -239,7 +239,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testRemoveGameInStore_whenSuccessfully_shouldRemoveGameInStore() {
+    void testRemoveGameInStore_whenSuccess_shouldRemoveGameInStore() {
         long gameInStoreId = 1L;
 
         gameService.removeGameInStore(gameInStoreId);
@@ -248,7 +248,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testSetFollowGameOption_whenSuccessfully_shouldSetFollowedOptionToTrue() {
+    void testSetFollowGameOption_whenSuccess_shouldSetFollowedOptionToTrue() {
         long gameId = 1L;
         when(gameRepository.findById(gameId)).thenReturn(game);
         Game expectedGame = Game.builder()

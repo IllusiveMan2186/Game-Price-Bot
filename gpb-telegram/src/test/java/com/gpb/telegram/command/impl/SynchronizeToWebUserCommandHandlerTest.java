@@ -31,7 +31,7 @@ class SynchronizeToWebUserCommandHandlerTest {
     SynchronizeToWebUserCommandHandler controller;
 
     @Test
-    void testGetDescription_shouldReturnDescription() {
+    void testGetDescription_whenSuccess_shouldReturnDescription() {
         Locale locale = new Locale("");
         when(messageSource.getMessage("accounts.synchronization.description", null, locale))
                 .thenReturn("messages");
@@ -41,7 +41,7 @@ class SynchronizeToWebUserCommandHandlerTest {
     }
 
     @Test
-    void testApply_shouldReturnMessageAndSSynchronizeAccounts() {
+    void testApply_whenSuccess_shouldReturnMessageAndSSynchronizeAccounts() {
         Locale locale = new Locale("");
         long userId = 123456;
         Update update = UpdateCreator.getUpdateWithoutCallback("/synchronizeToWeb mockToken",123);

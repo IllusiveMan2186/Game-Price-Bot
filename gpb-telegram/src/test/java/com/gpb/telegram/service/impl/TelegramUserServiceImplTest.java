@@ -69,7 +69,7 @@ class TelegramUserServiceImplTest {
     }
 
     @Test
-    void testChangeUserLocale_whenSuccessfully_shouldReturnNewLocale() {
+    void testChangeUserLocale_whenSuccess_shouldReturnNewLocale() {
         long telegramId = 123;
         Locale locale = new Locale("");
         TelegramUser telegramUser = TelegramUser.builder()
@@ -89,7 +89,7 @@ class TelegramUserServiceImplTest {
     }
 
     @Test
-    void testGetUserLocale_whenSuccessfully_shouldReturnUserLocale() {
+    void testGetUserLocale_whenSuccess_shouldReturnUserLocale() {
         long telegramId = 123;
         Locale locale = new Locale("");
         TelegramUser telegramUser = TelegramUser.builder()
@@ -106,7 +106,7 @@ class TelegramUserServiceImplTest {
     }
 
     @Test
-    void testGetUserById_shouldReturnUser() {
+    void testGetUserById_whenSuccess_shouldReturnUser() {
         long telegramId = 123;
         TelegramUser telegramUser = new TelegramUser();
         when(telegramUserRepository.findByTelegramId(telegramId)).thenReturn(telegramUser);

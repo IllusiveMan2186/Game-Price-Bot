@@ -27,9 +27,9 @@ class UserLinkerControllerTest {
     }
 
     @Test
-    void connectTelegramUser_shouldInvokeServiceMethod() {
+    void testConnectTelegramUser_whenSuccess_shouldInvokeServiceMethod() {
         String token = "telegram-token";
-        UserDto user = new UserDto("username", "password", "tpken", "role", "ua");
+        UserDto user = new UserDto("username", "password", "token", "role", "ua");
         user.setId(123L);
 
 
@@ -40,8 +40,8 @@ class UserLinkerControllerTest {
     }
 
     @Test
-    void getTelegramUserConnectorToken_shouldReturnToken() {
-        UserDto user = new UserDto("username", "password", "tpken", "role", "ua");
+    void testGetTelegramUserConnectorToken_whenSuccess_shouldReturnToken() {
+        UserDto user = new UserDto("username", "password", "token", "role", "ua");
         user.setId(123L);
         when(userLinkerService.getAccountsLinkerToken(123L)).thenReturn("connector-token");
 

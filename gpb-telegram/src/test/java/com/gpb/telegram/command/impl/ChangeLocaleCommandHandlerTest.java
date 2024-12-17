@@ -29,7 +29,7 @@ class ChangeLocaleCommandHandlerTest {
     ChangeLocaleCommandHandler controller;
 
     @Test
-    void testGetDescription_shouldReturnDescription() {
+    void testGetDescription_whenSuccess_shouldReturnDescription() {
         Locale locale = new Locale("");
         when(messageSource.getMessage("change.language.command.description", null, locale))
                 .thenReturn("messages");
@@ -39,7 +39,7 @@ class ChangeLocaleCommandHandlerTest {
     }
 
     @Test
-    void testApply_shouldReturnSuccessMessage() {
+    void testApply_whenSuccess_shouldReturnSuccessMessage() {
         Locale locale = new Locale("");
         Update update = UpdateCreator.getUpdateWithoutCallback("/changeLanguage language", 123);
         Locale newLocale = new Locale("new");

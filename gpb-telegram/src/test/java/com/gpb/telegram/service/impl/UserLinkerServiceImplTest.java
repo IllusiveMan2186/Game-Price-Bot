@@ -43,7 +43,7 @@ class UserLinkerServiceImplTest {
     }
 
     @Test
-    void testGetAccountsLinkerToken_shouldReturnToken() {
+    void testGetAccountsLinkerToken_whenSuccess_shouldReturnToken() {
         String token = "token";
         long webUserId = 1L;
         AccountLinkerEvent event = new AccountLinkerEvent(token, webUserId);

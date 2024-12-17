@@ -28,7 +28,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     }
 
     @Test
-    void getGameByIdSuccessfullyShouldReturnGame() throws Exception {
+    void testGetGameById_whenSuccess_shouldReturnGame() throws Exception {
 
         mockMvc.perform(get("/game/{id}", games.get(0).getId())
                         .header(Constants.API_KEY_HEADER, API_KEY))
@@ -40,7 +40,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     }
 
     @Test
-    void getGameByUrlSuccessfullyShouldReturnGame() throws Exception {
+    void testGetGameByUrl_whenSuccess_shouldReturnGame() throws Exception {
         mockMvc.perform(get("/game/url")
                         .param("url", games.get(0).getGamesInShop().stream().toList().get(0).getUrl())
                         .header(Constants.API_KEY_HEADER, API_KEY))
@@ -56,7 +56,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     }
 
     @Test
-    void getGamesByGenreWithoutParametersSuccessfullyShouldReturnListOfGames() throws Exception {
+    void testGetGamesByGenre_whenTypeParametersNoProvided_shouldReturnListOfGames() throws Exception {
         mockMvc.perform(get("/game/genre")
                         .param("genre", games.get(0).getGenres().get(0).name())
                         .param("genre", games.get(1).getGenres().get(0).name())
@@ -78,7 +78,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     }
 
     @Test
-    void getAllGamesByGenreSuccessfullyShouldReturnListOfGames() throws Exception {
+    void testGetAllGamesByGenre_whenSuccess_shouldReturnListOfGames() throws Exception {
         mockMvc.perform(get("/game/genre")
                         .param("pageNum", "1")
                         .param("pageSize", "25")
@@ -98,8 +98,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     }
 
     @Test
-    void getSecondPageOfGamesByGenreSuccessfullyShouldReturnSecondPageOfGame() throws Exception {
-
+    void testGetGamesByGenre_whenRequestingSecondPage_shouldReturnSecondPageOfGames() throws Exception {
         mockMvc.perform(get("/game/genre")
                         .param("genre", games.get(0).getGenres().get(0).name())
                         .param("pageNum", "2")
@@ -118,7 +117,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     }
 
     @Test
-    void getGamesByGenreInPriceRangeSuccessfullyShouldReturnThreeGames() throws Exception {
+    void testGetGamesByGenre_whenInPriceRange_shouldReturnThreeGames() throws Exception {
         GameInShop gameInShop1 = gameInShopCreation("url1", new BigDecimal(100), new BigDecimal(100));
         GameInShop gameInShop2 = gameInShopCreation("url2", new BigDecimal(600), new BigDecimal(600));
         GameInShop gameInShop3 = gameInShopCreation("url3", new BigDecimal(1500), new BigDecimal(1200));
@@ -151,7 +150,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     }
 
     @Test
-    void getGamesByGenreForOnePriceSuccessfullyShouldReturnOneGame() throws Exception {
+    void testGetGamesByGenre_whenPriceIsSpecific_shouldReturnOneGame() throws Exception {
 
         mockMvc.perform(get("/game/genre")
                         .param("pageNum", "1")
@@ -183,7 +182,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     }
 
     @Test
-    void getUserGamesSuccessfullyShouldReturnGame() throws Exception {
+    void testGetUserGames_whenSuccess_shouldReturnGame() throws Exception {
         BasicUser user = userRepository.save(new BasicUser());
         userService.subscribeToGame(user.getId(), games.get(1).getId());
 
@@ -204,7 +203,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     }
 
     @Test
-    void getGameByNotExistingIdShouldReturnError() throws Exception {
+    void testGetGameById_whenIdDoesNotExist_shouldReturnError() throws Exception {
         int notExistingGameId = games.size() + 1;
 
         mockMvc.perform(get("/game/{id}", notExistingGameId)
