@@ -26,7 +26,7 @@ public class GameStoresServiceImpl implements GameStoresService {
     @Override
     public List<Game> findGameByName(String name) {
 
-        log.info(String.format("Getting host from link : '%s'", name));
+        log.info("Getting host from link : '{}'", name);
         List<Game> games = new ArrayList<>();
         for (StoreService service : storeServices.values()) {
 
@@ -46,11 +46,11 @@ public class GameStoresServiceImpl implements GameStoresService {
     @Override
     public Game findGameByUrl(String link) {
         try {
-            log.info(String.format("Getting host from link : '%s'", link));
+            log.info("Getting host from link : '{}'", link);
             URL url = new URL(link);
             StoreService storeService = storeServices.get(url.getHost());
 
-            log.info(String.format("Getting store service from link : '%s'", url.getHost()));
+            log.info("Getting store service from link : '{}'", url.getHost());
             Game game = storeService.findUncreatedGameByUrl(link);
             setGameFromAllStores(game, storeService);
             return game;
@@ -62,7 +62,7 @@ public class GameStoresServiceImpl implements GameStoresService {
 
     @Override
     public List<GameInShop> checkGameInStoreForChange(List<GameInShop> games) {
-        log.info(String.format("Check %s games from wishlist in stores for changes ", games.size()));
+        log.info("Check {} games from wishlist in stores for changes ", games.size());
         List<GameInShop> changedGameInShopList = new ArrayList<>();
 
         for (String host : storeServices.keySet()) {
@@ -82,14 +82,14 @@ public class GameStoresServiceImpl implements GameStoresService {
             URL url = new URL(gameUrl);
             return storeHost.equals(url.getHost());
         } catch (MalformedURLException e) {
-            log.info(String.format("Game with url '%s' not found during comparison with host '%s' " +
-                    "cause of exception : '%s'", gameUrl, storeHost, e.getMessage()));
+            log.info("Game with url '{}' not found during comparison with host '{}' " +
+                    "cause of exception : '{}'", gameUrl, storeHost, e.getMessage());
         }
         return false;
     }
 
     private void setGameFromAllStores(Game game, StoreService serviceToSkip) {
-        log.info(String.format("Set game from all stores for  : '%s'", game.getName()));
+        log.info("Set game from all stores for  : '{}'", game.getName());
         ArrayList<StoreService> services = new ArrayList<>(storeServices.values());
         services.remove(serviceToSkip);
 

@@ -73,14 +73,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void subscribeToGame(long userId, long gameId) {
-        log.info(String.format("Subscribe for game(%s) into user(%s) game list", gameId, userId));
+        log.info("Subscribe for game({}) into user({}) game list", gameId, userId);
 
         userRepository.addGameToUserListOfGames(userId, gameId);
     }
 
     @Override
     public void unsubscribeFromGame(long userId, long gameId) {
-        log.info(String.format("Unsubscribe game(%s) from user(%s) game list", gameId, userId));
+        log.info("Unsubscribe game({}) from user({}) game list", gameId, userId);
 
         userRepository.removeGameFromUserListOfGames(userId, gameId);
     }

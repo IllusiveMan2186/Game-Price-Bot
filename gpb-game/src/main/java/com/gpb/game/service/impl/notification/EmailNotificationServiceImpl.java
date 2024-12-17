@@ -28,7 +28,7 @@ public class EmailNotificationServiceImpl implements NotificationService {
     public void sendGameInfoChange(BasicUser user, List<GameInShop> gameInShopList) {
         Map<String, Object> variables = new LinkedHashMap<>();
         variables.put("games", gameInShopList);
-        log.info(String.format("Email notification for user '%s'", user.getId()));
+        log.info("Email notification for user '{}'", user.getId());
         kafkaTemplate.send(EMAIL_NOTIFICATION_TOPIC, "1", new EmailNotificationEvent(user.getId(), variables));
     }
 }

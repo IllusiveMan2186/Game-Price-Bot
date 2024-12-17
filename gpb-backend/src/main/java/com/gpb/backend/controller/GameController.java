@@ -101,12 +101,12 @@ public class GameController {
                                             @RequestParam(required = false, defaultValue = "0") final BigDecimal minPrice,
                                             @RequestParam(required = false, defaultValue = "10000") final BigDecimal maxPrice,
                                             @RequestParam(required = false, defaultValue = "gamesInShop.price-ASC") final String sortBy) {
-        log.info(String.format("Get games by genres : '%s',types to exclude - '%s',price '%s' - '%s' with '%s' " +
-                        "element on page for '%s' page and sort '%s' ",
-                genre, type, minPrice, maxPrice, pageSize, pageNum, sortBy));
+        log.info("Get games by genres : '{}',types to exclude - '{}',price '{}' - '{}' with '{}' " +
+                        "element on page for '{}' page and sort '{}' ",
+                genre, type, minPrice, maxPrice, pageSize, pageNum, sortBy);
         checkSortParam(sortBy);
         if (maxPrice.compareTo(minPrice) < 0) {
-            log.info(String.format("Invalid price range '%s' - '%s'", minPrice, maxPrice));
+            log.info("Invalid price range '{}' - '{}'", minPrice, maxPrice);
             throw new PriceRangeException();
         }
         return gameService.getByGenre(genre, type, pageSize, pageNum, minPrice, maxPrice, sortBy);
@@ -127,8 +127,8 @@ public class GameController {
                                           @RequestParam(required = false, defaultValue = "1") final int pageNum,
                                           @RequestParam(required = false, defaultValue = "gamesInShop.price-ASC") final String sortBy,
                                           @AuthenticationPrincipal UserDto user) {
-        log.info(String.format("Get games for user '%s' with '%s' element on page for '%s' page and sort '%s' ",
-                user.getId(), pageSize, pageNum, sortBy));
+        log.info("Get games for user '{}' with '{}' element on page for '{}' page and sort '{}' ",
+                user.getId(), pageSize, pageNum, sortBy);
         checkSortParam(sortBy);
         return gameService.getUserGames(user.getId(), pageSize, pageNum, sortBy);
     }
@@ -175,7 +175,7 @@ public class GameController {
         Matcher matcher = pattern.matcher(sortBy);
 
         if (!matcher.matches()) {
-            log.info(String.format("Invalid sort params '%s'", sortBy));
+            log.info("Invalid sort params '{}'", sortBy);
             throw new SortParamException();
         }
     }

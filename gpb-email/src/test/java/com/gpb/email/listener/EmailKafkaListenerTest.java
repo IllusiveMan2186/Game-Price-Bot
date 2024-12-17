@@ -3,11 +3,11 @@ package com.gpb.email.listener;
 import com.gpb.email.bean.EmailEvent;
 import com.gpb.email.service.EmailService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.thymeleaf.context.Context;
 
 import java.util.Locale;
@@ -18,6 +18,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 class EmailKafkaListenerTest {
 
     @Mock
@@ -25,11 +26,6 @@ class EmailKafkaListenerTest {
 
     @InjectMocks
     private EmailKafkaListener emailKafkaListener;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void testEmailEventListen_whenSuccess_shouldProcessEmailEvent() {

@@ -42,7 +42,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @Override
     public WebUser getWebUserByEmail(String email) {
-        log.info(String.format("Get web user by email : %s", email));
+        log.info("Get web user by email : {}", email);
         return webUserRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("app.user.error.email.not.found"));
     }
@@ -51,7 +51,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     @SuppressWarnings("deprecation")
     public void updateLocale(String locale, long userId) {
-        log.info(String.format("Change locale for user '%s' into '%s'", userId, locale));
+        log.info("Change locale for user '{}' into '{}'", userId, locale);
 
         WebUser webUser = getWebUserById(userId);
         webUser.setLocale(new Locale(locale));
@@ -65,7 +65,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     private WebUser getWebUserById(final long userId) {
-        log.info(String.format("Get user by id : %s", userId));
+        log.info("Get user by id : {}", userId);
 
         return webUserRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("app.user.error.id.not.found"));

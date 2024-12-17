@@ -24,19 +24,19 @@ public class TelegramUserServiceImpl implements TelegramUserService {
 
     @Override
     public boolean isUserRegistered(long telegramId) {
-        log.info(String.format("Check if user '%s' is registered", telegramId));
+        log.info("Check if user '{}' is registered", telegramId);
         return telegramUserRepository.existsByTelegramId(telegramId);
     }
 
     @Override
     public TelegramUser getUserById(long telegramId) {
-        log.info(String.format("Get user by telegram id '%s'", telegramId));
+        log.info("Get user by telegram id '{}'", telegramId);
         return telegramUserRepository.findByTelegramId(telegramId);
     }
 
     @Override
     public TelegramUser createTelegramUser(TelegramUser newUser) {
-        log.info(String.format("New user '%s' registered", newUser.getTelegramId()));
+        log.info("New user '{}' registered", newUser.getTelegramId());
         Long basicUserId = restTemplateHandler.executeRequest("/user", HttpMethod.POST, null, Long.class);
         newUser.setBasicUserId(basicUserId);
         return telegramUserRepository.save(newUser);
@@ -44,7 +44,7 @@ public class TelegramUserServiceImpl implements TelegramUserService {
 
     @Override
     public Locale changeUserLocale(long telegramId, Locale newLocale) {
-        log.info(String.format("Change locale for user '%s'", telegramId));
+        log.info("Change locale for user '{}'", telegramId);
         TelegramUser telegramUser = telegramUserRepository.findByTelegramId(telegramId);
         telegramUser.setLocale(newLocale);
 
