@@ -16,11 +16,42 @@ Backend web part of GPB application
 ### Environments
 
 Add Environment variables for running project locally
-* POSTGRES_DB_URL;
-* POSTGRES_DB_USERNAME;
-* POSTGRES_DB_PASSWORD;
-* KAFKA_SERVER_URL;
-* BACKEND_SERVICE_URL;
-* IMAGE_FOLDER;
-* GAME_SERVICE_URL
-* API_KEY;
+
+* ADMIN_EMAIL: The email address for the admin user.
+    * Set a valid email address for the admin user here.
+  
+
+* ADMIN_PASSWORD: The password for the admin user.
+    * Set a password for the admin user here.
+  
+
+* IMAGE_FOLDER: The folder path for storing game-related images.
+    * Set your desired folder path here.
+  
+
+* KAFKA_SERVER_URL: The URL of the Kafka server for your backend to communicate with.
+    * Set the correct Kafka server URL if it is different from the default.
+  
+
+* POSTGRES_DB_URL: The JDBC URL to connect to the PostgreSQL database.
+    * You typically do not need to change this unless you are running PostgreSQL on a different host or port.
+  
+
+* POSTGRES_DB_USERNAME: The username to connect to the PostgreSQL database.
+    * Set your desired username here.
+  
+
+* POSTGRES_DB_PASSWORD: The password for the PostgreSQL user.
+    * Set a strong password for your PostgreSQL user here.
+  
+
+* BACKEND_SERVICE_URL: The URL for the backend service.
+    * Adjust this if your backend service is running on a different host or port.
+  
+
+* GAME_SERVICE_URL: The URL for the game service.
+    * Modify this URL if your game service runs on a different address or port.
+  
+
+* API_KEY: The API key used for authorization or other purposes.
+    * Set your unique API key here.

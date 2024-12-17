@@ -14,7 +14,14 @@ Part of GPB application that responsible for sending emails
 ### Environments
 
 Add Environment variables for running project locally
-* MAIL_USERNAME;
-* MAIL_PASSWORD;
-* KAFKA_GROUP_ID;
-* KAFKA_SERVER_URL;
+
+* MAIL_USERNAME: The username for sending emails (e.g., Gmail address).
+    * Enter the email address you will use to send notifications to users.
+
+
+* MAIL_PASSWORD: The app password for the email account used for sending emails.
+    * Set the correct password for the email account here.
+
+
+* KAFKA_SERVER_URL: The URL of the Kafka server for your backend to communicate with.
+    * Set the correct Kafka server URL if it is different from the default.
