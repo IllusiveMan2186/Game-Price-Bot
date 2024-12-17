@@ -46,11 +46,11 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game getById(long gameId) {
-        log.info(String.format("Get game by id : %s", gameId));
+        log.info("Get game by id : {}", gameId);
 
         final Game game = gameRepository.findById(gameId);
         if (game == null) {
-            log.info(String.format("Game with id : '%s' not found", gameId));
+            log.info("Game with id : '{}' not found", gameId);
             throw new NotFoundException("app.game.error.id.not.found");
         }
         return game;
@@ -70,7 +70,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameListPageDto getByName(final String name, final int pageSize, final int pageNum, Sort sort) {
-        log.info(String.format("Get game by name : %s", name));
+        log.info("Get game by name : {}", name);
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
         long elementAmount;
 
@@ -93,7 +93,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameInfoDto getByUrl(String url) {
-        log.info(String.format("Get game by url : %s", url));
+        log.info("Get game by url : {}", url);
 
         final GameInShop gameInShop = gameInShopRepository.findByUrl(url);
         if (gameInShop == null) {
@@ -107,8 +107,8 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameListPageDto getByGenre(List<Genre> genre, List<ProductType> typesToExclude, final int pageSize,
                                       final int pageNum, BigDecimal minPrice, BigDecimal maxPrice, Sort sort) {
-        log.info(String.format("Get games by genres : '%s',types to exclude - '%s',price '%s' - '%s' with '%s' " +
-                "element on page for '%s' page ", genre, typesToExclude, minPrice, maxPrice, pageSize, pageNum));
+        log.info("Get games by genres : '{}',types to exclude - '{}',price '{}' - '{}' with '{}' " +
+                "element on page for '{}' page ", genre, typesToExclude, minPrice, maxPrice, pageSize, pageNum);
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
         List<Game> games;
         long elementAmount;
@@ -132,8 +132,8 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameListPageDto getUserGames(long userId, int pageSize, int pageNum, Sort sort) {
-        log.info(String.format("Get games for user '%s' with '%s' element on page for '%s' page ",
-                userId, pageSize, pageNum));
+        log.info("Get games for user '{}' with '{}' element on page for '{}' page ",
+                userId, pageSize, pageNum);
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
         BasicUser user = new BasicUser();
         user.setId(userId);
@@ -156,7 +156,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void changeInfo(List<GameInShop> changedGames) {
-        log.info(String.format("Save games in store changes for %s elements", changedGames.size()));
+        log.info("Save games in store changes for {} elements", changedGames.size());
 
         gameInShopRepository.saveAll(changedGames);
     }
@@ -171,14 +171,14 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void removeGame(long gameId) {
-        log.info(String.format("Remove game by id : %s", gameId));
+        log.info("Remove game by id : {}", gameId);
 
         gameRepository.deleteById(gameId);
     }
 
     @Override
     public void removeGameInStore(long gameInStoreId) {
-        log.info(String.format("Remove game in store by id : %s", gameInStoreId));
+        log.info("Remove game in store by id : {}", gameInStoreId);
 
         gameInShopRepository.deleteById(gameInStoreId);
     }

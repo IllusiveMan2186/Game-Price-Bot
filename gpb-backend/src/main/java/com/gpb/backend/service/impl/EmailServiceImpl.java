@@ -49,7 +49,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void sendEmail(String to, String subject, Map<String, Object> variables, Locale locale, String templateName) {
-        log.info(String.format("Email event for recipient '%s' about '%s'", to, subject));
+        log.info("Email event for recipient '{}' about '{}'", to, subject);
         String key = UUID.randomUUID().toString();
         kafkaTemplate.send(EMAIL_SERVICE_TOPIC, key, new EmailEvent(to, subject, variables, locale, templateName));
     }

@@ -28,7 +28,7 @@ public class UserActivationServiceImpl implements UserActivationService {
 
     @Override
     public UserActivation createUserActivation(WebUser user) {
-        log.info(String.format("Create activation token for user : %s", user.getId()));
+        log.info("Create activation token for user : {}", user.getId());
 
         UserActivation userActivation = UserActivation.builder()
                 .user(user)
@@ -38,7 +38,7 @@ public class UserActivationServiceImpl implements UserActivationService {
 
     @Override
     public void resendActivationEmail(String email) {
-        log.info(String.format("Resend the activation email to the user for user: %s", email));
+        log.info("Resend the activation email to the user for user: {}", email);
 
         WebUser user = userService.getWebUserByEmail(email);
         UserActivation userActivation = userActivationRepository.findByUser(user);
@@ -47,7 +47,7 @@ public class UserActivationServiceImpl implements UserActivationService {
 
     @Override
     public void activateUserAccount(String token) {
-        log.info(String.format("Activate user for token : %s", token));
+        log.info("Activate user for token : {}", token);
 
         UserActivation userActivation = userActivationRepository.findByToken(token);
         if (userActivation == null) {

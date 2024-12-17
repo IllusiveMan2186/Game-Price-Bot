@@ -23,10 +23,9 @@ public class NotificationManagerImpl implements NotificationManager {
 
     @Override
     public void sendGameInfoChange(BasicUser user, List<GameInShop> gameInShopList) {
-        log.info(String.format("Send to user(%s) list of (%s) changed games", user.getId(), gameInShopList.size()));
+        log.info("Send to user({}) list of ({}) changed games", user.getId(), gameInShopList.size());
         for (UserNotificationType notificationType : user.getNotificationTypes()) {
-            log.info(String.format("Send to user(%s) list of changed games by (%s) notification type ",
-                    user.getId(), notificationType));
+            log.info("Send to user({}) list of changed games by ({}) notification type ", user.getId(), notificationType);
             notificationServices.get(notificationType.name()).sendGameInfoChange(user, gameInShopList);
         }
     }
