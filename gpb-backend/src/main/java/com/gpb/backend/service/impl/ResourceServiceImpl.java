@@ -41,7 +41,7 @@ public class ResourceServiceImpl implements ResourceService {
             InputStream in = new FileInputStream(gameImageFullPath);
             return IOUtils.toByteArray(in);
         } catch (Exception e) {
-            log.error(String.format("Not found image by path '%s'. Full message :'%s'", gameImageFullPath, e.getMessage()));
+            log.error(String.format("Not found image by path '{}'. Full message :'{}'", gameImageFullPath, e.getMessage()));
             throw new GameImageNotFoundException(e);
         }
     }

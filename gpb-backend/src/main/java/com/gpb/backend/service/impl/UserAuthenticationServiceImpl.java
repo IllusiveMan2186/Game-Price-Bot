@@ -96,7 +96,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     @Override
     public UserDto getUserByEmail(final String email) {
-        log.info(String.format("Get user by email : %s", email));
+        log.info("Get user by email : {}", email);
         final WebUser user = webUserRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("app.user.error.email.not.found"));
         return modelMapper.map(user, UserDto.class);

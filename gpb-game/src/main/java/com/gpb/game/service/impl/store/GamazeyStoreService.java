@@ -82,7 +82,7 @@ public class GamazeyStoreService implements StoreService {
 
     @Override
     public Game findUncreatedGameByUrl(String url) {
-        log.info(String.format("Searching uncreated game with url : '%s' in gamazey store", url));
+        log.info("Searching uncreated game with url : '{}' in gamazey store", url);
         Document page = parser.getPage(url);
         GameInShop gameInShop = getGameInShop(page);
         ProductType type = getProductType(page);
@@ -102,7 +102,7 @@ public class GamazeyStoreService implements StoreService {
 
     @Override
     public GameInShop findByUrl(String url) {
-        log.info(String.format("Searching game with url : '%s' in gamazey store", url));
+        log.info("Searching game with url : '{}' in gamazey store", url);
         Document page = parser.getPage(url);
         GameInShop game = getGameInShop(page);
         game.setUrl(url);
@@ -111,7 +111,7 @@ public class GamazeyStoreService implements StoreService {
 
     @Override
     public List<Game> findUncreatedGameByName(String name) {
-        log.info(String.format("Searching game with name : '%s' in gamazey store", name));
+        log.info("Searching game with name : '{}' in gamazey store", name);
 
         Document page = parser.getPage(GAMEZEY_SEARCH_URL + name);
         Elements elements = page.getElementsByClass("rm-module-title");
@@ -154,7 +154,7 @@ public class GamazeyStoreService implements StoreService {
     }
 
     private boolean isGameInfoChanged(GameInShop gameInShop) {
-        log.info(String.format("Check for game '%s' info changing in gamazey store", gameInShop.getNameInStore()));
+        log.info("Check for game '{}' info changing in gamazey store", gameInShop.getNameInStore());
 
         Document page = parser.getPage(gameInShop.getUrl());
         GameInShop gameOnPage = getGameInShop(page);
@@ -165,7 +165,7 @@ public class GamazeyStoreService implements StoreService {
     }
 
     private GameInShop setChangedFields(GameInShop gameInShop) {
-        log.info(String.format("Set changes for game '%s' in gamazey store", gameInShop.getNameInStore()));
+        log.info("Set changes for game '{}' in gamazey store", gameInShop.getNameInStore());
 
         Document page = parser.getPage(gameInShop.getUrl());
         GameInShop gameOnPage = getGameInShop(page);
@@ -246,7 +246,7 @@ public class GamazeyStoreService implements StoreService {
         try {
             cropImage(imgUrl, filePath);
         } catch (IOException e) {
-            log.error(String.format("Not loaded image for game '%s' by url '%s':'%s'", gameName, imgUrl, e.getMessage()));
+            log.error(String.format("Not loaded image for game '{}' by url '{}':'{}'", gameName, imgUrl, e.getMessage()));
         }
     }
 

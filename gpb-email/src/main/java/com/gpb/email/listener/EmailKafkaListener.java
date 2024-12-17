@@ -23,8 +23,8 @@ public class EmailKafkaListener {
             containerFactory = "emailEventListener")
     public void emailEventListen(ConsumerRecord<String, EmailEvent> eventRecord) {
         EmailEvent emailEvent = eventRecord.value();
-        log.info(String.format("Email event '%s' for recipient '%s' about '%s'", eventRecord.key(),
-                emailEvent.getRecipient(), emailEvent.getSubject()));
+        log.info("Email event '{}' for recipient '{}' about '{}'", eventRecord.key(),
+                emailEvent.getRecipient(), emailEvent.getSubject());
 
         Context context = new Context();
         context.setLocale(emailEvent.getLocale());
