@@ -66,11 +66,6 @@ public class GamazeyStoreService implements StoreService {
 
     private final ResourceConfiguration resourceConfiguration;
 
-    @Value("${GAMEZEY_LOGIN}")
-    private String login;
-    @Value("${GAMEZEY_PASSWORD}")
-    private String password;
-
     public GamazeyStoreService(StorePageParser parser, Map<String, Genre> genreMap, Map<String, ProductType> productTypeMap,
                                Map<String, ClientActivationType> clientActivationTypeMap, ResourceConfiguration resourceConfiguration) {
         this.parser = parser;
