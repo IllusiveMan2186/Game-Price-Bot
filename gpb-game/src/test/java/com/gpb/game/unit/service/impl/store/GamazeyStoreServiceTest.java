@@ -14,7 +14,6 @@ import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,7 +22,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +57,7 @@ class GamazeyStoreServiceTest {
             clientActivationTypeMap, resourceConfiguration);
 
     @Test
-    void testGetUncreatedGameByUrl_whenSuccessfully_thenShouldReturnNewGame() {
+    void testGetUncreatedGameByUrl_whenSuccess_shouldReturnNewGame() {
         final GameInShop gameInShop = getGameInStore();
         final Game game = Game.builder()
                 .name(gameInShop.getNameInStore())
@@ -84,11 +82,11 @@ class GamazeyStoreServiceTest {
     }
 
     @Test
-    void testGetGameInStoreByUrl_whenSuccessfully_thenShouldReturnNewGameInStore() {
+    void testGetGameInStoreByUrl_whenSuccess_shouldReturnNewGameInStore() {
         final GameInShop gameInShop = getGameInStore();
         String url = "url";
 
-        getDocumentForGameByUrl(gameInShop,url);
+        getDocumentForGameByUrl(gameInShop, url);
 
         GameInShop result = storeService.findByUrl(url);
 
@@ -96,7 +94,7 @@ class GamazeyStoreServiceTest {
     }
 
     @Test
-    void testFindUncreatedGameByName_whenSuccessfully_thenShouldReturnGameList() {
+    void testFindUncreatedGameByName_whenSuccess_shouldReturnGameList() {
         final GameInShop gameInShop = getGameInStore();
         final Game game = Game.builder()
                 .name(gameInShop.getNameInStore())
@@ -132,7 +130,7 @@ class GamazeyStoreServiceTest {
     }
 
     @Test
-    void testFindGameByName_whenSuccessfully_thenShouldReturnGame() {
+    void testFindGameByName_whenSuccess_shouldReturnGame() {
         final GameInShop gameInShop = getGameInStore();
         String url = "url";
 
@@ -159,7 +157,7 @@ class GamazeyStoreServiceTest {
     }
 
     @Test
-    void testCheckGameInStoreForChange() {
+    void testCheckGameInStoreForChange_whenSuccess_shouldReturnListOfGameInShop() {
         List<GameInShop> gameInShops = new ArrayList<>();
         GameInShop gameInShop = GameInShop.builder()
                 .nameInStore("Test Game")
@@ -203,7 +201,7 @@ class GamazeyStoreServiceTest {
     }
 
     private Document getDocumentForGameByUrl(GameInShop gameInShop, String url) {
-        String nameOnPage = String.format("Гра %s для ПК (Ключ активації Steam)",gameInShop.getNameInStore());
+        String nameOnPage = String.format("Гра %s для ПК (Ключ активації Steam)", gameInShop.getNameInStore());
         Document page = mock(Document.class);
         when(parser.getPage(url)).thenReturn(page);
         Elements nameFieldElement = mock(Elements.class);

@@ -8,24 +8,24 @@ import com.gpb.backend.service.GameService;
 import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserAuthenticationService;
 import com.gpb.backend.service.UserManagementService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
     @Mock
     private UserManagementService userManagementService;
     @Mock
     private UserAuthenticationService userAuthenticationService;
-    ;
 
     @Mock
     private GameService gameService;
@@ -39,18 +39,13 @@ class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
-    void updateUserEmail_shouldReturnUpdatedUser() {
+    void testUpdateUserEmail_whenSuccess_shouldReturnUpdatedUser() {
         String newEmail = "newemail@example.com";
-        UserDto user = new UserDto("username", "password", "tpken", "role", "ua");
+        UserDto user = new UserDto("username", "password", "token", "role", "ua");
         user.setId(123L);
 
-        UserDto updatedUser = new UserDto("username", "password", "tpken", "role", "ua");
+        UserDto updatedUser = new UserDto("username", "password", "token", "role", "ua");
         updatedUser.setEmail(newEmail);
         when(userAuthenticationService.updateUserEmail(newEmail, user)).thenReturn(updatedUser);
         when(userAuthenticationProvider.createToken(newEmail)).thenReturn("new-token");
@@ -67,14 +62,14 @@ class UserControllerTest {
     }
 
     @Test
-    void updateUserPassword_shouldReturnUpdatedUser() {
+    void testUpdateUserPassword_whenSuccess_shouldReturnUpdatedUser() {
         char[] password = "newPassword123".toCharArray();
         PasswordChangeDto passwordChangeDto = new PasswordChangeDto();
         passwordChangeDto.setPassword(password);
-        UserDto user = new UserDto("username", "password", "tpken", "role", "ua");
+        UserDto user = new UserDto("username", "password", "token", "role", "ua");
         user.setId(123L);
 
-        UserDto updatedUser = new UserDto("username", "password", "tpken", "role", "ua");
+        UserDto updatedUser = new UserDto("username", "password", "token", "role", "ua");
         when(userAuthenticationService.updateUserPassword(password, user)).thenReturn(updatedUser);
 
 
@@ -86,7 +81,7 @@ class UserControllerTest {
     }
 
     @Test
-    void resendUserActivationEmail_shouldInvokeServiceMethod() {
+    void testResendUserActivationEmail_whenSuccess_shouldInvokeServiceMethod() {
         String email = "user@example.com";
 
 
@@ -97,9 +92,9 @@ class UserControllerTest {
     }
 
     @Test
-    void addGameToUserListOfGames_shouldReturnUpdatedUser() {
+    void testAddGameToUserListOfGames_whenSuccess_shouldReturnUpdatedUser() {
         long gameId = 1L;
-        UserDto user = new UserDto("username", "password", "tpken", "role", "ua");
+        UserDto user = new UserDto("username", "password", "token", "role", "ua");
         user.setId(123L);
 
 
@@ -110,13 +105,10 @@ class UserControllerTest {
     }
 
     @Test
-    void removeGameFromUserListOfGames_shouldReturnUpdatedUser() {
+    void testRemoveGameFromUserListOfGames_whenSuccess_shouldReturnUpdatedUser() {
         long gameId = 1L;
-        UserDto user = new UserDto("username", "password", "tpken", "role", "ua");
+        UserDto user = new UserDto("username", "password", "token", "role", "ua");
         user.setId(123L);
-
-        UserDto updatedUser = new UserDto("username", "password", "tpken", "role", "ua");
-        when(userManagementService.getUserById(123L)).thenReturn(updatedUser);
 
 
         userController.removeGameFromUserListOfGames(gameId, user);
@@ -126,9 +118,9 @@ class UserControllerTest {
     }
 
     @Test
-    void updateUserLocale_shouldInvokeServiceMethod() {
+    void testUpdateUserLocale_whenSuccess_shouldInvokeServiceMethod() {
         String locale = "en_US";
-        UserDto user = new UserDto("username", "password", "tpken", "role", "ua");
+        UserDto user = new UserDto("username", "password", "token", "role", "ua");
         user.setId(123L);
 
 

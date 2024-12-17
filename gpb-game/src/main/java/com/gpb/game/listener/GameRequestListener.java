@@ -3,7 +3,6 @@ package com.gpb.game.listener;
 import com.gpb.game.bean.event.GameFollowEvent;
 import com.gpb.game.bean.game.Game;
 import com.gpb.game.service.GameService;
-import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.UserService;
 import com.gpb.game.util.Constants;
 import jakarta.transaction.Transactional;

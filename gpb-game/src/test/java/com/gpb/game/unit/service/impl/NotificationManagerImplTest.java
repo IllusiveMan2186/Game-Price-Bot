@@ -40,7 +40,7 @@ class NotificationManagerImplTest {
     }
 
     @Test
-    void testSendGameInfoChange_SingleNotificationType() {
+    void testSendGameInfoChange_whenSingleNotificationType_shouldSendGameInfoChanges() {
         BasicUser user = new BasicUser();
         user.setId(1);
         user.setNotificationTypes(Collections.singletonList(UserNotificationType.EMAIL));
@@ -58,7 +58,7 @@ class NotificationManagerImplTest {
     }
 
     @Test
-    void testSendGameInfoChange_MultipleNotificationTypes() {
+    void testSendGameInfoChange_whenMultipleNotificationTypes_shouldSendGameInfoChanges() {
         BasicUser user = new BasicUser();
         user.setId(2);
         user.setNotificationTypes(Arrays.asList(UserNotificationType.EMAIL, UserNotificationType.TELEGRAM));
@@ -75,7 +75,7 @@ class NotificationManagerImplTest {
     }
 
     @Test
-    void testSendGameInfoChange_NoNotificationTypes() {
+    void testSendGameInfoChange_whenNoNotificationTypes_shouldSendGameInfoChanges() {
         BasicUser user = new BasicUser();
         user.setId(3);
         user.setNotificationTypes(Collections.emptyList());
@@ -91,7 +91,7 @@ class NotificationManagerImplTest {
     }
 
     @Test
-    void testSendGameInfoChange_NullNotificationType() {
+    void testSendGameInfoChange_whenNullNotificationType_shouldNotSendGameInfoChanges() {
         BasicUser user = new BasicUser();
         user.setId(4);
         user.setNotificationTypes(new ArrayList<>());

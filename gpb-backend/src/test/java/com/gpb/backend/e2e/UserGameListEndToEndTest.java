@@ -21,7 +21,7 @@ class UserGameListEndToEndTest {
     private final String adminPassword = System.getProperty("e2e.password");
 
     @Test
-    void testGameSubscription_Successfully_SubscribeToGame() {
+    void testGameSubscription_whenSuccess_shouldSubscribeToGame() {
         WebDriver driver = getNameInfoPAge();
 
 
@@ -35,7 +35,7 @@ class UserGameListEndToEndTest {
     }
 
     @Test
-    void testGameUnsubscription_Successfully_UnsubscribeToGame() {
+    void testGameUnsubscribe_whenSuccess_shouldUnsubscribeToGame() {
         WebDriver driver = getNameInfoPAge();
 
         clickSubscribeButtonIfNeededCondition(driver, "Subscribe");
@@ -48,7 +48,7 @@ class UserGameListEndToEndTest {
     }
 
     @Test
-    void testUserGameList_Successfully_GameInListAfterSubscription() {
+    void testUserGameList_whenSuccess_shouldGameInListAfterSubscription() {
         WebDriver driver = getNameInfoPAge();
 
         String gameName = driver.findElement(By.className("App-game-page-info-title")).getText();

@@ -37,7 +37,7 @@ class UserLinkerServiceImplTest {
     }
 
     @Test
-    void connectTelegramUser_shouldCallKafka() {
+    void testConnectTelegramUser_whenSuccess_shouldCallKafka() {
         String token = "token";
         long webUserId = 1L;
         AccountLinkerEvent event = new AccountLinkerEvent(token, webUserId);
@@ -50,7 +50,7 @@ class UserLinkerServiceImplTest {
     }
 
     @Test
-    void testGetAccountsLinkerToken_shouldReturnToken() {
+    void testGetAccountsLinkerToken_whenSuccess_shouldReturnToken() {
         String token = "token";
         long webUserId = 1L;
         AccountLinkerEvent event = new AccountLinkerEvent(token, webUserId);

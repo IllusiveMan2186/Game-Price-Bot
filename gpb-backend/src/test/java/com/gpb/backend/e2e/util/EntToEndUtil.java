@@ -49,17 +49,9 @@ public class EntToEndUtil {
     }
 
     public static void gameSearch(WebDriver driver, String gameName) {
-        try {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT_TIME));
-            Thread.sleep(3000);
         driver.findElement(By.id("game-search-input-field")).sendKeys(gameName);
-        Thread.sleep(3000);
         driver.findElement(By.id("game-search-button")).click();
-        Thread.sleep(3000);
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("App-game-content-list-loading")));
-        Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

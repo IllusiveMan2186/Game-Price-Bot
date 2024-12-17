@@ -5,29 +5,32 @@ import com.gpb.game.bean.game.Game;
 import com.gpb.game.bean.user.BasicUser;
 import com.gpb.game.listener.GameRequestListener;
 import com.gpb.game.service.GameService;
-import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.UserService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.mockito.Mockito.mock;
-
+@ExtendWith(MockitoExtension.class)
 class GameRequestListenerTest {
 
+    @Mock
+    private GameService gameService;
 
-    private final GameService gameService = mock(GameService.class);
+    @Mock
+    private UserService userService;
 
-    private final UserService userService = mock(UserService.class);
-
-    private final GameRequestListener gameRequestListener
-            = new GameRequestListener(gameService, userService);
+    @InjectMocks
+    private GameRequestListener gameRequestListener;
 
     @Test
-    void testListenGameFollow() {
+    void testListenGameFollow_whenGameNotFollowed_shouldSubscribeForUserAndSetFollowGameOptionTrue() {
         long userId = 1L;
         long gameId = 101L;
         GameFollowEvent event = new GameFollowEvent(userId, gameId);
@@ -46,7 +49,7 @@ class GameRequestListenerTest {
     }
 
     @Test
-    void testListenGameFollow_whenAlreadyFollowed() {
+    void testListenGameFollow_whenAlreadyFollowed_shouldSubscribeForUserAndNotCallGameService() {
         long userId = 1L;
         long gameId = 101L;
         GameFollowEvent event = new GameFollowEvent(userId, gameId);
@@ -65,7 +68,7 @@ class GameRequestListenerTest {
     }
 
     @Test
-    void testListenGameUnfollow_whenNoFollowerLeft() {
+    void testListenGameUnfollow_whenNoFollowerLeft_shouldUnsubscribeFromUserAndSetFollowGameOptionFalse() {
         long userId = 1L;
         long gameId = 101L;
         GameFollowEvent event = new GameFollowEvent(userId, gameId);
@@ -84,7 +87,7 @@ class GameRequestListenerTest {
     }
 
     @Test
-    void testListenGameUnfollowWithRemainingFollower() {
+    void testListenGameUnfollow_whenRemainFollower_shouldUnsubscribeFromUserAndNotCallGameService() {
         long userId = 1L;
         long gameId = 101L;
         GameFollowEvent event = new GameFollowEvent(userId, gameId);
@@ -103,7 +106,7 @@ class GameRequestListenerTest {
     }
 
     @Test
-    void testListenGameRemove() {
+    void testListenGameRemove_whenSuccess_shouldCallRemoveGameMethod() {
         long gameId = 101L;
         ConsumerRecord<String, Long> record = new ConsumerRecord<>("topic", 0, 0, "key", gameId);
 
@@ -115,7 +118,7 @@ class GameRequestListenerTest {
     }
 
     @Test
-    void testListenGameInStoreRemove() {
+    void testListenGameInStoreRemove_whenSuccess_shouldCallRemoveGameInStoreMethod() {
         long gameId = 102L;
         ConsumerRecord<String, Long> record = new ConsumerRecord<>("topic", 0, 0, "key", gameId);
 

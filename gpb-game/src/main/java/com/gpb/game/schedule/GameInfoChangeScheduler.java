@@ -9,15 +9,15 @@ import com.gpb.game.service.UserService;
 import com.gpb.game.util.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Configuration
+@Component
 @Slf4j
 @AllArgsConstructor
-public class GameInfoChangeCheckerConfiguration {
+public class GameInfoChangeScheduler {
 
     private final GameService gameService;
     private final GameStoresService gameStoresService;

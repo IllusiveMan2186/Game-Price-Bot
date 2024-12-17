@@ -14,7 +14,7 @@ class ExceptionHandlerTest {
     ExceptionHandler exceptionHandler = new ExceptionHandler();
 
     @Test
-    void testHandleException_shouldReturnSendMessage() {
+    void testHandleException_whenSuccess_shouldReturnSendMessage() {
         String chatId = "123";
         String message = "messages";
         RuntimeException exception = new RuntimeException(message);

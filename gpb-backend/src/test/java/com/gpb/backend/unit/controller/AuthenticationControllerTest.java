@@ -37,7 +37,7 @@ class AuthenticationControllerTest {
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
     @Test
-    void createUserSuccessfullyShouldReturnUser() {
+    void testCreateUser_whenSuccessful_shouldReturnUser() {
         UserRegistration userRegistration = new UserRegistration("email", "password".toCharArray(), "ua");
         when(service.createUser(userRegistration)).thenReturn(user);
         UserActivation userActivation = new UserActivation();

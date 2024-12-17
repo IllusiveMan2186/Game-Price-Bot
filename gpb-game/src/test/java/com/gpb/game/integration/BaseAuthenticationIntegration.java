@@ -69,7 +69,6 @@ class BaseAuthenticationIntegration {
 
     @MockBean
     protected KafkaTemplate<String, EmailNotificationEvent> responseKafkaTemplate;
-
     @MockBean
     protected GameRequestListener gameRequestListener;
     @MockBean
@@ -101,7 +100,7 @@ class BaseAuthenticationIntegration {
     }
 
     @Test
-    void testRequestFilter_whenNotHaveApiKey_shouldReturnUnauthorized() throws Exception {
+    void testRequestFilter_whenApiKeyMissing_shouldReturnUnauthorized() throws Exception {
 
         mockMvc.perform(get("/game/{id}", games.get(0).getId())
                         .header(Constants.BASIC_USER_ID_HEADER, -1))

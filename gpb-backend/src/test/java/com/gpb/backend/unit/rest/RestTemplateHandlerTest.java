@@ -43,7 +43,7 @@ class RestTemplateHandlerTest {
     }
 
     @Test
-    void executeRequest_successfulResponse_returnsBody() {
+    void testExecuteRequest_whenSuccessfulResponse_shouldReturnBody() {
         String url = "/resource";
         HttpMethod method = HttpMethod.GET;
         HttpHeaders headers = new HttpHeaders();

@@ -35,7 +35,7 @@ class GameInfoMapperTest {
     GameInfoMapper gameInfoMapper;
 
     @Test
-    void textGameInfoToTelegramPage_shouldReturnListOfMessages() {
+    void testGameInfoToTelegramPage_whenSuccess_shouldReturnListOfMessages() {
         String chatId = "123";
         Locale locale = new Locale("en");
         String url = "http://localhost:3000/some/url";
@@ -85,7 +85,7 @@ class GameInfoMapperTest {
     }
 
     @Test
-    void textGameInfoToTelegramPage_whenNotDiscount_shouldReturnListOfMessagesWithoutDiscount() {
+    void testGameInfoToTelegramPage_whenNotDiscount_shouldReturnListOfMessagesWithoutDiscount() {
         String chatId = "123";
         Locale locale = new Locale("en");
         String url = "http://localhost:3000/some/url";

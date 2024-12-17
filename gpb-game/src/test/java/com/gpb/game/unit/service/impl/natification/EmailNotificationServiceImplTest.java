@@ -4,11 +4,11 @@ import com.gpb.game.bean.event.EmailNotificationEvent;
 import com.gpb.game.bean.game.GameInShop;
 import com.gpb.game.bean.user.BasicUser;
 import com.gpb.game.service.impl.notification.EmailNotificationServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.List;
@@ -19,6 +19,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 class EmailNotificationServiceImplTest {
 
     @Mock
@@ -27,13 +28,8 @@ class EmailNotificationServiceImplTest {
     @InjectMocks
     private EmailNotificationServiceImpl emailNotificationService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
-    void sendGameInfoChange_shouldSendEmailNotification() {
+    void testSendGameInfoChange_whenSuccess_shouldSendEmailNotification() {
         BasicUser user = new BasicUser();
         user.setId(123L);
 
@@ -57,7 +53,7 @@ class EmailNotificationServiceImplTest {
     }
 
     @Test
-    void sendGameInfoChange_shouldLogInfo() {
+    void testSendGameInfoChange_whenSuccess_shouldLogInfo() {
         BasicUser user = new BasicUser();
         user.setId(123L);
 
