@@ -27,7 +27,7 @@ class UserActivationServiceImplTest {
     UserActivationService userActivationService = new UserActivationServiceImpl(userActivationRepository, userService, emailService);
 
     @Test
-    void createUserActivationSuccessfullyShouldReturnUserActivationAccount() {
+    void testCreateUserActivation_whenSuccess_shouldReturnUserActivationAccount() {
         WebUser user = WebUser.builder().id(1).build();
         UserActivation userActivation = UserActivation.builder()
                 .user(user)
@@ -40,7 +40,7 @@ class UserActivationServiceImplTest {
     }
 
     @Test
-    void activateUserAccountSuccessfullyShouldActivateUser() {
+    void testActivateUserAccount_whenSuccess_shouldActivateUser() {
         WebUser user = new WebUser();
         String token = "token";
         UserActivation userActivation = UserActivation.builder()
@@ -54,7 +54,7 @@ class UserActivationServiceImplTest {
     }
 
     @Test
-    void activateUserAccountThatNotExistSuccessfullyShouldThrowException() {
+    void testActivateUserAccount_whenUserDoesNotExist_shouldThrowException() {
         String token = "token";
         when(userActivationRepository.findByToken(token)).thenReturn(null);
 
@@ -63,7 +63,7 @@ class UserActivationServiceImplTest {
     }
 
     @Test
-    void resendActivationEmailSuccessfullyShouldSendEmail() {
+    void testResendActivationEmail_whenSuccessful_shouldSendEmail() {
         String email = "email";
         WebUser user = new WebUser();
         UserActivation userActivation = UserActivation.builder()

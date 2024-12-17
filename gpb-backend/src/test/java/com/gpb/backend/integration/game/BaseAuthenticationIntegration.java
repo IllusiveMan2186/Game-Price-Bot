@@ -69,7 +69,7 @@ public class BaseAuthenticationIntegration {
     protected KafkaTemplate<String, Long> kafkaGameRemoveEventTemplate;
 
     @MockBean
-    protected KafkaTemplate<Long, EmailEvent> kafkaEmailEventTemplate;
+    protected KafkaTemplate<String, EmailEvent> kafkaEmailEventTemplate;
 
     @MockBean
     protected KafkaTemplate<String, GameFollowEvent> kafkaGameFollowEventTemplate;

@@ -2,34 +2,40 @@ package com.gpb.game.unit.configuration;
 
 import com.gpb.game.bean.game.GameInShop;
 import com.gpb.game.bean.user.BasicUser;
-import com.gpb.game.schedule.GameInfoChangeCheckerConfiguration;
+import com.gpb.game.schedule.GameInfoChangeScheduler;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.NotificationManager;
 import com.gpb.game.service.UserService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class GameInfoChangeCheckerConfigurationTest {
+@ExtendWith(MockitoExtension.class)
+class GameInfoChangeSchedulerTest {
 
-    UserService userService = mock(UserService.class);
-
-    GameService gameService = mock(GameService.class);
-    NotificationManager notificationManager = mock(NotificationManager.class);
-    GameStoresService gameStoresService = mock(GameStoresService.class);
-
-    GameInfoChangeCheckerConfiguration changeCheckerConfiguration
-            = new GameInfoChangeCheckerConfiguration(gameService, gameStoresService, notificationManager, userService);
+    @Mock
+    UserService userService;
+    @Mock
+    GameService gameService;
+    @Mock
+    NotificationManager notificationManager;
+    @Mock
+    GameStoresService gameStoresService;
+    @InjectMocks
+    GameInfoChangeScheduler changeCheckerConfiguration;
 
     @Test
-    void testScheduleSubscribedGameInfoChangeEveryDay_whenSuccessfully_shouldChangeInfoANdSendNotification() {
+    void testScheduleSubscribedGameInfoChangeEveryDay_whenSuccess_shouldChangeInfoAndSendNotification() {
         List<GameInShop> subscribedGame = new ArrayList<>();
         when(gameService.getSubscribedGames()).thenReturn(subscribedGame);
         List<GameInShop> changedGames = new ArrayList<>();
@@ -48,7 +54,7 @@ class GameInfoChangeCheckerConfigurationTest {
     }
 
     @Test
-    void testScheduleSubscribedGameInfoChangeEveryWeak_whenSuccessfully_shouldChangeInfo() {
+    void testScheduleSubscribedGameInfoChangeEveryWeak_whenSuccess_shouldChangeInfo() {
         List<GameInShop> games = new ArrayList<>();
         when(gameService.getAllGamesInShop()).thenReturn(games);
         List<GameInShop> changedGames = new ArrayList<>();

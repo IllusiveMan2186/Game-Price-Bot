@@ -37,7 +37,7 @@ class GameSearchByPageCallbackHandlerTest {
     GameSearchByPageCallbackHandler controller;
 
     @Test
-    void apply_ShouldReturnGameList_WhenGamesFound() {
+    void testApply_whenSuccess_ShouldReturnGameList_WhenGamesFound() {
         String chatId = "123456";
         String gameName = "exampleGame";
         int pageNum = 1;

@@ -17,7 +17,7 @@ class UserAuthenticationEndToEndTest {
     private final String adminPassword = System.getProperty("e2e.password");
 
     @Test
-    void testUserLogin_Successfully_LoginInProfile() {
+    void testUserLogin_whenSuccess_shouldLoginInProfile() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
 
@@ -32,7 +32,7 @@ class UserAuthenticationEndToEndTest {
     }
 
     @Test
-    void testUserLogin_WrongCredential_ShowError() {
+    void testUserLogin_whenWrongCredential_shouldShowError() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
 
@@ -48,7 +48,7 @@ class UserAuthenticationEndToEndTest {
     }
 
     @Test
-    void testUserLogout_Successfully_LogoutOfProfile() {
+    void testUserLogout_whenSuccess_shouldLogoutOfProfile() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
 

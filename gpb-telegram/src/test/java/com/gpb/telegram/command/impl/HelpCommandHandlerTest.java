@@ -40,7 +40,7 @@ class HelpCommandHandlerTest {
     }
 
     @Test
-    void testGetDescription_shouldReturnDescription() {
+    void testGetDescription_whenSuccess_shouldReturnDescription() {
         Locale locale = new Locale("");
         when(messageSource.getMessage("help.command.description", null, locale))
                 .thenReturn("messages");
@@ -50,7 +50,7 @@ class HelpCommandHandlerTest {
     }
 
     @Test
-    void testApply_shouldReturnMessageAndSSynchronizeAccounts() {
+    void testApply_whenSuccess_shouldReturnMessageAndSSynchronizeAccounts() {
         Locale locale = new Locale("");
         when(messageSource.getMessage("help.menu.header.message", null, locale))
                 .thenReturn("messages");

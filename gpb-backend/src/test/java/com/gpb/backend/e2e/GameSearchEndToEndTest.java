@@ -18,7 +18,7 @@ class GameSearchEndToEndTest {
     private final String adminPassword = System.getProperty("e2e.password");
 
     @Test
-    void testGameSearch_Successfully_FindNeededGame() {
+    void testGameSearch_whenSuccess_shouldFindNeededGame() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
 
@@ -33,7 +33,7 @@ class GameSearchEndToEndTest {
     }
 
     @Test
-    void testGameInfoContent_Successfully_CheckGameInfo() {
+    void testGameInfoContent_whenSuccess_shouldVerifyGameInfo() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
         if (driver.findElements(By.className("App-game-content-list-game")).isEmpty()) {
@@ -64,7 +64,7 @@ class GameSearchEndToEndTest {
     }
 
     @Test
-    void testGameStoreLink_Successfully_RedirectToStore() {
+    void testGameStoreLink_whenSuccess_shouldRedirectToStore() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
         if (driver.findElements(By.className("App-game-content-list-game")).isEmpty()) {

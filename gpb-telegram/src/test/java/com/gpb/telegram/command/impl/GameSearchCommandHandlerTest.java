@@ -38,7 +38,7 @@ class GameSearchCommandHandlerTest {
     GameSearchCommandHandler controller;
 
     @Test
-    void testGetDescription_shouldReturnDescription() {
+    void testGetDescription_whenSuccess_shouldReturnDescription() {
         Locale locale = new Locale("");
         when(messageSource.getMessage("game.search.command.description", null, locale))
                 .thenReturn("messages");

@@ -42,7 +42,7 @@ class RestTemplateHandlerTest {
     }
 
     @Test
-    void executeRequest_successfulResponse_returnsBody() {
+    void testExecuteRequest_whenSuccess_shouldReturnsBody() {
         String url = "/resource";
         HttpMethod method = HttpMethod.GET;
         HttpHeaders headers = new HttpHeaders();
@@ -61,7 +61,7 @@ class RestTemplateHandlerTest {
     }
 
     @Test
-    void executeRequest_notFound_throwsNotFoundException() {
+    void testExecuteRequest_whenNotFound_throwsNotFoundException() {
         String url = "/resource";
         HttpMethod method = HttpMethod.GET;
         HttpHeaders headers = new HttpHeaders();
@@ -79,7 +79,7 @@ class RestTemplateHandlerTest {
     }
 
     @Test
-    void executeRequest_clientError_throwsRestTemplateRequestException() {
+    void testExecuteRequest_whenClientError_shouldThrowsRestTemplateRequestException() {
         String url = "/resource";
         HttpMethod method = HttpMethod.GET;
         HttpHeaders headers = new HttpHeaders();
@@ -97,7 +97,7 @@ class RestTemplateHandlerTest {
     }
 
     @Test
-    void executeRequest_restClientException_throwsRestTemplateRequestException() {
+    void testExecuteRequest_whenRestClientException_shouldThrowsRestTemplateRequestException() {
         String url = "/resource";
         HttpMethod method = HttpMethod.GET;
         HttpHeaders headers = new HttpHeaders();
@@ -114,7 +114,7 @@ class RestTemplateHandlerTest {
     }
 
     @Test
-    void executeRequest_unexpectedStatusCode_throwsRestTemplateRequestException() {
+    void testExecuteRequest_whenUnexpectedStatusCode_shouldThrowsRestTemplateRequestException() {
         String url = "/resource";
         HttpMethod method = HttpMethod.GET;
         HttpHeaders headers = new HttpHeaders();

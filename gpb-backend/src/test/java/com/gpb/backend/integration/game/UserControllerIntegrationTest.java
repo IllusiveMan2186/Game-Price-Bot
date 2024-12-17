@@ -15,14 +15,14 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration {
 
 
     @Test
-    void testAccessToGetUserInfoShouldNotHaveAccess() throws Exception {
+    void testAccess_whenRequestGetUserInfo_shouldNotHaveAccess() throws Exception {
         mockMvc.perform(get("/user/{id}", userList.get(0).getId()))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void updateUserSuccessfullyShouldReturnUser() throws Exception {
+    void testUpdateUser_whenSuccess_shouldReturnUser() throws Exception {
         String email = "email3";
 
         mockMvc.perform(put("/user/email")
@@ -37,7 +37,7 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration {
     }
 
     @Test
-    void updateUserThatDidNotChangedInfoShouldReturnErrorMessage() throws Exception {
+    void testUpdateUser_whenNotChangedInfo_shouldReturnErrorMessage() throws Exception {
 
         mockMvc.perform(put("/user/email")
                         .contentType(APPLICATION_JSON)

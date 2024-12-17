@@ -5,26 +5,24 @@ import com.gpb.game.listener.UserRequestListener;
 import com.gpb.game.service.UserService;
 import com.gpb.game.util.Constants;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 class UserRequestListenerTest {
 
     @Mock
     private UserService userService;
 
+    @InjectMocks
     private UserRequestListener userRequestListener;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        userRequestListener = new UserRequestListener(userService);
-    }
 
     @Test
     void testListenUserSynchronizationAccounts() {

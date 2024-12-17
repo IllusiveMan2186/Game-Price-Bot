@@ -37,7 +37,7 @@ class EmailServiceImplTest {
     }
 
     @Test
-    void sendGameInfoChange_shouldSendEmailEvent() {
+    void testSendGameInfoChange_whenSuccess_shouldSendEmailEvent() {
         WebUser user = new WebUser();
         user.setEmail("test@example.com");
         user.setLocale(Locale.ENGLISH);
@@ -55,7 +55,7 @@ class EmailServiceImplTest {
     }
 
     @Test
-    void sendEmailVerification_shouldSendVerificationEmailEvent() throws Exception {
+    void testSendEmailVerification_whenSuccess_shouldSendVerificationEmailEvent() throws Exception {
         WebUser user = new WebUser();
         user.setEmail("user@example.com");
         user.setLocale(Locale.FRENCH);

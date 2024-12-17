@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerIntegrationTest extends BaseAuthenticationIntegration{
 
     @Test
-    void testUserCreation_whenSuccessfully_shouldReturnUserId() throws Exception {
+    void testUserCreation_whenSuccess_shouldReturnUserId() throws Exception {
 
         mockMvc.perform(post("/user")
                         .header(Constants.API_KEY_HEADER, API_KEY))
@@ -25,7 +25,7 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration{
     }
 
     @Test
-    void testUserAccountLinkerCreation_whenSuccessfully_shouldReturnToken() throws Exception {
+    void testUserAccountLinkerCreation_whenSuccess_shouldReturnToken() throws Exception {
         mockMvc.perform(post("/user")
                         .header(Constants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
