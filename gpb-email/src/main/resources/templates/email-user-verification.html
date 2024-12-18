@@ -5,7 +5,7 @@
     <h1 style="margin-top: 10px;flex: 0 0 100%;max-width: 100%;font-size: 2.5rem;">
         <span th:text="#{email.user.verification.title}"></span> :
     </h1>
-    <span th:text="${url}"></span>
+    <a th:href="${url}" style="color: #00f; font-size: 1.2rem;" th:text="${url}"></a>
     <div style="border: 1px solid rgb(0, 0, 0);margin-top: 30px;flex: 0 0 100%;width: 100%;max-width: 600px;
   display: flex;flex-direction: column;justify-content: space-evenly;align-items: center;">
 

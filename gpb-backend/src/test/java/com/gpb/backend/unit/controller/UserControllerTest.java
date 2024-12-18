@@ -1,7 +1,9 @@
 package com.gpb.backend.unit.controller;
 
-import com.gpb.backend.bean.user.PasswordChangeDto;
-import com.gpb.backend.bean.user.UserDto;
+import com.gpb.backend.bean.user.dto.EmailRequestDto;
+import com.gpb.backend.bean.user.dto.LocaleRequestDto;
+import com.gpb.backend.bean.user.dto.PasswordChangeDto;
+import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.configuration.UserAuthenticationProvider;
 import com.gpb.backend.controller.UserController;
 import com.gpb.backend.service.GameService;
@@ -51,7 +53,7 @@ class UserControllerTest {
         when(userAuthenticationProvider.createToken(newEmail)).thenReturn("new-token");
 
 
-        UserDto result = userController.updateUserEmail(newEmail, user);
+        UserDto result = userController.updateUserEmail(new EmailRequestDto(newEmail), user);
 
 
         assertNotNull(result);
@@ -85,7 +87,7 @@ class UserControllerTest {
         String email = "user@example.com";
 
 
-        userController.resendUserActivationEmail(email);
+        userController.resendUserActivationEmail(new EmailRequestDto(email));
 
 
         verify(userActivationService).resendActivationEmail(email);
@@ -124,7 +126,7 @@ class UserControllerTest {
         user.setId(123L);
 
 
-        userController.updateUserLocale(locale, user);
+        userController.updateUserLocale(new LocaleRequestDto(locale), user);
 
 
         verify(userManagementService).updateLocale(locale, 123L);

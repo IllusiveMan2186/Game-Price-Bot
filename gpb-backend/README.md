@@ -45,12 +45,10 @@ Add Environment variables for running project locally
     * Set a strong password for your PostgreSQL user here.
   
 
-* BACKEND_SERVICE_URL: The URL for the backend service.
-    * Adjust this if your backend service is running on a different host or port.
+* FRONT_SERVICE_URL: The URL of frontend service.
   
 
 * GAME_SERVICE_URL: The URL for the game service.
-    * Modify this URL if your game service runs on a different address or port.
   
 
 * API_KEY: The API key used for authorization or other purposes.

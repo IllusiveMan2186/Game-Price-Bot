@@ -2,14 +2,14 @@ package com.gpb.backend.controller;
 
 import com.gpb.backend.bean.user.Credentials;
 import com.gpb.backend.bean.user.UserActivation;
-import com.gpb.backend.bean.user.UserDto;
 import com.gpb.backend.bean.user.UserRegistration;
 import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.bean.user.dto.TokenRequestDto;
+import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.configuration.UserAuthenticationProvider;
 import com.gpb.backend.service.EmailService;
 import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserAuthenticationService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +34,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public UserDto login(@RequestBody Credentials credentials, HttpServletRequest request) {
+    public UserDto login(@RequestBody Credentials credentials) {
         UserDto userDto = userService.login(credentials);
         userDto.setToken(userAuthenticationProvider.createToken(userDto.getEmail()));
         return userDto;
@@ -52,5 +52,17 @@ public class AuthenticationController {
         WebUser webUser = userService.createUser(user);
         UserActivation activation = userActivationService.createUserActivation(webUser);
         emailService.sendEmailVerification(activation);
+    }
+
+    /**
+     * Activate user
+     *
+     * @param tokenRequestDto token of user activation
+     */
+    @PostMapping(value = "/activate")
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    public void userActivation(@RequestBody final TokenRequestDto tokenRequestDto) {
+        userActivationService.activateUserAccount(tokenRequestDto.getToken());
     }
 }

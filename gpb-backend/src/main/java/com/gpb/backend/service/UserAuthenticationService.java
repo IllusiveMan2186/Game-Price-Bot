@@ -1,9 +1,9 @@
 package com.gpb.backend.service;
 
 import com.gpb.backend.bean.user.Credentials;
-import com.gpb.backend.bean.user.UserDto;
 import com.gpb.backend.bean.user.UserRegistration;
 import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.bean.user.dto.UserDto;
 
 /**
  * Handle user authentication operations

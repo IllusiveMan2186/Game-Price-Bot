@@ -1,7 +1,7 @@
 package com.gpb.backend.unit.configuration;
 
-import com.gpb.backend.bean.user.UserDto;
 import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.configuration.MapperConfig;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;

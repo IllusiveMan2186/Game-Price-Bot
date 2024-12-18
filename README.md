@@ -83,9 +83,9 @@ Other Configuration:
   * Default: /image_folder
   * Set your desired folder path here.
 
-* BACKEND_SERVICE_URL: The URL for the backend service.
-  * Default: http://localhost:8080
-  * Adjust this if your backend service is running on a different host or port.
+* FRONT_SERVICE_URL: The URL for the frontend service.
+  * Default: http://localhost:3000
+  * Adjust this if your frontend service is running on a different host or port.
 
 * GAME_SERVICE_URL: The URL for the game service.
   * Default: http://game:8081

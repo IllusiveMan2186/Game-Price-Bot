@@ -1,7 +1,9 @@
 package com.gpb.backend.controller;
 
-import com.gpb.backend.bean.user.PasswordChangeDto;
-import com.gpb.backend.bean.user.UserDto;
+import com.gpb.backend.bean.user.dto.EmailRequestDto;
+import com.gpb.backend.bean.user.dto.LocaleRequestDto;
+import com.gpb.backend.bean.user.dto.PasswordChangeDto;
+import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.configuration.UserAuthenticationProvider;
 import com.gpb.backend.service.GameService;
 import com.gpb.backend.service.UserActivationService;
@@ -47,14 +49,14 @@ public class UserController {
     /**
      * Update registered user email
      *
-     * @param email new version of email
+     * @param emailRequestDto new version of email
      * @param user  current user
      * @return updated user
      */
     @PutMapping("/email")
     @Transactional
-    public UserDto updateUserEmail(@RequestBody final String email, @AuthenticationPrincipal UserDto user) {
-        UserDto userDto = userAuthenticationService.updateUserEmail(email, user);
+    public UserDto updateUserEmail(@RequestBody final EmailRequestDto emailRequestDto, @AuthenticationPrincipal UserDto user) {
+        UserDto userDto = userAuthenticationService.updateUserEmail(emailRequestDto.getEmail(), user);
         userDto.setToken(userAuthenticationProvider.createToken(userDto.getEmail()));
         return userDto;
     }
@@ -75,13 +77,13 @@ public class UserController {
     /**
      * Resend the activation email to the user
      *
-     * @param email email for resending activation message
+     * @param emailRequestDto email for resending activation message
      */
     @PostMapping(value = "/resend/email")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public void resendUserActivationEmail(@RequestBody final String email) {
-        userActivationService.resendActivationEmail(email);
+    public void resendUserActivationEmail(@RequestBody final EmailRequestDto emailRequestDto) {
+        userActivationService.resendActivationEmail(emailRequestDto.getEmail());
     }
 
     /**
@@ -115,14 +117,14 @@ public class UserController {
     /**
      * Update user locale
      *
-     * @param locale new locale
+     * @param localeRequestDto new locale
      * @param user   user
      */
     @PutMapping("/locale")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public void updateUserLocale(@RequestBody final String locale,
+    public void updateUserLocale(@RequestBody final LocaleRequestDto localeRequestDto,
                                  @AuthenticationPrincipal UserDto user) {
-        userManagementService.updateLocale(locale, user.getId());
+        userManagementService.updateLocale(localeRequestDto.getLocale(), user.getId());
     }
 }

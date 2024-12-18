@@ -1,43 +1,69 @@
 package com.gpb.backend.unit.controller;
 
+import com.gpb.backend.bean.user.Credentials;
 import com.gpb.backend.bean.user.UserActivation;
 import com.gpb.backend.bean.user.UserRegistration;
 import com.gpb.backend.bean.user.WebUser;
-import com.gpb.backend.configuration.MapperConfig;
+import com.gpb.backend.bean.user.dto.TokenRequestDto;
+import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.configuration.UserAuthenticationProvider;
 import com.gpb.backend.controller.AuthenticationController;
 import com.gpb.backend.service.EmailService;
 import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserAuthenticationService;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Locale;
 
 import static com.gpb.backend.util.Constants.USER_ROLE;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class AuthenticationControllerTest {
 
-    UserAuthenticationService service = mock(UserAuthenticationService.class);
+    @Mock
+    UserAuthenticationService service;
 
-    UserAuthenticationProvider provider = mock(UserAuthenticationProvider.class);
+    @Mock
+    UserAuthenticationProvider provider;
 
-    UserActivationService userActivationService = mock(UserActivationService.class);
+    @Mock
+    UserActivationService userActivationService;
 
-    EmailService emailService = mock(EmailService.class);
+    @Mock
+    EmailService emailService;
 
-    private final AuthenticationController controller = new AuthenticationController(service, provider, userActivationService, emailService);
+    @InjectMocks
+    AuthenticationController controller;
 
-    private final WebUser user = new WebUser(0, 1L,"email", "password", false, false,
+    private final WebUser user = new WebUser(0, 1L, "email", "password", false, false,
             0, null, USER_ROLE, new Locale("ua"));
 
-    private final ModelMapper modelMapper = new MapperConfig().modelMapper();
+    @Test
+    void testLogin_whenSuccess_shouldReturnUser() {
+        String token = "token";
+        Credentials credentials = new Credentials("email", null);
+        UserDto userDto = new UserDto(credentials.getEmail(), "", "", "ADMIN", "ua");
+        when(service.login(credentials)).thenReturn(userDto);
+        when(provider.createToken(user.getEmail())).thenReturn(token);
+
+
+        UserDto result = controller.login(credentials);
+
+
+        assertEquals(userDto, result);
+        assertEquals(token, result.getToken());
+    }
 
     @Test
-    void testCreateUser_whenSuccessful_shouldReturnUser() {
+    void testUserRegistration_whenSuccess_shouldReturnUser() {
         UserRegistration userRegistration = new UserRegistration("email", "password".toCharArray(), "ua");
         when(service.createUser(userRegistration)).thenReturn(user);
         UserActivation userActivation = new UserActivation();
@@ -46,5 +72,16 @@ class AuthenticationControllerTest {
         controller.userRegistration(userRegistration);
 
         verify(emailService).sendEmailVerification(userActivation);
+    }
+
+    @Test
+    void testUserActivation_whenValidToken_shouldCallActivationUserService() {
+        String token = "valid-token";
+
+
+        controller.userActivation(new TokenRequestDto(token));
+
+
+        verify(userActivationService, times(1)).activateUserAccount(token);
     }
 }

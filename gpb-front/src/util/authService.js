@@ -111,11 +111,9 @@ export const setEmailHeader = (email) => {
 };
 
 export const defaultRequestErrorCheck = (error) => {
-    console.log(error.response.status)
-    console.log(error.response.data.error)
-    if (error.response.status === 401) {
-        setAuthHeader(null);
-        setRoleHeader(null);
+    if (error?.response?.status === 401) {
+        setAuthToken(null);
+        setUserRole(null);
     }
 };
 
