@@ -13,8 +13,6 @@ const handleError = (error, navigate) => {
     defaultRequestErrorCheck(error);
     console.info(error)
     if (error?.response?.status === 401) {
-        setAuthToken(null);
-        setUserRole(null);
         navigate?.(0); // Refresh on unauthorized
     }
 };

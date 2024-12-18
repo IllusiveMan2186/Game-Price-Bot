@@ -5,14 +5,13 @@ import com.gpb.backend.bean.event.EmailNotificationEvent;
 import com.gpb.backend.bean.user.UserActivation;
 import com.gpb.backend.bean.user.WebUser;
 import com.gpb.backend.service.impl.EmailServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -23,6 +22,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 class EmailServiceImplTest {
 
     @Mock
@@ -30,11 +30,6 @@ class EmailServiceImplTest {
 
     @InjectMocks
     private EmailServiceImpl emailService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void testSendGameInfoChange_whenSuccess_shouldSendEmailEvent() {
@@ -64,16 +59,14 @@ class EmailServiceImplTest {
         userActivation.setToken("testToken");
         userActivation.setUser(user);
 
-        Field webServiceUrlField = EmailServiceImpl.class.getDeclaredField("webServiceUrl");
-        webServiceUrlField.setAccessible(true);
-        webServiceUrlField.set(emailService, "http://localhost:8080");
+        emailService.setFronendServiceUrl("http://localhost:3000");
 
 
         emailService.sendEmailVerification(userActivation);
 
 
         Map<String, Object> expectedVariables = new LinkedHashMap<>();
-        expectedVariables.put("url", "http://localhost:8080/email/testToken");
+        expectedVariables.put("url", "http://localhost:3000/activation?token=testToken");
 
         verify(kafkaTemplate).send(eq(EMAIL_SERVICE_TOPIC), any(String.class), argThat(emailEvent ->
                 emailEvent.getRecipient().equals("user@example.com") &&

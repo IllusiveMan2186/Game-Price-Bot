@@ -34,7 +34,7 @@ public class SecurityConfiguration {
                 .and().addFilterBefore(new JwtAuthFilter(userAuthenticationProvider), BasicAuthenticationFilter.class)
                 .csrf().disable()
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.POST, "/login", "/registration").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login", "/registration", "/activate").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/resend/email/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/email/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/game/**").permitAll()

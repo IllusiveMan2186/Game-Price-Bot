@@ -1,6 +1,6 @@
 package com.gpb.backend.controller;
 
-import com.gpb.backend.bean.user.UserDto;
+import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.service.UserLinkerService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

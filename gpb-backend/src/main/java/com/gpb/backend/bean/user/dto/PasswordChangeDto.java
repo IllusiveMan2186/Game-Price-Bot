@@ -1,4 +1,4 @@
-package com.gpb.backend.bean.user;
+package com.gpb.backend.bean.user.dto;
 
 import lombok.Data;
 import lombok.ToString;

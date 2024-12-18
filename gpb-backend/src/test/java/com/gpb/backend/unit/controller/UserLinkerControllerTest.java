@@ -1,6 +1,6 @@
 package com.gpb.backend.unit.controller;
 
-import com.gpb.backend.bean.user.UserDto;
+import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.controller.UserLinkerController;
 import com.gpb.backend.service.UserLinkerService;
 import org.junit.jupiter.api.BeforeEach;

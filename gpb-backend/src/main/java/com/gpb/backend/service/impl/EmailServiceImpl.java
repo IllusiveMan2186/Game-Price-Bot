@@ -5,6 +5,7 @@ import com.gpb.backend.bean.event.EmailNotificationEvent;
 import com.gpb.backend.bean.user.UserActivation;
 import com.gpb.backend.bean.user.WebUser;
 import com.gpb.backend.service.EmailService;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,13 +20,14 @@ import static com.gpb.backend.util.Constants.EMAIL_SERVICE_TOPIC;
 
 @Service
 @Slf4j
+@Data
 public class EmailServiceImpl implements EmailService {
 
 
     private final KafkaTemplate<String, EmailEvent> kafkaTemplate;
 
-    @Value("${BACKEND_SERVICE_URL}")
-    private String webServiceUrl;
+    @Value("${FRONT_SERVICE_URL}")
+    private String fronendServiceUrl;//url for user activation link
 
     public EmailServiceImpl(KafkaTemplate<String, EmailEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
@@ -33,14 +35,16 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendGameInfoChange(WebUser user, EmailNotificationEvent emailNotificationEvent) {
+        log.info("Send game info changed  to user {}", user.getEmail());
         sendEmail(user.getEmail(), "Game info changes", emailNotificationEvent.getVariables(), user.getLocale(),
                 "email-info-changed-template");
     }
 
     @Override
     public void sendEmailVerification(UserActivation userActivation) {
+        log.info("Send email verification to user {}", userActivation.getUser().getEmail());
         Map<String, Object> variables = new LinkedHashMap<>();
-        variables.put("url", webServiceUrl + "/email/" + userActivation.getToken());
+        variables.put("url", fronendServiceUrl + "/activation?token=" + userActivation.getToken());
         Locale locale = userActivation.getUser().getLocale() != null
                 ? userActivation.getUser().getLocale()
                 : Locale.getDefault();

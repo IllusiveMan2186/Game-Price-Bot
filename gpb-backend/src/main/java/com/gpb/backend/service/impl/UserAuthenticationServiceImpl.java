@@ -1,9 +1,9 @@
 package com.gpb.backend.service.impl;
 
 import com.gpb.backend.bean.user.Credentials;
-import com.gpb.backend.bean.user.UserDto;
 import com.gpb.backend.bean.user.UserRegistration;
 import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.exception.EmailAlreadyExistException;
 import com.gpb.backend.exception.LoginFailedException;
 import com.gpb.backend.exception.NotFoundException;

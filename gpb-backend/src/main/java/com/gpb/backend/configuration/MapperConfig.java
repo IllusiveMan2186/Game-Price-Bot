@@ -1,7 +1,7 @@
 package com.gpb.backend.configuration;
 
-import com.gpb.backend.bean.user.UserDto;
 import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.bean.user.dto.UserDto;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Header from '@components/common/layout/Header/Header';
+import ActivationPage from '@components/auth/activation/ActivationPage';
 import AuthViewSwitcher from '@components/auth/switcher/AuthViewSwitcher';
 import GameListPage from '@components/game/list/page/GameListPage';
 import GameDetailPage from '@components/game/detail/page/GameDetailPage';
@@ -36,6 +37,8 @@ export default function AppContent() {
                         {/* Profile changes */}
                         <Route path="/change/email" element={<EmailChange />} />
                         <Route path="/change/password" element={<PasswordChange />} />
+
+                        <Route path="/activation?" element={<ActivationPage />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
