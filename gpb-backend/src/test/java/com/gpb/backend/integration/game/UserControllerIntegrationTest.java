@@ -1,5 +1,6 @@
 package com.gpb.backend.integration.game;
 
+import com.gpb.backend.bean.user.dto.EmailRequestDto;
 import org.junit.jupiter.api.Test;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -11,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class UserControllerIntegrationTest extends BaseAuthenticationIntegration {
-
 
 
     @Test
@@ -27,7 +27,7 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration {
 
         mockMvc.perform(put("/user/email")
                         .contentType(APPLICATION_JSON)
-                        .content(email)
+                        .content(objectToJson(new EmailRequestDto(email)))
                         .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -41,7 +41,7 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration {
 
         mockMvc.perform(put("/user/email")
                         .contentType(APPLICATION_JSON)
-                        .content(userList.get(0).getEmail())
+                        .content(objectToJson(new EmailRequestDto(userList.get(0).getEmail())))
                         .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
                 .andExpect(status().isBadRequest())

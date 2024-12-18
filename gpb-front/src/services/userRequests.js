@@ -7,6 +7,7 @@ const API_ENDPOINTS = {
     CHANGE_EMAIL: `/user/email`,
     CHANGE_PASSWORD: '/user/password',
     CHANGE_LOCALE: `/user/locale`,
+    ACTIVATE_USER: `/activate`,
 };
 
 // Centralized Error Handler
@@ -18,21 +19,31 @@ const handleError = (error, navigate, setErrorMessage) => {
     setErrorMessage?.(error?.response?.data || "An unexpected error occurred.");
 };
 
+// Activate user account
+export const activateUserAccountRequest = (token, navigate) => {
+    console.info("activation")
+    handleRequest(
+        "POST",
+        API_ENDPOINTS.ACTIVATE_USER,
+        { token },
+        () => navigate("/login"),
+        () => console.error("Failed to activate user")
+    );
+};
+
 // Resend Activation Email
-export const resendActivationEmailRequest = (event, email, navigate) => {
-    event.preventDefault();
+export const resendActivationEmailRequest = (email, navigate) => {
     handleRequest(
         "POST",
         API_ENDPOINTS.RESEND_EMAIL,
         { email },
         () => navigate("/login"),
-        () => console.error("Failed to resend activation email")
+        (error) => console.error("Failed to resend activation email")
     );
 };
 
 // Change Email
 export const emailChangeRequest = (event, email, setErrorMessage, navigate) => {
-    event.preventDefault();
     handleRequest(
         "PUT",
         API_ENDPOINTS.CHANGE_EMAIL,
@@ -48,7 +59,6 @@ export const emailChangeRequest = (event, email, setErrorMessage, navigate) => {
 
 // Change Password
 export const passwordChangeRequest = (event, password, setErrorMessage, navigate) => {
-    event.preventDefault();
     handleRequest(
         "PUT",
         API_ENDPOINTS.CHANGE_PASSWORD,

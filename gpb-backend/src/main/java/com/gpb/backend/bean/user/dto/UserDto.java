@@ -1,4 +1,4 @@
-package com.gpb.backend.bean.user;
+package com.gpb.backend.bean.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

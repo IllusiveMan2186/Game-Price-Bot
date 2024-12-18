@@ -6,8 +6,8 @@ import com.gpb.backend.GpbWebApplication;
 import com.gpb.backend.bean.event.AccountLinkerEvent;
 import com.gpb.backend.bean.event.EmailEvent;
 import com.gpb.backend.bean.event.GameFollowEvent;
-import com.gpb.backend.bean.user.UserDto;
 import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.configuration.AdminUserInitializer;
 import com.gpb.backend.listener.EmailNotificationListener;
 import com.gpb.backend.repository.WebUserRepository;
@@ -96,7 +96,7 @@ public class BaseAuthenticationIntegration {
         System.setProperty("GAMEZEY_LOGIN", "");
         System.setProperty("GAMEZEY_PASSWORD", "");
         System.setProperty("IMAGE_FOLDER", "");
-        System.setProperty("BACKEND_SERVICE_URL", "");
+        System.setProperty("FRONT_SERVICE_URL", "");
         System.setProperty("KAFKA_SERVER_URL", "");
         System.setProperty("GAME_SERVICE_URL", GAME_SERVICE_URL);
     }

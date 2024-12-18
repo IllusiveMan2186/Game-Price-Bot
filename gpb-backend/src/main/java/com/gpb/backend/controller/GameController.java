@@ -4,7 +4,7 @@ import com.gpb.backend.bean.game.GameInfoDto;
 import com.gpb.backend.bean.game.GameListPageDto;
 import com.gpb.backend.bean.game.Genre;
 import com.gpb.backend.bean.game.ProductType;
-import com.gpb.backend.bean.user.UserDto;
+import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.exception.PriceRangeException;
 import com.gpb.backend.exception.SortParamException;
 import com.gpb.backend.service.GameService;
