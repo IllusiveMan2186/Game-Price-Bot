@@ -70,5 +70,8 @@
     "app.user.link.enter.description": "Может быть взят из одного из ботов Messenger",
     "app.user.link.token.error.not.found": "Токен не найден. Укажите действительный токен.",
     "app.user.link.token.error.required": "Требуется токен. Введите действительный токен.",
-    "app.user.link.form.button": "Привязать аккаунт"
+    "app.user.link.form.button": "Привязать аккаунт",
+    "app.profile.account.link.token": "Сгенерировать токен привязки",
+    "app.user.get.link.token.title": "Получить токен для привязки аккаунта",
+    "app.user.get.link.token.description": "Введите этот токен в поддерживаемый мессенджер (Telegram)"
 }
