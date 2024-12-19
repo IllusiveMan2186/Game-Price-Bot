@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AccountLinkerRepository extends CrudRepository<AccountLinker, String> {
+
+    void deleteByUserId(long userId);
 }

@@ -5,6 +5,7 @@
     "app.user.change.password": "Змінити пароль",
     "app.profile.game.list": "Список ігор",
     "app.profile.logout": "Вийти",
+    "app.profile.account.link": "Пов'язати облікові записи",
     "app.registr": "Реєстрація",
     "app.login.form.email": "Електронна пошта",
     "app.login.form.password": "Пароль",
@@ -64,5 +65,10 @@
     "app.game.info.type.subscription": "Підписка",
     "app.game.info.type.addition": "Доповнення",
     "app.user.error.account.not.activated": "Користувача не активовано. Активуйте користувача за посиланням, надісланим електронною поштою",
-    "app.user.error.account.not.activated.send": "Надіслати електронний лист ще раз"
+    "app.user.error.account.not.activated.send": "Надіслати електронний лист ще раз",
+    "app.user.link.enter": "Введіть токен для зв'язування",
+    "app.user.link.enter.description": "Можна взяти з одного з ботів месенджера",
+    "app.user.link.token.error.not.found": "Токен не знайдено. Укажіть дійсний маркер.",
+    "app.user.link.token.error.required": "Потрібен маркер. Введіть дійсний маркер.",
+    "app.user.link.form.button": "Пов'язати облікові записи"
 }

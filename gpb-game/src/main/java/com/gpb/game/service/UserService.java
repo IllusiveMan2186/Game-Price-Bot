@@ -21,9 +21,8 @@ public interface UserService {
 
     /**
      * Merge info from one user to other
-     *
      */
-    void linkUsers(String token, long sourceUserId);
+    BasicUser linkUsers(String token, long sourceUserId);
 
     /**
      * Get token for link accounts with user
@@ -31,7 +30,7 @@ public interface UserService {
      * @param userId basic user id
      * @return accounts link token
      */
-    String getAccountLinkerToken(long userId);
+    String createAccountLinkerToken(long userId);
 
     /**
      * @param changedGames changed games

@@ -4,6 +4,7 @@ import com.gpb.telegram.bean.TelegramUser;
 import com.gpb.telegram.repository.TelegramUserRepository;
 import com.gpb.telegram.rest.RestTemplateHandler;
 import com.gpb.telegram.service.TelegramUserService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ public class TelegramUserServiceImpl implements TelegramUserService {
     }
 
     @Override
+    @Transactional
     public TelegramUser createTelegramUser(TelegramUser newUser) {
         log.info("New user '{}' registered", newUser.getTelegramId());
         Long basicUserId = restTemplateHandler.executeRequest("/user", HttpMethod.POST, null, Long.class);
@@ -54,5 +56,10 @@ public class TelegramUserServiceImpl implements TelegramUserService {
     @Override
     public Locale getUserLocale(long telegramId) {
         return telegramUserRepository.findByTelegramId(telegramId).getLocale();
+    }
+
+    @Override
+    public void setBasicUserId(long currentBasicUserId, long newBasicUserId) {
+        telegramUserRepository.updateBasicUserIdByBasicUserId(currentBasicUserId, newBasicUserId);
     }
 }

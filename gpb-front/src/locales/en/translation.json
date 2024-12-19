@@ -5,6 +5,7 @@
     "app.user.change.password": "Change password",
     "app.profile.game.list": "Game list",
     "app.profile.logout": "Logout",
+    "app.profile.account.link": "Link accounts",
     "app.registr": "Registration",
     "app.login.form.email": "Email",
     "app.login.form.password": "Password",
@@ -63,5 +64,10 @@
     "app.game.info.type.subscription": "Subscription",
     "app.game.info.type.addition": "Addition",
     "app.user.error.account.not.activated": "User not activated. Please activate user by link sended on email",
-    "app.user.error.account.not.activated.send": "Send email again"
+    "app.user.error.account.not.activated.send": "Send email again",
+    "app.user.link.enter": "Enter token for linking",
+    "app.user.link.enter.description": "Could be taken from one of messenger bot",
+    "app.user.link.token.error.not.found": "The token not found. Please provide a valid token.",
+    "app.user.link.token.error.required": "Token is required. Please enter a valid token.",
+    "app.user.link.form.button": "Link accounts"
 }

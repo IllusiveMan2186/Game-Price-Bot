@@ -8,6 +8,7 @@ const API_ENDPOINTS = {
     CHANGE_PASSWORD: '/user/password',
     CHANGE_LOCALE: `/user/locale`,
     ACTIVATE_USER: `/activate`,
+    LINK_USER: `/linker`,
 };
 
 // Centralized Error Handler
@@ -21,7 +22,6 @@ const handleError = (error, navigate, setErrorMessage) => {
 
 // Activate user account
 export const activateUserAccountRequest = (token, navigate) => {
-    console.info("activation")
     handleRequest(
         "POST",
         API_ENDPOINTS.ACTIVATE_USER,
@@ -76,5 +76,16 @@ export const localeChangeRequest = (locale) => {
         { locale },
         () => console.log("Locale changed successfully"),
         (error) => console.error("Failed to change locale", error)
+    );
+};
+
+// Link user account
+export const accountLinkRequest = (token, setErrorMessage, navigate) => {
+    handleRequest(
+        "POST",
+        API_ENDPOINTS.LINK_USER,
+        { token },
+        () => navigate("/"),
+        (error) => handleError(error, navigate, setErrorMessage)
     );
 };

@@ -130,7 +130,7 @@ public class GameController {
         log.info("Get games for user '{}' with '{}' element on page for '{}' page and sort '{}' ",
                 user.getId(), pageSize, pageNum, sortBy);
         checkSortParam(sortBy);
-        return gameService.getUserGames(user.getId(), pageSize, pageNum, sortBy);
+        return gameService.getUserGames(user.getBasicUserId(), pageSize, pageNum, sortBy);
     }
 
     /**

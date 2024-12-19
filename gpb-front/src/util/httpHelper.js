@@ -24,8 +24,8 @@ export const handleRequest = async (method, url, data, onSuccess, onError) => {
         const response = await request(method, url, data);
         onSuccess(response);
     } catch (error) {
-        console.info(error.response.status)
-        if (error.response.status === 401 && getAuthToken() !== null) {
+        console.info(error)
+        if (error?.response?.status === 401 && getAuthToken() !== null) {
             setAuthToken(null);
             setUserRole(null);
         }

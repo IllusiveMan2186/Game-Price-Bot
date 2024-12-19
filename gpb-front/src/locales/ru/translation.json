@@ -5,6 +5,7 @@
     "app.user.change.password": "Изменить пароль",
     "app.profile.game.list": "Список игр",
     "app.profile.logout": "Выход",
+    "app.profile.account.link": "Связать аккаунты",
     "app.registr": "Регистрация",
     "app.login.form.email": "Электронная почта",
     "app.login.form.password": "Пароль",
@@ -64,5 +65,10 @@
     "app.game.info.type.subscription": "Подписка",
     "app.game.info.type.addition": "Дополнение",
     "app.user.error.account.not.activated": "Пользователь не активирован. Пожалуйста, активируйте пользователя по ссылке, отправленной по электронной почте",
-    "app.user.error.account.not.activated.send": "Отправьте электронное письмо еще раз"
+    "app.user.error.account.not.activated.send": "Отправьте электронное письмо еще раз",
+    "app.user.link.enter": "Введите токен для привязки",
+    "app.user.link.enter.description": "Может быть взят из одного из ботов Messenger",
+    "app.user.link.token.error.not.found": "Токен не найден. Укажите действительный токен.",
+    "app.user.link.token.error.required": "Требуется токен. Введите действительный токен.",
+    "app.user.link.form.button": "Привязать аккаунт"
 }

@@ -7,7 +7,6 @@ import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.UserManagementService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,9 +18,6 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     private final WebUserRepository webUserRepository;
     private final ModelMapper modelMapper;
-
-    @Value("${GAME_SERVICE_URL}")
-    private String gameServiceUrl;
 
     public UserManagementServiceImpl(WebUserRepository webUserRepository,
                                      ModelMapper modelMapper) {
@@ -80,4 +76,8 @@ public class UserManagementServiceImpl implements UserManagementService {
         webUserRepository.save(user);
     }
 
+    @Override
+    public void setBasicUserId(long currentBasicUserId, long newBasicUserId) {
+        webUserRepository.updateBasicUserIdByBasicUserId(currentBasicUserId, newBasicUserId);
+    }
 }

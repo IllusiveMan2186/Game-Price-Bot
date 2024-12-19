@@ -4,13 +4,15 @@ package com.gpb.telegram.service;
  * Handle user accounts integration with other accounts
  */
 public interface UserLinkerService {
+
     /**
      * Link external accounts (e.g., Telegram) to a web user
      *
      * @param token          Connection token
      * @param webBasicUserId Web user basic ID
+     * @return new basic user id
      */
-    void linkAccounts(String token, long webBasicUserId);
+    Long linkAccounts(String token, long webBasicUserId);
 
     /**
      * Generate a token for linking accounts
