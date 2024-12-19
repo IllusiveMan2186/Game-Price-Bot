@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Header from '@components/common/layout/Header/Header';
+import Header from '@components/common/layout/header/Header';
 import ActivationPage from '@components/auth/activation/ActivationPage';
 import AuthViewSwitcher from '@components/auth/switcher/AuthViewSwitcher';
 import GameListPage from '@components/game/list/page/GameListPage';
 import GameDetailPage from '@components/game/detail/page/GameDetailPage';
 import PasswordChange from '@components/profile/PasswordChange';
 import EmailChange from '@components/profile/EmailChange';
+import LinkPage from '@components/profile/LinkPage';
 
 export default function AppContent() {
 
@@ -39,6 +40,8 @@ export default function AppContent() {
                         <Route path="/change/password" element={<PasswordChange />} />
 
                         <Route path="/activation?" element={<ActivationPage />} />
+
+                        <Route path="/link" element={<LinkPage />} />
                     </Route>
                 </Routes>
             </BrowserRouter>

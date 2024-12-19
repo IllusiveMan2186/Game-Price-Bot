@@ -20,6 +20,10 @@ public interface WebUserRepository extends CrudRepository<WebUser, Long> {
     Optional<WebUser> findByBasicUserId(long basicUserId);
 
     @Modifying
+    @Query("UPDATE WebUser w SET w.basicUserId = :newBasicUserId WHERE w.basicUserId = :currentBasicUserId")
+    void updateBasicUserIdByBasicUserId(@Param("currentBasicUserId") long currentBasicUserId, @Param("newBasicUserId") long newBasicUserId);
+
+    @Modifying
     @Query(value = "INSERT INTO user_game(user_id,game_id) VALUES(:userId,:gameId); ", nativeQuery = true)
     void addGameToUserListOfGames(@Param("userId") long userId, @Param("gameId") long gameId);
 

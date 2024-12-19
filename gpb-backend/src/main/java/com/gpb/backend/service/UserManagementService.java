@@ -55,5 +55,13 @@ public interface UserManagementService {
      * @param userId User's ID
      */
     void activateUser(long userId);
+
+    /**
+     * Set new basic user id
+     *
+     * @param currentBasicUserId current basic user id
+     * @param newBasicUserId     new basic user id
+     */
+    void setBasicUserId(long currentBasicUserId, long newBasicUserId);
 }
 

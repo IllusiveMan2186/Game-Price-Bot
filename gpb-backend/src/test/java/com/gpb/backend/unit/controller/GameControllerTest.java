@@ -158,20 +158,20 @@ class GameControllerTest {
     @Test
     void testGetGamesOfUser_whenSuccess_shouldReturnGameList() {
         UserDto user = new UserDto("username", "password", "token", "role", "ua");
-        user.setId(123L);
+        user.setBasicUserId(123L);
 
         int pageSize = 25;
         int pageNum = 1;
         String sortBy = "gamesInShop.price-ASC";
 
         GameListPageDto gameList = new GameListPageDto();
-        when(gameService.getUserGames(user.getId(), pageSize, pageNum, sortBy)).thenReturn(gameList);
+        when(gameService.getUserGames(user.getBasicUserId(), pageSize, pageNum, sortBy)).thenReturn(gameList);
 
 
         GameListPageDto result = gameController.getGamesOfUser(pageSize, pageNum, sortBy, user);
 
 
         assertNotNull(result);
-        verify(gameService).getUserGames(user.getId(), pageSize, pageNum, sortBy);
+        verify(gameService).getUserGames(user.getBasicUserId(), pageSize, pageNum, sortBy);
     }
 }

@@ -117,7 +117,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetAccountLinkerToken_whenSuccess_shouldReturnToken() {
+    void tesCreateAccountLinkerToken_whenSuccess_shouldReturnToken() {
         long userId = 1L;
         BasicUser user = new BasicUser();
         AccountLinker accountLinker = new AccountLinker();
@@ -126,9 +126,10 @@ class UserServiceImplTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(accountLinkerRepository.save(any(AccountLinker.class))).thenReturn(accountLinker);
 
-        String token = userService.getAccountLinkerToken(userId);
+        String token = userService.createAccountLinkerToken(userId);
 
         assertEquals("testToken", token);
+        verify(accountLinkerRepository).deleteByUserId(userId);
         verify(userRepository).findById(userId);
         verify(accountLinkerRepository).save(any(AccountLinker.class));
     }

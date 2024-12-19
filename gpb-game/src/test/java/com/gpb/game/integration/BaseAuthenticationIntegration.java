@@ -7,7 +7,6 @@ import com.gpb.game.bean.game.GameInShop;
 import com.gpb.game.bean.game.Genre;
 import com.gpb.game.bean.game.ProductType;
 import com.gpb.game.listener.GameRequestListener;
-import com.gpb.game.listener.UserRequestListener;
 import com.gpb.game.repository.GameInShopRepository;
 import com.gpb.game.repository.GameRepository;
 import com.gpb.game.repository.UserRepository;
@@ -71,12 +70,9 @@ class BaseAuthenticationIntegration {
     protected KafkaTemplate<String, EmailNotificationEvent> responseKafkaTemplate;
     @MockBean
     protected GameRequestListener gameRequestListener;
-    @MockBean
-    protected UserRequestListener userRequestListener;
 
     @BeforeAll
     protected static void beforeAll() throws ParseException {
-
         games.clear();
         games.add(gameCreation("name1", "url1", Genre.STRATEGIES, new BigDecimal("100.0"), new BigDecimal("100.0")));
         games.add(gameCreation("name2", "url2", Genre.RPG, new BigDecimal("500.0"), new BigDecimal("500.0")));
@@ -99,7 +95,6 @@ class BaseAuthenticationIntegration {
 
     @Test
     void testRequestFilter_whenApiKeyMissing_shouldReturnUnauthorized() throws Exception {
-
         mockMvc.perform(get("/game/{id}", games.get(0).getId())
                         .header(Constants.BASIC_USER_ID_HEADER, -1))
                 .andDo(print())

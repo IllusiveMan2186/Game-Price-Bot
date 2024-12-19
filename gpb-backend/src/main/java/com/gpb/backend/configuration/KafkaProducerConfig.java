@@ -1,6 +1,5 @@
 package com.gpb.backend.configuration;
 
-import com.gpb.backend.bean.event.AccountLinkerEvent;
 import com.gpb.backend.bean.event.EmailEvent;
 import com.gpb.backend.bean.event.GameFollowEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -42,15 +41,6 @@ public class KafkaProducerConfig {
 
     @Bean
     public KafkaTemplate<String, GameFollowEvent> kafkaGameFollowEventTemplate() {
-        Map<String, Object> configs = new HashMap<>();
-        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
-        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(configs));
-    }
-
-    @Bean
-    public KafkaTemplate<String, AccountLinkerEvent> kafkaAccountsLinkerEventTemplate() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);

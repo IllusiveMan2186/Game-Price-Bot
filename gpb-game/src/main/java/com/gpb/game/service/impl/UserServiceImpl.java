@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void linkUsers(String token, long sourceUserId) {
+    public BasicUser linkUsers(String token, long sourceUserId) {
         AccountLinker connector = accountLinkerRepository.findById(token)
                 .orElseThrow(NotExistingMessengerActivationTokenException::new);
         BasicUser targetUser = connector.getUser();
@@ -48,17 +48,20 @@ public class UserServiceImpl implements UserService {
         targetUser.getGameList().addAll(sourceUser.getGameList());
         targetUser.getNotificationTypes().addAll(sourceUser.getNotificationTypes());
 
-        userRepository.save(targetUser);
+        BasicUser linkedUser = userRepository.save(targetUser);
         userRepository.deleteById(sourceUser.getId());
         accountLinkerRepository.deleteById(token);
+        return linkedUser;
     }
 
     @Override
-    public String getAccountLinkerToken(long userId) {
+    @Transactional
+    public String createAccountLinkerToken(long userId) {
         AccountLinker connector = new AccountLinker();
         BasicUser user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Target user not found with ID: " + userId));
         connector.setUser(user);
+        accountLinkerRepository.deleteByUserId(userId);
         return accountLinkerRepository.save(connector).getToken();
     }
 
