@@ -1,42 +1,47 @@
 package com.gpb.backend.unit.controller;
 
+import com.gpb.backend.bean.user.dto.TokenRequestDto;
 import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.controller.UserLinkerController;
 import com.gpb.backend.service.UserLinkerService;
-import org.junit.jupiter.api.BeforeEach;
+import com.gpb.backend.service.UserManagementService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class UserLinkerControllerTest {
 
     @Mock
     private UserLinkerService userLinkerService;
-
+    @Mock
+    private UserManagementService userManagementService;
     @InjectMocks
     private UserLinkerController userController;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
-    void testConnectTelegramUser_whenSuccess_shouldInvokeServiceMethod() {
+    void testLinkUser_whenSuccess_shouldInvokeServiceMethod() {
+        long userId = 123L;
+        long currentBasicUserId = 1L;
+        long newUserBasicId = 12L;
         String token = "telegram-token";
         UserDto user = new UserDto("username", "password", "token", "role", "ua");
-        user.setId(123L);
+        user.setId(userId);
+        user.setBasicUserId(currentBasicUserId);
+        when(userLinkerService.linkAccounts(token, userId)).thenReturn(newUserBasicId);
 
 
-        userController.connectTelegramUser(token, user);
+        userController.linkUser(new TokenRequestDto(token), user);
 
 
-        verify(userLinkerService).linkAccounts(token, 123L);
+        verify(userLinkerService).linkAccounts(token, userId);
+        verify(userManagementService).setBasicUserId(currentBasicUserId, newUserBasicId);
     }
 
     @Test

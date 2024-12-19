@@ -1,8 +1,11 @@
 package com.gpb.backend.controller;
 
+import com.gpb.backend.bean.user.dto.TokenRequestDto;
 import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.service.UserLinkerService;
+import com.gpb.backend.service.UserManagementService;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,14 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
+@AllArgsConstructor
 @RequestMapping("/linker")
 public class UserLinkerController {
 
     private final UserLinkerService userLinkerService;
-
-    public UserLinkerController(UserLinkerService userLinkerService) {
-        this.userLinkerService = userLinkerService;
-    }
+    private final UserManagementService userManagementService;
 
     /**
      * Connect telegram user to current web user
@@ -34,9 +35,10 @@ public class UserLinkerController {
     @PostMapping
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public void connectTelegramUser(@RequestBody final String token,
-                                    @AuthenticationPrincipal UserDto user) {
-        userLinkerService.linkAccounts(token, user.getId());
+    public void linkUser(@RequestBody final TokenRequestDto token,
+                         @AuthenticationPrincipal UserDto user) {
+        Long newBasicUserId = userLinkerService.linkAccounts(token.getToken(), user.getId());
+        userManagementService.setBasicUserId(user.getBasicUserId(), newBasicUserId);
     }
 
     /**

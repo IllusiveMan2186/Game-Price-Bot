@@ -3,6 +3,7 @@ package com.gpb.telegram.command.impl;
 import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.bean.TelegramUser;
+import com.gpb.telegram.service.TelegramUserService;
 import com.gpb.telegram.service.UserLinkerService;
 import com.gpb.telegram.util.UpdateCreator;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,8 @@ class SynchronizeToWebUserCommandHandlerTest {
     MessageSource messageSource;
     @Mock
     UserLinkerService userLinkerService;
+    @Mock
+    TelegramUserService telegramUserService;
     @InjectMocks
     SynchronizeToWebUserCommandHandler controller;
 
@@ -43,21 +46,24 @@ class SynchronizeToWebUserCommandHandlerTest {
     @Test
     void testApply_whenSuccess_shouldReturnMessageAndSSynchronizeAccounts() {
         Locale locale = new Locale("");
-        long userId = 123456;
-        Update update = UpdateCreator.getUpdateWithoutCallback("/synchronizeToWeb mockToken",123);
+        long currentUserId = 123456;
+        long newBasicUserId = 123;
+        Update update = UpdateCreator.getUpdateWithoutCallback("/synchronizeToWeb mockToken", 123);
         when(messageSource.getMessage("accounts.synchronization.token.connected.message", null, locale))
                 .thenReturn("messages");
 
         String token = "mockToken";
         TelegramUser user = TelegramUser.builder().basicUserId(123456L).build();
         TelegramRequest request = TelegramRequest.builder().update(update).user(user).locale(locale).build();
+        when(userLinkerService.linkAccounts(token, currentUserId)).thenReturn(newBasicUserId);
 
 
         TelegramResponse response = controller.apply(request);
 
 
         SendMessage sendMessage = (SendMessage) response.getMessages().get(0);
-        verify(userLinkerService).linkAccounts(token, userId);
+        verify(userLinkerService).linkAccounts(token, currentUserId);
+        verify(telegramUserService).setBasicUserId(currentUserId, newBasicUserId);
         assertEquals("123", sendMessage.getChatId());
         assertEquals("messages", sendMessage.getText());
     }

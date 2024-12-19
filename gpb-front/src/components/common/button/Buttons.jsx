@@ -49,6 +49,10 @@ function DropDown(props) {
     navigate("/change/password");
   }
 
+  const handleAccountLinkClick = () => {
+    navigate("/link");
+  }
+
   return (
     <div class="dropdown">
       <button id="profile-dropdown-button" class="btn btn-primary"><Message string={'app.profile'} /></button>
@@ -56,6 +60,7 @@ function DropDown(props) {
         <a id="change-email-button" onClick={handleChangeEmailClick}><Message string={'app.user.change.email'} /></a>
         <a id="change-password-button" onClick={handleChangePasswordClick}><Message string={'app.user.change.password'} /></a>
         <a id="user-gameList-button" onClick={handleGameListClick}><Message string={'app.profile.game.list'} /></a>
+        <a id="user-gameList-button" onClick={handleAccountLinkClick}><Message string={'app.profile.account.link'} /></a>
         <a id="logout-button" onClick={props.logout}><Message string={'app.profile.logout'} /></a>
       </div>
     </div>

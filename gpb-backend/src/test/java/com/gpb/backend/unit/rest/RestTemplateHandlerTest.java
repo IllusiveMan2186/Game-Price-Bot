@@ -131,4 +131,23 @@ class RestTemplateHandlerTest {
         assertNotNull(exception);
         verify(restTemplate, times(1)).exchange(eq(GAME_SERVICE_URL + url), eq(method), any(HttpEntity.class), eq(String.class));
     }
+
+    @Test
+    void testExecuteRequestWithBody_whenSuccessfulResponse_shouldReturnBody() {
+        String url = "/resource";
+        HttpMethod method = HttpMethod.GET;
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Custom-Header", "value");
+        String expectedResponse = "response-body";
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(expectedResponse, HttpStatus.OK);
+        when(restTemplate.exchange(eq(GAME_SERVICE_URL + url), eq(method), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
+
+
+        String result = restTemplateHandler.executeRequestWithBody(url, method, headers, new Object(), String.class);
+
+
+        assertEquals(expectedResponse, result);
+        verify(restTemplate, times(1)).exchange(eq(GAME_SERVICE_URL + url), eq(method), any(HttpEntity.class), eq(String.class));
+    }
 }

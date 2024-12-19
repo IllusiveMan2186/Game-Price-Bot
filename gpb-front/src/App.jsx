@@ -1,7 +1,7 @@
 import './styles/app.css'
 
 import Router from '@routes/Router';
-import Footer from '@components/common/layout/Footer/Footer';
+import Footer from '@components/common/layout/footer/Footer';
 
 
 function App() {
