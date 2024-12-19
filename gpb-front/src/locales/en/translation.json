@@ -69,5 +69,8 @@
     "app.user.link.enter.description": "Could be taken from one of messenger bot",
     "app.user.link.token.error.not.found": "The token not found. Please provide a valid token.",
     "app.user.link.token.error.required": "Token is required. Please enter a valid token.",
-    "app.user.link.form.button": "Link accounts"
+    "app.user.link.form.button": "Link accounts",
+    "app.profile.account.link.token": "Generate Linking Token",
+    "app.user.get.link.token.title": "Get token for account linking",
+    "app.user.get.link.token.description": "Enter this token in supported messanger (Telegram)"
 }

@@ -85,7 +85,20 @@ export const accountLinkRequest = (token, setErrorMessage, navigate) => {
         "POST",
         API_ENDPOINTS.LINK_USER,
         { token },
-        () => navigate("/"),
+        () => { navigate("/"); },
         (error) => handleError(error, navigate, setErrorMessage)
+    );
+};
+
+// Get linke token for user account link
+export const getLinkTokenRequest = (setToken, navigate) => {
+    handleRequest(
+        "GET",
+        API_ENDPOINTS.LINK_USER,
+        null,
+        (response) => {
+            setToken(response.data);
+        },
+        () => console.error("Failed to get link token")
     );
 };
