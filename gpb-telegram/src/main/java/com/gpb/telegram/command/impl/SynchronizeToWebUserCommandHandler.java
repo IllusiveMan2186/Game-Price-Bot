@@ -7,6 +7,7 @@ import com.gpb.telegram.filter.FilterChainMarker;
 import com.gpb.telegram.service.TelegramUserService;
 import com.gpb.telegram.service.UserLinkerService;
 import com.gpb.telegram.util.Constants;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,7 @@ public class SynchronizeToWebUserCommandHandler implements CommandHandler {
     }
 
     @Override
+    @Transactional
     public TelegramResponse apply(TelegramRequest request) {
         String token = request.getArgument(1);
 

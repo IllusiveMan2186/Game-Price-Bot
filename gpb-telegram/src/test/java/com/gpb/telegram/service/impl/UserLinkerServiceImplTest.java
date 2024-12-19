@@ -1,5 +1,6 @@
 package com.gpb.telegram.service.impl;
 
+import com.gpb.telegram.bean.TokenRequestDto;
 import com.gpb.telegram.rest.RestTemplateHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +30,12 @@ class UserLinkerServiceImplTest {
         long newBasicUserId = 1L;
         HttpHeaders headers = new HttpHeaders();
         headers.add("BASIC-USER-ID", String.valueOf(webUserId));
-        when(restTemplateHandler.executeRequest("/user/link", HttpMethod.POST, headers, Long.class))
+        when(restTemplateHandler.executeRequestWithBody(
+                "/user/link",
+                HttpMethod.POST,
+                headers,
+                new TokenRequestDto(token),
+                Long.class))
                 .thenReturn(newBasicUserId);
 
 
@@ -37,7 +43,12 @@ class UserLinkerServiceImplTest {
 
 
         assertEquals(newBasicUserId, result);
-        verify(restTemplateHandler).executeRequest("/user/link", HttpMethod.POST, headers, Long.class);
+        verify(restTemplateHandler).executeRequestWithBody(
+                "/user/link",
+                HttpMethod.POST,
+                headers,
+                new TokenRequestDto(token),
+                Long.class);
     }
 
     @Test

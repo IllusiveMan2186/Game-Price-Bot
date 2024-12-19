@@ -36,14 +36,23 @@ public class RestTemplateHandler {
     }
 
     public <T> T executeRequest(String url, HttpMethod httpMethod, HttpHeaders headers, Class<T> responseType) {
+        return executeRequestWithBody(url, httpMethod, headers, null, responseType);
+    }
+
+    public <T> T executeRequestWithBody(String url, HttpMethod httpMethod, HttpHeaders headers, Object requestBody, Class<T> responseType) {
         url = gameServiceUrl + url;
-        log.info("Request ({}){} with headers {}", httpMethod, url, headers);
+        log.info("Request ({}){} with headers {} and body {}", httpMethod, url, headers, requestBody);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(Constants.API_KEY_HEADER, validApiKey);
         if (headers != null) {
             httpHeaders.addAll(headers);
         }
-        HttpEntity<Object> entity = new HttpEntity<>(httpHeaders);
+        HttpEntity<Object> entity;
+        if (requestBody == null) {
+            entity = new HttpEntity<>(httpHeaders);
+        } else {
+            entity = new HttpEntity<>(requestBody, httpHeaders);
+        }
         try {
             ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, entity, responseType);
             HttpStatus statusCode = (HttpStatus) response.getStatusCode();

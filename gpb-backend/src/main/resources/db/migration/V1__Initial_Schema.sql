@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS web_user (
     lock_time TIMESTAMP(6),
     password VARCHAR(255),
     role VARCHAR(255),
-    basic_user_id BIGINT,
+    basic_user_id BIGINT UNIQUE,
     PRIMARY KEY (id)
 );
 

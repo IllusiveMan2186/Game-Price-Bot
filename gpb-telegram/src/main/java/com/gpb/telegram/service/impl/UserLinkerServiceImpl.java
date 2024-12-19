@@ -1,5 +1,6 @@
 package com.gpb.telegram.service.impl;
 
+import com.gpb.telegram.bean.TokenRequestDto;
 import com.gpb.telegram.rest.RestTemplateHandler;
 import com.gpb.telegram.service.UserLinkerService;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,12 @@ public class UserLinkerServiceImpl implements UserLinkerService {
         log.info("Link user {} by token {}", basicUserId, token);
         HttpHeaders headers = new HttpHeaders();
         headers.add("BASIC-USER-ID", String.valueOf(basicUserId));
-        return restTemplateHandler.executeRequest("/user/link", HttpMethod.POST, headers, Long.class);
+        return restTemplateHandler.executeRequestWithBody(
+                "/user/link",
+                HttpMethod.POST,
+                headers,
+                new TokenRequestDto(token),
+                Long.class);
     }
 
     @Override
