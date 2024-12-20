@@ -35,6 +35,7 @@ export default function LinkPage() {
     // Validates the form before submission
     const isFormValid = () => token.trim() !== '' && errorToken === '';
 
+    // Submits the token change request
     const onSubmitTokenChange = (event) => {
         event.preventDefault();
         accountLinkRequest(token, setErrorMessage, navigate);
