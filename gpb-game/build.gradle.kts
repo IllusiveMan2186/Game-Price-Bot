@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.gpb"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 fun getEnvOrProperty(name: String): String {
@@ -57,7 +57,7 @@ dependencies {
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
     testImplementation("com.h2database:h2:2.2.220")
 
-    implementation("com.gpb:common:0.0.5-SNAPSHOT")
+    implementation("com.gpb:common:1.0.0")
 }
 
 tasks.withType<Test> {
