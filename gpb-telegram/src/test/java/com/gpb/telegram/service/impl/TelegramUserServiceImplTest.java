@@ -1,5 +1,7 @@
 package com.gpb.telegram.service.impl;
 
+import com.gpb.common.entity.user.NotificationRequestDto;
+import com.gpb.common.entity.user.UserNotificationType;
 import com.gpb.common.service.RestTemplateHandlerService;
 import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.repository.TelegramUserRepository;
@@ -59,7 +61,12 @@ class TelegramUserServiceImplTest {
         TelegramUser newUser = new TelegramUser();
         Long basicUserId = 1L;
         when(telegramUserRepository.save(newUser)).thenReturn(newUser);
-        when(restTemplateHandler.executeRequest("/user", HttpMethod.POST, null, Long.class))
+        when(restTemplateHandler.executeRequestWithBody(
+                "/user",
+                HttpMethod.POST,
+                null,
+                new NotificationRequestDto(UserNotificationType.TELEGRAM),
+                Long.class))
                 .thenReturn(basicUserId);
 
 
@@ -125,9 +132,9 @@ class TelegramUserServiceImplTest {
         long newBasicUserId = 1L;
 
 
-        telegramUserService.setBasicUserId(currentBasicUserId,newBasicUserId);
+        telegramUserService.setBasicUserId(currentBasicUserId, newBasicUserId);
 
 
-        verify(telegramUserRepository).updateBasicUserIdByBasicUserId(currentBasicUserId,newBasicUserId);
+        verify(telegramUserRepository).updateBasicUserIdByBasicUserId(currentBasicUserId, newBasicUserId);
     }
 }

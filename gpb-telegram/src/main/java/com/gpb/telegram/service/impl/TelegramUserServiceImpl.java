@@ -1,5 +1,7 @@
 package com.gpb.telegram.service.impl;
 
+import com.gpb.common.entity.user.NotificationRequestDto;
+import com.gpb.common.entity.user.UserNotificationType;
 import com.gpb.common.service.RestTemplateHandlerService;
 import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.repository.TelegramUserRepository;
@@ -37,7 +39,13 @@ public class TelegramUserServiceImpl implements TelegramUserService {
     @Transactional
     public TelegramUser createTelegramUser(TelegramUser newUser) {
         log.info("New user '{}' registered", newUser.getTelegramId());
-        Long basicUserId = restTemplateHandler.executeRequest("/user", HttpMethod.POST, null, Long.class);
+
+        Long basicUserId = restTemplateHandler.executeRequestWithBody("/user",
+                HttpMethod.POST,
+                null,
+                new NotificationRequestDto(UserNotificationType.TELEGRAM),
+                Long.class);
+
         newUser.setBasicUserId(basicUserId);
         return telegramUserRepository.save(newUser);
     }

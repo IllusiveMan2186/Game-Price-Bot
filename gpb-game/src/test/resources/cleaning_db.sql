@@ -1,5 +1,6 @@
 DELETE FROM user_game ;
 DELETE FROM account_linker ;
+DELETE FROM basic_user_notification_types ;
 DELETE FROM basic_user ;
 DELETE FROM game_in_shop ;
 DELETE FROM game_genres ;

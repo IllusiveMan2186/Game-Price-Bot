@@ -81,7 +81,7 @@
 		<dependency>
 			<groupId>com.gpb</groupId>
 			<artifactId>common</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
+			<version>0.0.5-SNAPSHOT</version>
 			<classifier>plain</classifier>
 		</dependency>
 	</dependencies>

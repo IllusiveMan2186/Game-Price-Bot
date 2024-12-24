@@ -12,6 +12,8 @@ import com.gpb.backend.exception.UserNotActivatedException;
 import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.UserAuthenticationService;
 import com.gpb.backend.util.Constants;
+import com.gpb.common.entity.user.NotificationRequestDto;
+import com.gpb.common.entity.user.UserNotificationType;
 import com.gpb.common.exception.NotFoundException;
 import com.gpb.common.service.RestTemplateHandlerService;
 import lombok.Data;
@@ -80,7 +82,11 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
             throw new EmailAlreadyExistException();
         }
 
-        Long basicUserId = restTemplateHandler.executeRequest("/user", HttpMethod.POST, null, Long.class);
+        Long basicUserId = restTemplateHandler.executeRequestWithBody("/user",
+                HttpMethod.POST,
+                null,
+                new NotificationRequestDto(UserNotificationType.EMAIL),
+                Long.class);
 
         WebUser user = WebUser.builder()
                 .email(userRegistration.getEmail())
