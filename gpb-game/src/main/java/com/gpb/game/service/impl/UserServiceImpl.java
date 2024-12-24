@@ -1,5 +1,6 @@
 package com.gpb.game.service.impl;
 
+import com.gpb.common.entity.user.UserNotificationType;
 import com.gpb.common.exception.NotExistingLinkerTokenException;
 import com.gpb.common.exception.NotFoundException;
 import com.gpb.game.entity.game.GameInShop;
@@ -33,8 +34,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BasicUser createUser() {
-        return userRepository.save(new BasicUser());
+    public BasicUser createUser(UserNotificationType notificationType) {
+        BasicUser basicUser = BasicUser.builder()
+                .notificationTypes(List.of(notificationType))
+                .build();
+        return userRepository.save(basicUser);
     }
 
     @Override

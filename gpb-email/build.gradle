@@ -40,7 +40,7 @@ configurations {
 dependencies {
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.15.2'
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.2'
-	implementation 'com.gpb:common:0.0.2-SNAPSHOT'
+	implementation 'com.gpb:common:0.0.5-SNAPSHOT'
 
 	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
 	annotationProcessor 'org.projectlombok:lombok:1.18.30'

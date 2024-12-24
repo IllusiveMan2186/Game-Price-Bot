@@ -1,5 +1,7 @@
 package com.gpb.game.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gpb.common.entity.event.EmailNotificationEvent;
 import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
@@ -123,5 +125,9 @@ class BaseAuthenticationIntegration {
                 .genres(Collections.singletonList(genre)).build();
         game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));
         return game;
+    }
+
+    protected String objectToJson(Object obj) throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(obj);
     }
 }

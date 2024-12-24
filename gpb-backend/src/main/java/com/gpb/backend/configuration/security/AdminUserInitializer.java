@@ -2,6 +2,8 @@ package com.gpb.backend.configuration.security;
 
 import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.repository.WebUserRepository;
+import com.gpb.common.entity.user.NotificationRequestDto;
+import com.gpb.common.entity.user.UserNotificationType;
 import com.gpb.common.service.RestTemplateHandlerService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +45,11 @@ public class AdminUserInitializer implements ApplicationListener<ContextRefreshe
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (userRepository.findByEmail(adminEmail).isEmpty()) {
-            Long basicUserId = restTemplateHandler.executeRequest(
-                    "/user", HttpMethod.POST, null, Long.class);
+            Long basicUserId = restTemplateHandler.executeRequestWithBody("/user",
+                    HttpMethod.POST,
+                    null,
+                    new NotificationRequestDto(UserNotificationType.EMAIL),
+                    Long.class);
 
             WebUser admin = WebUser.builder()
                     .id(1L)
