@@ -17,7 +17,7 @@ RUN gradle clean build
 
 # Stage 2: Create the final image
 FROM openjdk:20
-ENV ARTIFACT_NAME=gpb-backend-0.0.1-SNAPSHOT.war
+ENV ARTIFACT_NAME=gpb-backend-1.0.0.war
 ENV APP_HOME=/gpb/backend/
 
 WORKDIR $APP_HOME
