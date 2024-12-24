@@ -1,0 +1,77 @@
+html,
+body {
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+}
+
+.row {
+
+  --bs-gutter-x: 0 !important;
+}
+
+.App {
+  height: 100%;
+  display: block;
+  overflow: auto;
+  text-align: center;
+  color: white;
+  background-color: rgb(39, 47, 71);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.App-footer {
+  background-color: #000000;
+  min-height: 8vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.Error {
+  color: #911010;
+}
+
+.Resend-link {
+  color: #4eb2ec;
+  text-decoration: underline;
+}
+
+.Resend-link:hover {
+  cursor: pointer;
+}
+
+.App-user-info {
+  background-color: #13538881;
+  box-sizing: border-box;
+  width: 100%;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-top: 20px;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1140px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.App-user-info-title {
+  font-size: 2.5rem;
+}
+
+.login-form {
+  margin-top: 20px !important;
+}
