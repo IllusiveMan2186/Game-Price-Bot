@@ -1,6 +1,6 @@
 package com.gpb.telegram.service;
 
-import com.gpb.telegram.bean.TelegramUser;
+import com.gpb.telegram.entity.TelegramUser;
 
 import java.util.Locale;
 

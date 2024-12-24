@@ -1,8 +1,8 @@
 package com.gpb.game.unit.listener;
 
-import com.gpb.game.bean.event.GameFollowEvent;
-import com.gpb.game.bean.game.Game;
-import com.gpb.game.bean.user.BasicUser;
+import com.gpb.common.entity.event.GameFollowEvent;
+import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.listener.GameRequestListener;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.UserService;

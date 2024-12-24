@@ -1,18 +1,19 @@
 package com.gpb.game.service.impl;
 
-import com.gpb.game.bean.game.Game;
-import com.gpb.game.bean.game.GameDto;
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.game.GameInfoDto;
-import com.gpb.game.bean.game.GameListPageDto;
-import com.gpb.game.bean.game.Genre;
-import com.gpb.game.bean.game.ProductType;
-import com.gpb.game.bean.user.BasicUser;
-import com.gpb.game.exception.NotFoundException;
+import com.gpb.common.entity.game.GameDto;
+import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.common.entity.game.GameListPageDto;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
+import com.gpb.common.exception.NotFoundException;
+import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.repository.GameInShopRepository;
 import com.gpb.game.repository.GameRepository;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.GameStoresService;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -26,23 +27,13 @@ import java.util.List;
 
 @Service
 @Log4j2
+@AllArgsConstructor
 public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
     private final GameInShopRepository gameInShopRepository;
     private final GameStoresService gameStoresService;
     private final ModelMapper modelMapper;
-
-
-    public GameServiceImpl(GameRepository gameRepository,
-                           GameInShopRepository gameInShopRepository,
-                           GameStoresService gameStoresService,
-                           ModelMapper modelMapper) {
-        this.gameRepository = gameRepository;
-        this.gameInShopRepository = gameInShopRepository;
-        this.gameStoresService = gameStoresService;
-        this.modelMapper = modelMapper;
-    }
 
     @Override
     public Game getById(long gameId) {

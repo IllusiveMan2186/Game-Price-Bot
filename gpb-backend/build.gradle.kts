@@ -9,10 +9,23 @@ group = "com.gpb"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
-repositories {
-    mavenCentral()
+fun getEnvOrProperty(name: String): String {
+    return findProperty(name)?.toString()
+            ?: System.getenv(name)
+            ?: throw GradleException("$name not specified. Set '$name' property or $name environment variable.")
 }
 
+repositories {
+    mavenCentral()
+    maven {
+        isAllowInsecureProtocol = true
+        url = uri(getEnvOrProperty("DEPENDENCY_REPO_URL"))
+        credentials {
+            username = getEnvOrProperty("DEPENDENCY_REPO_USERNAME")
+            password = getEnvOrProperty("DEPENDENCY_REPO_PASSWORD")
+        }
+    }
+}
 configurations.all {
     exclude(module = "spring-boot-starter-logging")
 }
@@ -44,6 +57,8 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
 
     implementation("org.postgresql:postgresql:42.5.1")
+
+    implementation("com.gpb:common:0.0.2-SNAPSHOT")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

@@ -1,10 +1,11 @@
 package com.gpb.backend.unit.service.impl;
 
-import com.gpb.backend.bean.event.EmailEvent;
-import com.gpb.backend.bean.event.EmailNotificationEvent;
-import com.gpb.backend.bean.user.UserActivation;
-import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.entity.UserActivation;
+import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.service.impl.EmailServiceImpl;
+import com.gpb.common.entity.event.EmailEvent;
+import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.util.CommonConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.gpb.backend.util.Constants.EMAIL_SERVICE_TOPIC;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.argThat;
@@ -46,7 +46,7 @@ class EmailServiceImplTest {
         emailService.sendGameInfoChange(user, notificationEvent);
 
 
-        verify(kafkaTemplate).send(eq(EMAIL_SERVICE_TOPIC), any(String.class), any(EmailEvent.class));
+        verify(kafkaTemplate).send(eq(CommonConstants.EMAIL_SERVICE_TOPIC), any(String.class), any(EmailEvent.class));
     }
 
     @Test
@@ -68,7 +68,7 @@ class EmailServiceImplTest {
         Map<String, Object> expectedVariables = new LinkedHashMap<>();
         expectedVariables.put("url", "http://localhost:3000/activation?token=testToken");
 
-        verify(kafkaTemplate).send(eq(EMAIL_SERVICE_TOPIC), any(String.class), argThat(emailEvent ->
+        verify(kafkaTemplate).send(eq(CommonConstants.EMAIL_SERVICE_TOPIC), any(String.class), argThat(emailEvent ->
                 emailEvent.getRecipient().equals("user@example.com") &&
                         emailEvent.getSubject().equals("User verification") &&
                         emailEvent.getVariables().equals(expectedVariables) &&

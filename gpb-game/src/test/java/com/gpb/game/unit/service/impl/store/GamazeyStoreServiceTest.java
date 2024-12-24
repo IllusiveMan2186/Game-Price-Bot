@@ -1,11 +1,11 @@
 package com.gpb.game.unit.service.impl.store;
 
-import com.gpb.game.bean.game.ClientActivationType;
-import com.gpb.game.bean.game.Game;
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.game.Genre;
-import com.gpb.game.bean.game.ProductType;
+import com.gpb.common.entity.game.ClientActivationType;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
 import com.gpb.game.configuration.ResourceConfiguration;
+import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.parser.StorePageParser;
 import com.gpb.game.service.impl.store.GamazeyStoreService;
 import org.jsoup.nodes.Document;

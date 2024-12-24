@@ -1,10 +1,10 @@
 package com.gpb.backend.unit.controller;
 
-import com.gpb.backend.bean.user.dto.TokenRequestDto;
-import com.gpb.backend.bean.user.dto.UserDto;
 import com.gpb.backend.controller.UserLinkerController;
-import com.gpb.backend.service.UserLinkerService;
+import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.UserManagementService;
+import com.gpb.common.entity.user.TokenRequestDto;
+import com.gpb.common.service.UserLinkerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

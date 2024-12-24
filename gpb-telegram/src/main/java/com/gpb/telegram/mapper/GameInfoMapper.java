@@ -1,8 +1,8 @@
 package com.gpb.telegram.mapper;
 
-import com.gpb.telegram.bean.TelegramRequest;
-import com.gpb.telegram.bean.game.GameInStoreDto;
-import com.gpb.telegram.bean.game.GameInfoDto;
+import com.gpb.common.entity.game.GameInStoreDto;
+import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.telegram.entity.TelegramRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;

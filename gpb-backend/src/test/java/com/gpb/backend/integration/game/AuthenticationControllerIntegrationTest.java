@@ -1,7 +1,7 @@
 package com.gpb.backend.integration.game;
 
-import com.gpb.backend.bean.user.Credentials;
-import com.gpb.backend.bean.user.UserRegistration;
+import com.gpb.backend.entity.Credentials;
+import com.gpb.backend.entity.UserRegistration;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 

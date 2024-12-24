@@ -1,9 +1,9 @@
 package com.gpb.backend.service;
 
-import com.gpb.backend.bean.game.GameInfoDto;
-import com.gpb.backend.bean.game.GameListPageDto;
-import com.gpb.backend.bean.game.Genre;
-import com.gpb.backend.bean.game.ProductType;
+import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.common.entity.game.GameListPageDto;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
 
 import java.math.BigDecimal;
 import java.util.List;

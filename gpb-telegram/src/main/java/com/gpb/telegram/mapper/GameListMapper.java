@@ -1,10 +1,11 @@
 package com.gpb.telegram.mapper;
 
-import com.gpb.telegram.bean.TelegramRequest;
-import com.gpb.telegram.bean.TelegramUser;
-import com.gpb.telegram.bean.game.GameDto;
-import com.gpb.telegram.bean.game.Genre;
+import com.gpb.common.entity.game.GameDto;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.util.CommonConstants;
 import com.gpb.telegram.configuration.ResourceConfiguration;
+import com.gpb.telegram.entity.TelegramRequest;
+import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.util.Constants;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -57,7 +58,7 @@ public class GameListMapper {
     }
 
     private InputFile getGameImage(String gameName) {
-        String filePath = resourceConfiguration.getImageFolder() + "/" + gameName + Constants.JPG_IMG_FILE_EXTENSION;
+        String filePath = resourceConfiguration.getImageFolder() + "/" + gameName + CommonConstants.JPG_IMG_FILE_EXTENSION;
         return new InputFile(new File(filePath));
     }
 

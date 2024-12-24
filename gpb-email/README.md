@@ -9,6 +9,18 @@ Part of GPB application that responsible for sending emails
 
 ## Step for running in development environment:
 * Launch Kafka server message broker
+* Setup dependency repository for  common service
+  * Create or add to gradle.properties at directory %LocalUser%/.gradle
+  ```
+  DEPENDENCY_REPO_URL=https://maven.pkg.github.com/IllusiveMan2186/GPB-common
+  DEPENDENCY_REPO_USERNAME=place_your_github_username
+  DEPENDENCY_REPO_PASSWORD=place_your_github_personal_access_tokens
+  ```
+  * If you decide publish common service yourself then credential to this repository
+* Run
+  ```
+  gradle clean build
+  ```
 * Run service
 
 ### Environments

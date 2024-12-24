@@ -1,10 +1,10 @@
 package com.gpb.telegram.mapper;
 
-import com.gpb.telegram.bean.TelegramRequest;
-import com.gpb.telegram.bean.TelegramUser;
-import com.gpb.telegram.bean.game.GameDto;
-import com.gpb.telegram.bean.game.Genre;
+import com.gpb.common.entity.game.GameDto;
+import com.gpb.common.entity.game.Genre;
 import com.gpb.telegram.configuration.ResourceConfiguration;
+import com.gpb.telegram.entity.TelegramRequest;
+import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.util.UpdateCreator;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;

@@ -13,6 +13,20 @@ Part of GPB application that responsible for interaction with telegram
 ## Step for running in development environment:
 * Launch Kafka server message broker
 * Launch PostgreSQL server
+* Setup dependency repository for  common service
+  * Set System environments "DEPENDENCY_REPO_URL"
+  * Default : https://maven.pkg.github.com/IllusiveMan2186/GPB-common
+  * Copy setting.xml to directory %LocalUser%/.m2 
+  * Replace placeholders in setting.xml with your credential 
+  * Default : github username and token for default 
+  * If you decide publish common service yourself then credential to this repository
+* Run
+
+  ```
+  mvn clean package
+  ```
+  * If repository not found even if env are set then add "-DDEPENDENCY_REPO_URL=needed_url" to run command for first time
+
 * Run service
 
 ### Environments

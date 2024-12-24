@@ -1,10 +1,10 @@
 package com.gpb.telegram.command.impl;
 
-import com.gpb.telegram.bean.TelegramRequest;
-import com.gpb.telegram.bean.TelegramResponse;
-import com.gpb.telegram.bean.TelegramUser;
-import com.gpb.telegram.bean.game.GameDto;
-import com.gpb.telegram.bean.game.GameListPageDto;
+import com.gpb.common.entity.game.GameDto;
+import com.gpb.common.entity.game.GameListPageDto;
+import com.gpb.telegram.entity.TelegramRequest;
+import com.gpb.telegram.entity.TelegramResponse;
+import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.mapper.GameListMapper;
 import com.gpb.telegram.service.GameService;
 import com.gpb.telegram.util.UpdateCreator;

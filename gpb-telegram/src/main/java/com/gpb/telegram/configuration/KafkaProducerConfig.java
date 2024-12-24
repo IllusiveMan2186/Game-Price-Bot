@@ -1,6 +1,6 @@
 package com.gpb.telegram.configuration;
 
-import com.gpb.telegram.bean.event.GameFollowEvent;
+import com.gpb.common.entity.event.GameFollowEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

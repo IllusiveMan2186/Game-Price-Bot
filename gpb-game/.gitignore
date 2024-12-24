@@ -1,6 +1,7 @@
 README.md
 .run
 .gradle
+.gradle/gradle.properties
 logs/
 build/
 gradle/

@@ -1,8 +1,8 @@
 package com.gpb.game.unit.service.impl;
 
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.user.BasicUser;
-import com.gpb.game.bean.user.UserNotificationType;
+import com.gpb.common.entity.user.UserNotificationType;
+import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.service.NotificationService;
 import com.gpb.game.service.impl.NotificationManagerImpl;
 import org.junit.jupiter.api.BeforeEach;

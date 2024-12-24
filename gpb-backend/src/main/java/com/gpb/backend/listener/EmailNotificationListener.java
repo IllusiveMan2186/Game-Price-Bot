@@ -1,10 +1,10 @@
 package com.gpb.backend.listener;
 
-import com.gpb.backend.bean.event.EmailNotificationEvent;
-import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.service.EmailService;
 import com.gpb.backend.service.UserManagementService;
-import com.gpb.backend.util.Constants;
+import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.util.CommonConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -23,8 +23,8 @@ public class EmailNotificationListener {
         this.emailService = emailService;
     }
 
-    @KafkaListener(topics = Constants.EMAIL_NOTIFICATION_TOPIC,
-            groupId = Constants.GPB_KAFKA_GROUP_ID,
+    @KafkaListener(topics = CommonConstants.EMAIL_NOTIFICATION_TOPIC,
+            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
             containerFactory = "notificationListener")
     @Transactional
     public void listenEmailNotification(ConsumerRecord<String, EmailNotificationEvent> unfollowRecord) {

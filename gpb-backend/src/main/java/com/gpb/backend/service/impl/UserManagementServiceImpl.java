@@ -1,10 +1,10 @@
 package com.gpb.backend.service.impl;
 
-import com.gpb.backend.bean.user.WebUser;
-import com.gpb.backend.bean.user.dto.UserDto;
-import com.gpb.backend.exception.NotFoundException;
+import com.gpb.backend.entity.WebUser;
+import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.UserManagementService;
+import com.gpb.common.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

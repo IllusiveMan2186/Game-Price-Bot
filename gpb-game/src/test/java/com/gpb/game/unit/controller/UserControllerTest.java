@@ -1,8 +1,8 @@
 package com.gpb.game.unit.controller;
 
-import com.gpb.game.bean.user.BasicUser;
-import com.gpb.game.bean.user.TokenRequestDto;
+import com.gpb.common.entity.user.TokenRequestDto;
 import com.gpb.game.controller.UserController;
+import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

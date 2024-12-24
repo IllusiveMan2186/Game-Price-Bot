@@ -1,16 +1,16 @@
 package com.gpb.game.controller;
 
-import com.gpb.game.bean.game.GameDto;
-import com.gpb.game.bean.game.GameInfoDto;
-import com.gpb.game.bean.game.GameListPageDto;
-import com.gpb.game.bean.game.Genre;
-import com.gpb.game.bean.game.ProductType;
-import com.gpb.game.bean.user.BasicUser;
-import com.gpb.game.exception.PriceRangeException;
-import com.gpb.game.exception.SortParamException;
+import com.gpb.common.entity.game.GameDto;
+import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.common.entity.game.GameListPageDto;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
+import com.gpb.common.exception.PriceRangeException;
+import com.gpb.common.exception.SortParamException;
+import com.gpb.common.util.CommonConstants;
+import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.UserService;
-import com.gpb.game.util.Constants;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -54,7 +54,7 @@ public class GameController {
     @GetMapping(value = "/{gameId}")
     @ResponseStatus(HttpStatus.OK)
     public GameInfoDto getGameById(@PathVariable final long gameId,
-                                   @RequestHeader(name = Constants.BASIC_USER_ID_HEADER, required = false) Long userId) {
+                                   @RequestHeader(name = CommonConstants.BASIC_USER_ID_HEADER, required = false) Long userId) {
         log.info("Get game by id {} for user {}", gameId, userId);
         return setIsSubscribedForGame(gameService.getDtoById(gameId), userId);
     }
@@ -70,7 +70,7 @@ public class GameController {
                                          @RequestParam final int pageSize,
                                          @RequestParam final int pageNum,
                                          @RequestParam final String sortBy,
-                                         @RequestHeader(name = Constants.BASIC_USER_ID_HEADER, required = false) Long userId) {
+                                         @RequestHeader(name = CommonConstants.BASIC_USER_ID_HEADER, required = false) Long userId) {
         return setIsSubscribedForAllGames(gameService.getByName(name, pageSize, pageNum, getSortBy(sortBy)), userId);
     }
 
@@ -106,7 +106,7 @@ public class GameController {
                                             @RequestParam final BigDecimal minPrice,
                                             @RequestParam final BigDecimal maxPrice,
                                             @RequestParam final String sortBy,
-                                            @RequestHeader(name = Constants.BASIC_USER_ID_HEADER, required = false) Long userId) {
+                                            @RequestHeader(name = CommonConstants.BASIC_USER_ID_HEADER, required = false) Long userId) {
         log.info("Get games by genres : '{}',types to exclude - '{}',price '{}' - '{}' with '{}' " +
                         "element on page for '{}' page and sort '{}' ",
                 genre, type, minPrice, maxPrice, pageSize, pageNum, sortBy);
@@ -131,7 +131,7 @@ public class GameController {
     public GameListPageDto getGamesOfUser(@RequestParam final int pageSize,
                                           @RequestParam final int pageNum,
                                           @RequestParam final String sortBy,
-                                          @RequestHeader(Constants.BASIC_USER_ID_HEADER) long userId) {
+                                          @RequestHeader(CommonConstants.BASIC_USER_ID_HEADER) long userId) {
         log.info("Get games for user '{}' with '{}' element on page for '{}' page and sort '{}' ",
                 userId, pageSize, pageNum, sortBy);
         return gameService.getUserGames(userId, pageSize, pageNum, getSortBy(sortBy));

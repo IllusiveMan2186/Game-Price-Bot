@@ -1,10 +1,10 @@
 package com.gpb.backend.unit.service.impl;
 
-import com.gpb.backend.bean.user.WebUser;
-import com.gpb.backend.bean.user.dto.UserDto;
-import com.gpb.backend.exception.NotFoundException;
+import com.gpb.backend.entity.WebUser;
+import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.impl.UserManagementServiceImpl;
+import com.gpb.common.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

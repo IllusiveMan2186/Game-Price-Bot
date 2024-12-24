@@ -1,8 +1,8 @@
 package com.gpb.game.configuration;
 
-import com.gpb.game.bean.game.ClientActivationType;
-import com.gpb.game.bean.game.Genre;
-import com.gpb.game.bean.game.ProductType;
+import com.gpb.common.entity.game.ClientActivationType;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 

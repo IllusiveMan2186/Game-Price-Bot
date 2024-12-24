@@ -1,19 +1,15 @@
 package com.gpb.telegram.service.impl;
 
-import com.gpb.telegram.bean.event.GameFollowEvent;
-import com.gpb.telegram.bean.game.GameInfoDto;
-import com.gpb.telegram.bean.game.GameListPageDto;
-import com.gpb.telegram.rest.RestTemplateHandler;
+import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.common.entity.game.GameListPageDto;
+import com.gpb.common.service.BasicGameService;
+import com.gpb.common.service.RestTemplateHandlerService;
 import com.gpb.telegram.service.GameService;
 import com.gpb.telegram.util.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 
 @Slf4j
@@ -21,19 +17,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class GameServiceImpl implements GameService {
 
-    private final RestTemplateHandler restTemplateHandler;
-    private final KafkaTemplate<String, GameFollowEvent> gameFollowEventKafkaTemplate;
+    private final RestTemplateHandlerService restTemplateHandler;
+    private final BasicGameService basicGameService;
 
     @Override
     public GameInfoDto getById(long gameId, long userId) {
-        log.info("Get game by id '{}' and '{}'", gameId, userId);
-        String url = "/game/" + gameId;
-        HttpHeaders headers = new HttpHeaders();
-        if (userId > 0) {
-            headers.add("BASIC-USER-ID", String.valueOf(userId));
-        }
-
-        return restTemplateHandler.executeRequest(url, HttpMethod.GET, headers, GameInfoDto.class);
+        return basicGameService.getById(gameId, userId);
     }
 
     @Override
@@ -47,13 +36,6 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void setFollowGameOption(long gameId, long userId, boolean isFollow) {
-        String key = UUID.randomUUID().toString();
-        if (isFollow) {
-            log.info("Send game follow request for game {} for user {}", userId, gameId);
-            gameFollowEventKafkaTemplate.send(Constants.GAME_FOLLOW_TOPIC, key, new GameFollowEvent(userId, gameId));
-        } else {
-            log.info("Send game unfollow request for game {} for user {}", userId, gameId);
-            gameFollowEventKafkaTemplate.send(Constants.GAME_UNFOLLOW_TOPIC, key, new GameFollowEvent(userId, gameId));
-        }
+        basicGameService.setFollowGameOption(gameId, userId, isFollow);
     }
 }

@@ -1,7 +1,7 @@
 package com.gpb.backend.repository;
 
-import com.gpb.backend.bean.user.UserActivation;
-import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.entity.UserActivation;
+import com.gpb.backend.entity.WebUser;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

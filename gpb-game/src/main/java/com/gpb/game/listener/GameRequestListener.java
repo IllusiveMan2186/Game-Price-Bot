@@ -1,10 +1,10 @@
 package com.gpb.game.listener;
 
-import com.gpb.game.bean.event.GameFollowEvent;
-import com.gpb.game.bean.game.Game;
+import com.gpb.common.entity.event.GameFollowEvent;
+import com.gpb.common.util.CommonConstants;
+import com.gpb.game.entity.game.Game;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.UserService;
-import com.gpb.game.util.Constants;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +21,8 @@ public class GameRequestListener {
     private final GameService gameService;
     private final UserService userService;
 
-    @KafkaListener(topics = Constants.GAME_FOLLOW_TOPIC,
-            groupId = Constants.GPB_KAFKA_GROUP_ID,
+    @KafkaListener(topics = CommonConstants.GAME_FOLLOW_TOPIC,
+            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
             containerFactory = "followListener")
     @Transactional
     public void listenGameFollow(ConsumerRecord<String, GameFollowEvent> followRecord) {
@@ -37,8 +37,8 @@ public class GameRequestListener {
     }
 
 
-    @KafkaListener(topics = Constants.GAME_UNFOLLOW_TOPIC,
-            groupId = Constants.GPB_KAFKA_GROUP_ID,
+    @KafkaListener(topics = CommonConstants.GAME_UNFOLLOW_TOPIC,
+            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
             containerFactory = "followListener")
     @Transactional
     public void listenGameUnfollow(ConsumerRecord<String, GameFollowEvent> unfollowRecord) {
@@ -53,8 +53,8 @@ public class GameRequestListener {
         }
     }
 
-    @KafkaListener(topics = Constants.GAME_REMOVE_TOPIC,
-            groupId = Constants.GPB_KAFKA_GROUP_ID,
+    @KafkaListener(topics = CommonConstants.GAME_REMOVE_TOPIC,
+            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
             containerFactory = "gameRemoveListener")
     @Transactional
     public void listenGameRemove(ConsumerRecord<String, Long> removeRecord) {
@@ -62,8 +62,8 @@ public class GameRequestListener {
         gameService.removeGame(removeRecord.value());
     }
 
-    @KafkaListener(topics = Constants.GAME_IN_STORE_REMOVE_TOPIC,
-            groupId = Constants.GPB_KAFKA_GROUP_ID,
+    @KafkaListener(topics = CommonConstants.GAME_IN_STORE_REMOVE_TOPIC,
+            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
             containerFactory = "gameRemoveListener")
     @Transactional
     public void listenGameInStoreRemove(ConsumerRecord<String, Long> removeRecord) {

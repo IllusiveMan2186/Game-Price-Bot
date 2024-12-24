@@ -13,6 +13,8 @@ services:
     container_name: kafka
     ports:
       - "9092:9092"
+    depends_on:
+      - zookeeper
     environment:
       KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS}
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP}
@@ -35,7 +37,7 @@ services:
     image: postgres:latest
     container_name: postgres-db
     environment:
-      POSTGRES_DB: ${POSTGRES_DB_USERNAME}
+      POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_DB_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
     ports:
@@ -44,6 +46,30 @@ services:
       - gpb-network
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  game:
+    container_name: gpb_game
+    ports:
+      - "8081:8081"
+    depends_on:
+      - kafka
+    build:
+      context: ./gpb-game
+      args:
+        DEPENDENCY_REPO_URL: ${DEPENDENCY_REPO_URL}
+        DEPENDENCY_REPO_USERNAME: ${DEPENDENCY_REPO_USERNAME}
+        DEPENDENCY_REPO_PASSWORD: ${DEPENDENCY_REPO_PASSWORD}
+    networks:
+      - gpb-network
+    environment:
+      - IMAGE_FOLDER=${GAMES_IMAGE_FOLDER}
+      - KAFKA_SERVER_URL=${KAFKA_SERVER_URL}
+      - POSTGRES_DB_URL=${POSTGRES_DB_URL}
+      - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
+      - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
+      - API_KEY=${API_KEY}
+    volumes:
+      - common_data_images:${GAMES_IMAGE_FOLDER}
 
   backend:
     container_name: gpb_backend
@@ -55,7 +81,12 @@ services:
       - game
     networks:
       - gpb-network
-    build: ./gpb-backend
+    build:
+      context: ./gpb-backend
+      args:
+        DEPENDENCY_REPO_URL: ${DEPENDENCY_REPO_URL}
+        DEPENDENCY_REPO_USERNAME: ${DEPENDENCY_REPO_USERNAME}
+        DEPENDENCY_REPO_PASSWORD: ${DEPENDENCY_REPO_PASSWORD}
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
@@ -68,7 +99,7 @@ services:
       - GAME_SERVICE_URL=${GAME_SERVICE_URL}
       - API_KEY=${API_KEY}
     volumes:
-      - common_data:${GAMES_IMAGE_FOLDER}
+      - common_data_images:${GAMES_IMAGE_FOLDER}
 
   telegram:
     container_name: gpb_telegram
@@ -79,7 +110,12 @@ services:
       - postgres
     networks:
       - gpb-network
-    build: ./gpb-telegram
+    build:
+      context: ./gpb-telegram
+      args:
+        DEPENDENCY_REPO_URL: ${DEPENDENCY_REPO_URL}
+        DEPENDENCY_REPO_USERNAME: ${DEPENDENCY_REPO_USERNAME}
+        DEPENDENCY_REPO_PASSWORD: ${DEPENDENCY_REPO_PASSWORD}
     environment:
       - BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - IMAGE_FOLDER=${GAMES_IMAGE_FOLDER}
@@ -90,13 +126,18 @@ services:
       - GAME_SERVICE_URL=${GAME_SERVICE_URL}
       - API_KEY=${API_KEY}
     volumes:
-      - common_data:${GAMES_IMAGE_FOLDER}
+      - common_data_images:${GAMES_IMAGE_FOLDER}
 
   email:
     container_name: gpb_email
     depends_on:
       - kafka
-    build: ./gpb-email
+    build:
+      context: ./gpb-email
+      args:
+        DEPENDENCY_REPO_URL: ${DEPENDENCY_REPO_URL}
+        DEPENDENCY_REPO_USERNAME: ${DEPENDENCY_REPO_USERNAME}
+        DEPENDENCY_REPO_PASSWORD: ${DEPENDENCY_REPO_PASSWORD}
     networks:
       - gpb-network
     environment:
@@ -104,27 +145,8 @@ services:
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - MAIL_USERNAME=${MAIL_USERNAME}
 
-  game:
-    container_name: gpb_game
-    ports:
-      - "8081:8081"
-    depends_on:
-      - kafka
-    build: ./gpb-game
-    networks:
-      - gpb-network
-    environment:
-      - IMAGE_FOLDER=${GAMES_IMAGE_FOLDER}
-      - KAFKA_SERVER_URL=${KAFKA_SERVER_URL}
-      - POSTGRES_DB_URL=${POSTGRES_DB_URL}
-      - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
-      - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
-      - API_KEY=${API_KEY}
-    volumes:
-      - common_data:${GAMES_IMAGE_FOLDER}
-
 volumes:
-  common_data:
+  common_data_images:
   postgres_data:
 
 networks:

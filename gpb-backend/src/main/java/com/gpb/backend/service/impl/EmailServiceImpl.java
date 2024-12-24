@@ -1,10 +1,11 @@
 package com.gpb.backend.service.impl;
 
-import com.gpb.backend.bean.event.EmailEvent;
-import com.gpb.backend.bean.event.EmailNotificationEvent;
-import com.gpb.backend.bean.user.UserActivation;
-import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.entity.UserActivation;
+import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.service.EmailService;
+import com.gpb.common.entity.event.EmailEvent;
+import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.util.CommonConstants;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +17,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.gpb.backend.util.Constants.EMAIL_SERVICE_TOPIC;
 
 @Service
 @Slf4j
@@ -55,6 +55,6 @@ public class EmailServiceImpl implements EmailService {
     private void sendEmail(String to, String subject, Map<String, Object> variables, Locale locale, String templateName) {
         log.info("Email event for recipient '{}' about '{}'", to, subject);
         String key = UUID.randomUUID().toString();
-        kafkaTemplate.send(EMAIL_SERVICE_TOPIC, key, new EmailEvent(to, subject, variables, locale, templateName));
+        kafkaTemplate.send(CommonConstants.EMAIL_SERVICE_TOPIC, key, new EmailEvent(to, subject, variables, locale, templateName));
     }
 }

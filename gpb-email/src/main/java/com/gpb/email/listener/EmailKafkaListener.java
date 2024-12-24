@@ -1,6 +1,7 @@
 package com.gpb.email.listener;
 
-import com.gpb.email.bean.EmailEvent;
+import com.gpb.common.entity.event.EmailEvent;
+import com.gpb.common.util.CommonConstants;
 import com.gpb.email.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -18,8 +19,8 @@ public class EmailKafkaListener {
         this.emailService = emailService;
     }
 
-    @KafkaListener(topics = "gpb_email_event",
-            groupId = "gpb",
+    @KafkaListener(topics = CommonConstants.EMAIL_SERVICE_TOPIC,
+            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
             containerFactory = "emailEventListener")
     public void emailEventListen(ConsumerRecord<String, EmailEvent> eventRecord) {
         EmailEvent emailEvent = eventRecord.value();

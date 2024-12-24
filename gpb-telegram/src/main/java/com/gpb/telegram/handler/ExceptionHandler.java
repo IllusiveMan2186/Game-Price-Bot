@@ -1,7 +1,7 @@
 package com.gpb.telegram.handler;
 
-import com.gpb.telegram.bean.TelegramRequest;
-import com.gpb.telegram.bean.TelegramResponse;
+import com.gpb.telegram.entity.TelegramRequest;
+import com.gpb.telegram.entity.TelegramResponse;
 import org.springframework.stereotype.Component;
 
 @Component

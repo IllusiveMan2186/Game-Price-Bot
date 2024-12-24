@@ -1,7 +1,7 @@
 package com.gpb.backend.service;
 
-import com.gpb.backend.bean.user.WebUser;
-import com.gpb.backend.bean.user.dto.UserDto;
+import com.gpb.backend.entity.WebUser;
+import com.gpb.backend.entity.dto.UserDto;
 
 import java.util.List;
 

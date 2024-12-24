@@ -1,9 +1,9 @@
 package com.gpb.backend.controller;
 
-import com.gpb.backend.bean.user.dto.TokenRequestDto;
-import com.gpb.backend.bean.user.dto.UserDto;
-import com.gpb.backend.service.UserLinkerService;
+import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.UserManagementService;
+import com.gpb.common.entity.user.TokenRequestDto;
+import com.gpb.common.service.UserLinkerService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

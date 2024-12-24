@@ -1,16 +1,16 @@
 package com.gpb.backend.unit.controller;
 
-import com.gpb.backend.bean.user.Credentials;
-import com.gpb.backend.bean.user.UserActivation;
-import com.gpb.backend.bean.user.UserRegistration;
-import com.gpb.backend.bean.user.WebUser;
-import com.gpb.backend.bean.user.dto.TokenRequestDto;
-import com.gpb.backend.bean.user.dto.UserDto;
-import com.gpb.backend.configuration.UserAuthenticationProvider;
+import com.gpb.backend.configuration.security.UserAuthenticationProvider;
 import com.gpb.backend.controller.AuthenticationController;
+import com.gpb.backend.entity.Credentials;
+import com.gpb.backend.entity.UserActivation;
+import com.gpb.backend.entity.UserRegistration;
+import com.gpb.backend.entity.WebUser;
+import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.EmailService;
 import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserAuthenticationService;
+import com.gpb.common.entity.user.TokenRequestDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

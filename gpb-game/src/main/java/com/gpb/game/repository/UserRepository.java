@@ -1,6 +1,6 @@
 package com.gpb.game.repository;
 
-import com.gpb.game.bean.user.BasicUser;
+import com.gpb.game.entity.user.BasicUser;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
