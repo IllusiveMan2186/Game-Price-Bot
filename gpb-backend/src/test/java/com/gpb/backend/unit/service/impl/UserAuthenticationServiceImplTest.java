@@ -12,6 +12,8 @@ import com.gpb.backend.exception.UserNotActivatedException;
 import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.impl.UserAuthenticationServiceImpl;
 import com.gpb.backend.util.Constants;
+import com.gpb.common.entity.user.NotificationRequestDto;
+import com.gpb.common.entity.user.UserNotificationType;
 import com.gpb.common.exception.NotFoundException;
 import com.gpb.common.service.RestTemplateHandlerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -108,7 +110,12 @@ class UserAuthenticationServiceImplTest {
         WebUser webUser = new WebUser();
         when(webUserRepository.findByEmail(registration.getEmail())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(CharBuffer.wrap(registration.getPassword()))).thenReturn("encodedPassword");
-        when(restTemplateHandler.executeRequest(anyString(), eq(HttpMethod.POST), isNull(), eq(Long.class)))
+        when(restTemplateHandler.executeRequestWithBody(
+                anyString(),
+                eq(HttpMethod.POST),
+                isNull(),
+                eq(new NotificationRequestDto(UserNotificationType.EMAIL)),
+                eq(Long.class)))
                 .thenReturn(1L);
         when(webUserRepository.save(any(WebUser.class))).thenReturn(webUser);
 
@@ -119,7 +126,12 @@ class UserAuthenticationServiceImplTest {
         assertNotNull(result);
         verify(webUserRepository).findByEmail(registration.getEmail());
         verify(passwordEncoder).encode(CharBuffer.wrap(registration.getPassword()));
-        verify(restTemplateHandler).executeRequest(contains("/user"), eq(HttpMethod.POST), isNull(), eq(Long.class));
+        verify(restTemplateHandler).executeRequestWithBody(
+                contains("/user"),
+                eq(HttpMethod.POST),
+                isNull(),
+                eq(new NotificationRequestDto(UserNotificationType.EMAIL)),
+                eq(Long.class));
         verify(webUserRepository).save(any(WebUser.class));
     }
 
@@ -250,7 +262,7 @@ class UserAuthenticationServiceImplTest {
         lockedUser.setLocked(true);
         lockedUser.setPassword("encodedPassword");
         lockedUser.setFailedAttempt(3);
-        lockedUser.setLockTime(new Date(new Date().getTime() - (Constants.LOCK_TIME_DURATION * 2 )));
+        lockedUser.setLockTime(new Date(new Date().getTime() - (Constants.LOCK_TIME_DURATION * 2)));
 
         WebUser expectedUSerAfterUnlock = new WebUser();
         expectedUSerAfterUnlock.setActivated(true);
@@ -328,6 +340,7 @@ class UserAuthenticationServiceImplTest {
         assertEquals(3, user.getFailedAttempt());
         assertTrue(user.isAccountLocked());
     }
+
     @Test
     void testLogin_whenUserIsLocked_shouldThrowUserLockedException() {
         Credentials credentials = new Credentials("user@example.com", null);

@@ -1,6 +1,8 @@
 package com.gpb.game.unit.controller;
 
+import com.gpb.common.entity.user.NotificationRequestDto;
 import com.gpb.common.entity.user.TokenRequestDto;
+import com.gpb.common.entity.user.UserNotificationType;
 import com.gpb.game.controller.UserController;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.service.UserService;
@@ -9,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
@@ -58,13 +62,13 @@ class UserControllerTest {
     void testCreateUser_whenSuccess_shouldReturnCreatedUserId() {
         BasicUser mockUser = new BasicUser();
         mockUser.setId(1L);
-        when(userService.createUser()).thenReturn(mockUser);
+        when(userService.createUser(UserNotificationType.EMAIL)).thenReturn(mockUser);
 
 
-        Long userId = userController.createUser();
+        Long userId = userController.createUser(new NotificationRequestDto(UserNotificationType.EMAIL));
 
 
         assertEquals(1L, userId);
-        verify(userService, times(1)).createUser();
+        verify(userService, times(1)).createUser(UserNotificationType.EMAIL);
     }
 }

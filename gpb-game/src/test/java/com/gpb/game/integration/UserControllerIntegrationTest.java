@@ -1,5 +1,7 @@
 package com.gpb.game.integration;
 
+import com.gpb.common.entity.user.NotificationRequestDto;
+import com.gpb.common.entity.user.UserNotificationType;
 import com.gpb.common.util.CommonConstants;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +19,9 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration{
     void testUserCreation_whenSuccess_shouldReturnUserId() throws Exception {
 
         mockMvc.perform(post("/user")
-                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
+                        .contentType(APPLICATION_JSON)
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY)
+                        .content(objectToJson(new NotificationRequestDto(UserNotificationType.EMAIL))))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -27,7 +31,9 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration{
     @Test
     void testUserAccountLinkerCreation_whenSuccess_shouldReturnToken() throws Exception {
         mockMvc.perform(post("/user")
-                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
+                        .contentType(APPLICATION_JSON)
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY)
+                        .content(objectToJson(new NotificationRequestDto(UserNotificationType.EMAIL))))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(APPLICATION_JSON))

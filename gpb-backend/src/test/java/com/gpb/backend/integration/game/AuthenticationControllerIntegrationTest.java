@@ -2,8 +2,12 @@ package com.gpb.backend.integration.game;
 
 import com.gpb.backend.entity.Credentials;
 import com.gpb.backend.entity.UserRegistration;
+import com.gpb.common.entity.user.NotificationRequestDto;
+import com.gpb.common.entity.user.UserNotificationType;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -35,7 +39,12 @@ class AuthenticationControllerIntegrationTest extends BaseAuthenticationIntegrat
     @Test
     void testCreateUser_shenSuccess_shouldReturnUser() throws Exception {
         when(restTemplateHandler
-                .executeRequest("/user", HttpMethod.POST, null, Long.class))
+                .executeRequestWithBody(
+                        "/user",
+                        HttpMethod.POST,
+                        null,
+                        new NotificationRequestDto(UserNotificationType.EMAIL),
+                        Long.class))
                 .thenReturn(1L);
         UserRegistration userRegistration = UserRegistration.builder()
                 .email("email2")

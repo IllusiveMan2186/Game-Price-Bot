@@ -1,6 +1,8 @@
 package com.gpb.game.controller;
 
+import com.gpb.common.entity.user.NotificationRequestDto;
 import com.gpb.common.entity.user.TokenRequestDto;
+import com.gpb.common.entity.user.UserNotificationType;
 import com.gpb.common.util.CommonConstants;
 import com.gpb.game.service.UserService;
 import lombok.extern.log4j.Log4j2;
@@ -38,7 +40,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Long createUser() {
-        return userService.createUser().getId();
+    public Long createUser(@RequestBody final NotificationRequestDto notificationRequestDto) {
+        return userService.createUser(notificationRequestDto.getUserNotificationType()).getId();
     }
 }
