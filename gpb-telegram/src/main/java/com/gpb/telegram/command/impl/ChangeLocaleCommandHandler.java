@@ -1,8 +1,8 @@
 package com.gpb.telegram.command.impl;
 
-import com.gpb.telegram.bean.TelegramRequest;
-import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.command.CommandHandler;
+import com.gpb.telegram.entity.TelegramRequest;
+import com.gpb.telegram.entity.TelegramResponse;
 import com.gpb.telegram.filter.FilterChainMarker;
 import com.gpb.telegram.service.TelegramUserService;
 import com.gpb.telegram.util.Constants;

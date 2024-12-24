@@ -1,10 +1,10 @@
 package com.gpb.telegram.handler;
 
-import com.gpb.telegram.bean.TelegramRequest;
-import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.callback.CallbackHandler;
 import com.gpb.telegram.command.CommandHandler;
 import com.gpb.telegram.command.impl.HelpCommandHandler;
+import com.gpb.telegram.entity.TelegramRequest;
+import com.gpb.telegram.entity.TelegramResponse;
 import com.gpb.telegram.filter.FilterChain;
 import com.gpb.telegram.filter.FilteredHandler;
 import com.gpb.telegram.service.TelegramUserService;

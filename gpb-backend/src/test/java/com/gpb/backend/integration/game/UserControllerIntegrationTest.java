@@ -1,6 +1,6 @@
 package com.gpb.backend.integration.game;
 
-import com.gpb.backend.bean.user.dto.EmailRequestDto;
+import com.gpb.backend.entity.dto.EmailRequestDto;
 import org.junit.jupiter.api.Test;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;

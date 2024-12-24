@@ -1,7 +1,7 @@
 package com.gpb.backend.service.impl;
 
-import com.gpb.backend.bean.user.UserActivation;
-import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.entity.UserActivation;
+import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.exception.NotExistingUserActivationTokenException;
 import com.gpb.backend.repository.UserActivationRepository;
 import com.gpb.backend.service.EmailService;

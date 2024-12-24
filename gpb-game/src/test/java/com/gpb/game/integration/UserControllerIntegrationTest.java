@@ -1,6 +1,6 @@
 package com.gpb.game.integration;
 
-import com.gpb.game.util.Constants;
+import com.gpb.common.util.CommonConstants;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.matchesPattern;
@@ -17,7 +17,7 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration{
     void testUserCreation_whenSuccess_shouldReturnUserId() throws Exception {
 
         mockMvc.perform(post("/user")
-                        .header(Constants.API_KEY_HEADER, API_KEY))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -27,15 +27,15 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration{
     @Test
     void testUserAccountLinkerCreation_whenSuccess_shouldReturnToken() throws Exception {
         mockMvc.perform(post("/user")
-                        .header(Constants.API_KEY_HEADER, API_KEY))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$").value(1));
 
         mockMvc.perform(post("/user/token")
-                        .header(Constants.API_KEY_HEADER, API_KEY)
-                        .header(Constants.BASIC_USER_ID_HEADER, 1))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY)
+                        .header(CommonConstants.BASIC_USER_ID_HEADER, 1))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").value(matchesPattern("^[a-fA-F0-9\\-]{36}$")));

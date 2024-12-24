@@ -1,12 +1,12 @@
 package com.gpb.game.unit.service.impl;
 
-import com.gpb.game.bean.game.Game;
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.user.AccountLinker;
-import com.gpb.game.bean.user.BasicUser;
-import com.gpb.game.bean.user.UserNotificationType;
-import com.gpb.game.exception.NotExistingMessengerActivationTokenException;
-import com.gpb.game.exception.NotFoundException;
+import com.gpb.common.entity.user.UserNotificationType;
+import com.gpb.common.exception.NotExistingLinkerTokenException;
+import com.gpb.common.exception.NotFoundException;
+import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.user.AccountLinker;
+import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.repository.AccountLinkerRepository;
 import com.gpb.game.repository.UserRepository;
 import com.gpb.game.service.impl.UserServiceImpl;
@@ -113,7 +113,7 @@ class UserServiceImplTest {
 
         when(accountLinkerRepository.findById(token)).thenReturn(Optional.empty());
 
-        assertThrows(NotExistingMessengerActivationTokenException.class, () -> userService.linkUsers(token, 1L));
+        assertThrows(NotExistingLinkerTokenException.class, () -> userService.linkUsers(token, 1L));
     }
 
     @Test
@@ -142,7 +142,7 @@ class UserServiceImplTest {
         when(accountLinkerRepository.findById(token)).thenReturn(Optional.empty());
 
 
-        NotExistingMessengerActivationTokenException exception = assertThrows(NotExistingMessengerActivationTokenException.class,
+        NotExistingLinkerTokenException exception = assertThrows(NotExistingLinkerTokenException.class,
                 () -> userService.linkUsers(token, sourceUserId));
 
         assertEquals("app.user.error.messenger.token.not.exist", exception.getMessage());

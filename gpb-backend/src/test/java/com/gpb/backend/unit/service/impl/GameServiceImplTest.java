@@ -1,17 +1,18 @@
 package com.gpb.backend.unit.service.impl;
 
-import com.gpb.backend.bean.event.GameFollowEvent;
-import com.gpb.backend.bean.game.GameInfoDto;
-import com.gpb.backend.bean.game.GameListPageDto;
-import com.gpb.backend.bean.game.Genre;
-import com.gpb.backend.bean.game.ProductType;
-import com.gpb.backend.rest.RestTemplateHandler;
 import com.gpb.backend.service.impl.GameServiceImpl;
-import com.gpb.backend.util.Constants;
-import org.junit.jupiter.api.BeforeEach;
+import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.common.entity.game.GameListPageDto;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
+import com.gpb.common.service.BasicGameService;
+import com.gpb.common.service.RestTemplateHandlerService;
+import com.gpb.common.util.CommonConstants;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -27,26 +28,20 @@ import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class GameServiceImplTest {
-
-    private GameServiceImpl gameService;
-
-    @Mock
-    private KafkaTemplate<String, GameFollowEvent> gameFollowEventKafkaTemplate;
 
     @Mock
     private KafkaTemplate<String, Long> kafkaTemplate;
 
     @Mock
-    private RestTemplateHandler restTemplateHandler;
+    private RestTemplateHandlerService restTemplateHandler;
 
-    private static final String GAME_SERVICE_URL = "";
+    @Mock
+    private BasicGameService basicGameService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        gameService = new GameServiceImpl(gameFollowEventKafkaTemplate, kafkaTemplate, restTemplateHandler);
-    }
+    @InjectMocks
+    private GameServiceImpl gameService;
 
     @Test
     void testGetById_whenSuccess_shouldReturnGameInfoDto() {
@@ -54,16 +49,13 @@ class GameServiceImplTest {
         long userId = 123L;
         GameInfoDto mockResponse = new GameInfoDto();
 
-        String url = GAME_SERVICE_URL + "/game/" + gameId;
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("BASIC-USER-ID", String.valueOf(userId));
 
-        when(restTemplateHandler.executeRequest(url, HttpMethod.GET, headers, GameInfoDto.class)).thenReturn(mockResponse);
+        when(basicGameService.getById(gameId, userId)).thenReturn(mockResponse);
 
         GameInfoDto result = gameService.getById(gameId, userId);
 
         assertEquals(mockResponse, result);
-        verify(restTemplateHandler).executeRequest(url, HttpMethod.GET, headers, GameInfoDto.class);
+        verify(basicGameService).getById(gameId, userId);
     }
 
     @Test
@@ -74,7 +66,7 @@ class GameServiceImplTest {
         String sort = "gamesInShop.price-ASC";
         GameListPageDto mockResponse = new GameListPageDto();
 
-        String url = GAME_SERVICE_URL + "/game/name/" + name + "?pageSize=" + pageSize + "&pageNum=" + pageNum + "&sortBy=gamesInShop.price-ASC";
+        String url = "/game/name/" + name + "?pageSize=" + pageSize + "&pageNum=" + pageNum + "&sortBy=gamesInShop.price-ASC";
 
         when(restTemplateHandler.executeRequest(url, HttpMethod.GET, null, GameListPageDto.class)).thenReturn(mockResponse);
 
@@ -90,7 +82,7 @@ class GameServiceImplTest {
                 "maxPrice=100&sortBy=name-ASC&genre=ACTION&type=GAME";
         GameInfoDto mockResponse = new GameInfoDto();
 
-        String serverUrl = GAME_SERVICE_URL + "/game/url?url=" + url;
+        String serverUrl = "/game/url?url=" + url;
 
         when(restTemplateHandler.executeRequest(serverUrl, HttpMethod.GET, null, GameInfoDto.class))
                 .thenReturn(mockResponse);
@@ -104,27 +96,14 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testSetFollowGameOption_whenFollowEvent_shouldCallFollowEvent() {
+    void testSetFollowGameOption_whenSuccess_shouldCallBasicGameService() {
         long gameId = 1L;
         long userId = 123L;
         boolean isFollow = true;
 
         gameService.setFollowGameOption(gameId, userId, isFollow);
 
-        verify(gameFollowEventKafkaTemplate)
-                .send(eq(Constants.GAME_FOLLOW_TOPIC), anyString(), eq(new GameFollowEvent(userId, gameId)));
-    }
-
-    @Test
-    void testSetFollowGameOption_whenUnfollowEvent_shouldCallUnfollowEvent() {
-        long gameId = 1L;
-        long userId = 123L;
-        boolean isFollow = false;
-
-        gameService.setFollowGameOption(gameId, userId, isFollow);
-
-        verify(gameFollowEventKafkaTemplate)
-                .send(eq(Constants.GAME_UNFOLLOW_TOPIC), anyString(), eq(new GameFollowEvent(userId, gameId)));
+        verify(basicGameService).setFollowGameOption(gameId, userId, isFollow);
     }
 
     @Test
@@ -150,7 +129,7 @@ class GameServiceImplTest {
     @Test
     void testRemoveGame_whenSuccess_shouldSendRemoveGameEvent() {
         long gameId = 1L;
-        String expectedTopic = Constants.GAME_REMOVE_TOPIC;
+        String expectedTopic = CommonConstants.GAME_REMOVE_TOPIC;
 
         gameService.removeGame(gameId);
 
@@ -160,7 +139,7 @@ class GameServiceImplTest {
     @Test
     void testRemoveGameGameInStore_whenSuccess_shouldSendRemoveGameInStoreEvent() {
         long gameInStoreId = 1L;
-        String expectedTopic = Constants.GAME_IN_STORE_REMOVE_TOPIC;
+        String expectedTopic = CommonConstants.GAME_IN_STORE_REMOVE_TOPIC;
 
         gameService.removeGameInStore(gameInStoreId);
 

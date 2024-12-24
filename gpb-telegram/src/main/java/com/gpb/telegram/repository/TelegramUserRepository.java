@@ -1,6 +1,6 @@
 package com.gpb.telegram.repository;
 
-import com.gpb.telegram.bean.TelegramUser;
+import com.gpb.telegram.entity.TelegramUser;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

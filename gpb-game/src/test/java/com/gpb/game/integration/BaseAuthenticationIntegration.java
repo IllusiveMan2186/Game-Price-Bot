@@ -1,17 +1,17 @@
 package com.gpb.game.integration;
 
+import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
+import com.gpb.common.util.CommonConstants;
 import com.gpb.game.GpbStoresApplication;
-import com.gpb.game.bean.event.EmailNotificationEvent;
-import com.gpb.game.bean.game.Game;
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.game.Genre;
-import com.gpb.game.bean.game.ProductType;
+import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.listener.GameRequestListener;
 import com.gpb.game.repository.GameInShopRepository;
 import com.gpb.game.repository.GameRepository;
 import com.gpb.game.repository.UserRepository;
 import com.gpb.game.service.UserService;
-import com.gpb.game.util.Constants;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,7 +78,6 @@ class BaseAuthenticationIntegration {
         games.add(gameCreation("name2", "url2", Genre.RPG, new BigDecimal("500.0"), new BigDecimal("500.0")));
         games.add(gameCreation("name3", "url3", Genre.STRATEGIES, new BigDecimal("1000.0"), new BigDecimal("800.0")));
         System.setProperty("IMAGE_FOLDER", "");
-        System.setProperty("WEB_SERVICE_URL", "");
         System.setProperty("KAFKA_SERVER_URL", "");
         System.setProperty("API_KEY", API_KEY);
     }
@@ -96,7 +95,7 @@ class BaseAuthenticationIntegration {
     @Test
     void testRequestFilter_whenApiKeyMissing_shouldReturnUnauthorized() throws Exception {
         mockMvc.perform(get("/game/{id}", games.get(0).getId())
-                        .header(Constants.BASIC_USER_ID_HEADER, -1))
+                        .header(CommonConstants.BASIC_USER_ID_HEADER, -1))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }

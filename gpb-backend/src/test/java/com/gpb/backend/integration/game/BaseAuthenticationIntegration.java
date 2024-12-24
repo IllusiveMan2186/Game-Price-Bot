@@ -3,15 +3,15 @@ package com.gpb.backend.integration.game;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gpb.backend.GpbWebApplication;
-import com.gpb.backend.bean.event.AccountLinkerEvent;
-import com.gpb.backend.bean.event.EmailEvent;
-import com.gpb.backend.bean.event.GameFollowEvent;
-import com.gpb.backend.bean.user.WebUser;
-import com.gpb.backend.bean.user.dto.UserDto;
-import com.gpb.backend.configuration.AdminUserInitializer;
+import com.gpb.backend.configuration.security.AdminUserInitializer;
+import com.gpb.backend.entity.WebUser;
+import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.listener.EmailNotificationListener;
 import com.gpb.backend.repository.WebUserRepository;
-import com.gpb.backend.rest.RestTemplateHandler;
+import com.gpb.common.entity.event.AccountLinkerEvent;
+import com.gpb.common.entity.event.EmailEvent;
+import com.gpb.common.entity.event.GameFollowEvent;
+import com.gpb.common.service.RestTemplateHandlerService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,7 +81,7 @@ public class BaseAuthenticationIntegration {
     protected EmailNotificationListener listener;
 
     @MockBean
-    protected RestTemplateHandler restTemplateHandler;
+    protected RestTemplateHandlerService restTemplateHandler;
 
     @MockBean
     protected AdminUserInitializer adminUserInitializer;

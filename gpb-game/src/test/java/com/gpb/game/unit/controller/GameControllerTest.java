@@ -1,14 +1,14 @@
 package com.gpb.game.unit.controller;
 
-import com.gpb.game.bean.game.Game;
-import com.gpb.game.bean.game.GameInfoDto;
-import com.gpb.game.bean.game.GameListPageDto;
-import com.gpb.game.bean.game.Genre;
-import com.gpb.game.bean.game.ProductType;
-import com.gpb.game.bean.user.BasicUser;
+import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.common.entity.game.GameListPageDto;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
+import com.gpb.common.exception.PriceRangeException;
+import com.gpb.common.exception.SortParamException;
 import com.gpb.game.controller.GameController;
-import com.gpb.game.exception.PriceRangeException;
-import com.gpb.game.exception.SortParamException;
+import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.UserService;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
 package com.gpb.game.parser;
 
-import com.gpb.game.exception.NotFoundException;
+import com.gpb.common.exception.NotFoundException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;

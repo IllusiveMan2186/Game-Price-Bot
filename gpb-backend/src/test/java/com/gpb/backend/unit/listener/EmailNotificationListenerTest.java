@@ -1,11 +1,11 @@
 package com.gpb.backend.unit.listener;
 
-import com.gpb.backend.bean.event.EmailNotificationEvent;
-import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.listener.EmailNotificationListener;
 import com.gpb.backend.service.EmailService;
 import com.gpb.backend.service.UserManagementService;
-import com.gpb.backend.util.Constants;
+import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.util.CommonConstants;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class EmailNotificationListenerTest {
         EmailNotificationEvent event = new EmailNotificationEvent();
         event.setBasicUserId(basicUserId);
 
-        ConsumerRecord<String, EmailNotificationEvent> record = new ConsumerRecord<>(Constants.EMAIL_NOTIFICATION_TOPIC, 0, 0, "key", event);
+        ConsumerRecord<String, EmailNotificationEvent> record = new ConsumerRecord<>(CommonConstants.EMAIL_NOTIFICATION_TOPIC, 0, 0, "key", event);
 
         WebUser user = new WebUser();
         when(userService.getUserByBasicUserId(basicUserId)).thenReturn(user);

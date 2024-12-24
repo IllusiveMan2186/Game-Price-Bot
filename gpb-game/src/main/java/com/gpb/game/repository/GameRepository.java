@@ -1,9 +1,9 @@
 package com.gpb.game.repository;
 
-import com.gpb.game.bean.game.Game;
-import com.gpb.game.bean.game.Genre;
-import com.gpb.game.bean.game.ProductType;
-import com.gpb.game.bean.user.BasicUser;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
+import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.user.BasicUser;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

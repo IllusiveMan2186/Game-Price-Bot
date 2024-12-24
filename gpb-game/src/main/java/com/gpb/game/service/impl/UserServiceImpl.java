@@ -1,10 +1,10 @@
 package com.gpb.game.service.impl;
 
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.user.AccountLinker;
-import com.gpb.game.bean.user.BasicUser;
-import com.gpb.game.exception.NotExistingMessengerActivationTokenException;
-import com.gpb.game.exception.NotFoundException;
+import com.gpb.common.exception.NotExistingLinkerTokenException;
+import com.gpb.common.exception.NotFoundException;
+import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.user.AccountLinker;
+import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.repository.AccountLinkerRepository;
 import com.gpb.game.repository.UserRepository;
 import com.gpb.game.service.UserService;
@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public BasicUser linkUsers(String token, long sourceUserId) {
         AccountLinker connector = accountLinkerRepository.findById(token)
-                .orElseThrow(NotExistingMessengerActivationTokenException::new);
+                .orElseThrow(NotExistingLinkerTokenException::new);
         BasicUser targetUser = connector.getUser();
         BasicUser sourceUser = userRepository.findById(sourceUserId)
                 .orElseThrow(() -> new NotFoundException("Source user not found with ID: " + sourceUserId));

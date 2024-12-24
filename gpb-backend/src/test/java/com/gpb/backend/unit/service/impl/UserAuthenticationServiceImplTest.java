@@ -1,19 +1,19 @@
 package com.gpb.backend.unit.service.impl;
 
-import com.gpb.backend.bean.user.Credentials;
-import com.gpb.backend.bean.user.UserRegistration;
-import com.gpb.backend.bean.user.WebUser;
-import com.gpb.backend.bean.user.dto.UserDto;
+import com.gpb.backend.entity.Credentials;
+import com.gpb.backend.entity.UserRegistration;
+import com.gpb.backend.entity.WebUser;
+import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.exception.EmailAlreadyExistException;
 import com.gpb.backend.exception.LoginFailedException;
-import com.gpb.backend.exception.NotFoundException;
 import com.gpb.backend.exception.UserDataNotChangedException;
 import com.gpb.backend.exception.UserLockedException;
 import com.gpb.backend.exception.UserNotActivatedException;
 import com.gpb.backend.repository.WebUserRepository;
-import com.gpb.backend.rest.RestTemplateHandler;
 import com.gpb.backend.service.impl.UserAuthenticationServiceImpl;
 import com.gpb.backend.util.Constants;
+import com.gpb.common.exception.NotFoundException;
+import com.gpb.common.service.RestTemplateHandlerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -55,7 +55,7 @@ class UserAuthenticationServiceImplTest {
     private ModelMapper modelMapper;
 
     @Mock
-    private RestTemplateHandler restTemplateHandler;
+    private RestTemplateHandlerService restTemplateHandler;
 
     @InjectMocks
     private UserAuthenticationServiceImpl userService;

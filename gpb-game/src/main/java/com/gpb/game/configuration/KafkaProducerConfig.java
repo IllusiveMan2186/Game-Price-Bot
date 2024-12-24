@@ -1,6 +1,6 @@
 package com.gpb.game.configuration;
 
-import com.gpb.game.bean.event.EmailNotificationEvent;
+import com.gpb.common.entity.event.EmailNotificationEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

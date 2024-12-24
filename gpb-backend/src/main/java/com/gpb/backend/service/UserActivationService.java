@@ -1,7 +1,7 @@
 package com.gpb.backend.service;
 
-import com.gpb.backend.bean.user.UserActivation;
-import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.entity.UserActivation;
+import com.gpb.backend.entity.WebUser;
 
 /**
  * Handle UserActivation entity operations

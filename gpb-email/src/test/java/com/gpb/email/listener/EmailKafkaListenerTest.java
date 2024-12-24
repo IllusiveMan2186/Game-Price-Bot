@@ -1,6 +1,7 @@
 package com.gpb.email.listener;
 
-import com.gpb.email.bean.EmailEvent;
+import com.gpb.common.entity.event.EmailEvent;
+import com.gpb.common.util.CommonConstants;
 import com.gpb.email.service.EmailService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class EmailKafkaListenerTest {
         emailEvent.setVariables(Map.of("key1", "value1"));
 
         ConsumerRecord<String, EmailEvent> consumerRecord = new ConsumerRecord<>(
-                "gpb_email_event", 0, 0L, "eventKey", emailEvent
+                CommonConstants.EMAIL_SERVICE_TOPIC, 0, 0L, "eventKey", emailEvent
         );
 
 
@@ -68,7 +69,7 @@ class EmailKafkaListenerTest {
         emailEvent.setVariables(null); // Simulating null variables
 
         ConsumerRecord<String, EmailEvent> consumerRecord = new ConsumerRecord<>(
-                "gpb_email_event", 0, 0L, "eventKey", emailEvent
+                CommonConstants.EMAIL_SERVICE_TOPIC, 0, 0L, "eventKey", emailEvent
         );
 
 
@@ -97,7 +98,7 @@ class EmailKafkaListenerTest {
         emailEvent.setVariables(Map.of("key1", "value1"));
 
         ConsumerRecord<String, EmailEvent> consumerRecord = new ConsumerRecord<>(
-                "gpb_email_event", 0, 0L, eventKey, emailEvent
+                CommonConstants.EMAIL_SERVICE_TOPIC, 0, 0L, eventKey, emailEvent
         );
 
 
