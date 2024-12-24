@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.gpb"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 fun getEnvOrProperty(name: String): String {
@@ -58,7 +58,7 @@ dependencies {
 
     implementation("org.postgresql:postgresql:42.5.1")
 
-    implementation("com.gpb:common:0.0.5-SNAPSHOT")
+    implementation("com.gpb:common:1.0.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
