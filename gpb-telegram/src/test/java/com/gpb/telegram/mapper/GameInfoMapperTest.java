@@ -1,9 +1,9 @@
 package com.gpb.telegram.mapper;
 
-import com.gpb.telegram.bean.TelegramRequest;
-import com.gpb.telegram.bean.TelegramUser;
-import com.gpb.telegram.bean.game.GameInStoreDto;
-import com.gpb.telegram.bean.game.GameInfoDto;
+import com.gpb.common.entity.game.GameInStoreDto;
+import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.telegram.entity.TelegramRequest;
+import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.util.UpdateCreator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

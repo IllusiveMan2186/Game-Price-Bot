@@ -1,6 +1,6 @@
 package com.gpb.telegram.filter;
 
-import com.gpb.telegram.bean.TelegramRequest;
+import com.gpb.telegram.entity.TelegramRequest;
 import org.springframework.aop.framework.AopProxyUtils;
 
 import java.util.List;

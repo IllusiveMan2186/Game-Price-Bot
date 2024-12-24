@@ -1,8 +1,8 @@
 package com.gpb.telegram.service.impl;
 
-import com.gpb.telegram.bean.TelegramUser;
+import com.gpb.common.service.RestTemplateHandlerService;
+import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.repository.TelegramUserRepository;
-import com.gpb.telegram.rest.RestTemplateHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +15,7 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,7 +25,7 @@ class TelegramUserServiceImplTest {
     TelegramUserRepository telegramUserRepository;
 
     @Mock
-    RestTemplateHandler restTemplateHandler;
+    RestTemplateHandlerService restTemplateHandler;
 
     @InjectMocks
     TelegramUserServiceImpl telegramUserService;
@@ -116,5 +117,17 @@ class TelegramUserServiceImplTest {
 
 
         assertEquals(telegramUser, result);
+    }
+
+    @Test
+    void testSetBasicUserId_whenSuccess_shouldCAllRepositoryMethod() {
+        long currentBasicUserId = 1L;
+        long newBasicUserId = 1L;
+
+
+        telegramUserService.setBasicUserId(currentBasicUserId,newBasicUserId);
+
+
+        verify(telegramUserRepository).updateBasicUserIdByBasicUserId(currentBasicUserId,newBasicUserId);
     }
 }

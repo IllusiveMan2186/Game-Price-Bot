@@ -1,6 +1,7 @@
 package com.gpb.email.configuration;
 
-import com.gpb.email.bean.EmailEvent;
+import com.gpb.common.entity.event.EmailEvent;
+import com.gpb.common.util.CommonConstants;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,9 +27,9 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.gpb.email.bean.EmailEvent");
+        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.gpb.common.entity.event.EmailEvent");
         props.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "gpb");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, CommonConstants.GPB_KAFKA_GROUP_ID);
 
         ConcurrentKafkaListenerContainerFactory<String, EmailEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();

@@ -9,6 +9,20 @@ COPY pom.xml $APP_HOME
 # Copy the source code
 COPY src $APP_HOME/src
 
+ARG DEPENDENCY_REPO_URL
+ARG DEPENDENCY_REPO_USERNAME
+ARG DEPENDENCY_REPO_PASSWORD
+ENV DEPENDENCY_REPO_URL=$DEPENDENCY_REPO_URL
+ENV DEPENDENCY_REPO_USERNAME=$DEPENDENCY_REPO_USERNAME
+ENV DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD
+
+COPY settings.xml /root/.m2/settings.xml
+
+RUN sed -i 's|${env.DEPENDENCY_REPO_USERNAME}|'"$DEPENDENCY_REPO_USERNAME"'|g' /root/.m2/settings.xml \
+    && sed -i 's|${env.DEPENDENCY_REPO_PASSWORD}|'"$DEPENDENCY_REPO_PASSWORD"'|g' /root/.m2/settings.xml
+
+RUN cat /root/.m2/settings.xml
+
 # Build the application
 RUN mvn clean package
 

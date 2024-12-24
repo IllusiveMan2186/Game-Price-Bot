@@ -1,10 +1,10 @@
 package com.gpb.telegram.command.impl;
 
-import com.gpb.telegram.bean.TelegramRequest;
-import com.gpb.telegram.bean.TelegramResponse;
-import com.gpb.telegram.bean.TelegramUser;
+import com.gpb.common.service.UserLinkerService;
+import com.gpb.telegram.entity.TelegramRequest;
+import com.gpb.telegram.entity.TelegramResponse;
+import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.service.TelegramUserService;
-import com.gpb.telegram.service.UserLinkerService;
 import com.gpb.telegram.util.UpdateCreator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

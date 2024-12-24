@@ -8,8 +8,22 @@ group = "com.gpb"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
+fun getEnvOrProperty(name: String): String {
+    return findProperty(name)?.toString()
+            ?: System.getenv(name)
+            ?: throw GradleException("$name not specified. Set '$name' property or $name environment variable.")
+}
+
 repositories {
     mavenCentral()
+    maven {
+        isAllowInsecureProtocol = true
+        url = uri(getEnvOrProperty("DEPENDENCY_REPO_URL"))
+        credentials {
+            username = getEnvOrProperty("DEPENDENCY_REPO_USERNAME")
+            password = getEnvOrProperty("DEPENDENCY_REPO_PASSWORD")
+        }
+    }
 }
 
 configurations.all {
@@ -42,6 +56,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
     testImplementation("com.h2database:h2:2.2.220")
+
+    implementation("com.gpb:common:0.0.2-SNAPSHOT")
 }
 
 tasks.withType<Test> {

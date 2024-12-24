@@ -1,6 +1,6 @@
 package com.gpb.backend.filter;
 
-import com.gpb.backend.configuration.UserAuthenticationProvider;
+import com.gpb.backend.configuration.security.UserAuthenticationProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

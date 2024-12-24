@@ -1,19 +1,19 @@
 package com.gpb.backend.service.impl;
 
-import com.gpb.backend.bean.user.Credentials;
-import com.gpb.backend.bean.user.UserRegistration;
-import com.gpb.backend.bean.user.WebUser;
-import com.gpb.backend.bean.user.dto.UserDto;
+import com.gpb.backend.entity.Credentials;
+import com.gpb.backend.entity.UserRegistration;
+import com.gpb.backend.entity.WebUser;
+import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.exception.EmailAlreadyExistException;
 import com.gpb.backend.exception.LoginFailedException;
-import com.gpb.backend.exception.NotFoundException;
 import com.gpb.backend.exception.UserDataNotChangedException;
 import com.gpb.backend.exception.UserLockedException;
 import com.gpb.backend.exception.UserNotActivatedException;
 import com.gpb.backend.repository.WebUserRepository;
-import com.gpb.backend.rest.RestTemplateHandler;
 import com.gpb.backend.service.UserAuthenticationService;
 import com.gpb.backend.util.Constants;
+import com.gpb.common.exception.NotFoundException;
+import com.gpb.common.service.RestTemplateHandlerService;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -34,12 +34,12 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     private final WebUserRepository webUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
-    private final RestTemplateHandler restTemplateHandler;
+    private final RestTemplateHandlerService restTemplateHandler;
 
     public UserAuthenticationServiceImpl(WebUserRepository webUserRepository,
                                          PasswordEncoder passwordEncoder,
                                          ModelMapper modelMapper,
-                                         RestTemplateHandler restTemplateHandler) {
+                                         RestTemplateHandlerService restTemplateHandler) {
         this.webUserRepository = webUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;

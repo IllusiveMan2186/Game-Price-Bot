@@ -1,6 +1,6 @@
 package com.gpb.telegram.filter;
 
-import com.gpb.telegram.bean.TelegramRequest;
+import com.gpb.telegram.entity.TelegramRequest;
 
 public class FilterChain {
 

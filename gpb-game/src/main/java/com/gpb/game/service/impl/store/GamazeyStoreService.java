@@ -1,13 +1,15 @@
 package com.gpb.game.service.impl.store;
 
-import com.gpb.game.bean.game.ClientActivationType;
-import com.gpb.game.bean.game.Game;
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.game.Genre;
-import com.gpb.game.bean.game.ProductType;
+import com.gpb.common.entity.game.ClientActivationType;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
+import com.gpb.common.util.CommonConstants;
 import com.gpb.game.configuration.ResourceConfiguration;
+import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.parser.StorePageParser;
 import com.gpb.game.service.StoreService;
+import com.gpb.game.util.Constants;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,8 +34,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.gpb.game.util.Constants.JPG_IMG_FILE_EXTENSION;
-import static com.gpb.game.util.Constants.SEARCH_REQUEST_WAITING_TIME;
 
 @Service(value = "gamazey.com.ua")
 @Log4j2
@@ -114,7 +114,7 @@ public class GamazeyStoreService implements StoreService {
 
         List<Game> games = new ArrayList<>();
         for (Element element : elements) {
-            if (System.currentTimeMillis() - startTime > SEARCH_REQUEST_WAITING_TIME) {
+            if (System.currentTimeMillis() - startTime > Constants.SEARCH_REQUEST_WAITING_TIME) {
                 log.warn("Search process exceeded the maximum allowed duration. Stopping search.");
                 break;
             }
@@ -226,7 +226,6 @@ public class GamazeyStoreService implements StoreService {
         List<Genre> genres = new ArrayList<>();
         for (Map.Entry<String, Genre> entry : genreMap.entrySet()) {
             if (genreElement.text().contains(entry.getKey())) {
-                System.out.println(entry.getKey() + " " + entry.getValue());
                 genres.add(entry.getValue());
             }
         }
@@ -236,7 +235,9 @@ public class GamazeyStoreService implements StoreService {
     private void saveImage(Document document, String gameName) {
         Element element = document.getElementsByClass(GAME_IMG_CLASS).get(1);
         String imgUrl = element.attr("src");
-        String filePath = resourceConfiguration.getImageFolder() + "/" + sanitizeFilename(gameName) + JPG_IMG_FILE_EXTENSION;
+        String filePath = resourceConfiguration.getImageFolder() + "/"
+                + sanitizeFilename(gameName)
+                + CommonConstants.JPG_IMG_FILE_EXTENSION;
         try {
             cropImage(imgUrl, filePath);
         } catch (IOException e) {

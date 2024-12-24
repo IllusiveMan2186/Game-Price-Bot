@@ -1,13 +1,14 @@
 package com.gpb.backend.service.impl;
 
-import com.gpb.backend.bean.event.GameFollowEvent;
-import com.gpb.backend.bean.game.GameInfoDto;
-import com.gpb.backend.bean.game.GameListPageDto;
-import com.gpb.backend.bean.game.Genre;
-import com.gpb.backend.bean.game.ProductType;
-import com.gpb.backend.rest.RestTemplateHandler;
 import com.gpb.backend.service.GameService;
-import com.gpb.backend.util.Constants;
+import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.common.entity.game.GameListPageDto;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
+import com.gpb.common.service.BasicGameService;
+import com.gpb.common.service.RestTemplateHandlerService;
+import com.gpb.common.util.CommonConstants;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -25,29 +26,16 @@ import java.util.UUID;
 @Slf4j
 @Data
 @Service
+@AllArgsConstructor
 public class GameServiceImpl implements GameService {
 
-    private final KafkaTemplate<String, GameFollowEvent> gameFollowEventKafkaTemplate;
     private final KafkaTemplate<String, Long> removeKafkaTemplate;
-    private final RestTemplateHandler restTemplateHandler;
-
-    public GameServiceImpl(KafkaTemplate<String, GameFollowEvent> gameFollowEventKafkaTemplate,
-                           KafkaTemplate<String, Long> removeKafkaTemplate, RestTemplateHandler restTemplateHandler) {
-        this.gameFollowEventKafkaTemplate = gameFollowEventKafkaTemplate;
-        this.removeKafkaTemplate = removeKafkaTemplate;
-        this.restTemplateHandler = restTemplateHandler;
-    }
-
+    private final RestTemplateHandlerService restTemplateHandler;
+    private final BasicGameService basicGameService;
 
     @Override
     public GameInfoDto getById(long gameId, long userId) {
-        String url = "/game/" + gameId;
-        HttpHeaders headers = new HttpHeaders();
-        if (userId > 0) {
-            headers.add("BASIC-USER-ID", String.valueOf(userId));
-        }
-
-        return restTemplateHandler.executeRequest(url, HttpMethod.GET, headers, GameInfoDto.class);
+        return basicGameService.getById(gameId, userId);
     }
 
     @Override
@@ -103,25 +91,18 @@ public class GameServiceImpl implements GameService {
     public void removeGame(long gameId) {
         String key = UUID.randomUUID().toString();
         log.info("Send remove game event for game {} ", gameId);
-        removeKafkaTemplate.send(Constants.GAME_REMOVE_TOPIC, key, gameId);
+        removeKafkaTemplate.send(CommonConstants.GAME_REMOVE_TOPIC, key, gameId);
     }
 
     @Override
     public void removeGameInStore(long gameInStoreId) {
         String key = UUID.randomUUID().toString();
         log.info("Send remove game in store event for game {} ", gameInStoreId);
-        removeKafkaTemplate.send(Constants.GAME_IN_STORE_REMOVE_TOPIC, key, gameInStoreId);
+        removeKafkaTemplate.send(CommonConstants.GAME_IN_STORE_REMOVE_TOPIC, key, gameInStoreId);
     }
 
     @Override
     public void setFollowGameOption(long gameId, long userId, boolean isFollow) {
-        String key = UUID.randomUUID().toString();
-        if (isFollow) {
-            log.info("Send game follow request for game {} for user {}", userId, gameId);
-            gameFollowEventKafkaTemplate.send(Constants.GAME_FOLLOW_TOPIC, key, new GameFollowEvent(userId, gameId));
-        } else {
-            log.info("Send game unfollow request for game {} for user {}", userId, gameId);
-            gameFollowEventKafkaTemplate.send(Constants.GAME_UNFOLLOW_TOPIC, key, new GameFollowEvent(userId, gameId));
-        }
+        basicGameService.setFollowGameOption(gameId, userId, isFollow);
     }
 }

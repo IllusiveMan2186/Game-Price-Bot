@@ -1,7 +1,7 @@
 package com.gpb.telegram.service;
 
-import com.gpb.telegram.bean.game.GameInfoDto;
-import com.gpb.telegram.bean.game.GameListPageDto;
+import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.common.entity.game.GameListPageDto;
 
 public interface GameService {
 

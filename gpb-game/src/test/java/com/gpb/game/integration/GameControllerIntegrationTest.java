@@ -1,11 +1,11 @@
 package com.gpb.game.integration;
 
-import com.gpb.game.bean.game.Game;
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.game.Genre;
-import com.gpb.game.bean.game.ProductType;
-import com.gpb.game.bean.user.BasicUser;
-import com.gpb.game.util.Constants;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
+import com.gpb.common.util.CommonConstants;
+import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.user.BasicUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +31,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     void testGetGameById_whenSuccess_shouldReturnGame() throws Exception {
 
         mockMvc.perform(get("/game/{id}", games.get(0).getId())
-                        .header(Constants.API_KEY_HEADER, API_KEY))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -43,7 +43,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     void testGetGameByUrl_whenSuccess_shouldReturnGame() throws Exception {
         mockMvc.perform(get("/game/url")
                         .param("url", games.get(0).getGamesInShop().stream().toList().get(0).getUrl())
-                        .header(Constants.API_KEY_HEADER, API_KEY))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -65,7 +65,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("minPrice", "0")
                         .param("maxPrice", "10000")
                         .param("sortBy", "gamesInShop.price-ASC")
-                        .header(Constants.API_KEY_HEADER, API_KEY))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -85,7 +85,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("minPrice", "0")
                         .param("maxPrice", "10000")
                         .param("sortBy", "gamesInShop.price-ASC")
-                        .header(Constants.API_KEY_HEADER, API_KEY))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -106,7 +106,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("minPrice", "0")
                         .param("maxPrice", "10000")
                         .param("sortBy", "gamesInShop.price-ASC")
-                        .header(Constants.API_KEY_HEADER, API_KEY))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -137,7 +137,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("minPrice", "500")
                         .param("maxPrice", "1000")
                         .param("sortBy", "gamesInShop.price-ASC")
-                        .header(Constants.API_KEY_HEADER, API_KEY))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -158,7 +158,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("minPrice", "500")
                         .param("maxPrice", "500")
                         .param("sortBy", "gamesInShop.price-ASC")
-                        .header(Constants.API_KEY_HEADER, API_KEY))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -176,7 +176,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("minPrice", "501")
                         .param("maxPrice", "500")
                         .param("sortBy", "gamesInShop.price-ASC")
-                        .header(Constants.API_KEY_HEADER, API_KEY))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -191,8 +191,8 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("pageNum", "1")
                         .param("pageSize", "25")
                         .param("sortBy", "gamesInShop.price-ASC") // Correct format
-                        .header(Constants.API_KEY_HEADER, API_KEY)
-                        .header(Constants.BASIC_USER_ID_HEADER, 1))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY)
+                        .header(CommonConstants.BASIC_USER_ID_HEADER, 1))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -207,8 +207,8 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
         int notExistingGameId = games.size() + 1;
 
         mockMvc.perform(get("/game/{id}", notExistingGameId)
-                        .header(Constants.API_KEY_HEADER, API_KEY)
-                        .header(Constants.BASIC_USER_ID_HEADER, 1))
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY)
+                        .header(CommonConstants.BASIC_USER_ID_HEADER, 1))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").value("app.game.error.id.not.found"));

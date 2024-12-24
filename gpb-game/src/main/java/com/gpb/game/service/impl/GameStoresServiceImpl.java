@@ -1,7 +1,7 @@
 package com.gpb.game.service.impl;
 
-import com.gpb.game.bean.game.Game;
-import com.gpb.game.bean.game.GameInShop;
+import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.StoreService;
 import lombok.extern.slf4j.Slf4j;

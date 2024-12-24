@@ -1,7 +1,7 @@
 package com.gpb.game.service;
 
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.user.BasicUser;
+import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.user.BasicUser;
 
 import java.util.List;
 

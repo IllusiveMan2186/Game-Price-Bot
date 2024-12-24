@@ -1,15 +1,15 @@
 package com.gpb.game.unit.service.impl;
 
-import com.gpb.game.bean.game.Game;
-import com.gpb.game.bean.game.GameDto;
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.game.GameInfoDto;
-import com.gpb.game.bean.game.GameListPageDto;
-import com.gpb.game.bean.game.Genre;
-import com.gpb.game.bean.game.ProductType;
-import com.gpb.game.bean.user.BasicUser;
+import com.gpb.common.entity.game.GameDto;
+import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.common.entity.game.GameListPageDto;
+import com.gpb.common.entity.game.Genre;
+import com.gpb.common.entity.game.ProductType;
+import com.gpb.common.exception.NotFoundException;
 import com.gpb.game.configuration.MapperConfig;
-import com.gpb.game.exception.NotFoundException;
+import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.repository.GameInShopRepository;
 import com.gpb.game.repository.GameRepository;
 import com.gpb.game.service.GameService;

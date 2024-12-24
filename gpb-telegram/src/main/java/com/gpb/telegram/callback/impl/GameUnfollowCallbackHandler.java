@@ -1,8 +1,8 @@
 package com.gpb.telegram.callback.impl;
 
-import com.gpb.telegram.bean.TelegramRequest;
-import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.callback.CallbackHandler;
+import com.gpb.telegram.entity.TelegramRequest;
+import com.gpb.telegram.entity.TelegramResponse;
 import com.gpb.telegram.filter.FilterChainMarker;
 import com.gpb.telegram.service.GameService;
 import com.gpb.telegram.util.Constants;

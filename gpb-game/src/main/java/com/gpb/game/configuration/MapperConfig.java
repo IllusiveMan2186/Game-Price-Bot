@@ -1,10 +1,10 @@
 package com.gpb.game.configuration;
 
-import com.gpb.game.bean.game.Game;
-import com.gpb.game.bean.game.GameDto;
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.game.GameInStoreDto;
-import com.gpb.game.bean.game.GameInfoDto;
+import com.gpb.common.entity.game.GameDto;
+import com.gpb.common.entity.game.GameInStoreDto;
+import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.game.GameInShop;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -89,7 +89,16 @@ public class MapperConfig {
     public void mapGameInShopField(Game source, GameInfoDto destination) {
         destination.setGamesInShop(Objects.isNull(source) ? null :
                 source.getGamesInShop().stream()
-                        .map(GameInStoreDto::new)
+                        .map(game -> GameInStoreDto.builder()
+                                .id(game.getId())
+                                .nameInStore(game.getNameInStore())
+                                .url(game.getUrl())
+                                .price(game.getPrice())
+                                .discountPrice(game.getDiscountPrice())
+                                .discount(game.getDiscount())
+                                .discountDate(game.getDiscountDate())
+                                .isAvailable(game.isAvailable())
+                                .clientType(game.getClientType()).build())
                         .toList());
     }
 }

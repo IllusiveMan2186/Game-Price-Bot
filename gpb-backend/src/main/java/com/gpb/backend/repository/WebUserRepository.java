@@ -1,6 +1,6 @@
 package com.gpb.backend.repository;
 
-import com.gpb.backend.bean.user.WebUser;
+import com.gpb.backend.entity.WebUser;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

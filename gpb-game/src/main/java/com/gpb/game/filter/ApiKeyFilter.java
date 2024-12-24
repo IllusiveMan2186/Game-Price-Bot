@@ -1,6 +1,6 @@
 package com.gpb.game.filter;
 
-import com.gpb.game.util.Constants;
+import com.gpb.common.util.CommonConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +22,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String apiKey = request.getHeader(Constants.API_KEY_HEADER);
+        String apiKey = request.getHeader(CommonConstants.API_KEY_HEADER);
 
         if (!validApiKey.equals(apiKey)) {
             log.debug("Request have wrong API key" + apiKey);

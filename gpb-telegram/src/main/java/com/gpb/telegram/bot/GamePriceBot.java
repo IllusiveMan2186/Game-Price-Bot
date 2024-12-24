@@ -1,7 +1,7 @@
 package com.gpb.telegram.bot;
 
-import com.gpb.telegram.bean.TelegramRequest;
 import com.gpb.telegram.configuration.BotConfiguration;
+import com.gpb.telegram.entity.TelegramRequest;
 import com.gpb.telegram.handler.ControllerHandler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

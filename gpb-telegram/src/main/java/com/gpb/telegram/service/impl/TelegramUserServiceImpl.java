@@ -1,12 +1,11 @@
 package com.gpb.telegram.service.impl;
 
-import com.gpb.telegram.bean.TelegramUser;
+import com.gpb.common.service.RestTemplateHandlerService;
+import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.repository.TelegramUserRepository;
-import com.gpb.telegram.rest.RestTemplateHandler;
 import com.gpb.telegram.service.TelegramUserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
@@ -15,13 +14,12 @@ import java.util.Locale;
 
 @Component
 @Slf4j
-@Data
 @AllArgsConstructor
 public class TelegramUserServiceImpl implements TelegramUserService {
 
     private final TelegramUserRepository telegramUserRepository;
 
-    private final RestTemplateHandler restTemplateHandler;
+    private final RestTemplateHandlerService restTemplateHandler;
 
     @Override
     public boolean isUserRegistered(long telegramId) {

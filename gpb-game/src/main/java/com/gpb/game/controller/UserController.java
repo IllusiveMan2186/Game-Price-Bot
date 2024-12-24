@@ -1,8 +1,8 @@
 package com.gpb.game.controller;
 
-import com.gpb.game.bean.user.TokenRequestDto;
+import com.gpb.common.entity.user.TokenRequestDto;
+import com.gpb.common.util.CommonConstants;
 import com.gpb.game.service.UserService;
-import com.gpb.game.util.Constants;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,14 +25,14 @@ public class UserController {
 
     @PostMapping("/token")
     @ResponseStatus(HttpStatus.CREATED)
-    public String createAccountLinkerToken(@RequestHeader(Constants.BASIC_USER_ID_HEADER) long userId) {
+    public String createAccountLinkerToken(@RequestHeader(CommonConstants.BASIC_USER_ID_HEADER) long userId) {
         return userService.createAccountLinkerToken(userId);
     }
 
     @PostMapping("/link")
     @ResponseStatus(HttpStatus.OK)
     public Long userAccountLink(@RequestBody final TokenRequestDto token,
-                                @RequestHeader(Constants.BASIC_USER_ID_HEADER) long userId) {
+                                @RequestHeader(CommonConstants.BASIC_USER_ID_HEADER) long userId) {
         return userService.linkUsers(token.getToken(), userId).getId();
     }
 

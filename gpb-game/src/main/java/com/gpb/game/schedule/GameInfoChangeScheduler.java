@@ -1,7 +1,7 @@
 package com.gpb.game.schedule;
 
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.user.BasicUser;
+import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.NotificationManager;

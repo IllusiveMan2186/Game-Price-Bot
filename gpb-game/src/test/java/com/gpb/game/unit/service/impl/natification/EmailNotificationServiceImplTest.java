@@ -1,8 +1,9 @@
 package com.gpb.game.unit.service.impl.natification;
 
-import com.gpb.game.bean.event.EmailNotificationEvent;
-import com.gpb.game.bean.game.GameInShop;
-import com.gpb.game.bean.user.BasicUser;
+import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.util.CommonConstants;
+import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.service.impl.notification.EmailNotificationServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +15,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import java.util.List;
 import java.util.Map;
 
-import static com.gpb.game.util.Constants.EMAIL_NOTIFICATION_TOPIC;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
@@ -49,7 +49,7 @@ class EmailNotificationServiceImplTest {
                 Map.of("games", gameInShopList)
         );
 
-        verify(kafkaTemplate).send(EMAIL_NOTIFICATION_TOPIC, "1", expectedEvent);
+        verify(kafkaTemplate).send(CommonConstants.EMAIL_NOTIFICATION_TOPIC, "1", expectedEvent);
     }
 
     @Test
@@ -66,6 +66,6 @@ class EmailNotificationServiceImplTest {
         emailNotificationService.sendGameInfoChange(user, gameInShopList);
 
 
-        verify(kafkaTemplate).send(eq(EMAIL_NOTIFICATION_TOPIC), eq("1"), any(EmailNotificationEvent.class));
+        verify(kafkaTemplate).send(eq(CommonConstants.EMAIL_NOTIFICATION_TOPIC), eq("1"), any(EmailNotificationEvent.class));
     }
 }

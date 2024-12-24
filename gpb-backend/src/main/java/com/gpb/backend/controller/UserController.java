@@ -1,10 +1,10 @@
 package com.gpb.backend.controller;
 
-import com.gpb.backend.bean.user.dto.EmailRequestDto;
-import com.gpb.backend.bean.user.dto.LocaleRequestDto;
-import com.gpb.backend.bean.user.dto.PasswordChangeDto;
-import com.gpb.backend.bean.user.dto.UserDto;
-import com.gpb.backend.configuration.UserAuthenticationProvider;
+import com.gpb.backend.configuration.security.UserAuthenticationProvider;
+import com.gpb.backend.entity.dto.EmailRequestDto;
+import com.gpb.backend.entity.dto.LocaleRequestDto;
+import com.gpb.backend.entity.dto.PasswordChangeDto;
+import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.GameService;
 import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserAuthenticationService;

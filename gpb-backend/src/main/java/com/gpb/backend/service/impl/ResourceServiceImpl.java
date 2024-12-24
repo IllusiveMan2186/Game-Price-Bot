@@ -3,15 +3,14 @@ package com.gpb.backend.service.impl;
 import com.gpb.backend.configuration.ResourceConfiguration;
 import com.gpb.backend.exception.GameImageNotFoundException;
 import com.gpb.backend.service.ResourceService;
+import com.gpb.backend.util.Constants;
+import com.gpb.common.util.CommonConstants;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-
-import static com.gpb.backend.util.Constants.JPG_IMG_FILE_EXTENSION;
-import static com.gpb.backend.util.Constants.PNG_IMG_FILE_EXTENSION;
 
 @Log4j2
 @Service
@@ -25,7 +24,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     public byte[] getGameImage(final String gameName) {
         String gameImageFullPath = resourceConfiguration.getImageFolder() + "/" + sanitizeFilename(gameName)
-                + JPG_IMG_FILE_EXTENSION;
+                + CommonConstants.JPG_IMG_FILE_EXTENSION;
         try {
             InputStream in = new FileInputStream(gameImageFullPath);
 
@@ -36,7 +35,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     private byte[] getDefaultGameImage() {
-        String gameImageFullPath = resourceConfiguration.getImageFolder() + "/defaultImage" + PNG_IMG_FILE_EXTENSION;
+        String gameImageFullPath = resourceConfiguration.getImageFolder() + "/defaultImage" + Constants.PNG_IMG_FILE_EXTENSION;
         try {
             InputStream in = new FileInputStream(gameImageFullPath);
             return IOUtils.toByteArray(in);

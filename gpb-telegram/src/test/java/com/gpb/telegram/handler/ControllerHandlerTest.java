@@ -1,10 +1,10 @@
 package com.gpb.telegram.handler;
 
-import com.gpb.telegram.bean.TelegramRequest;
-import com.gpb.telegram.bean.TelegramResponse;
 import com.gpb.telegram.callback.CallbackHandler;
 import com.gpb.telegram.command.CommandHandler;
-import com.gpb.telegram.exception.NotExistingMessengerActivationTokenException;
+import com.gpb.telegram.entity.TelegramRequest;
+import com.gpb.telegram.entity.TelegramResponse;
+import com.gpb.telegram.exception.NotExistingAccountSynchronizationException;
 import com.gpb.telegram.filter.FilterChain;
 import com.gpb.telegram.service.TelegramUserService;
 import com.gpb.telegram.util.UpdateCreator;
@@ -153,7 +153,7 @@ class ControllerHandlerTest {
     void testHandleCommands_whenFilterChainThrowException_shouldReturnExceptionMessage() {
         String chatId = "123456";
         Update update = UpdateCreator.getUpdateWithoutCallback("/command", Long.parseLong(chatId));
-        RuntimeException exception = new NotExistingMessengerActivationTokenException();
+        RuntimeException exception = new NotExistingAccountSynchronizationException();
         String exceptionResponse = exception.getMessage();
         TelegramRequest request = TelegramRequest.builder().update(update).build();
         doThrow(exception).when(filterChain).handleFilterChain(controller, request);
@@ -166,14 +166,14 @@ class ControllerHandlerTest {
 
         SendMessage sendMessage = (SendMessage) response.getMessages().get(0);
         assertEquals(chatId, sendMessage.getChatId());
-        assertEquals(new NotExistingMessengerActivationTokenException().getMessage(), sendMessage.getText());
+        assertEquals(new NotExistingAccountSynchronizationException().getMessage(), sendMessage.getText());
     }
 
     @Test
     void testHandleCommands_whenCommandThrowException_shouldReturnExceptionMessage() {
         String chatId = "123456";
         Update update = UpdateCreator.getUpdateWithoutCallback("/command", Long.parseLong(chatId));
-        RuntimeException exception = new NotExistingMessengerActivationTokenException();
+        RuntimeException exception = new NotExistingAccountSynchronizationException();
         String exceptionResponse = exception.getMessage();
         Locale locale = new Locale("");
         TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
@@ -190,7 +190,7 @@ class ControllerHandlerTest {
         SendMessage sendMessage = (SendMessage) response.getMessages().get(0);
         verify(filterChain, times(1)).handleFilterChain(controller, request);
         assertEquals(chatId, sendMessage.getChatId());
-        assertEquals(new NotExistingMessengerActivationTokenException().getMessage(), sendMessage.getText());
+        assertEquals(new NotExistingAccountSynchronizationException().getMessage(), sendMessage.getText());
     }
 
 }
