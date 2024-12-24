@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div style="text-align:center;color:white;background-color:rgb(39,47,71);">
+    <h1 style="margin-top: 10px;flex: 0 0 100%;max-width: 100%;font-size: 2.5rem;">
+        <span th:text="#{email.data.change.title}"></span>
+    </h1>
+    <div style="border: 1px solid rgb(0, 0, 0);margin-top: 30px;flex: 0 0 100%;width: 100%;max-width: 600px;
+  display: flex;flex-direction: column;justify-content: space-evenly;align-items: center;">
+        <tr th:each="game: ${games}">
+            <td>
+                <a th:href="${game.url}" style="color: white;border: none;text-decoration: none;">
+                    <div th:style="'border: 1px solid rgb(0, 0, 0);flex: 0 0 100%;width: 100%;display: flex;flex-direction: row;
+  justify-content: space-evenly;align-items: center;background:url(' + ${game.url} + ');'">
+                        <div style="border: 1px solid rgb(0, 0, 0);display: flex;flex-direction: column;align-items: center;">
+                            <div style="font-size: 1.5rem;" th:text="${game.nameInStore}"/>
+                            <div>
+                        <span th:if="${game.isAvailable }">
+                            <div style="color: #62f14f;font-size: 0.8rem;margin-bottom: 0;">
+                                <span th:text="#{email.data.change.game.available}"></span>
+                            </div>
+                        </span>
+                                <span th:unless="${game.isAvailable }">
+                            <div style="color: #ff0000;font-size: 0.8rem;margin-bottom: 0;">
+                                <span th:text="#{email.data.change.game.not.available}"></span>
+                            </div>
+                        </span>
+                            </div>
+                            <div style="width: 30%;display: flex;flex-direction: row;justify-content: space-around;align-items: center;">
+                                <div style="font-size: 0.9rem;color: rgb(128, 126, 126);text-decoration: line-through;"
+                                     th:text="${game.price}"/>
+                                <div style="background-color: green;height: 20px;width: 40px;display: flex;
+                            align-items: center;">
+                                    -
+                                    <div th:text="${game.discount}"/>
+                                    %
+                                </div>
+                                <div style="font-size: 1.4rem;" th:text="${game.discountPrice}"/>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </td>
+        </tr>
+    </div>
+</div>
+</body>
+</html>

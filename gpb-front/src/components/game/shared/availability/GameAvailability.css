@@ -1,0 +1,9 @@
+.App-game-content-list-game-info-available {
+    color: #62f14f;
+    font-size: 0.8rem;
+    margin-bottom: 0;
+}
+
+.not-available {
+    color: #ff0000;
+}
