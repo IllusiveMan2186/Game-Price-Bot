@@ -79,12 +79,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameListPageDto getUserGames(long userId, int pageSize, int pageNum, String sort) {
-        String url = "/game/user/games?pageSize=" + pageSize + "&pageNum=" + pageNum
-                + "&sortBy=" + sort;
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("BASIC-USER-ID", String.valueOf(userId));
-
-        return restTemplateHandler.executeRequest(url, HttpMethod.GET, headers, GameListPageDto.class);
+        return basicGameService.getUserGames(userId, pageSize, pageNum, sort);
     }
 
     @Override

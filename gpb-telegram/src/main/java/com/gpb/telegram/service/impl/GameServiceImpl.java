@@ -38,4 +38,9 @@ public class GameServiceImpl implements GameService {
     public void setFollowGameOption(long gameId, long userId, boolean isFollow) {
         basicGameService.setFollowGameOption(gameId, userId, isFollow);
     }
+
+    @Override
+    public GameListPageDto getUserGames(long basicUserId, int pageNum) {
+        return basicGameService.getUserGames(basicUserId, 2, pageNum, "gamesInShop.price-ASC");
+    }
 }
