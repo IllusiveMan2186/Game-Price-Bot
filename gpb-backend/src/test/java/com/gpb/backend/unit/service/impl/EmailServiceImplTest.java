@@ -59,7 +59,7 @@ class EmailServiceImplTest {
         userActivation.setToken("testToken");
         userActivation.setUser(user);
 
-        emailService.setFronendServiceUrl("http://localhost:3000");
+        emailService.setFrontendServiceUrl("http://localhost:3000");
 
 
         emailService.sendEmailVerification(userActivation);

@@ -3,6 +3,7 @@ package com.gpb.telegram.mapper;
 import com.gpb.common.entity.game.GameInStoreDto;
 import com.gpb.common.entity.game.GameInfoDto;
 import com.gpb.telegram.entity.TelegramRequest;
+import com.gpb.telegram.mapper.entity.TelegramButton;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -12,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -25,12 +27,12 @@ public class GameInfoMapper {
     private static final String GAME_PRICE_WITH_DISCOUNT_FORM = "<s>%s ₴</s> <code>-%s%%</code> %s ₴";
 
     private final TelegramKeyboardMapper telegramKeyboardMapper;
-    private final GameListMapper gameListMapper;
+    private final GameMapper gameMapper;
 
 
     public List<PartialBotApiMethod> gameInfoToTelegramPage(GameInfoDto game, TelegramRequest request) {
-        List<PartialBotApiMethod> messages = gameListMapper
-                .gameSearchListToTelegramPage(Collections.singletonList(game), request, 1, 1, game.getName());
+        List<PartialBotApiMethod> messages = new ArrayList<>();
+        messages.add(gameMapper.getGamePhotoMessage(request,game));
         messages.addAll(game.getGamesInShop()
                 .stream()
                 .map(gameInShop -> getGamesInShop(request.getChatId(), gameInShop, request.getLocale()))
@@ -42,7 +44,7 @@ public class GameInfoMapper {
         return SendMessage.builder()
                 .chatId(chatId)
                 .text(String.format(GAME_INFO_FORM, getHostnameFromUrl(game.getUrl()),
-                        gameListMapper.getIsAvailableForm(game.isAvailable(), locale), getPrice(game)))
+                        gameMapper.getIsAvailableForm(game.isAvailable(), locale), getPrice(game)))
                 .replyMarkup(getKeyboardForGame(game.getUrl(), locale))
                 .parseMode(ParseMode.HTML)
                 .build();

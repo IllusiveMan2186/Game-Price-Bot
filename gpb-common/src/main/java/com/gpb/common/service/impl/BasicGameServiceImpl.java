@@ -2,6 +2,7 @@ package com.gpb.common.service.impl;
 
 import com.gpb.common.entity.event.GameFollowEvent;
 import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.common.entity.game.GameListPageDto;
 import com.gpb.common.service.BasicGameService;
 import com.gpb.common.service.RestTemplateHandlerService;
 import com.gpb.common.util.CommonConstants;
@@ -43,5 +44,15 @@ public class BasicGameServiceImpl implements BasicGameService {
             log.info("Send game unfollow request for game {} for user {}", userId, gameId);
             gameFollowEventKafkaTemplate.send(CommonConstants.GAME_UNFOLLOW_TOPIC, key, new GameFollowEvent(userId, gameId));
         }
+    }
+
+    @Override
+    public GameListPageDto getUserGames(long userId, int pageSize, int pageNum, String sort) {
+        String url = "/game/user/games?pageSize=" + pageSize + "&pageNum=" + pageNum
+                + "&sortBy=" + sort;
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("BASIC-USER-ID", String.valueOf(userId));
+
+        return templateHandlerService.executeRequest(url, HttpMethod.GET, headers, GameListPageDto.class);
     }
 }

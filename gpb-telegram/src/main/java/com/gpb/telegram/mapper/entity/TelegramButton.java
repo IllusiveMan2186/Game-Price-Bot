@@ -1,4 +1,4 @@
-package com.gpb.telegram.mapper;
+package com.gpb.telegram.mapper.entity;
 
 import lombok.Builder;
 import lombok.Data;

@@ -13,10 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
-@Component("searchByPage")
+@Component("searchByName")
 @RequiredArgsConstructor
 @FilterChainMarker(Constants.USER_EXISTING_FILTER)
-public class GameSearchByPageCallbackHandler implements CallbackHandler {
+public class GameSearchByNameCallbackHandler implements CallbackHandler {
 
     private final GameService gameService;
     private final MessageSource messageSource;
@@ -26,7 +26,7 @@ public class GameSearchByPageCallbackHandler implements CallbackHandler {
     @Transactional
     @Override
     public TelegramResponse apply(TelegramRequest request) {
-        String gameName = request.getUpdate().getCallbackQuery().getData().replaceAll("/searchByPage \\d+ ", "");
+        String gameName = request.getUpdate().getCallbackQuery().getData().replaceAll("/searchByName \\d+ ", "");
         int pageNum = request.getIntArgument(1);
 
         GameListPageDto page = gameService.getByName(gameName, pageNum);
@@ -37,6 +37,11 @@ public class GameSearchByPageCallbackHandler implements CallbackHandler {
             return new TelegramResponse(request, errorMessage);
         }
 
-        return new TelegramResponse(gameListMapper.gameSearchListToTelegramPage(page.getGames(), request, page.getElementAmount(), pageNum, gameName));
+        return new TelegramResponse(
+                gameListMapper.gameSearchListToTelegramPage(
+                        page.getGames(),
+                        request, page.getElementAmount(),
+                        pageNum,
+                        gameName));
     }
 }

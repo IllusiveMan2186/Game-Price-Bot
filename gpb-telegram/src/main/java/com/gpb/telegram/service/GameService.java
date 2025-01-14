@@ -31,4 +31,13 @@ public interface GameService {
      * @param isFollow is program would follow this game for information changing
      */
     void setFollowGameOption(long gameId, long userId, boolean isFollow);
+
+    /**
+     * Get games of user
+     *
+     * @param basicUserId basic user id
+     * @param pageNum page number
+     * @return list of user`s games with all amount
+     */
+    GameListPageDto getUserGames(long basicUserId, int pageNum);
 }

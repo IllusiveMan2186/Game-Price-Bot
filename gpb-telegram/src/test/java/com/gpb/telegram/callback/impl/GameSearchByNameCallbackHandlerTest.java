@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GameSearchByPageCallbackHandlerTest {
+class GameSearchByNameCallbackHandlerTest {
     @Mock
     GameService gameService;
     @Mock
@@ -34,14 +34,14 @@ class GameSearchByPageCallbackHandlerTest {
     @Mock
     GameListMapper gameListMapper;
     @InjectMocks
-    GameSearchByPageCallbackHandler controller;
+    GameSearchByNameCallbackHandler controller;
 
     @Test
-    void testApply_whenSuccess_ShouldReturnGameList_WhenGamesFound() {
+    void testApply_whenGamesFound_shouldReturnGameList() {
         String chatId = "123456";
         String gameName = "exampleGame";
         int pageNum = 1;
-        Update update = UpdateCreator.getUpdateWithCallback("/searchByPage " + pageNum + " " + gameName, Long.parseLong(chatId));
+        Update update = UpdateCreator.getUpdateWithCallback("/searchByName " + pageNum + " " + gameName, Long.parseLong(chatId));
         TelegramRequest request = TelegramRequest.builder().update(update).locale(Locale.ENGLISH).user(null).build();
         GameListPageDto page = new GameListPageDto(1, List.of(new GameDto()));
         SendMessage message = new SendMessage();
@@ -59,14 +59,14 @@ class GameSearchByPageCallbackHandlerTest {
     }
 
     @Test
-    void apply_ShouldReturnErrorMessage_WhenNoGamesFound() {
+    void testApply_whenNoGamesFound_shouldReturnErrorMessage() {
         String chatId = "123456";
         GameListPageDto emptyPage = new GameListPageDto(0, Collections.emptyList());
         String gameName = "exampleGame";
         String errorMessage = "message";
         int pageNum = 1;
         SendMessage message = new SendMessage(chatId, errorMessage);
-        Update update = UpdateCreator.getUpdateWithCallback("/searchByPage " + pageNum + " " + gameName,
+        Update update = UpdateCreator.getUpdateWithCallback("/searchByName " + pageNum + " " + gameName,
                 Long.parseLong(chatId));
         TelegramRequest request = TelegramRequest.builder().update(update).locale(Locale.ENGLISH).user(null).build();
 

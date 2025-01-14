@@ -58,7 +58,7 @@ dependencies {
 
     implementation("org.postgresql:postgresql:42.5.1")
 
-    implementation("com.gpb:common:1.0.0")
+    implementation("com.gpb:common:1.0.2")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

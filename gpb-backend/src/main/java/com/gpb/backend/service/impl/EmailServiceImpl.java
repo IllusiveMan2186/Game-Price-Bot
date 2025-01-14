@@ -27,7 +27,7 @@ public class EmailServiceImpl implements EmailService {
     private final KafkaTemplate<String, EmailEvent> kafkaTemplate;
 
     @Value("${FRONT_SERVICE_URL}")
-    private String fronendServiceUrl;//url for user activation link
+    private String frontendServiceUrl;//url for user activation link
 
     public EmailServiceImpl(KafkaTemplate<String, EmailEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
@@ -44,7 +44,7 @@ public class EmailServiceImpl implements EmailService {
     public void sendEmailVerification(UserActivation userActivation) {
         log.info("Send email verification to user {}", userActivation.getUser().getEmail());
         Map<String, Object> variables = new LinkedHashMap<>();
-        variables.put("url", fronendServiceUrl + "/activation?token=" + userActivation.getToken());
+        variables.put("url", frontendServiceUrl + "/activation?token=" + userActivation.getToken());
         Locale locale = userActivation.getUser().getLocale() != null
                 ? userActivation.getUser().getLocale()
                 : Locale.getDefault();
