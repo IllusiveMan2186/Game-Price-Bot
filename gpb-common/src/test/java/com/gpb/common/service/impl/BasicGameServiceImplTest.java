@@ -2,6 +2,7 @@ package com.gpb.common.service.impl;
 
 import com.gpb.common.entity.event.GameFollowEvent;
 import com.gpb.common.entity.game.GameInfoDto;
+import com.gpb.common.entity.game.GameListPageDto;
 import com.gpb.common.service.RestTemplateHandlerService;
 import com.gpb.common.util.CommonConstants;
 import org.junit.jupiter.api.Test;
@@ -71,5 +72,25 @@ class BasicGameServiceImplTest {
 
         verify(gameFollowEventKafkaTemplate)
                 .send(eq(CommonConstants.GAME_UNFOLLOW_TOPIC), anyString(), eq(new GameFollowEvent(userId, gameId)));
+    }
+
+    @Test
+    void testGetUserGames_whenSuccess_shouldCallRequest() {
+        long userId = 123L;
+        int pageSize = 10;
+        int pageNum = 1;
+        String sort = "name-ASC";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("BASIC-USER-ID", String.valueOf(userId));
+        GameListPageDto mockResponse = new GameListPageDto();
+        String url = "/game/user/games?pageSize=10&pageNum=1&sortBy=name-ASC";
+        when(restTemplateHandlerServiceImpl.executeRequest(url, HttpMethod.GET, headers, GameListPageDto.class)).thenReturn(mockResponse);
+
+
+        GameListPageDto result = gameService.getUserGames(userId, pageSize, pageNum, sort);
+
+
+        assertEquals(mockResponse, result);
+        verify(restTemplateHandlerServiceImpl).executeRequest(url, HttpMethod.GET, headers, GameListPageDto.class);
     }
 }

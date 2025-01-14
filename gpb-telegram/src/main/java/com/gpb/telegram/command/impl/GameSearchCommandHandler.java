@@ -38,15 +38,21 @@ public class GameSearchCommandHandler implements CommandHandler {
         GameListPageDto page = gameService.getByName(gameName, pageNum);
 
         if (page.getGames().isEmpty()) {
-            String errorMessage = String
-                    .format(messageSource.getMessage("game.search.not.found.game", null, request.getLocale()), gameName);
+            String errorMessage = String.format(
+                    messageSource.getMessage(
+                            "game.search.not.found.game",
+                            null,
+                            request.getLocale()),
+                    gameName);
             return new TelegramResponse(request.getChatId(), errorMessage);
         }
 
-        return new TelegramResponse(gameListMapper.gameSearchListToTelegramPage(page.getGames(),
-                request,
-                page.getElementAmount(),
-                pageNum,
-                gameName));
+        return new TelegramResponse(
+                gameListMapper.gameSearchListToTelegramPage(
+                        page.getGames(),
+                        request,
+                        page.getElementAmount(),
+                        pageNum,
+                        gameName));
     }
 }

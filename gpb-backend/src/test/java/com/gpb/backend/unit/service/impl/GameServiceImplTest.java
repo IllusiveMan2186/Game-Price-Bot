@@ -112,18 +112,15 @@ class GameServiceImplTest {
         int pageSize = 10;
         int pageNum = 1;
         String sort = "name-ASC";
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("BASIC-USER-ID", String.valueOf(userId));
         GameListPageDto mockResponse = new GameListPageDto();
-        String url = "/game/user/games?pageSize=10&pageNum=1&sortBy=name-ASC";
-        when(restTemplateHandler.executeRequest(url, HttpMethod.GET, headers, GameListPageDto.class)).thenReturn(mockResponse);
+        when(basicGameService.getUserGames(userId, pageSize, pageNum, sort)).thenReturn(mockResponse);
 
 
         GameListPageDto result = gameService.getUserGames(userId, pageSize, pageNum, sort);
 
 
         assertEquals(mockResponse, result);
-        verify(restTemplateHandler).executeRequest(url, HttpMethod.GET, headers, GameListPageDto.class);
+        verify(basicGameService).getUserGames(userId, pageSize, pageNum, sort);
     }
 
     @Test
