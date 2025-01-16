@@ -49,6 +49,9 @@ public class GamazeyStoreService implements StoreService {
     private static final String GAMEZEY_SEARCH_URL = "https://gamazey.com.ua/search?search=";
     private static final String GAME_NAME_PRODUCT_TYPE_PART = "(Гра|Ігрова валюта|Доповнення) ";
     private static final String GAME_NAME_SPECIFICATION_PART = " для .+ \\(Ключ активації .+\\)";
+    private static final String GAME_NAME_KEY_ACTIVATION_PART = " \\(Ключ активації .+\\)";
+    private static final String GAME_NAME_PRODUCT_TYPE_END_PART = " (Ігрова валюта)";
+    private static final String GAME_NAME_PROBLEMATIC_SYMBOLS = ":";
     private static final String GAME_GENRES_FIELD = "Жанр";
 
     private static final int GAME_IMAGE_CROP_WIDTH_START = 20;
@@ -241,7 +244,7 @@ public class GamazeyStoreService implements StoreService {
         try {
             cropImage(imgUrl, filePath);
         } catch (IOException e) {
-            log.error(String.format("Not loaded image for game '{}' by url '{}':'{}'", gameName, imgUrl, e.getMessage()));
+            log.error("Not loaded image for game '{}' by url '{}':'{}'", gameName, imgUrl, e.getMessage());
         }
     }
 
@@ -270,7 +273,10 @@ public class GamazeyStoreService implements StoreService {
     private String removeUnnecessaryInfoFromGameName(String originalName) {
         return originalName
                 .replaceAll(GAME_NAME_PRODUCT_TYPE_PART, "")
-                .replaceAll(GAME_NAME_SPECIFICATION_PART, "");
+                .replaceAll(GAME_NAME_SPECIFICATION_PART, "")
+                .replaceAll(GAME_NAME_KEY_ACTIVATION_PART, "")
+                .replaceAll(GAME_NAME_PRODUCT_TYPE_END_PART, "")
+                .replaceAll(GAME_NAME_PROBLEMATIC_SYMBOLS, "");
     }
 
     private ProductType getProductType(Document page) {
