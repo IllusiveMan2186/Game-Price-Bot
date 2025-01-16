@@ -45,13 +45,13 @@ class UserGameListCommandHandlerTest {
         int pageNum = 1;
         TelegramResponse response = new TelegramResponse(new ArrayList<>());
         TelegramRequest request = TelegramRequest.builder().build();
-        when(commonRequestHandlerService.processGameListRequest(request, pageNum)).thenReturn(response);
+        when(commonRequestHandlerService.processUserGameListRequest(request, pageNum)).thenReturn(response);
 
 
         TelegramResponse result = controller.apply(request);
 
 
         assertEquals(result, response);
-        verify(commonRequestHandlerService, times(1)).processGameListRequest(request, pageNum);
+        verify(commonRequestHandlerService, times(1)).processUserGameListRequest(request, pageNum);
     }
 }

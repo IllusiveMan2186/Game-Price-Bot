@@ -67,9 +67,9 @@ class GameControllerTest {
         String name = "GameName";
         int pageSize = 10;
         int pageNum = 1;
-        String sortBy = "gamesInShop.price-ASC";
+        String sortBy = "gamesInShop.discountPrice-ASC";
         GameListPageDto mockPage = new GameListPageDto();
-        when(gameService.getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.price")))
+        when(gameService.getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.discountPrice")))
                 .thenReturn(mockPage);
 
 
@@ -77,7 +77,7 @@ class GameControllerTest {
 
 
         assertNotNull(result);
-        verify(gameService, times(1)).getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.price"));
+        verify(gameService, times(1)).getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.discountPrice"));
     }
 
     @Test
@@ -102,7 +102,7 @@ class GameControllerTest {
 
         assertThrows(PriceRangeException.class, () ->
                 gameController.getGamesForGenre(Collections.emptyList(), Collections.emptyList(), 10,
-                        1, minPrice, maxPrice, "gamesInShop.price-ASC", null));
+                        1, minPrice, maxPrice, "gamesInShop.discountPrice-ASC", null));
     }
 
     @Test
@@ -113,9 +113,9 @@ class GameControllerTest {
         int pageNum = 1;
         BigDecimal minPrice = BigDecimal.valueOf(20);
         BigDecimal maxPrice = BigDecimal.valueOf(60);
-        String sortBy = "gamesInShop.price-DESC";
+        String sortBy = "gamesInShop.discountPrice-DESC";
         GameListPageDto mockPage = new GameListPageDto();
-        when(gameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, Sort.by(Sort.Direction.DESC, "gamesInShop.price")))
+        when(gameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, Sort.by(Sort.Direction.DESC, "gamesInShop.discountPrice")))
                 .thenReturn(mockPage);
 
 
@@ -123,7 +123,7 @@ class GameControllerTest {
 
 
         assertNotNull(result);
-        verify(gameService, times(1)).getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, Sort.by(Sort.Direction.DESC, "gamesInShop.price"));
+        verify(gameService, times(1)).getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, Sort.by(Sort.Direction.DESC, "gamesInShop.discountPrice"));
     }
 
     @Test
@@ -161,9 +161,9 @@ class GameControllerTest {
         String name = "GameName";
         int pageSize = 10;
         int pageNum = 1;
-        String validSortBy = "gamesInShop.price-ASC";
+        String validSortBy = "gamesInShop.discountPrice-ASC";
         GameListPageDto mockPage = new GameListPageDto();
-        when(gameService.getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.price")))
+        when(gameService.getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.discountPrice")))
                 .thenReturn(mockPage);
 
 
@@ -171,7 +171,7 @@ class GameControllerTest {
 
 
         assertNotNull(result);
-        verify(gameService, times(1)).getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.price"));
+        verify(gameService, times(1)).getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.discountPrice"));
     }
 
 }

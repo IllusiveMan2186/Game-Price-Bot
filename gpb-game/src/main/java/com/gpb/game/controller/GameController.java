@@ -138,9 +138,8 @@ public class GameController {
     }
 
     private Sort getSortBy(String sortBy) {
-        Pattern pattern = java.util.regex.Pattern.compile("(gamesInShop.(price)|(name))-(ASC|DESC)");
+        Pattern pattern = java.util.regex.Pattern.compile(CommonConstants.SORT_PARAM_REGEX);
         Matcher matcher = pattern.matcher(sortBy);
-
         if (!matcher.matches()) {
             log.info("Invalid sort params '{}'", sortBy);
             throw new SortParamException();

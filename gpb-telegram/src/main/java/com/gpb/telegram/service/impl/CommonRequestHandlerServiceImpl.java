@@ -18,7 +18,7 @@ public class CommonRequestHandlerServiceImpl implements CommonRequestHandlerServ
     private final MessageSource messageSource;
     private final GameListMapper gameListMapper;
 
-    public TelegramResponse processGameListRequest(TelegramRequest request, int pageNum) {
+    public TelegramResponse processUserGameListRequest(TelegramRequest request, int pageNum) {
         GameListPageDto page = gameService.getUserGames(request.getUserBasicId(), pageNum);
 
         if (page.getGames().isEmpty()) {
@@ -32,5 +32,26 @@ public class CommonRequestHandlerServiceImpl implements CommonRequestHandlerServ
                         request,
                         page.getElementAmount(),
                         pageNum));
+    }
+
+    @Override
+    public TelegramResponse processGameListRequest(TelegramRequest request, int pageNum, String sort) {
+        GameListPageDto page = gameService.getGameList(pageNum, sort);
+
+        if (page.getGames().isEmpty()) {
+            String errorMessage = messageSource.getMessage(
+                    "game.list.not.found.game",
+                    null,
+                    request.getLocale());
+            return new TelegramResponse(request.getChatId(), errorMessage);
+        }
+
+        return new TelegramResponse(
+                gameListMapper.gameListToTelegramPage(
+                        page.getGames(),
+                        request,
+                        page.getElementAmount(),
+                        pageNum,
+                        sort));
     }
 }

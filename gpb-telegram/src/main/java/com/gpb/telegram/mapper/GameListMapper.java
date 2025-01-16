@@ -23,8 +23,7 @@ public class GameListMapper {
                                                                   long gameAmount,
                                                                   int pageNum,
                                                                   String gameName) {
-        List<PartialBotApiMethod> messages = new ArrayList<>();
-        games.forEach(game -> messages.add(gameMapper.getGamePhotoMessage(request, game)));
+        List<PartialBotApiMethod> messages = mapGamesToTelegramPage(games, request);
         if (isMorePagesExist(gameAmount, pageNum)) {
             messages.add(buttonFactory.getNextPageButtonForSearchByName(request.getChatId(), pageNum, gameName, request.getLocale()));
         }
@@ -35,11 +34,28 @@ public class GameListMapper {
                                                                 TelegramRequest request,
                                                                 long gameAmount,
                                                                 int pageNum) {
-        List<PartialBotApiMethod> messages = new ArrayList<>();
-        games.forEach(game -> messages.add(gameMapper.getGamePhotoMessage(request, game)));
+        List<PartialBotApiMethod> messages = mapGamesToTelegramPage(games, request);
         if (isMorePagesExist(gameAmount, pageNum)) {
             messages.add(buttonFactory.getNextPageButtonForUserListOfGame(request.getChatId(), pageNum, request.getLocale()));
         }
+        return messages;
+    }
+
+    public List<PartialBotApiMethod> gameListToTelegramPage(List<GameDto> games,
+                                                            TelegramRequest request,
+                                                            long gameAmount,
+                                                            int pageNum,
+                                                            String sort) {
+        List<PartialBotApiMethod> messages = mapGamesToTelegramPage(games, request);
+        if (isMorePagesExist(gameAmount, pageNum)) {
+            messages.add(buttonFactory.getNextPageButtonForListOfGame(request.getChatId(), pageNum, request.getLocale(), sort));
+        }
+        return messages;
+    }
+
+    private List<PartialBotApiMethod> mapGamesToTelegramPage(List<GameDto> games, TelegramRequest request) {
+        List<PartialBotApiMethod> messages = new ArrayList<>();
+        games.forEach(game -> messages.add(gameMapper.getGamePhotoMessage(request, game)));
         return messages;
     }
 

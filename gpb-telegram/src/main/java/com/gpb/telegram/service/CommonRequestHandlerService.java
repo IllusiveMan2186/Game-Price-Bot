@@ -19,5 +19,15 @@ public interface CommonRequestHandlerService {
      * @param pageNum number of page list
      * @return response with list of games
      */
-    TelegramResponse processGameListRequest(TelegramRequest request, int pageNum);
+    TelegramResponse processUserGameListRequest(TelegramRequest request, int pageNum);
+
+    /**
+     * Process a request to get a list of games with sort param
+     *
+     * @param request telegram request
+     * @param pageNum number of page list
+     * @param sort    sort param
+     * @return response with list of games
+     */
+    TelegramResponse processGameListRequest(TelegramRequest request, int pageNum, String sort);
 }
