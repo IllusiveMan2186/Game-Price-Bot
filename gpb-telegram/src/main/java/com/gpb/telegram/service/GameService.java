@@ -24,6 +24,15 @@ public interface GameService {
     GameListPageDto getByName(final String name, final int pageNum);
 
     /**
+     * Get games by sort param
+     *
+     * @param pageNum page number
+     * @param sort    sort parameters
+     * @return list of games with all amount
+     */
+    GameListPageDto getGameList(int pageNum, String sort);
+
+    /**
      * Set isFollowed field in game for user by game and user id
      *
      * @param gameId   games id
@@ -36,7 +45,7 @@ public interface GameService {
      * Get games of user
      *
      * @param basicUserId basic user id
-     * @param pageNum page number
+     * @param pageNum     page number
      * @return list of user`s games with all amount
      */
     GameListPageDto getUserGames(long basicUserId, int pageNum);

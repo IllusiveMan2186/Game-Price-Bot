@@ -39,7 +39,7 @@ class CommonRequestHandlerServiceImplTest {
     CommonRequestHandlerServiceImpl commonRequestHandlerService;
 
     @Test
-    void testApply_whenGamesFound_shouldReturnGameList() {
+    void testProcessUserGameListRequest_whenGamesFound_shouldReturnGameList() {
         String chatId = "123456";
         int pageNum = 1;
         TelegramUser user = TelegramUser.builder().basicUserId(123456L).build();
@@ -53,7 +53,7 @@ class CommonRequestHandlerServiceImplTest {
                 .thenReturn(Collections.singletonList(message));
 
 
-        TelegramResponse response = commonRequestHandlerService.processGameListRequest(request, pageNum);
+        TelegramResponse response = commonRequestHandlerService.processUserGameListRequest(request, pageNum);
 
 
         assertEquals(message, response.getMessages().get(0));
@@ -61,7 +61,7 @@ class CommonRequestHandlerServiceImplTest {
     }
 
     @Test
-    void testApply_whenNoGamesFound_shouldReturnErrorMessage() {
+    void testProcessUserGameListRequest_whenNoGamesFound_shouldReturnErrorMessage() {
         String chatId = "123456";
         GameListPageDto emptyPage = new GameListPageDto(0, Collections.emptyList());
         String errorMessage = "message";
@@ -77,11 +77,58 @@ class CommonRequestHandlerServiceImplTest {
                 .thenReturn(errorMessage);
 
 
-        TelegramResponse response = commonRequestHandlerService.processGameListRequest(request, pageNum);
+        TelegramResponse response = commonRequestHandlerService.processUserGameListRequest(request, pageNum);
 
 
         assertEquals(message, response.getMessages().get(0));
         verify(gameService, times(1)).getUserGames(123456L, pageNum);
     }
 
+    @Test
+    void testProcessGameListRequest_whenGamesFound_shouldReturnGameList() {
+        String chatId = "123456";
+        int pageNum = 1;
+        String sort = "sort";
+        TelegramUser user = TelegramUser.builder().basicUserId(123456L).build();
+        Update update = UpdateCreator.getUpdateWithCallback("/gameList " + pageNum, Long.parseLong(chatId));
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(Locale.ENGLISH).user(user).build();
+        GameListPageDto page = new GameListPageDto(1, List.of(new GameDto()));
+        SendMessage message = new SendMessage();
+
+        when(gameService.getGameList(pageNum, sort)).thenReturn(page);
+        when(gameListMapper.gameListToTelegramPage(page.getGames(), request, page.getElementAmount(), pageNum, sort))
+                .thenReturn(Collections.singletonList(message));
+
+
+        TelegramResponse response = commonRequestHandlerService.processGameListRequest(request, pageNum, sort);
+
+
+        assertEquals(message, response.getMessages().get(0));
+        verify(gameService, times(1)).getGameList(pageNum, sort);
+    }
+
+    @Test
+    void testProcessGameListRequest_whenNoGamesFound_shouldReturnErrorMessage() {
+        String chatId = "123456";
+        GameListPageDto emptyPage = new GameListPageDto(0, Collections.emptyList());
+        String errorMessage = "message";
+        int pageNum = 1;
+        String sort = "sort";
+        SendMessage message = new SendMessage(chatId, errorMessage);
+        Update update = UpdateCreator.getUpdateWithCallback("/gameList " + pageNum,
+                Long.parseLong(chatId));
+        TelegramUser user = TelegramUser.builder().basicUserId(123456L).build();
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(Locale.ENGLISH).user(user).build();
+
+        when(gameService.getGameList(pageNum, sort)).thenReturn(emptyPage);
+        when(messageSource.getMessage("game.list.not.found.game", null, Locale.ENGLISH))
+                .thenReturn(errorMessage);
+
+
+        TelegramResponse response = commonRequestHandlerService.processGameListRequest(request, pageNum, sort);
+
+
+        assertEquals(message, response.getMessages().get(0));
+        verify(gameService, times(1)).getGameList(pageNum, sort);
+    }
 }

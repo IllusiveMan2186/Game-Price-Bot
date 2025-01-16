@@ -1,6 +1,7 @@
 package com.gpb.telegram.mapper;
 
 import com.gpb.common.entity.game.GameDto;
+import com.gpb.common.util.CommonConstants;
 import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.mapper.entity.TelegramButton;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,8 @@ import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,10 +28,8 @@ class ButtonFactoryTest {
 
     @Mock
     private MessageSource messageSource;
-
     @Mock
     private TelegramKeyboardMapper telegramKeyboardMapper;
-
     @InjectMocks
     private ButtonFactory buttonFactory;
 
@@ -45,7 +46,9 @@ class ButtonFactoryTest {
         when(messageSource.getMessage("game.search.list.next.page.text", null, locale))
                 .thenReturn("Next page");
 
+
         SendMessage result = buttonFactory.getNextPageButtonForSearchByName(chatId, pageNum, gameName, locale);
+
 
         assertNotNull(result);
         assertEquals(chatId, result.getChatId());
@@ -60,14 +63,21 @@ class ButtonFactoryTest {
     void testGetNextPageButtonForUserListOfGame_whenSuccess_shouldReturnNextPageButton() {
         String chatId = "12345";
         int pageNum = 1;
-        String callbackData = "/userGameList 2";
-
+        String callbackData = "/userGameListCallback 2";
+        List<List<TelegramButton>> settingList = Collections
+                .singletonList(Collections.singletonList(
+                        TelegramButton.builder()
+                                .textCode("game.search.list.next.page.more.button")
+                                .callBackData(callbackData)
+                                .locale(locale).build()));
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-        when(telegramKeyboardMapper.getKeyboardMarkup(any())).thenReturn(keyboardMarkup);
         when(messageSource.getMessage("game.search.list.next.page.text", null, locale))
                 .thenReturn("Next page");
+        when(telegramKeyboardMapper.getKeyboardMarkup(settingList)).thenReturn(keyboardMarkup);
+
 
         SendMessage result = buttonFactory.getNextPageButtonForUserListOfGame(chatId, pageNum, locale);
+
 
         assertNotNull(result);
         assertEquals(chatId, result.getChatId());
@@ -79,10 +89,44 @@ class ButtonFactoryTest {
     }
 
     @Test
+    void testGetNextPageButtonForListOfGame_whenSuccess_shouldReturnNextPageButton() {
+        String chatId = "12345";
+        int pageNum = 1;
+        String sort = CommonConstants.NAME_SORT_PARAM + "-" + CommonConstants.SORT_DIRECTION_ASCENDING;
+        String callbackData = "/gameListCallback 2 " + sort;
+
+        List<List<TelegramButton>> settingList = Collections
+                .singletonList(Collections.singletonList(
+                        TelegramButton.builder()
+                                .textCode("game.search.list.next.page.more.button")
+                                .callBackData(callbackData)
+                                .locale(locale).build()));
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        when(messageSource.getMessage("game.search.list.next.page.text", null, locale))
+                .thenReturn("Next page");
+        when(telegramKeyboardMapper.getKeyboardMarkup(settingList)).thenReturn(keyboardMarkup);
+
+
+        SendMessage result = buttonFactory.getNextPageButtonForListOfGame(chatId, pageNum, locale, sort);
+
+
+        assertNotNull(result);
+        assertEquals(chatId, result.getChatId());
+        assertEquals("Next page", result.getText());
+        assertEquals(keyboardMarkup, result.getReplyMarkup());
+
+        verify(telegramKeyboardMapper).getKeyboardMarkup(any());
+        verify(messageSource).getMessage("game.search.list.next.page.text", null, locale);
+    }
+
+
+    @Test
     void testGetGameInfoButton_whenSuccess_shouldReturnMoreInfoButton() {
         long gameId = 123L;
 
+
         TelegramButton result = buttonFactory.getGameInfoButton(gameId, locale);
+
 
         assertNotNull(result);
         assertEquals("game.more.info.button", result.getTextCode());
@@ -97,7 +141,9 @@ class ButtonFactoryTest {
         game.setId(123L);
         game.setUserSubscribed(false);
 
+
         TelegramButton result = buttonFactory.getSubscribeButton(telegramUser, game, locale);
+
 
         assertNotNull(result);
         assertEquals("game.subscribe.button", result.getTextCode());
@@ -112,7 +158,9 @@ class ButtonFactoryTest {
         game.setId(123L);
         game.setUserSubscribed(true);
 
+
         TelegramButton result = buttonFactory.getSubscribeButton(telegramUser, game, locale);
+
 
         assertNotNull(result);
         assertEquals("game.unsubscribe.button", result.getTextCode());

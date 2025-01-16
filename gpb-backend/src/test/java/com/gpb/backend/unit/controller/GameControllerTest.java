@@ -58,7 +58,7 @@ class GameControllerTest {
         String name = "Test Game";
         int pageSize = 25;
         int pageNum = 1;
-        String sortBy = "gamesInShop.price-ASC";
+        String sortBy = "gamesInShop.discountPrice-ASC";
 
         GameListPageDto gameList = new GameListPageDto();
         when(gameService.getByName(name, pageSize, pageNum, sortBy)).thenReturn(gameList);
@@ -78,7 +78,7 @@ class GameControllerTest {
 
 
         assertThrows(PriceRangeException.class, () ->
-                gameController.getGamesForGenre(List.of(), List.of(), 25, 1, minPrice, maxPrice, "gamesInShop.price-ASC"));
+                gameController.getGamesForGenre(List.of(), List.of(), 25, 1, minPrice, maxPrice, "gamesInShop.discountPrice-ASC"));
     }
 
     @Test
@@ -90,11 +90,11 @@ class GameControllerTest {
         int pageNum = 1;
         BigDecimal minPrice = BigDecimal.ZERO;
         BigDecimal maxPrice = BigDecimal.valueOf(100);
-        String sortBy = "gamesInShop.price-ASC";
+        String sortBy = "gamesInShop.discountPrice-ASC";
 
         GameListPageDto gameList = new GameListPageDto();
         when(gameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice,
-                "gamesInShop.price-ASC")).thenReturn(gameList);
+                "gamesInShop.discountPrice-ASC")).thenReturn(gameList);
 
 
         GameListPageDto result = gameController.getGamesForGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sortBy);
@@ -102,7 +102,7 @@ class GameControllerTest {
 
         assertNotNull(result);
         verify(gameService).getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice,
-                "gamesInShop.price-ASC");
+                "gamesInShop.discountPrice-ASC");
     }
 
     @Test
@@ -162,7 +162,7 @@ class GameControllerTest {
 
         int pageSize = 25;
         int pageNum = 1;
-        String sortBy = "gamesInShop.price-ASC";
+        String sortBy = "gamesInShop.discountPrice-ASC";
 
         GameListPageDto gameList = new GameListPageDto();
         when(gameService.getUserGames(user.getBasicUserId(), pageSize, pageNum, sortBy)).thenReturn(gameList);

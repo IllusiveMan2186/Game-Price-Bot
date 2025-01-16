@@ -104,7 +104,6 @@ public class GameServiceImpl implements GameService {
         List<Game> games;
         long elementAmount;
         List<ProductType> types = getProductTypeThatNotExcluded(typesToExclude);
-        System.out.println(pageRequest + " " + types + " " + genre);
         if (genre == null) {
             games = gameRepository.findAllByTypeInAndGamesInShop_DiscountPriceBetween(pageRequest, types, minPrice
                     , maxPrice);

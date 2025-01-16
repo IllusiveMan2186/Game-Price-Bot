@@ -9,6 +9,7 @@ import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
 import com.gpb.common.exception.PriceRangeException;
 import com.gpb.common.exception.SortParamException;
+import com.gpb.common.util.CommonConstants;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -64,7 +65,7 @@ public class GameController {
     public GameListPageDto getGameByName(@PathVariable final String name,
                                          @RequestParam(required = false, defaultValue = "25") final int pageSize,
                                          @RequestParam(required = false, defaultValue = "1") final int pageNum,
-                                         @RequestParam(required = false, defaultValue = "gamesInShop.price-ASC") final String sortBy) {
+                                         @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC") final String sortBy) {
         checkSortParam(sortBy);
         return gameService.getByName(name, pageSize, pageNum, sortBy);
     }
@@ -100,7 +101,7 @@ public class GameController {
                                             @RequestParam(required = false, defaultValue = "1") final int pageNum,
                                             @RequestParam(required = false, defaultValue = "0") final BigDecimal minPrice,
                                             @RequestParam(required = false, defaultValue = "10000") final BigDecimal maxPrice,
-                                            @RequestParam(required = false, defaultValue = "gamesInShop.price-ASC") final String sortBy) {
+                                            @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC") final String sortBy) {
         log.info("Get games by genres : '{}',types to exclude - '{}',price '{}' - '{}' with '{}' " +
                         "element on page for '{}' page and sort '{}' ",
                 genre, type, minPrice, maxPrice, pageSize, pageNum, sortBy);
@@ -125,7 +126,7 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     public GameListPageDto getGamesOfUser(@RequestParam(required = false, defaultValue = "25") final int pageSize,
                                           @RequestParam(required = false, defaultValue = "1") final int pageNum,
-                                          @RequestParam(required = false, defaultValue = "gamesInShop.price-ASC") final String sortBy,
+                                          @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC") final String sortBy,
                                           @AuthenticationPrincipal UserDto user) {
         log.info("Get games for user '{}' with '{}' element on page for '{}' page and sort '{}' ",
                 user.getId(), pageSize, pageNum, sortBy);
@@ -171,7 +172,7 @@ public class GameController {
     }
 
     private void checkSortParam(String sortBy) {
-        Pattern pattern = java.util.regex.Pattern.compile("(gamesInShop.(price)|(name))-(ASC|DESC)");
+        Pattern pattern = java.util.regex.Pattern.compile(CommonConstants.SORT_PARAM_REGEX);
         Matcher matcher = pattern.matcher(sortBy);
 
         if (!matcher.matches()) {

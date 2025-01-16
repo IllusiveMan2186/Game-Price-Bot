@@ -27,6 +27,6 @@ public class UserGameListCommandHandler implements CommandHandler {
 
     @Override
     public TelegramResponse apply(TelegramRequest request) {
-        return commonRequestHandlerService.processGameListRequest(request, 1);
+        return commonRequestHandlerService.processUserGameListRequest(request, 1);
     }
 }
