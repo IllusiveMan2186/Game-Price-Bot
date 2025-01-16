@@ -201,7 +201,7 @@ class GamazeyStoreServiceTest {
     }
 
     private Document getDocumentForGameByUrl(GameInShop gameInShop, String url) {
-        String nameOnPage = String.format("Гра %s для ПК (Ключ активації Steam)", gameInShop.getNameInStore());
+        String nameOnPage = String.format("Гра %s: для ПК (Ключ активації Steam)", gameInShop.getNameInStore());
         Document page = mock(Document.class);
         when(parser.getPage(url)).thenReturn(page);
         Elements nameFieldElement = mock(Elements.class);
