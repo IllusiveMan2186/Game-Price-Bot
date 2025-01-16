@@ -32,6 +32,12 @@ public class ButtonFactory {
         return getNextPageButton(chatId, callbackData, locale);
     }
 
+    public SendMessage getNextPageButtonForListOfGame(String chatId, int pageNum, Locale locale, String sort) {
+        String callbackData = String.format("/gameListCallback %s %s", pageNum + 1, sort);
+
+        return getNextPageButton(chatId, callbackData, locale);
+    }
+
     public TelegramButton getGameInfoButton(long gameId, Locale locale) {
         return TelegramButton.builder()
                 .textCode("game.more.info.button")

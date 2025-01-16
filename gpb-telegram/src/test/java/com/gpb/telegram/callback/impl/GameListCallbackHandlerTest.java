@@ -1,5 +1,6 @@
 package com.gpb.telegram.callback.impl;
 
+import com.gpb.common.util.CommonConstants;
 import com.gpb.telegram.entity.TelegramRequest;
 import com.gpb.telegram.entity.TelegramResponse;
 import com.gpb.telegram.entity.TelegramUser;
@@ -21,27 +22,30 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UserGameListCallbackHandlerTest {
+class GameListCallbackHandlerTest {
+
     @Mock
     CommonRequestHandlerService commonRequestHandlerService;
     @InjectMocks
-    UserGameListCallbackHandler controller;
+    GameListCallbackHandler controller;
 
     @Test
-    void testApply_whenSuccess_shouldReturnGameList() {
-        int pageNum = 2;
+    void testApply_whenSuccess_shouldReturnTelegramResponse() {
         String chatId = "123456";
+        int pageNum = 1;
+        String sort = CommonConstants.PRICE_SORT_PARAM + "-" + CommonConstants.SORT_DIRECTION_DESCENDING;
         TelegramResponse response = new TelegramResponse(new ArrayList<>());
         TelegramUser user = TelegramUser.builder().basicUserId(123456L).build();
-        Update update = UpdateCreator.getUpdateWithCallback("/userGameListCallback " + pageNum, Long.parseLong(chatId));
+        String textParam = "/gameList " + pageNum + " " + sort;
+        Update update = UpdateCreator.getUpdateWithCallback(textParam, Long.parseLong(chatId));
         TelegramRequest request = TelegramRequest.builder().update(update).locale(Locale.ENGLISH).user(user).build();
-        when(commonRequestHandlerService.processUserGameListRequest(request, pageNum)).thenReturn(response);
+        when(commonRequestHandlerService.processGameListRequest(request, pageNum, sort)).thenReturn(response);
 
 
         TelegramResponse result = controller.apply(request);
 
 
         assertEquals(result, response);
-        verify(commonRequestHandlerService, times(1)).processUserGameListRequest(request, pageNum);
+        verify(commonRequestHandlerService, times(1)).processGameListRequest(request, pageNum, sort);
     }
 }

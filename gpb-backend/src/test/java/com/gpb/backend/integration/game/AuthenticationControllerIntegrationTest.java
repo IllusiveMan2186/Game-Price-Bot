@@ -5,9 +5,7 @@ import com.gpb.backend.entity.UserRegistration;
 import com.gpb.common.entity.user.NotificationRequestDto;
 import com.gpb.common.entity.user.UserNotificationType;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;

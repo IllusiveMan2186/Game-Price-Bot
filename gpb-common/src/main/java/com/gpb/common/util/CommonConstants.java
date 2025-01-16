@@ -57,4 +57,33 @@ public class CommonConstants {
      * Kafka group ID for the GPB application.
      */
     public static final String GPB_KAFKA_GROUP_ID = "gpb";
+
+    /**
+     * Name sort param
+     */
+    public static final String NAME_SORT_PARAM = "name";
+
+    /**
+     * Price sort param
+     */
+    public static final String PRICE_SORT_PARAM = "gamesInShop.discountPrice";
+
+    /**
+     * Ascending sort direction
+     */
+    public static final String SORT_DIRECTION_ASCENDING = "ASC";
+
+    /**
+     * Descending sort direction
+     */
+    public static final String SORT_DIRECTION_DESCENDING = "DESC";
+
+    /**
+     * Pattern of sort string
+     */
+    public static final String SORT_PARAM_REGEX = String.format("((%s)|(%s))-(%s|%s)",
+            CommonConstants.PRICE_SORT_PARAM,
+            CommonConstants.NAME_SORT_PARAM,
+            CommonConstants.SORT_DIRECTION_ASCENDING,
+            CommonConstants.SORT_DIRECTION_DESCENDING);
 }

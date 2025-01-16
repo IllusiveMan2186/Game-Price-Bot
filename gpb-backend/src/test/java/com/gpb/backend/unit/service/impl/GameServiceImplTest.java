@@ -13,18 +13,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,19 +58,19 @@ class GameServiceImplTest {
     @Test
     void testGetByName_whenSuccess_shouldReturnGameListPageDto() {
         String name = "TestGame";
-        int pageSize = 10;
         int pageNum = 1;
-        String sort = "gamesInShop.price-ASC";
+        int pageSize = 10;
         GameListPageDto mockResponse = new GameListPageDto();
+        String sort = CommonConstants.NAME_SORT_PARAM + "-" + CommonConstants.SORT_DIRECTION_ASCENDING;
 
-        String url = "/game/name/" + name + "?pageSize=" + pageSize + "&pageNum=" + pageNum + "&sortBy=gamesInShop.price-ASC";
 
-        when(restTemplateHandler.executeRequest(url, HttpMethod.GET, null, GameListPageDto.class)).thenReturn(mockResponse);
+        when(basicGameService.getByName(name, pageSize, pageNum, sort))
+                .thenReturn(mockResponse);
 
         GameListPageDto result = gameService.getByName(name, pageSize, pageNum, sort);
 
         assertEquals(mockResponse, result);
-        verify(restTemplateHandler).executeRequest(url, HttpMethod.GET, null, GameListPageDto.class);
+        verify(basicGameService).getByName(name, pageSize, pageNum, sort);
     }
 
     @Test
@@ -107,7 +104,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetUserGames_whenSuccess_shouldCallReqeust() {
+    void testGetUserGames_whenSuccess_shouldCallRequest() {
         long userId = 123L;
         int pageSize = 10;
         int pageNum = 1;
@@ -144,7 +141,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetByGenre_whenAllParameters_shouldCallRequestAndReturnGameListPageDto() {
+    void testGetByGenre_whenSuccess_shouldCallBasicServiceAndReturnGameListPageDto() {
         List<Genre> genres = List.of(Genre.ACTION);
         List<ProductType> types = List.of(ProductType.GAME);
         int pageSize = 10;
@@ -154,67 +151,13 @@ class GameServiceImplTest {
         String sort = "name-ASC";
         GameListPageDto mockResponse = new GameListPageDto();
 
-        when(restTemplateHandler.executeRequest(anyString(), eq(HttpMethod.GET), isNull(), eq(GameListPageDto.class)))
+        when(basicGameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort))
                 .thenReturn(mockResponse);
 
         GameListPageDto result = gameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort);
 
         assertEquals(mockResponse, result);
-        verify(restTemplateHandler)
-                .executeRequest(eq("/game/genre?pageSize=10&pageNum=1&minPrice=0&" +
-                                "maxPrice=100&sortBy=name-ASC&genre=ACTION&type=GAME"),
-                        eq(HttpMethod.GET),
-                        isNull(),
-                        eq(GameListPageDto.class));
-    }
-
-    @Test
-    void testGetByGenre_whenFewGenresAndZeroGenres_shouldCallRequestAndGameListPageDto() {
-        List<Genre> genres = new ArrayList<>();
-        genres.add(Genre.ACTION);
-        genres.add(Genre.SIMULATORS);
-        int pageSize = 10;
-        int pageNum = 1;
-        BigDecimal minPrice = BigDecimal.ZERO;
-        BigDecimal maxPrice = BigDecimal.valueOf(100);
-        String sort = "gamesInShop.name-ASC";
-        GameListPageDto mockResponse = new GameListPageDto();
-
-        when(restTemplateHandler.executeRequest(anyString(), eq(HttpMethod.GET), isNull(), eq(GameListPageDto.class))).thenReturn(mockResponse);
-
-        GameListPageDto result = gameService.getByGenre(genres, null, pageSize, pageNum, minPrice, maxPrice, sort);
-
-        assertEquals(mockResponse, result);
-        verify(restTemplateHandler)
-                .executeRequest(eq("/game/genre?pageSize=10&pageNum=1&minPrice=0&" +
-                                "maxPrice=100&sortBy=gamesInShop.name-ASC&genre=ACTION&genre=SIMULATORS"),
-                        eq(HttpMethod.GET),
-                        isNull(),
-                        eq(GameListPageDto.class));
-    }
-
-    @Test
-    void testGetByGenre_whenFewTypesAndZeroGenres_shouldCallRequestAndGameListPageDto() {
-        List<ProductType> genres = new ArrayList<>();
-        genres.add(ProductType.GAME);
-        genres.add(ProductType.ADDITION);
-        int pageSize = 10;
-        int pageNum = 1;
-        BigDecimal minPrice = BigDecimal.ZERO;
-        BigDecimal maxPrice = BigDecimal.valueOf(100);
-        String sort = "name-ASC";
-        GameListPageDto mockResponse = new GameListPageDto();
-
-        when(restTemplateHandler.executeRequest(anyString(), eq(HttpMethod.GET), isNull(), eq(GameListPageDto.class))).thenReturn(mockResponse);
-
-        GameListPageDto result = gameService.getByGenre(null, genres, pageSize, pageNum, minPrice, maxPrice, sort);
-
-        assertEquals(mockResponse, result);
-        verify(restTemplateHandler)
-                .executeRequest(eq("/game/genre?pageSize=10&pageNum=1&minPrice=0" +
-                                "&maxPrice=100&sortBy=name-ASC&type=GAME&type=ADDITION"),
-                        eq(HttpMethod.GET),
-                        isNull(),
-                        eq(GameListPageDto.class));
+        verify(basicGameService)
+                .getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort);
     }
 }
