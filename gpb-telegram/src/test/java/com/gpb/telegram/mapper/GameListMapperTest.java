@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -31,7 +32,7 @@ class GameListMapperTest {
     GameListMapper gameListMapper;
 
     @Test
-    void testGameListToTelegramPage_whenHasNextPage_shouldReturnMessagesListWithNextPageButton() {
+    void testMapGameSearchListToTelegramPage_whenHasNextPage_shouldReturnMessagesListWithNextPageButton() {
         List<GameDto> games = new ArrayList<>();
         games.add(GameDto.builder().build());
         long gameAmount = 12;
@@ -42,21 +43,26 @@ class GameListMapperTest {
         Update update = UpdateCreator.getUpdateWithoutCallback("", Long.parseLong(chatId));
         TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
         SendPhoto gameTelegramPage = new SendPhoto();
-        when(gameMapper.getGamePhotoMessage(request, games.get(0))).thenReturn(gameTelegramPage);
+        when(gameMapper.mapGameToPhotoMessage(request, games.get(0))).thenReturn(gameTelegramPage);
+        SendMessage expectedMessage = new SendMessage();
+        when(buttonFactory.getNextPageButtonForSearchByName(request.getChatId(), pageNum, gameName, request.getLocale()))
+                .thenReturn(expectedMessage);
 
 
         List<PartialBotApiMethod> partialBotApiMethods = gameListMapper
-                .gameSearchListToTelegramPage(games, request, gameAmount, pageNum, gameName);
+                .mapGameSearchListToTelegramPage(games, request, gameAmount, pageNum, gameName);
 
 
         assertEquals(2, partialBotApiMethods.size());
         SendPhoto photo = (SendPhoto) partialBotApiMethods.get(0);
         assertEquals(gameTelegramPage, photo);
-        verify(gameMapper).getGamePhotoMessage(request, games.get(0));
+        SendMessage message = (SendMessage) partialBotApiMethods.get(1);
+        assertEquals(expectedMessage, message);
+        verify(gameMapper).mapGameToPhotoMessage(request, games.get(0));
     }
 
     @Test
-    void testGameListToTelegramPage_whenHasNotNextPage_shouldReturnMessagesListWithoutNextPageButton() {
+    void testMapGameSearchListToTelegramPage_whenHasNotNextPage_shouldReturnMessagesListWithoutNextPageButton() {
         List<GameDto> games = new ArrayList<>();
         games.add(GameDto.builder().build());
         long gameAmount = 4;
@@ -67,21 +73,21 @@ class GameListMapperTest {
         Update update = UpdateCreator.getUpdateWithoutCallback("", Long.parseLong(chatId));
         TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
         SendPhoto gameTelegramPage = new SendPhoto();
-        when(gameMapper.getGamePhotoMessage(request, games.get(0))).thenReturn(gameTelegramPage);
+        when(gameMapper.mapGameToPhotoMessage(request, games.get(0))).thenReturn(gameTelegramPage);
 
 
         List<PartialBotApiMethod> partialBotApiMethods = gameListMapper
-                .gameSearchListToTelegramPage(games, request, gameAmount, pageNum, gameName);
+                .mapGameSearchListToTelegramPage(games, request, gameAmount, pageNum, gameName);
 
 
         assertEquals(1, partialBotApiMethods.size());
         SendPhoto photo = (SendPhoto) partialBotApiMethods.get(0);
         assertEquals(gameTelegramPage, photo);
-        verify(gameMapper).getGamePhotoMessage(request, games.get(0));
+        verify(gameMapper).mapGameToPhotoMessage(request, games.get(0));
     }
 
     @Test
-    void testUserGameListToTelegramPage_whenHasNextPage_shouldReturnMessagesListWithNextPageButton() {
+    void testMapUserGameListToTelegramPage_whenHasNextPage_shouldReturnMessagesListWithNextPageButton() {
         List<GameDto> games = new ArrayList<>();
         games.add(GameDto.builder().build());
         long gameAmount = 12;
@@ -91,21 +97,26 @@ class GameListMapperTest {
         Update update = UpdateCreator.getUpdateWithoutCallback("", Long.parseLong(chatId));
         TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
         SendPhoto gameTelegramPage = new SendPhoto();
-        when(gameMapper.getGamePhotoMessage(request, games.get(0))).thenReturn(gameTelegramPage);
+        when(gameMapper.mapGameToPhotoMessage(request, games.get(0))).thenReturn(gameTelegramPage);
+        SendMessage expectedMessage = new SendMessage();
+        when(buttonFactory.getNextPageButtonForUserListOfGame(request.getChatId(), pageNum, request.getLocale()))
+                .thenReturn(expectedMessage);
 
 
         List<PartialBotApiMethod> partialBotApiMethods = gameListMapper
-                .userGameListToTelegramPage(games, request, gameAmount, pageNum);
+                .mapUserGameListToTelegramPage(games, request, gameAmount, pageNum);
 
 
         assertEquals(2, partialBotApiMethods.size());
         SendPhoto photo = (SendPhoto) partialBotApiMethods.get(0);
         assertEquals(gameTelegramPage, photo);
-        verify(gameMapper).getGamePhotoMessage(request, games.get(0));
+        SendMessage message = (SendMessage) partialBotApiMethods.get(1);
+        assertEquals(expectedMessage, message);
+        verify(gameMapper).mapGameToPhotoMessage(request, games.get(0));
     }
 
     @Test
-    void testUerGameListToTelegramPage_whenHasNotNextPage_shouldReturnMessagesListWithoutNextPageButton() {
+    void testMapUserGameListToTelegramPage_whenHasNotNextPage_shouldReturnMessagesListWithoutNextPageButton() {
         List<GameDto> games = new ArrayList<>();
         games.add(GameDto.builder().build());
         long gameAmount = 4;
@@ -115,16 +126,71 @@ class GameListMapperTest {
         Update update = UpdateCreator.getUpdateWithoutCallback("", Long.parseLong(chatId));
         TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
         SendPhoto gameTelegramPage = new SendPhoto();
-        when(gameMapper.getGamePhotoMessage(request, games.get(0))).thenReturn(gameTelegramPage);
+        when(gameMapper.mapGameToPhotoMessage(request, games.get(0))).thenReturn(gameTelegramPage);
 
 
         List<PartialBotApiMethod> partialBotApiMethods = gameListMapper
-                .userGameListToTelegramPage(games, request, gameAmount, pageNum);
+                .mapUserGameListToTelegramPage(games, request, gameAmount, pageNum);
 
 
         assertEquals(1, partialBotApiMethods.size());
         SendPhoto photo = (SendPhoto) partialBotApiMethods.get(0);
         assertEquals(gameTelegramPage, photo);
-        verify(gameMapper).getGamePhotoMessage(request, games.get(0));
+        verify(gameMapper).mapGameToPhotoMessage(request, games.get(0));
+    }
+
+    @Test
+    void testMapGameListToTelegramPage_whenHasNextPage_shouldReturnMessagesListWithNextPageButton() {
+        List<GameDto> games = new ArrayList<>();
+        games.add(GameDto.builder().build());
+        long gameAmount = 12;
+        int pageNum = 1;
+        String chatId = "123";
+        Locale locale = new Locale("");
+        String sort = "sort";
+        Update update = UpdateCreator.getUpdateWithoutCallback("", Long.parseLong(chatId));
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
+        SendPhoto gameTelegramPage = new SendPhoto();
+        when(gameMapper.mapGameToPhotoMessage(request, games.get(0))).thenReturn(gameTelegramPage);
+        SendMessage expectedMessage = new SendMessage();
+        when(buttonFactory.getNextPageButtonForListOfGame(request.getChatId(), pageNum, request.getLocale(), sort))
+                .thenReturn(expectedMessage);
+
+
+        List<PartialBotApiMethod> partialBotApiMethods = gameListMapper
+                .mapGameListToTelegramPage(games, request, gameAmount, pageNum, sort);
+
+
+        assertEquals(2, partialBotApiMethods.size());
+        SendPhoto photo = (SendPhoto) partialBotApiMethods.get(0);
+        assertEquals(gameTelegramPage, photo);
+        SendMessage message = (SendMessage) partialBotApiMethods.get(1);
+        assertEquals(expectedMessage, message);
+        verify(gameMapper).mapGameToPhotoMessage(request, games.get(0));
+    }
+
+    @Test
+    void testMapGameListToTelegramPage_whenHasNotNextPage_shouldReturnMessagesListWithoutNextPageButton() {
+        List<GameDto> games = new ArrayList<>();
+        games.add(GameDto.builder().build());
+        long gameAmount = 4;
+        int pageNum = 2;
+        String chatId = "123";
+        Locale locale = new Locale("");
+        String sort = "sort";
+        Update update = UpdateCreator.getUpdateWithoutCallback("", Long.parseLong(chatId));
+        TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();
+        SendPhoto gameTelegramPage = new SendPhoto();
+        when(gameMapper.mapGameToPhotoMessage(request, games.get(0))).thenReturn(gameTelegramPage);
+
+
+        List<PartialBotApiMethod> partialBotApiMethods = gameListMapper
+                .mapGameListToTelegramPage(games, request, gameAmount, pageNum, sort);
+
+
+        assertEquals(1, partialBotApiMethods.size());
+        SendPhoto photo = (SendPhoto) partialBotApiMethods.get(0);
+        assertEquals(gameTelegramPage, photo);
+        verify(gameMapper).mapGameToPhotoMessage(request, games.get(0));
     }
 }

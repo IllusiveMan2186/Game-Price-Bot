@@ -63,7 +63,7 @@ class GameSearchCommandHandlerTest {
                 .elementAmount(gameAmount)
                 .build();
         when(gameService.getByName(name, 1)).thenReturn(page);
-        when(gameListMapper.gameSearchListToTelegramPage(games, request, gameAmount, 1, name))
+        when(gameListMapper.mapGameSearchListToTelegramPage(games, request, gameAmount, 1, name))
                 .thenReturn(Collections.singletonList(message));
 
 

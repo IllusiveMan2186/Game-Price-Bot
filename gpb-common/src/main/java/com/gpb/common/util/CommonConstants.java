@@ -34,6 +34,11 @@ public class CommonConstants {
     public static final String EMAIL_NOTIFICATION_TOPIC = "gpb_email_notification";
 
     /**
+     * Kafka topic for email notifications.
+     */
+    public static final String TELEGRAM_NOTIFICATION_TOPIC = "gpb_telegram_notification";
+
+    /**
      * Kafka topic for following a game event.
      */
     public static final String GAME_FOLLOW_TOPIC = "gpb_game_follow";

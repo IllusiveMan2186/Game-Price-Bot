@@ -23,6 +23,14 @@ public interface TelegramUserService {
     TelegramUser getUserById(long telegramId);
 
     /**
+     * Get user by basic user id
+     *
+     * @param basicUserId basic user id
+     * @return telegram user
+     */
+    TelegramUser getByBasicUserId(long basicUserId);
+
+    /**
      * Create new telegram user
      *
      * @param newUser new user
@@ -34,10 +42,10 @@ public interface TelegramUserService {
      * Change user locale
      *
      * @param telegramId user id in telegram
-     * @param newLocale new locale
+     * @param newLocale  new locale
      * @return updated locale
      */
-    Locale changeUserLocale(long telegramId,Locale newLocale);
+    Locale changeUserLocale(long telegramId, Locale newLocale);
 
     /**
      * Get users locale

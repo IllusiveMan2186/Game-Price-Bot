@@ -4,7 +4,7 @@ import com.gpb.backend.entity.UserActivation;
 import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.service.EmailService;
 import com.gpb.common.entity.event.EmailEvent;
-import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.entity.event.NotificationEvent;
 import com.gpb.common.util.CommonConstants;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +34,11 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendGameInfoChange(WebUser user, EmailNotificationEvent emailNotificationEvent) {
+    public void sendGameInfoChange(WebUser user, NotificationEvent notificationEvent) {
         log.info("Send game info changed  to user {}", user.getEmail());
-        sendEmail(user.getEmail(), "Game info changes", emailNotificationEvent.getVariables(), user.getLocale(),
+        Map<String, Object> variables = new LinkedHashMap<>();
+        variables.put("games", notificationEvent.getGameInShopList());
+        sendEmail(user.getEmail(), "Game info changes", variables, user.getLocale(),
                 "email-info-changed-template");
     }
 

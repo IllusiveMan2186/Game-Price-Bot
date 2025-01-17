@@ -48,7 +48,7 @@ public class GameSearchCommandHandler implements CommandHandler {
         }
 
         return new TelegramResponse(
-                gameListMapper.gameSearchListToTelegramPage(
+                gameListMapper.mapGameSearchListToTelegramPage(
                         page.getGames(),
                         request,
                         page.getElementAmount(),

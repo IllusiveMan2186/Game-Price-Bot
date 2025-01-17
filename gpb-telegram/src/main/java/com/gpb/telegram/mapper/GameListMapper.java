@@ -18,11 +18,11 @@ public class GameListMapper {
     private final ButtonFactory buttonFactory;
 
 
-    public List<PartialBotApiMethod> gameSearchListToTelegramPage(List<GameDto> games,
-                                                                  TelegramRequest request,
-                                                                  long gameAmount,
-                                                                  int pageNum,
-                                                                  String gameName) {
+    public List<PartialBotApiMethod> mapGameSearchListToTelegramPage(List<GameDto> games,
+                                                                     TelegramRequest request,
+                                                                     long gameAmount,
+                                                                     int pageNum,
+                                                                     String gameName) {
         List<PartialBotApiMethod> messages = mapGamesToTelegramPage(games, request);
         if (isMorePagesExist(gameAmount, pageNum)) {
             messages.add(buttonFactory.getNextPageButtonForSearchByName(request.getChatId(), pageNum, gameName, request.getLocale()));
@@ -30,10 +30,10 @@ public class GameListMapper {
         return messages;
     }
 
-    public List<PartialBotApiMethod> userGameListToTelegramPage(List<GameDto> games,
-                                                                TelegramRequest request,
-                                                                long gameAmount,
-                                                                int pageNum) {
+    public List<PartialBotApiMethod> mapUserGameListToTelegramPage(List<GameDto> games,
+                                                                   TelegramRequest request,
+                                                                   long gameAmount,
+                                                                   int pageNum) {
         List<PartialBotApiMethod> messages = mapGamesToTelegramPage(games, request);
         if (isMorePagesExist(gameAmount, pageNum)) {
             messages.add(buttonFactory.getNextPageButtonForUserListOfGame(request.getChatId(), pageNum, request.getLocale()));
@@ -41,11 +41,11 @@ public class GameListMapper {
         return messages;
     }
 
-    public List<PartialBotApiMethod> gameListToTelegramPage(List<GameDto> games,
-                                                            TelegramRequest request,
-                                                            long gameAmount,
-                                                            int pageNum,
-                                                            String sort) {
+    public List<PartialBotApiMethod> mapGameListToTelegramPage(List<GameDto> games,
+                                                               TelegramRequest request,
+                                                               long gameAmount,
+                                                               int pageNum,
+                                                               String sort) {
         List<PartialBotApiMethod> messages = mapGamesToTelegramPage(games, request);
         if (isMorePagesExist(gameAmount, pageNum)) {
             messages.add(buttonFactory.getNextPageButtonForListOfGame(request.getChatId(), pageNum, request.getLocale(), sort));
@@ -55,7 +55,7 @@ public class GameListMapper {
 
     private List<PartialBotApiMethod> mapGamesToTelegramPage(List<GameDto> games, TelegramRequest request) {
         List<PartialBotApiMethod> messages = new ArrayList<>();
-        games.forEach(game -> messages.add(gameMapper.getGamePhotoMessage(request, game)));
+        games.forEach(game -> messages.add(gameMapper.mapGameToPhotoMessage(request, game)));
         return messages;
     }
 

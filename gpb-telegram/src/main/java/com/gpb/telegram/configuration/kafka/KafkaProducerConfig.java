@@ -1,4 +1,4 @@
-package com.gpb.telegram.configuration;
+package com.gpb.telegram.configuration.kafka;
 
 import com.gpb.common.entity.event.GameFollowEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;

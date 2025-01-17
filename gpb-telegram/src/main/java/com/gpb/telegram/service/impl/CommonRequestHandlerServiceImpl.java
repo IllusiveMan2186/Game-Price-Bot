@@ -27,7 +27,7 @@ public class CommonRequestHandlerServiceImpl implements CommonRequestHandlerServ
         }
 
         return new TelegramResponse(
-                gameListMapper.userGameListToTelegramPage(
+                gameListMapper.mapUserGameListToTelegramPage(
                         page.getGames(),
                         request,
                         page.getElementAmount(),
@@ -47,7 +47,7 @@ public class CommonRequestHandlerServiceImpl implements CommonRequestHandlerServ
         }
 
         return new TelegramResponse(
-                gameListMapper.gameListToTelegramPage(
+                gameListMapper.mapGameListToTelegramPage(
                         page.getGames(),
                         request,
                         page.getElementAmount(),

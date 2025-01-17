@@ -1,17 +1,18 @@
 package com.gpb.common.entity.event;
 
+import com.gpb.common.entity.game.GameInStoreDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmailNotificationEvent {
+public class NotificationEvent {
 
     private long basicUserId;
 
-    private Map<String, Object> variables;
+    private List<GameInStoreDto> gameInShopList;
 }

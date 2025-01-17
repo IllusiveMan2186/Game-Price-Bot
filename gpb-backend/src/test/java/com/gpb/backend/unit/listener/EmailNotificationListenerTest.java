@@ -4,7 +4,7 @@ import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.listener.EmailNotificationListener;
 import com.gpb.backend.service.EmailService;
 import com.gpb.backend.service.UserManagementService;
-import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.entity.event.NotificationEvent;
 import com.gpb.common.util.CommonConstants;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,10 +35,10 @@ class EmailNotificationListenerTest {
     @Test
     void testListenEmailNotification_whenSuccess_shouldProcessEvent() {
         long basicUserId = 123L;
-        EmailNotificationEvent event = new EmailNotificationEvent();
+        NotificationEvent event = new NotificationEvent();
         event.setBasicUserId(basicUserId);
 
-        ConsumerRecord<String, EmailNotificationEvent> record = new ConsumerRecord<>(CommonConstants.EMAIL_NOTIFICATION_TOPIC, 0, 0, "key", event);
+        ConsumerRecord<String, NotificationEvent> record = new ConsumerRecord<>(CommonConstants.EMAIL_NOTIFICATION_TOPIC, 0, 0, "key", event);
 
         WebUser user = new WebUser();
         when(userService.getUserByBasicUserId(basicUserId)).thenReturn(user);
