@@ -7,6 +7,7 @@ import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.NotificationManager;
 import com.gpb.game.service.UserService;
 import com.gpb.game.util.Constants;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,6 +25,7 @@ public class GameInfoChangeScheduler {
     private final NotificationManager notificationManager;
     private final UserService userService;
 
+    @Transactional
     @Scheduled(cron = Constants.GAME_INFO_CHANGE_DAILY)
     public void scheduleSubscribedGameInfoChangeEveryDay() {
         log.info("Check game information changing ");
@@ -39,6 +41,7 @@ public class GameInfoChangeScheduler {
         }
     }
 
+    @Transactional
     @Scheduled(cron = Constants.GAME_INFO_CHANGE_WEAKLY)
     public void scheduleGameInfoChangeEveryWeak() {
         log.info("Check game information changing ");

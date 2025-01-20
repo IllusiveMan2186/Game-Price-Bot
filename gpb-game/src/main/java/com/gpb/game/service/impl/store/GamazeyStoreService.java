@@ -143,7 +143,7 @@ public class GamazeyStoreService implements StoreService {
         List<GameInShop> changedGames = new ArrayList<>();
 
         for (GameInShop game : gameInShops) {
-            if (isGameInfoChanged(game)) {
+            if (!isGameInfoChanged(game)) {
                 changedGames.add(setChangedFields(game));
             }
         }
@@ -157,8 +157,8 @@ public class GamazeyStoreService implements StoreService {
         GameInShop gameOnPage = getGameInShop(page);
 
         return gameInShop.isAvailable() == gameOnPage.isAvailable()
-                && gameInShop.getDiscountPrice().equals(gameOnPage.getDiscountPrice())
-                && gameInShop.getPrice().equals(gameOnPage.getPrice());
+                && gameInShop.getDiscountPrice().stripTrailingZeros().equals(gameOnPage.getDiscountPrice())
+                && gameInShop.getPrice().stripTrailingZeros().equals(gameOnPage.getPrice());
     }
 
     private GameInShop setChangedFields(GameInShop gameInShop) {
