@@ -36,6 +36,12 @@ public class TelegramUserServiceImpl implements TelegramUserService {
     }
 
     @Override
+    public TelegramUser getByBasicUserId(long basicUserId) {
+        log.info("Get user by basic user id '{}'", basicUserId);
+        return telegramUserRepository.findByBasicUserId(basicUserId);
+    }
+
+    @Override
     @Transactional
     public TelegramUser createTelegramUser(TelegramUser newUser) {
         log.info("New user '{}' registered", newUser.getTelegramId());

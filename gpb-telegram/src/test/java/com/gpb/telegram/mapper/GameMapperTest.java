@@ -39,7 +39,7 @@ class GameMapperTest {
 
 
     @Test
-    void testGameListToTelegramPage_whenGameHaveGenre_shouldReturnMessagesListWithGenreList() {
+    void testMapameListToTelegramPage_whenGameHaveGenre_shouldReturnMessagesListWithGenreList() {
         List<Genre> genres = new ArrayList<>();
         genres.add(Genre.ONLINE);
         genres.add(Genre.ACTION);
@@ -61,7 +61,7 @@ class GameMapperTest {
 
 
         SendPhoto photo = gameMapper
-                .getGamePhotoMessage(request, game);
+                .mapGameToPhotoMessage(request, game);
 
 
         assertEquals(chatId, photo.getChatId());

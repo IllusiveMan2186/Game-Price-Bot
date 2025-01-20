@@ -47,7 +47,7 @@ class GameSearchByNameCallbackHandlerTest {
         SendMessage message = new SendMessage();
 
         when(gameService.getByName(gameName, pageNum)).thenReturn(page);
-        when(gameListMapper.gameSearchListToTelegramPage(page.getGames(), request, page.getElementAmount(), pageNum, gameName))
+        when(gameListMapper.mapGameSearchListToTelegramPage(page.getGames(), request, page.getElementAmount(), pageNum, gameName))
                 .thenReturn(Collections.singletonList(message));
 
 

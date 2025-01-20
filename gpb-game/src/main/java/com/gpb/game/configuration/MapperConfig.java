@@ -39,6 +39,8 @@ public class MapperConfig {
                 .addMappings(mapper -> mapper.skip(GameInfoDto::setGamesInShop)).setPostConverter(toGameInfoDtoConverter())
                 .addMappings(mapper -> mapper.skip(GameInfoDto::setAvailable)).setPostConverter(toGameInfoDtoConverter());
 
+        modelMapper.createTypeMap(GameInShop.class, GameInStoreDto.class);
+
         return modelMapper;
     }
 

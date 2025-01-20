@@ -33,7 +33,7 @@ public class GameMapper {
     private final ResourceConfiguration resourceConfiguration;
     private final ButtonFactory buttonFactory;
 
-    public SendPhoto getGamePhotoMessage(TelegramRequest request, GameDto game) {
+    public SendPhoto mapGameToPhotoMessage(TelegramRequest request, GameDto game) {
         return SendPhoto.builder()
                 .chatId(request.getChatId())
                 .photo(getGameImage(game.getName()))

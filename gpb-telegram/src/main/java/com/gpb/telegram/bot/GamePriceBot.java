@@ -13,6 +13,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.List;
+
 @Component
 @Slf4j
 @AllArgsConstructor
@@ -37,6 +39,10 @@ public class GamePriceBot extends TelegramLongPollingBot {
         commandsHandler.handleCommands(new TelegramRequest(update))
                 .getMessages()
                 .forEach(this::sendMessage);
+    }
+
+    public void sendNotification(List<PartialBotApiMethod> messages) {
+        messages.forEach(this::sendMessage);
     }
 
     private void sendMessage(PartialBotApiMethod botApiMethod) {

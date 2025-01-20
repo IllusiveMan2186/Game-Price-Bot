@@ -27,6 +27,6 @@ public class GameInfoCallbackHandler implements CallbackHandler {
 
         GameInfoDto game = gameService.getById(request.getLongArgument(1), request.getUserBasicId());
 
-        return new TelegramResponse(gameInfoMapper.gameInfoToTelegramPage(game, request));
+        return new TelegramResponse(gameInfoMapper.mapGameInfoToTelegramPage(game, request));
     }
 }
