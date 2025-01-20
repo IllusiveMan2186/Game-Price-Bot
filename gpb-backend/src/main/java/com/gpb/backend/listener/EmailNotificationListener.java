@@ -3,7 +3,7 @@ package com.gpb.backend.listener;
 import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.service.EmailService;
 import com.gpb.backend.service.UserManagementService;
-import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.entity.event.NotificationEvent;
 import com.gpb.common.util.CommonConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -27,8 +27,8 @@ public class EmailNotificationListener {
             groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
             containerFactory = "notificationListener")
     @Transactional
-    public void listenEmailNotification(ConsumerRecord<String, EmailNotificationEvent> unfollowRecord) {
-        EmailNotificationEvent event = unfollowRecord.value();
+    public void listenEmailNotification(ConsumerRecord<String, NotificationEvent> unfollowRecord) {
+        NotificationEvent event = unfollowRecord.value();
         log.info("Request for email notification user {} ", event.getBasicUserId());
         WebUser user = userService.getUserByBasicUserId(event.getBasicUserId());
         emailService.sendGameInfoChange(user, event);

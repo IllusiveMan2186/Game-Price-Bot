@@ -127,6 +127,19 @@ class TelegramUserServiceImplTest {
     }
 
     @Test
+    void testGetByBasicUserId_whenSuccess_shouldReturnUser() {
+        long basicUserId = 123;
+        TelegramUser telegramUser = new TelegramUser();
+        when(telegramUserRepository.findByBasicUserId(basicUserId)).thenReturn(telegramUser);
+
+
+        TelegramUser result = telegramUserService.getByBasicUserId(basicUserId);
+
+
+        assertEquals(telegramUser, result);
+    }
+
+    @Test
     void testSetBasicUserId_whenSuccess_shouldCAllRepositoryMethod() {
         long currentBasicUserId = 1L;
         long newBasicUserId = 1L;

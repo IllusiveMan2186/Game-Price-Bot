@@ -4,7 +4,7 @@ import com.gpb.backend.entity.UserActivation;
 import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.service.impl.EmailServiceImpl;
 import com.gpb.common.entity.event.EmailEvent;
-import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.entity.event.NotificationEvent;
 import com.gpb.common.util.CommonConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,10 +37,7 @@ class EmailServiceImplTest {
         user.setEmail("test@example.com");
         user.setLocale(Locale.ENGLISH);
 
-        EmailNotificationEvent notificationEvent = new EmailNotificationEvent();
-        Map<String, Object> variables = new LinkedHashMap<>();
-        variables.put("key", "value");
-        notificationEvent.setVariables(variables);
+        NotificationEvent notificationEvent = new NotificationEvent();
 
 
         emailService.sendGameInfoChange(user, notificationEvent);

@@ -2,7 +2,7 @@ package com.gpb.game.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.entity.event.NotificationEvent;
 import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
 import com.gpb.common.util.CommonConstants;
@@ -69,7 +69,7 @@ class BaseAuthenticationIntegration {
     protected GameInShopRepository gameInShopRepository;
 
     @MockBean
-    protected KafkaTemplate<String, EmailNotificationEvent> responseKafkaTemplate;
+    protected KafkaTemplate<String, NotificationEvent> responseKafkaTemplate;
     @MockBean
     protected GameRequestListener gameRequestListener;
 

@@ -1,4 +1,4 @@
-package com.gpb.backend.configuration.kafka;
+package com.gpb.telegram.configuration.kafka;
 
 import com.gpb.common.entity.event.NotificationEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

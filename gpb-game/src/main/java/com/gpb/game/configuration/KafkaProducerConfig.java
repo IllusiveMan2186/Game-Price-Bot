@@ -1,6 +1,6 @@
 package com.gpb.game.configuration;
 
-import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.entity.event.NotificationEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +21,7 @@ public class KafkaProducerConfig {
 
 
     @Bean
-    public KafkaTemplate<String, EmailNotificationEvent> emailEventKafkaTemplate() {
+    public KafkaTemplate<String, NotificationEvent> emailEventKafkaTemplate() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);

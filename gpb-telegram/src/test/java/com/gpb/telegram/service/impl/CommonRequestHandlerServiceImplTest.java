@@ -49,7 +49,7 @@ class CommonRequestHandlerServiceImplTest {
         SendMessage message = new SendMessage();
 
         when(gameService.getUserGames(123456L, pageNum)).thenReturn(page);
-        when(gameListMapper.userGameListToTelegramPage(page.getGames(), request, page.getElementAmount(), pageNum))
+        when(gameListMapper.mapUserGameListToTelegramPage(page.getGames(), request, page.getElementAmount(), pageNum))
                 .thenReturn(Collections.singletonList(message));
 
 
@@ -96,7 +96,7 @@ class CommonRequestHandlerServiceImplTest {
         SendMessage message = new SendMessage();
 
         when(gameService.getGameList(pageNum, sort)).thenReturn(page);
-        when(gameListMapper.gameListToTelegramPage(page.getGames(), request, page.getElementAmount(), pageNum, sort))
+        when(gameListMapper.mapGameListToTelegramPage(page.getGames(), request, page.getElementAmount(), pageNum, sort))
                 .thenReturn(Collections.singletonList(message));
 
 
