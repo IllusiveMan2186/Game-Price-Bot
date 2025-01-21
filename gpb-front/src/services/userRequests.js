@@ -91,13 +91,28 @@ export const accountLinkRequest = (token, setErrorMessage, navigate) => {
 };
 
 // Get linke token for user account link
-export const getLinkTokenRequest = (setToken, navigate) => {
+export const getLinkTokenRequest = (setToken) => {
     handleRequest(
         "GET",
         API_ENDPOINTS.LINK_USER,
         null,
         (response) => {
             setToken(response.data);
+        },
+        () => console.error("Failed to get link token")
+    );
+};
+
+// Get linke token and redirect to messenger
+export const getLinkTokenForMessengerRequest = (messengeUrl) => {
+    handleRequest(
+        "GET",
+        API_ENDPOINTS.LINK_USER,
+        null,
+        (response) => {
+            if (messengeUrl) {
+                window.open(messengeUrl + response.data, '_blank');
+            }
         },
         () => console.error("Failed to get link token")
     );

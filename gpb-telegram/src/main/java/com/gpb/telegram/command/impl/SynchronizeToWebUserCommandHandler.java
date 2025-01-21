@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
-@Component("synchronizeToWeb")
+@Component(Constants.SYNCHRONIZATION_COMMAND)
 @AllArgsConstructor
 @FilterChainMarker(Constants.USER_EXISTING_FILTER)
 public class SynchronizeToWebUserCommandHandler implements CommandHandler {

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Localization from '@components/common/Localization';
+import Messenger from '@components/common/messenger/Messenger';
 import Message from '@util/message';
 
 export default class Footer extends React.Component {
@@ -28,6 +29,7 @@ export default class Footer extends React.Component {
                                         <i className="fas fa-envelope mr-3" /> info@gmail.com
                                     </p>
                                 </div>
+                                {<Messenger />}
                                 {<Localization />}
                             </div>
                         </section>

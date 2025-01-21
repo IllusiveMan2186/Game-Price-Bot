@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import Message from '@util/message';
 import { getLinkTokenRequest } from '@services/userRequests';
-import { useNavigate } from 'react-router-dom';
 
 const GetLinkTokenPage = () => {
     const [token, setToken] = useState('');
-    const navigate = useNavigate();
 
     if (!token) {
-        getLinkTokenRequest(setToken, navigate);
+        getLinkTokenRequest(setToken);
     }
 
     const copyToClipboard = () => {

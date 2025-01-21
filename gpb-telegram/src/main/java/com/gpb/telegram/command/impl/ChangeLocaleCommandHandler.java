@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
-@Component("changeLanguage")
+@Component("lang")
 @AllArgsConstructor
 @FilterChainMarker(Constants.USER_EXISTING_FILTER)
 public class ChangeLocaleCommandHandler implements CommandHandler {

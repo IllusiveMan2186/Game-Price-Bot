@@ -8,6 +8,7 @@ import com.gpb.telegram.entity.TelegramResponse;
 import com.gpb.telegram.filter.FilterChain;
 import com.gpb.telegram.filter.FilteredHandler;
 import com.gpb.telegram.service.TelegramUserService;
+import com.gpb.telegram.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -27,9 +28,12 @@ public class ControllerHandler {
     private final ExceptionHandler exceptionHandler;
     private final FilterChain filterChain;
 
-    public ControllerHandler(Map<String, CommandHandler> controllers, Map<String, CallbackHandler> callbackHandlerMap,
-                             MessageSource messageSource, TelegramUserService telegramUserService,
-                             ExceptionHandler exceptionHandler, FilterChain filterChain) {
+    public ControllerHandler(Map<String, CommandHandler> controllers,
+                             Map<String, CallbackHandler> callbackHandlerMap,
+                             MessageSource messageSource,
+                             TelegramUserService telegramUserService,
+                             ExceptionHandler exceptionHandler,
+                             FilterChain filterChain) {
         this.callbackHandlerMap = callbackHandlerMap;
         this.messageSource = messageSource;
         this.telegramUserService = telegramUserService;
@@ -37,6 +41,7 @@ public class ControllerHandler {
         this.filterChain = filterChain;
         HelpCommandHandler helpCommandHandler = new HelpCommandHandler(this.messageSource, controllers);
         controllers.put("help", helpCommandHandler);
+        controllers.put("start", controllers.get(Constants.SYNCHRONIZATION_COMMAND));
         this.controllers = controllers;
     }
 
