@@ -25,7 +25,9 @@ public class HelpCommandHandler implements CommandHandler {
         StringBuilder builder = new StringBuilder(messageSource.getMessage("help.menu.header.message", null, request.getLocale()));
         for (Map.Entry<String, CommandHandler> entrySet: controllers.entrySet()) {
             builder.append(System.lineSeparator())
-                    .append("/").append(entrySet.getKey())
+                    .append("/")
+                    .append(entrySet.getKey())
+                    .append(" ")
                     .append(entrySet.getValue().getDescription(request.getLocale()));
         }
         return new TelegramResponse(request, builder.toString());

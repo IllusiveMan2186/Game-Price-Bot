@@ -7,6 +7,7 @@ import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.AccountLinker;
 import com.gpb.game.entity.user.BasicUser;
+import com.gpb.game.exception.AccountAlreadyLinkedException;
 import com.gpb.game.repository.AccountLinkerRepository;
 import com.gpb.game.repository.UserRepository;
 import com.gpb.game.service.impl.UserServiceImpl;
@@ -151,7 +152,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLinkUsers_whenSourceUserNotFound_ThrowsNotFoundException() {
+    void testLinkUsers_whenSourceUserNotFound_shouldThrowsNotFoundException() {
         String token = "token";
         long sourceUserId = 2L;
 
@@ -165,6 +166,24 @@ class UserServiceImplTest {
                 () -> userService.linkUsers(token, sourceUserId));
 
         assertEquals("Source user not found with ID: " + sourceUserId, exception.getMessage());
+        verify(userRepository, never()).save(any());
+        verify(userRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    void testLinkUsers_whenLinkAlreadyLinkedUser_shouldThrowsAccountAlreadyLinkedException() {
+        String token = "token";
+        long sourceUserId = 2L;
+
+        BasicUser targetUser = new BasicUser();
+        targetUser.setId(sourceUserId);
+        AccountLinker accountLinker = new AccountLinker(token, targetUser);
+        when(accountLinkerRepository.findById(token)).thenReturn(Optional.of(accountLinker));
+
+
+        assertThrows(AccountAlreadyLinkedException.class, () -> userService.linkUsers(token, sourceUserId));
+
+
         verify(userRepository, never()).save(any());
         verify(userRepository, never()).deleteById(anyLong());
     }

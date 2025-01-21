@@ -2,17 +2,20 @@ import './styles/app.css'
 
 import Router from '@routes/Router';
 import Footer from '@components/common/layout/footer/Footer';
+import { BrowserRouter } from "react-router-dom";
 
 
 function App() {
   return (
     <div className="App">
-      <div className="row">
-        <div className="col">
-          <Router />
+      <BrowserRouter>
+        <div className="row">
+          <div className="col">
+            <Router />
+          </div>
         </div>
-      </div> 
-      <Footer />
+        <Footer />
+      </BrowserRouter>
     </div>
   );
 }

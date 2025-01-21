@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Header from '@components/common/layout/header/Header';
 import ActivationPage from '@components/auth/activation/ActivationPage';
@@ -15,38 +15,36 @@ export default function AppContent() {
 
     return (
         <>
-            <BrowserRouter>
-                <Header />
-                <Routes>
-                    <Route path="/" >
-                        <Route path="/" element={<GameListPage mode="list" />} />
+            <Header />
+            <Routes>
+                <Route path="/" >
+                    <Route path="/" element={<GameListPage mode="list" />} />
 
-                        {/* Games list with optional URL */}
-                        <Route path="/games/:url?" element={<GameListPage mode="list" />} />
+                    {/* Games list with optional URL */}
+                    <Route path="/games/:url?" element={<GameListPage mode="list" />} />
 
-                        {/* Search results with searchName and optional URL */}
-                        <Route path="/search/:searchName/:url?" element={<GameListPage mode="search" />} />
+                    {/* Search results with searchName and optional URL */}
+                    <Route path="/search/:searchName/:url?" element={<GameListPage mode="search" />} />
 
-                        {/* User's games list with optional URL */}
-                        <Route path="/user/games/:url?" element={<GameListPage mode="usersGames" />} />
+                    {/* User's games list with optional URL */}
+                    <Route path="/user/games/:url?" element={<GameListPage mode="usersGames" />} />
 
-                        {/* Game details */}
-                        <Route path="/game/:gameId" element={<GameDetailPage />} />
+                    {/* Game details */}
+                    <Route path="/game/:gameId" element={<GameDetailPage />} />
 
-                        {/* Authentication */}
-                        <Route path="/login" element={<AuthViewSwitcher />} />
+                    {/* Authentication */}
+                    <Route path="/login" element={<AuthViewSwitcher />} />
 
-                        {/* Profile changes */}
-                        <Route path="/change/email" element={<EmailChange />} />
-                        <Route path="/change/password" element={<PasswordChange />} />
+                    {/* Profile changes */}
+                    <Route path="/change/email" element={<EmailChange />} />
+                    <Route path="/change/password" element={<PasswordChange />} />
 
-                        <Route path="/activation?" element={<ActivationPage />} />
+                    <Route path="/activation?" element={<ActivationPage />} />
 
-                        <Route path="/link" element={<LinkPage />} />
-                        <Route path="/link/token" element={<GetLinkTokenPage />} />
-                    </Route>
-                </Routes>
-            </BrowserRouter>
+                    <Route path="/link" element={<LinkPage />} />
+                    <Route path="/link/token" element={<GetLinkTokenPage />} />
+                </Route>
+            </Routes>
         </>
     );
 }

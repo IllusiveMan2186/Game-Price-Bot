@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
-@Component("getSynchronizeToken")
+@Component("token")
 @AllArgsConstructor
 @FilterChainMarker(Constants.USER_EXISTING_FILTER)
 public class GetWebConnectorTokenCommandHandler implements CommandHandler {
