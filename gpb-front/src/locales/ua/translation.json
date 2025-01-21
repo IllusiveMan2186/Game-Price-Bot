@@ -22,6 +22,7 @@
     "app.footer.contact": "КОНТАКТ",
     "app.footer.follow": "НАШІ КОНТАКТИ",
     "app.footer.language": "МОВА",
+    "app.footer.messenger": "МЕСЕНДЖЕРИ",
     "app.game.error.price": "Неверний діапазон цін. Максимальна ціна повинна бути меншою.",
     "app.game.error.id.not.found": "Гру з цим ідентифікатором не знайдено",
     "app.game.error.name.not.found": "Гру з такою назвою не знайдено",

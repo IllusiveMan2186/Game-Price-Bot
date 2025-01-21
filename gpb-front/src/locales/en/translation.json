@@ -22,6 +22,7 @@
     "app.footer.contact": "CONTACT",
     "app.footer.follow": "FOLLOW US",
     "app.footer.language": "LANGUAGE",
+    "app.footer.messenger": "MESSENGERS",
     "app.game.error.price": "Invalid price range. The maximum price must be greater than the minimum.",
     "app.game.error.id.not.found": "Game with this id not found",
     "app.game.error.name.not.found": "The game with this name was not found",

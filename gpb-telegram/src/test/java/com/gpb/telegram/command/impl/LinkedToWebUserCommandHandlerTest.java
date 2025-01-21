@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class SynchronizeToWebUserCommandHandlerTest {
+class LinkedToWebUserCommandHandlerTest {
 
     @Mock
     MessageSource messageSource;
@@ -31,7 +31,7 @@ class SynchronizeToWebUserCommandHandlerTest {
     @Mock
     TelegramUserService telegramUserService;
     @InjectMocks
-    SynchronizeToWebUserCommandHandler controller;
+    LinkedToWebUserCommandHandler controller;
 
     @Test
     void testGetDescription_whenSuccess_shouldReturnDescription() {
