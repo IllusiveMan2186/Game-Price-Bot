@@ -125,6 +125,7 @@ services:
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
       - GAME_SERVICE_URL=${GAME_SERVICE_URL}
       - API_KEY=${API_KEY}
+      - FRONT_SERVICE_URL=${FRONT_SERVICE_URL}
     volumes:
       - common_data_images:${GAMES_IMAGE_FOLDER}
 
@@ -148,6 +149,7 @@ services:
 volumes:
   common_data_images:
   postgres_data:
+
 
 networks:
   gpb-network:
