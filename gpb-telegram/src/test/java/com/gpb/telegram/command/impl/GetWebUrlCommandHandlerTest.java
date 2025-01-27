@@ -1,7 +1,10 @@
 package com.gpb.telegram.command.impl;
 
+import com.gpb.common.service.UserLinkerService;
 import com.gpb.telegram.entity.TelegramRequest;
 import com.gpb.telegram.entity.TelegramResponse;
+import com.gpb.telegram.entity.TelegramUser;
+import com.gpb.telegram.util.Constants;
 import com.gpb.telegram.util.UpdateCreator;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
@@ -17,8 +20,8 @@ import static org.mockito.Mockito.when;
 class GetWebUrlCommandHandlerTest {
 
     MessageSource messageSource = mock(MessageSource.class);
-
-    GetWebUrlCommandHandler controller = new GetWebUrlCommandHandler(messageSource);
+    UserLinkerService userLinkerService = mock(UserLinkerService.class);
+    GetWebUrlCommandHandler controller = new GetWebUrlCommandHandler(messageSource, userLinkerService);
 
     @Test
     void testGetDescription_whenSuccess_shouldReturnDescription() {
@@ -34,10 +37,18 @@ class GetWebUrlCommandHandlerTest {
     void testApply_whenSuccess_shouldReturnUrl() {
         String chatId = "123456";
         String url = "http://mocked-url.com";
+        String token = "token";
+        long basicUserId = 123L;
         Update update = UpdateCreator.getUpdateWithoutCallback("/url ", Long.parseLong(chatId));
+        TelegramUser user = TelegramUser.builder()
+                .basicUserId(basicUserId)
+                .build();
         TelegramRequest request = TelegramRequest.builder()
                 .update(update)
+                .user(user)
                 .build();
+        when(userLinkerService.getAccountsLinkerToken(basicUserId)).thenReturn(token);
+
 
         controller.setFrontendServiceUrl(url);
 
@@ -47,6 +58,6 @@ class GetWebUrlCommandHandlerTest {
 
         SendMessage message = (SendMessage) response.getMessages().get(0);
         assertEquals(chatId, message.getChatId());
-        assertEquals(url, message.getText());
+        assertEquals(url + Constants.SET_LINK_TOKEN + token, message.getText());
     }
 }
