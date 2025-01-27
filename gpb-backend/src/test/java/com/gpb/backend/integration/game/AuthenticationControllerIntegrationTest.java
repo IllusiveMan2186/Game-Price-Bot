@@ -1,5 +1,6 @@
 package com.gpb.backend.integration.game;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gpb.backend.entity.Credentials;
 import com.gpb.backend.entity.UserRegistration;
 import com.gpb.common.entity.user.NotificationRequestDto;
@@ -43,7 +44,7 @@ class AuthenticationControllerIntegrationTest extends BaseAuthenticationIntegrat
                         null,
                         new NotificationRequestDto(UserNotificationType.EMAIL),
                         Long.class))
-                .thenReturn(1L);
+                .thenReturn(2L);
         UserRegistration userRegistration = UserRegistration.builder()
                 .email("email2")
                 .password("password".toCharArray())

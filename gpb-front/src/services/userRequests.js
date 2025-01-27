@@ -9,6 +9,7 @@ const API_ENDPOINTS = {
     CHANGE_LOCALE: `/user/locale`,
     ACTIVATE_USER: `/activate`,
     LINK_USER: `/linker`,
+    TOKE_SET: `/linker/set`,
 };
 
 // Centralized Error Handler

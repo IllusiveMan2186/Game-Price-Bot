@@ -62,6 +62,12 @@ export const isUserAdmin = () => getUserRole() === 'ROLE_ADMIN';
 export const getEmail = () => window.localStorage.getItem('email');
 
 /**
+ * Get the user's link token
+ * @returns {string|null} The stored email, or null if not present.
+ */
+export const getLinkToken = () => window.localStorage.getItem('linkToken');
+
+/**
  * Set the user's email in localStorage.
  * @param {string|null} email - The email to store, or null to remove it.
  */
@@ -108,6 +114,10 @@ export const setRoleHeader = (role) => {
 
 export const setEmailHeader = (email) => {
     window.localStorage.setItem('email', email);
+};
+
+export const setLinkToken = (token) => {
+    window.localStorage.setItem('linkToken', token);
 };
 
 export const defaultRequestErrorCheck = (error) => {

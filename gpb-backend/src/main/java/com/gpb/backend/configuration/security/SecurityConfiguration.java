@@ -1,6 +1,7 @@
 package com.gpb.backend.configuration.security;
 
 import com.gpb.backend.filter.JwtAuthFilter;
+import lombok.AllArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,27 +15,24 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties
+@AllArgsConstructor
 public class SecurityConfiguration {
 
     private final UserAuthenticationProvider userAuthenticationProvider;
 
     private final UserAuthenticationEntryPoint userAuthenticationEntryPoint;
 
-    public SecurityConfiguration(UserAuthenticationProvider userAuthenticationProvider,
-                                 UserAuthenticationEntryPoint userAuthenticationEntryPoint) {
-        this.userAuthenticationProvider = userAuthenticationProvider;
-        this.userAuthenticationEntryPoint = userAuthenticationEntryPoint;
-    }
-
     @Bean
     @Order(1)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors().and()
                 .exceptionHandling().authenticationEntryPoint(userAuthenticationEntryPoint)
                 .and().addFilterBefore(new JwtAuthFilter(userAuthenticationProvider), BasicAuthenticationFilter.class)
                 .csrf().disable()
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.POST, "/login", "/registration", "/activate").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/linker/set").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/resend/email/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/email/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/game/**").permitAll()
