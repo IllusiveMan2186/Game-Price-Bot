@@ -8,6 +8,7 @@ import GameListPage from '@components/game/list/page/GameListPage';
 import GameDetailPage from '@components/game/detail/page/GameDetailPage';
 import PasswordChange from '@components/profile/PasswordChange';
 import EmailChange from '@components/profile/EmailChange';
+import SetLink from '@components/profile/SetLink';
 import LinkPage from '@components/profile/LinkPage';
 import GetLinkTokenPage from '@components/profile/GetLinkTokenPage';
 
@@ -43,6 +44,7 @@ export default function AppContent() {
 
                     <Route path="/link" element={<LinkPage />} />
                     <Route path="/link/token" element={<GetLinkTokenPage />} />
+                    <Route path="/token/:token" element={<SetLink />} />
                 </Route>
             </Routes>
         </>

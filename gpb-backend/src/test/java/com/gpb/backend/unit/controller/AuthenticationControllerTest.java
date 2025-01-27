@@ -11,6 +11,8 @@ import com.gpb.backend.service.EmailService;
 import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserAuthenticationService;
 import com.gpb.common.entity.user.TokenRequestDto;
+import com.gpb.common.service.UserLinkerService;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,6 +23,8 @@ import java.util.Locale;
 
 import static com.gpb.backend.util.Constants.USER_ROLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,7 +40,8 @@ class AuthenticationControllerTest {
 
     @Mock
     UserActivationService userActivationService;
-
+    @Mock
+    UserLinkerService userLinkerService;
     @Mock
     EmailService emailService;
 
@@ -47,31 +52,74 @@ class AuthenticationControllerTest {
             0, null, USER_ROLE, new Locale("ua"));
 
     @Test
-    void testLogin_whenSuccess_shouldReturnUser() {
+    void testLogin_whenLinkTokenNotPresented_shouldReturnUser() {
+        long basicUserId = 123L;
         String token = "token";
         Credentials credentials = new Credentials("email", null);
         UserDto userDto = new UserDto(credentials.getEmail(), "", "", "ADMIN", "ua");
+        userDto.setBasicUserId(basicUserId);
         when(service.login(credentials)).thenReturn(userDto);
         when(provider.createToken(user.getEmail())).thenReturn(token);
 
 
-        UserDto result = controller.login(credentials);
+        UserDto result = controller.login(credentials, null);
 
 
         assertEquals(userDto, result);
         assertEquals(token, result.getToken());
+        verify(userLinkerService, times(0)).linkAccounts(any(String.class), any(Long.class));
     }
 
     @Test
-    void testUserRegistration_whenSuccess_shouldReturnUser() {
+    void testLogin_whenLinkTokenPresented_shouldReturnUser() {
+        long basicUserId = 123L;
+        String token = "token";
+        String linkToken = "linkToken";
+        Credentials credentials = new Credentials("email", null);
+        UserDto userDto = new UserDto(credentials.getEmail(), "", "", "ADMIN", "ua");
+        userDto.setBasicUserId(basicUserId);
+        when(service.login(credentials)).thenReturn(userDto);
+        when(provider.createToken(user.getEmail())).thenReturn(token);
+
+
+        UserDto result = controller.login(credentials, linkToken);
+
+
+        assertEquals(userDto, result);
+        assertEquals(token, result.getToken());
+        verify(userLinkerService).linkAccounts(linkToken, basicUserId);
+    }
+
+
+    @Test
+    void testUserRegistration_whenLinkTokenNotPresented_shouldReturnUser() {
         UserRegistration userRegistration = new UserRegistration("email", "password".toCharArray(), "ua");
         when(service.createUser(userRegistration)).thenReturn(user);
         UserActivation userActivation = new UserActivation();
         when(userActivationService.createUserActivation(user)).thenReturn(userActivation);
 
-        controller.userRegistration(userRegistration);
+
+        controller.userRegistration(userRegistration, null);
+
 
         verify(emailService).sendEmailVerification(userActivation);
+        verify(userLinkerService, times(0)).linkAccounts(any(String.class), any(Long.class));
+    }
+
+    @Test
+    void testUserRegistration_whenLinkTokenPresented_shouldReturnUser() {
+        String linkToken = "linkToken";
+        UserRegistration userRegistration = new UserRegistration("email", "password".toCharArray(), "ua");
+        when(service.createUser(userRegistration)).thenReturn(user);
+        UserActivation userActivation = new UserActivation();
+        when(userActivationService.createUserActivation(user)).thenReturn(userActivation);
+
+
+        controller.userRegistration(userRegistration, linkToken);
+
+
+        verify(emailService).sendEmailVerification(userActivation);
+        verify(userLinkerService).linkAccounts(linkToken, user.getBasicUserId());
     }
 
     @Test

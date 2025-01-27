@@ -2,8 +2,10 @@ package com.gpb.backend.controller;
 
 import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.UserManagementService;
+import com.gpb.backend.util.Constants;
 import com.gpb.common.entity.user.TokenRequestDto;
 import com.gpb.common.service.UserLinkerService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +31,7 @@ public class UserLinkerController {
     /**
      * Connect telegram user to current web user
      *
-     * @param token token that connected to telegram user
+     * @param token token that connected to another account
      * @param user  current user
      */
     @PostMapping
@@ -42,7 +44,7 @@ public class UserLinkerController {
     }
 
     /**
-     * Get token for connect with telegram user
+     * Get token for connect with another account
      *
      * @param user current user
      * @return token of connector

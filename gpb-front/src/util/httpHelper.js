@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getAuthToken, setAuthToken, setUserRole } from '@util/authService'
+import { getAuthToken, getLinkToken, setAuthToken, setUserRole } from '@util/authService'
 
 axios.defaults.baseURL = 'http://localhost:8080';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -9,6 +9,8 @@ export const request = (method, url, data) => {
     let headers = {};
     if (getAuthToken() !== null && getAuthToken() !== "null") {
         headers = { 'Authorization': `Bearer ${getAuthToken()}` };
+    } else if (getLinkToken() !== null && getLinkToken() !== "null") {
+        headers = { 'LinkToken': `${getLinkToken()}` };
     }
 
     return axios({

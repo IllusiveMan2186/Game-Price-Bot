@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gpb.backend.GpbWebApplication;
 import com.gpb.backend.configuration.security.AdminUserInitializer;
+import com.gpb.backend.entity.Credentials;
 import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.listener.EmailNotificationListener;
@@ -11,6 +12,8 @@ import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.common.entity.event.AccountLinkerEvent;
 import com.gpb.common.entity.event.EmailEvent;
 import com.gpb.common.entity.event.GameFollowEvent;
+import com.gpb.common.entity.user.NotificationRequestDto;
+import com.gpb.common.entity.user.UserNotificationType;
 import com.gpb.common.service.RestTemplateHandlerService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.CharBuffer;
 import java.text.ParseException;
@@ -36,9 +40,11 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.gpb.backend.util.Constants.ADMIN_ROLE;
-import static com.gpb.backend.util.Constants.USER_ROLE;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = GpbWebApplication.class)
@@ -104,21 +110,13 @@ public class BaseAuthenticationIntegration {
     @BeforeEach
     void userCreationForAuthBeforeAllTests() {
         when(restTemplateHandler
-                .executeRequest(GAME_SERVICE_URL + "/user", HttpMethod.POST, null, Long.class))
-                .thenReturn(1L)
-                .thenReturn(2L);
+                .executeRequestWithBody("/user",
+                        HttpMethod.POST,
+                        null,
+                        new NotificationRequestDto(UserNotificationType.EMAIL),
+                        Long.class))
+                .thenReturn(1L);
         adminCreation(0);
-    }
-
-
-    protected static WebUser userCreation(String email, String password) {
-        return WebUser.builder()
-                .email(email)
-                .password(password)
-                .role(USER_ROLE)
-                .isActivated(true)
-                .locale(new Locale("ua"))
-                .build();
     }
 
     protected static WebUser userCreation(String email, String password, String role) {
@@ -159,5 +157,15 @@ public class BaseAuthenticationIntegration {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 userDto, user.getPassword(), userDto.getAuthorities());
         return new SecurityContextImpl(token);
+    }
+
+    protected String login() throws Exception {
+        MvcResult loginResult =mockMvc.perform(post("/login")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectToJson(new Credentials(userList.get(0).getEmail(), DECODE_PASSWORD.toCharArray()))))
+                .andDo(print())
+                .andReturn();
+
+        return loginResult.getResponse().getCookie("SESSION").getValue();
     }
 }

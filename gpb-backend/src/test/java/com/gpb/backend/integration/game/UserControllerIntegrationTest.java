@@ -25,6 +25,7 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration {
     void testUpdateUser_whenSuccess_shouldReturnUser() throws Exception {
         String email = "email3";
 
+
         mockMvc.perform(put("/user/email")
                         .contentType(APPLICATION_JSON)
                         .content(objectToJson(new EmailRequestDto(email)))
