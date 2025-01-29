@@ -1,6 +1,7 @@
 package com.gpb.common.util;
 
 import com.gpb.common.entity.event.GameFollowEvent;
+import com.gpb.common.entity.event.LinkUsersEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A factory class for creating Kafka producer templates for GameFollowEvent.
+ * A factory class for creating Kafka producer templates for events.
  */
 public class KafkaProducerFactory {
 
@@ -25,6 +26,20 @@ public class KafkaProducerFactory {
      * @return a configured KafkaTemplate instance
      */
     public static KafkaTemplate<String, GameFollowEvent> createGameFollowEventTemplate(String kafkaServer) {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
+        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(configs));
+    }
+
+    /**
+     * Creates a KafkaTemplate for producing LinkUsersEvent messages.
+     *
+     * @param kafkaServer the Kafka server address
+     * @return a configured KafkaTemplate instance
+     */
+    public static KafkaTemplate<String, LinkUsersEvent> createLinkUsersEventEventTemplate(String kafkaServer) {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);

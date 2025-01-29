@@ -2,6 +2,7 @@ package com.gpb.backend.configuration.kafka;
 
 import com.gpb.common.entity.event.EmailEvent;
 import com.gpb.common.entity.event.GameFollowEvent;
+import com.gpb.common.entity.event.LinkUsersEvent;
 import com.gpb.common.util.KafkaProducerFactory;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongSerializer;
@@ -43,5 +44,10 @@ public class KafkaProducerConfig {
     @Bean
     public KafkaTemplate<String, GameFollowEvent> kafkaGameFollowEventTemplate() {
         return KafkaProducerFactory.createGameFollowEventTemplate(kafkaServer);
+    }
+
+    @Bean
+    public KafkaTemplate<String, LinkUsersEvent> createLinkUsersEventEventTemplate() {
+        return KafkaProducerFactory.createLinkUsersEventEventTemplate(kafkaServer);
     }
 }

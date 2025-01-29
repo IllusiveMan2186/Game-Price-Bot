@@ -10,11 +10,13 @@ import com.gpb.telegram.service.TelegramUserService;
 import com.gpb.telegram.util.Constants;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
+@Slf4j
 @Component(Constants.SYNCHRONIZATION_COMMAND)
 @AllArgsConstructor
 @FilterChainMarker(Constants.USER_EXISTING_FILTER)
@@ -35,8 +37,7 @@ public class LinkedToWebUserCommandHandler implements CommandHandler {
         String token = request.getArgument(1);
 
         try {
-            Long newUserBasicId = userLinkerService.linkAccounts(token, request.getUserBasicId());
-            telegramUserService.setBasicUserId(request.getUserBasicId(), newUserBasicId);
+            userLinkerService.linkAccounts(token, request.getUserBasicId());
 
             return new TelegramResponse(request,
                     messageSource.getMessage("accounts.synchronization.token.connected.message", null,

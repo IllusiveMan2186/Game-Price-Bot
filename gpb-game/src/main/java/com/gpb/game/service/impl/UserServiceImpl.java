@@ -59,8 +59,9 @@ public class UserServiceImpl implements UserService {
         targetUser.getNotificationTypes().addAll(sourceUser.getNotificationTypes());
 
         BasicUser linkedUser = userRepository.save(targetUser);
-        userRepository.deleteById(sourceUser.getId());
+        accountLinkerRepository.deleteByUserId(sourceUser.getId());
         accountLinkerRepository.deleteById(token);
+        userRepository.deleteById(sourceUser.getId());
         return linkedUser;
     }
 

@@ -1,5 +1,6 @@
 package com.gpb.backend.configuration.security;
 
+import com.gpb.backend.util.Constants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +30,7 @@ public class WebConfig {
                 HttpHeaders.AUTHORIZATION,
                 HttpHeaders.CONTENT_TYPE,
                 HttpHeaders.ACCEPT,
-                "LinkToken"));
+                Constants.LINK_TOKEN_HEADER));
         config.setAllowedMethods(Arrays.asList(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),

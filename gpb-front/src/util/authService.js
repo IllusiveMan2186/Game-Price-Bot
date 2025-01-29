@@ -4,7 +4,7 @@
  * Get the authentication token from localStorage.
  * @returns {string|null} The stored auth token, or null if not present.
  */
-export const getAuthToken = () => window.localStorage.getItem('auth_token');
+export const getAuthToken = () => sessionStorage.getItem('auth_token');
 
 /**
  * Set the authentication token in localStorage.
@@ -12,9 +12,9 @@ export const getAuthToken = () => window.localStorage.getItem('auth_token');
  */
 export const setAuthToken = (token) => {
     if (token) {
-        window.localStorage.setItem('auth_token', token);
+        sessionStorage.setItem('auth_token', token);
     } else {
-        window.localStorage.removeItem('auth_token');
+        sessionStorage.removeItem('auth_token');
     }
 };
 
@@ -33,7 +33,7 @@ export function isUserAuth() {
  * Get the user's role from localStorage.
  * @returns {string|null} The stored role, or null if not present.
  */
-export const getUserRole = () => window.localStorage.getItem('role');
+export const getUserRole = () => sessionStorage.getItem('role');
 
 /**
  * Set the user's role in localStorage.
@@ -41,9 +41,9 @@ export const getUserRole = () => window.localStorage.getItem('role');
  */
 export const setUserRole = (role) => {
     if (role) {
-        window.localStorage.setItem('role', role);
+        sessionStorage.setItem('role', role);
     } else {
-        window.localStorage.removeItem('role');
+        sessionStorage.removeItem('role');
     }
 };
 
@@ -59,13 +59,13 @@ export const isUserAdmin = () => getUserRole() === 'ROLE_ADMIN';
  * Get the user's email from localStorage.
  * @returns {string|null} The stored email, or null if not present.
  */
-export const getEmail = () => window.localStorage.getItem('email');
+export const getEmail = () => sessionStorage.getItem('email');
 
 /**
  * Get the user's link token
  * @returns {string|null} The stored email, or null if not present.
  */
-export const getLinkToken = () => window.localStorage.getItem('linkToken');
+export const getLinkToken = () => sessionStorage.getItem('linkToken');
 
 /**
  * Set the user's email in localStorage.
@@ -73,9 +73,9 @@ export const getLinkToken = () => window.localStorage.getItem('linkToken');
  */
 export const setEmail = (email) => {
     if (email) {
-        window.localStorage.setItem('email', email);
+        sessionStorage.setItem('email', email);
     } else {
-        window.localStorage.removeItem('email');
+        sessionStorage.removeItem('email');
     }
 };
 
@@ -101,7 +101,7 @@ export const setLocale = (locale) => {
 };
 
 export const setAuthHeader = (token) => {
-    window.localStorage.setItem('auth_token', token);
+    sessionStorage.setItem('auth_token', token);
 };
 
 export const setLocaleHeader = (locale) => {
@@ -109,15 +109,15 @@ export const setLocaleHeader = (locale) => {
 };
 
 export const setRoleHeader = (role) => {
-    window.localStorage.setItem('role', role);
+    sessionStorage.setItem('role', role);
 };
 
 export const setEmailHeader = (email) => {
-    window.localStorage.setItem('email', email);
+    sessionStorage.setItem('email', email);
 };
 
 export const setLinkToken = (token) => {
-    window.localStorage.setItem('linkToken', token);
+    sessionStorage.setItem('linkToken', token);
 };
 
 export const defaultRequestErrorCheck = (error) => {

@@ -24,7 +24,7 @@ public class EmailNotificationListener {
     }
 
     @KafkaListener(topics = CommonConstants.EMAIL_NOTIFICATION_TOPIC,
-            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
+            groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "notificationListener")
     @Transactional
     public void listenEmailNotification(ConsumerRecord<String, NotificationEvent> unfollowRecord) {

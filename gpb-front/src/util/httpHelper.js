@@ -10,6 +10,7 @@ export const request = (method, url, data) => {
     if (getAuthToken() !== null && getAuthToken() !== "null") {
         headers = { 'Authorization': `Bearer ${getAuthToken()}` };
     } else if (getLinkToken() !== null && getLinkToken() !== "null") {
+        console.info(getLinkToken())
         headers = { 'LinkToken': `${getLinkToken()}` };
     }
 
@@ -31,6 +32,6 @@ export const handleRequest = async (method, url, data, onSuccess, onError) => {
             setAuthToken(null);
             setUserRole(null);
         }
-        onError(error.response.data);
+        onError?.(error.response?.data);
     }
 };

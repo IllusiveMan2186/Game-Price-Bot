@@ -5,6 +5,7 @@ import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.UserManagementService;
 import com.gpb.common.exception.NotFoundException;
+import com.gpb.common.service.ChangeUserBasicIdService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import java.util.Locale;
 
 @Service
 @Slf4j
-public class UserManagementServiceImpl implements UserManagementService {
+public class UserManagementServiceImpl implements UserManagementService, ChangeUserBasicIdService {
 
     private final WebUserRepository webUserRepository;
     private final ModelMapper modelMapper;

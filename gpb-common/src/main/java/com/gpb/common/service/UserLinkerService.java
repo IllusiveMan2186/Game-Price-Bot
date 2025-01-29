@@ -10,9 +10,8 @@ public interface UserLinkerService {
      *
      * @param token              Connection token for linking
      * @param currentUserBasicId current user basic ID
-     * @return new basic user id
      */
-    Long linkAccounts(String token, long currentUserBasicId);
+    void linkAccounts(String token, long currentUserBasicId);
 
     /**
      * Generate a token for linking accounts

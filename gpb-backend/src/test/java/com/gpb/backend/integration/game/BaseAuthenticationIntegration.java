@@ -12,8 +12,10 @@ import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.common.entity.event.AccountLinkerEvent;
 import com.gpb.common.entity.event.EmailEvent;
 import com.gpb.common.entity.event.GameFollowEvent;
+import com.gpb.common.entity.event.LinkUsersEvent;
 import com.gpb.common.entity.user.NotificationRequestDto;
 import com.gpb.common.entity.user.UserNotificationType;
+import com.gpb.common.listener.ChangeBasicUserIdListener;
 import com.gpb.common.service.RestTemplateHandlerService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -82,6 +84,12 @@ public class BaseAuthenticationIntegration {
 
     @MockBean
     protected KafkaTemplate<String, AccountLinkerEvent> kafkaAccountsLinkerEventTemplate;
+
+    @MockBean
+    protected KafkaTemplate<String, LinkUsersEvent> kafkaLinkUsersEventTemplate;
+
+    @MockBean
+    protected ChangeBasicUserIdListener changeBasicUserIdListener;
 
     @MockBean
     protected EmailNotificationListener listener;
