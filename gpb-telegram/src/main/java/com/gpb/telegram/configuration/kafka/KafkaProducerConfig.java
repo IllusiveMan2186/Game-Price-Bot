@@ -1,6 +1,8 @@
 package com.gpb.telegram.configuration.kafka;
 
 import com.gpb.common.entity.event.GameFollowEvent;
+import com.gpb.common.entity.event.LinkUsersEvent;
+import com.gpb.common.util.KafkaProducerFactory;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,5 +28,11 @@ public class KafkaProducerConfig {
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(configs));
+    }
+
+
+    @Bean
+    public KafkaTemplate<String, LinkUsersEvent> createLinkUsersEventEventTemplate() {
+        return KafkaProducerFactory.createLinkUsersEventEventTemplate(kafkaServer);
     }
 }

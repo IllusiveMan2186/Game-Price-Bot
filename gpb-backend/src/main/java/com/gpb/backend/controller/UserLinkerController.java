@@ -2,10 +2,8 @@ package com.gpb.backend.controller;
 
 import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.UserManagementService;
-import com.gpb.backend.util.Constants;
 import com.gpb.common.entity.user.TokenRequestDto;
 import com.gpb.common.service.UserLinkerService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,8 +37,7 @@ public class UserLinkerController {
     @ResponseStatus(HttpStatus.OK)
     public void linkUser(@RequestBody final TokenRequestDto token,
                          @AuthenticationPrincipal UserDto user) {
-        Long newBasicUserId = userLinkerService.linkAccounts(token.getToken(), user.getId());
-        userManagementService.setBasicUserId(user.getBasicUserId(), newBasicUserId);
+        userLinkerService.linkAccounts(token.getToken(), user.getId());
     }
 
     /**

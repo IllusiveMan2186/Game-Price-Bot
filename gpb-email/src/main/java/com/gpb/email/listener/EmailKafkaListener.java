@@ -20,7 +20,7 @@ public class EmailKafkaListener {
     }
 
     @KafkaListener(topics = CommonConstants.EMAIL_SERVICE_TOPIC,
-            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
+            groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "emailEventListener")
     public void emailEventListen(ConsumerRecord<String, EmailEvent> eventRecord) {
         EmailEvent emailEvent = eventRecord.value();

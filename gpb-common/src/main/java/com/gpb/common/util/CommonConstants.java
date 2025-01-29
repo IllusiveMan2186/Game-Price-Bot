@@ -59,9 +59,14 @@ public class CommonConstants {
     public static final String GAME_IN_STORE_REMOVE_TOPIC = "gpb_game_in_store_remove";
 
     /**
-     * Kafka group ID for the GPB application.
+     * Kafka topic for link users.
      */
-    public static final String GPB_KAFKA_GROUP_ID = "gpb";
+    public static final String LINK_USERS_TOPIC = "gpb_link_user_";
+
+    /**
+     * Kafka topic for change basic user id.
+     */
+    public static final String CHANGE_BASIC_USER_ID_TOPIC = "gpb_change_basic_user_id";
 
     /**
      * Name sort param

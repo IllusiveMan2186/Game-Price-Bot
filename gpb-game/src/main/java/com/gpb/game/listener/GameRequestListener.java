@@ -22,7 +22,7 @@ public class GameRequestListener {
     private final UserService userService;
 
     @KafkaListener(topics = CommonConstants.GAME_FOLLOW_TOPIC,
-            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
+            groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "followListener")
     @Transactional
     public void listenGameFollow(ConsumerRecord<String, GameFollowEvent> followRecord) {
@@ -38,7 +38,7 @@ public class GameRequestListener {
 
 
     @KafkaListener(topics = CommonConstants.GAME_UNFOLLOW_TOPIC,
-            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
+            groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "followListener")
     @Transactional
     public void listenGameUnfollow(ConsumerRecord<String, GameFollowEvent> unfollowRecord) {
@@ -54,7 +54,7 @@ public class GameRequestListener {
     }
 
     @KafkaListener(topics = CommonConstants.GAME_REMOVE_TOPIC,
-            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
+            groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "gameRemoveListener")
     @Transactional
     public void listenGameRemove(ConsumerRecord<String, Long> removeRecord) {
@@ -63,7 +63,7 @@ public class GameRequestListener {
     }
 
     @KafkaListener(topics = CommonConstants.GAME_IN_STORE_REMOVE_TOPIC,
-            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
+            groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "gameRemoveListener")
     @Transactional
     public void listenGameInStoreRemove(ConsumerRecord<String, Long> removeRecord) {

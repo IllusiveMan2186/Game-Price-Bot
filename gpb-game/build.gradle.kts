@@ -57,7 +57,7 @@ dependencies {
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
     testImplementation("com.h2database:h2:2.2.220")
 
-    implementation("com.gpb:common:1.0.9-SNAPSHOT")
+    implementation("com.gpb:common:1.0.18-SNAPSHOT")
 }
 
 tasks.withType<Test> {

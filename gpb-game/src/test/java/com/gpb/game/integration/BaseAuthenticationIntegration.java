@@ -10,6 +10,7 @@ import com.gpb.game.GpbStoresApplication;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.listener.GameRequestListener;
+import com.gpb.game.listener.UserRequestListener;
 import com.gpb.game.repository.GameInShopRepository;
 import com.gpb.game.repository.GameRepository;
 import com.gpb.game.repository.UserRepository;
@@ -72,6 +73,8 @@ class BaseAuthenticationIntegration {
     protected KafkaTemplate<String, NotificationEvent> responseKafkaTemplate;
     @MockBean
     protected GameRequestListener gameRequestListener;
+    @MockBean
+    protected UserRequestListener userRequestListener;
 
     @BeforeAll
     protected static void beforeAll() throws ParseException {

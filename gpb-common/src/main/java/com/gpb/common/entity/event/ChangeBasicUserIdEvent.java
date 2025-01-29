@@ -3,14 +3,12 @@ package com.gpb.common.entity.event;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class GameFollowEvent {
+@NoArgsConstructor
+public class ChangeBasicUserIdEvent {
 
-    private long userId;
-    private long gameId;
+    private long oldBasicUserId;
+    private long newBasicUserId;
 }
