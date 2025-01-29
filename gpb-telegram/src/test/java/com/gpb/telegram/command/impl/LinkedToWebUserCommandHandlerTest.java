@@ -47,7 +47,6 @@ class LinkedToWebUserCommandHandlerTest {
     void testApply_whenSuccess_shouldReturnMessageAndSSynchronizeAccounts() {
         Locale locale = new Locale("");
         long currentUserId = 123456;
-        long newBasicUserId = 123;
         Update update = UpdateCreator.getUpdateWithoutCallback("/synchronizeToWeb mockToken", 123);
         when(messageSource.getMessage("accounts.synchronization.token.connected.message", null, locale))
                 .thenReturn("messages");
@@ -55,7 +54,6 @@ class LinkedToWebUserCommandHandlerTest {
         String token = "mockToken";
         TelegramUser user = TelegramUser.builder().basicUserId(123456L).build();
         TelegramRequest request = TelegramRequest.builder().update(update).user(user).locale(locale).build();
-        when(userLinkerService.linkAccounts(token, currentUserId)).thenReturn(newBasicUserId);
 
 
         TelegramResponse response = controller.apply(request);
@@ -63,7 +61,6 @@ class LinkedToWebUserCommandHandlerTest {
 
         SendMessage sendMessage = (SendMessage) response.getMessages().get(0);
         verify(userLinkerService).linkAccounts(token, currentUserId);
-        verify(telegramUserService).setBasicUserId(currentUserId, newBasicUserId);
         assertEquals("123", sendMessage.getChatId());
         assertEquals("messages", sendMessage.getText());
     }

@@ -1,6 +1,5 @@
 package com.gpb.backend.integration.game;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gpb.backend.entity.Credentials;
 import com.gpb.backend.entity.UserRegistration;
 import com.gpb.common.entity.user.NotificationRequestDto;

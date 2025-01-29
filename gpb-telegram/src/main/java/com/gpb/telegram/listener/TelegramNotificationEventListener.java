@@ -30,9 +30,8 @@ public class TelegramNotificationEventListener {
     private final TelegramUserService telegramUserService;
     private final MessageSource messageSource;
 
-
     @KafkaListener(topics = CommonConstants.TELEGRAM_NOTIFICATION_TOPIC,
-            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
+            groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "notificationListener")
     public void listenNotification(ConsumerRecord<String, NotificationEvent> notificationEvent) {
         NotificationEvent event = notificationEvent.value();

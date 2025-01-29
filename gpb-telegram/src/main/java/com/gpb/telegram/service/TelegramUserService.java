@@ -54,12 +54,4 @@ public interface TelegramUserService {
      * @return users locale
      */
     Locale getUserLocale(long telegramId);
-
-    /**
-     * Set new basic user id
-     *
-     * @param currentBasicUserId current basic user id
-     * @param newBasicUserId     new basic user id
-     */
-    void setBasicUserId(long currentBasicUserId, long newBasicUserId);
 }
