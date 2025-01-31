@@ -1,6 +1,7 @@
 package com.gpb.backend.configuration.security;
 
-import com.gpb.backend.filter.JwtAuthFilter;
+import com.gpb.backend.filter.AuthFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -25,18 +26,31 @@ public class SecurityConfiguration {
     @Bean
     @Order(1)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        AuthFilter authFilter = new AuthFilter(userAuthenticationProvider);
+
         http
                 .cors().and()
                 .exceptionHandling().authenticationEntryPoint(userAuthenticationEntryPoint)
-                .and().addFilterBefore(new JwtAuthFilter(userAuthenticationProvider), BasicAuthenticationFilter.class)
+                .and()
+                .addFilterBefore(authFilter, BasicAuthenticationFilter.class)
                 .csrf().disable()
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.POST, "/login", "/registration", "/activate").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/check-auth").permitAll()
                         .requestMatchers(HttpMethod.POST, "/linker/set").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/logout-user").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/resend/email/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/email/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/game/**").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated())
+                .logout(logout -> logout
+                        .logoutUrl("/do-not-use-logout") // Avoid conflicts by setting a fake logout URL
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK); // Prevent redirect
+                        })
+                );
+
         return http.build();
     }
+
 }

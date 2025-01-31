@@ -52,6 +52,9 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     public GameInfoDto getGameById(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
         long userId = user == null ? -1 : user.getId();
+
+        log.info("Get game by id {} for user {}", gameId, userId);
+
         return gameService.getById(gameId, userId);
     }
 
@@ -66,6 +69,8 @@ public class GameController {
                                          @RequestParam(required = false, defaultValue = "25") final int pageSize,
                                          @RequestParam(required = false, defaultValue = "1") final int pageNum,
                                          @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC") final String sortBy) {
+        log.info("Get game by name '{}'", name);
+
         checkSortParam(sortBy);
         return gameService.getByName(name, pageSize, pageNum, sortBy);
     }
@@ -78,6 +83,8 @@ public class GameController {
      */
     @GetMapping(value = "/url")
     public GameInfoDto getGameByUrl(@RequestParam final String url) {
+        log.info("Get game by url '{}'", url);
+
         return gameService.getByUrl(url);
     }
 
@@ -143,7 +150,11 @@ public class GameController {
     @DeleteMapping(value = "/{gameId}")
     @ResponseStatus(HttpStatus.OK)
     public void removeGameById(@PathVariable final long gameId) {
+        log.info("Remove game {} from database", gameId);
+
         gameService.removeGame(gameId);
+
+        log.info("Game successfully removed");
     }
 
     /**
@@ -155,7 +166,11 @@ public class GameController {
     @DeleteMapping(value = "/store/{gameInStoreId}")
     @ResponseStatus(HttpStatus.OK)
     public void removeGameInStoreById(@PathVariable final long gameInStoreId) {
+        log.info("Remove game in store {} from database", gameInStoreId);
+
         gameService.removeGameInStore(gameInStoreId);
+
+        log.info("Game in store successfully removed");
     }
 
 

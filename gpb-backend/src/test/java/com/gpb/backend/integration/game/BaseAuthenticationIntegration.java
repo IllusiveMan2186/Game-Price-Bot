@@ -168,9 +168,9 @@ public class BaseAuthenticationIntegration {
     }
 
     protected String login() throws Exception {
-        MvcResult loginResult =mockMvc.perform(post("/login")
+        MvcResult loginResult = mockMvc.perform(post("/login")
                         .contentType(APPLICATION_JSON)
-                        .content(objectToJson(new Credentials(userList.get(0).getEmail(), DECODE_PASSWORD.toCharArray()))))
+                        .content(objectToJson(new Credentials(userList.get(0).getEmail(), DECODE_PASSWORD.toCharArray(), false))))
                 .andDo(print())
                 .andReturn();
 

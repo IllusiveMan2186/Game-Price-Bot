@@ -20,6 +20,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -169,5 +170,17 @@ class UserManagementServiceTest {
 
         assertEquals(userList, result);
         verify(webUserRepository).findAllByIdIn(userIds);
+    }
+
+    @Test
+    void testSetBasicUserId_whenSuccess_shouldCallUserBasicChange() {
+        long currentBasicUserId = 123L;
+        long newBasicUserId = 456L;
+
+
+        userService.setBasicUserId(currentBasicUserId, newBasicUserId);
+
+
+        verify(webUserRepository, times(1)).updateBasicUserIdByBasicUserId(currentBasicUserId, newBasicUserId);
     }
 }

@@ -1,56 +1,53 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { changeLanguage } from 'i18next';
 
 import Message from '@util/message';
-import { isUserAuth, getLocale, setLocaleHeader } from '@util/authService';
+import { useIsUserAuth } from '@util/authHook';
+import { getLocale, setLocale } from '@util/userDataUtils';
 import { localeChangeRequest } from '@services/userRequests';
 
-export default class Localization extends React.Component {
+const Localization = () => {
+    const [locale, setLocaleState] = useState(getLocale()); // ✅ Using useState for locale
+    const isUserAuth = useIsUserAuth(); // ✅ Hooks work inside function components
 
-    constructor() {
-        super(null);
-        this.state = {
-            locale: getLocale()
-        };
-    };
-
-    onChangeHandler = (value) => {
-        this.setState({ ['locale']: value });
+    const onChangeHandler = (value) => {
+        setLocaleState(value);
         changeLanguage(value);
-        setLocaleHeader(value)
-        if (isUserAuth()) {
-            localeChangeRequest(value)
+        setLocale(value);
+        
+        if (isUserAuth) {
+            localeChangeRequest(value);
         }
     };
 
-    render() {
-        return (
-            <div id="footer-language-choice" className="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
-                <h6 className="text-uppercase mb-4 font-weight-bold">
-                    <Message string={'app.footer.language'} />
-                </h6>
-                <button
-                    className="btn btn-primary btn-floating m-1"
-                    style={{ backgroundColor: this.state.locale === "ru" ? "#0082ca" : "#333333" }}
-                    onClick={(() => this.onChangeHandler('ru'))}
-                >
-                    RU
-                </button >
-                <button
-                    className="btn btn-primary btn-floating m-1"
-                    style={{ backgroundColor: this.state.locale === "ua" ? "#0082ca" : "#333333" }}
-                    onClick={(() => this.onChangeHandler('ua'))}
-                >
-                    UA
-                </button >
-                <button
-                    className="btn btn-primary btn-floating m-1"
-                    style={{ backgroundColor: this.state.locale === "en" ? "#0082ca" : "#333333" }}
-                    onClick={(() => this.onChangeHandler('en'))}
-                >
-                    EN
-                </button >
-            </div>
-        );
-    }
-}
+    return (
+        <div id="footer-language-choice" className="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+            <h6 className="text-uppercase mb-4 font-weight-bold">
+                <Message string={'app.footer.language'} />
+            </h6>
+            <button
+                className="btn btn-primary btn-floating m-1"
+                style={{ backgroundColor: locale === "ru" ? "#0082ca" : "#333333" }}
+                onClick={() => onChangeHandler('ru')}
+            >
+                RU
+            </button>
+            <button
+                className="btn btn-primary btn-floating m-1"
+                style={{ backgroundColor: locale === "ua" ? "#0082ca" : "#333333" }}
+                onClick={() => onChangeHandler('ua')}
+            >
+                UA
+            </button>
+            <button
+                className="btn btn-primary btn-floating m-1"
+                style={{ backgroundColor: locale === "en" ? "#0082ca" : "#333333" }}
+                onClick={() => onChangeHandler('en')}
+            >
+                EN
+            </button>
+        </div>
+    );
+};
+
+export default Localization;

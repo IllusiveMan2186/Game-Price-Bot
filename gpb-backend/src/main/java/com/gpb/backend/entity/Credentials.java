@@ -12,4 +12,6 @@ public class Credentials {
 
     @ToString.Exclude
     private char[] password;
+
+    private boolean cookiesEnabled;
 }

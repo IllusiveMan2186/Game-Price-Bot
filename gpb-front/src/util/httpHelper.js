@@ -1,8 +1,12 @@
 import axios from 'axios';
-import { getAuthToken, getLinkToken, setAuthToken, setUserRole } from '@util/authService'
+import { getLinkToken} from '@util/userDataUtils'
+import { getAuthToken, setAuthToken } from '@util/authUtils'
+import { setUserRole } from '@util/userDataUtils'
 
 axios.defaults.baseURL = 'http://localhost:8080';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.withCredentials = true;
+
 
 export const request = (method, url, data) => {
 
@@ -10,15 +14,17 @@ export const request = (method, url, data) => {
     if (getAuthToken() !== null && getAuthToken() !== "null") {
         headers = { 'Authorization': `Bearer ${getAuthToken()}` };
     } else if (getLinkToken() !== null && getLinkToken() !== "null") {
-        console.info(getLinkToken())
         headers = { 'LinkToken': `${getLinkToken()}` };
     }
+
+    console.info(method +" "+ url)
 
     return axios({
         method: method,
         url: url,
         headers: headers,
-        data: data
+        data: data,
+        withCredentials: true,
     });
 };
 
@@ -34,4 +40,14 @@ export const handleRequest = async (method, url, data, onSuccess, onError) => {
         }
         onError?.(error.response?.data);
     }
+};
+
+// Centralized Error Handler
+export const handleError = (error, navigate, setErrorMessage) => {
+    if (error?.response?.status === 401) {
+        setAuthToken(null);
+        setUserRole(null);
+        navigate("/login");
+    }
+    setErrorMessage?.(error?.response?.data || "An unexpected error occurred.");
 };
