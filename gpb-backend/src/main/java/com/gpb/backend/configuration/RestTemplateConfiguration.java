@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Handler for synchronized call for other services
+ */
 @Configuration
 public class RestTemplateConfiguration {
 
@@ -17,8 +20,8 @@ public class RestTemplateConfiguration {
 
     @Bean
     public RestTemplateHandlerService restTemplateHandler(RestTemplate restTemplate,
-                                                   @Value("${api.key}") String validApiKey,
-                                                   @Value("${game.service.url}") String gameServiceUrl) {
+                                                          @Value("${api.key}") String validApiKey,
+                                                          @Value("${game.service.url}") String gameServiceUrl) {
         return new RestTemplateHandlerServiceImpl(restTemplate, validApiKey, gameServiceUrl);
     }
 }

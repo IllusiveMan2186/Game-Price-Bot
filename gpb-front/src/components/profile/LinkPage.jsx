@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import * as Yup from 'yup';
 
 import Message from '@util/message';
-import { accountLinkRequest } from '@services/userRequests';
+import { accountLinkRequest } from '@services/linkRequests';
 
 export default function LinkPage() {
     const navigate = useNavigate();

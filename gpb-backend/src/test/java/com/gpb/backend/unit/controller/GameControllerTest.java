@@ -9,6 +9,7 @@ import com.gpb.common.entity.game.GameListPageDto;
 import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
 import com.gpb.common.exception.PriceRangeException;
+import com.gpb.common.exception.SortParamException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -69,6 +70,12 @@ class GameControllerTest {
 
         assertNotNull(result);
         verify(gameService).getByName(name, pageSize, pageNum, sortBy);
+    }
+
+    @Test
+    void testGetGameByName_whenInvalidSortParam_shouldReturnGameList() {
+        assertThrows(SortParamException.class, () ->
+                gameController.getGameByName("name", 25, 1, "gamesInShop.price-ASC"));
     }
 
     @Test

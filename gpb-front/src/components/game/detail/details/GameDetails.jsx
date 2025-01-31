@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 
-import { isUserAdmin, isUserAuth } from '@util/authService';
+import { isUserAdmin } from '@util/userDataUtils';
+import { useIsUserAuth } from '@util/authHook';
 import Message from '@util/message';
 
 import { CommonGameInfo } from '@components/game/shared/info/CommonGameInfo';
@@ -33,18 +34,20 @@ const SubscribeButton = ({ isSubscribed, gameId, navigate }) => {
         }
     }, [isSubscribed, gameId, navigate]);
 
+    const isUserAuthenticate = useIsUserAuth();
+
     return (
         <div className="App-game-page-info-subscribe">
             <button
                 id="subscribe-button"
                 type="button"
                 className="btn btn-primary btn-block mb-3"
-                disabled={!isUserAuth()}
+                disabled={!isUserAuthenticate}
                 onClick={handleSubscribe}
             >
                 <Message string={isSubscribed ? 'app.game.info.unsubscribe' : 'app.game.info.subscribe'} />
             </button>
-            {!isUserAuth() && <Message string="app.game.info.need.auth" />}
+            {!isUserAuthenticate && <Message string="app.game.info.need.auth" />}
         </div>
     );
 };

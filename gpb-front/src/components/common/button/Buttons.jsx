@@ -1,22 +1,32 @@
-import * as React from 'react';
+import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
-import { isUserAuth } from '@util/authService';
+import { useIsUserAuth } from '@util/authHook';
 import Message from '@util/message';
 
 import './Button.css';
 
 export default function Buttons(props) {
   const navigate = useNavigate();
+  
+  const isUserAuthenticate = useIsUserAuth();
 
   const handleClickLogin = () => {
     navigate("/login");
+  };
+
+  if (isUserAuthenticate === null) {
+    return <div>Loading...</div>; // Show loading state while checking authentication
   }
 
   return (
     <div className="row">
       <div className="col-md-12 text-center">
-        {isUserAuth() ? <DropDown logout={props.logout} /> : <LoginButton handleClick={handleClickLogin} />}
+        {isUserAuthenticate ? (
+          <DropDown logout={props.logout} />
+        ) : (
+          <LoginButton handleClick={handleClickLogin} />
+        )}
       </div>
     </div>
   );

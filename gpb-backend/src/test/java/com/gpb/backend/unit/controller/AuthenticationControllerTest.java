@@ -10,19 +10,29 @@ import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.EmailService;
 import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserAuthenticationService;
+import com.gpb.backend.util.Constants;
 import com.gpb.common.entity.user.TokenRequestDto;
 import com.gpb.common.service.UserLinkerService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Locale;
 
 import static com.gpb.backend.util.Constants.USER_ROLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,17 +60,44 @@ class AuthenticationControllerTest {
             0, null, USER_ROLE, new Locale("ua"));
 
     @Test
+    void testLogin_whenCookiesEnabled_shouldReturnUserAndSetCookies() {
+        long basicUserId = 123L;
+        String token = "token";
+        Credentials credentials = new Credentials("email", null, true);
+        UserDto userDto = new UserDto(credentials.getEmail(), "", "", "ADMIN", "ua");
+        userDto.setBasicUserId(basicUserId);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(service.login(credentials)).thenReturn(userDto);
+        when(provider.createToken(user.getEmail())).thenReturn(token);
+
+        UserDto result = controller.login(credentials, null, response);
+
+
+        assertEquals(userDto, result);
+        assertNull(result.getToken());
+
+        Cookie cookie = new Cookie(Constants.TOKEN_COOKIES_ATTRIBUTE, token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(Constants.TOKEN_EXPIRATION);
+
+        verify(response, times(1)).addCookie(cookie);
+    }
+
+    @Test
     void testLogin_whenLinkTokenNotPresented_shouldReturnUser() {
         long basicUserId = 123L;
         String token = "token";
-        Credentials credentials = new Credentials("email", null);
+        Credentials credentials = new Credentials("email", null, false);
         UserDto userDto = new UserDto(credentials.getEmail(), "", "", "ADMIN", "ua");
         userDto.setBasicUserId(basicUserId);
+        HttpServletResponse response = mock(HttpServletResponse.class);
         when(service.login(credentials)).thenReturn(userDto);
         when(provider.createToken(user.getEmail())).thenReturn(token);
 
 
-        UserDto result = controller.login(credentials, null);
+        UserDto result = controller.login(credentials, null, response);
 
 
         assertEquals(userDto, result);
@@ -73,14 +110,15 @@ class AuthenticationControllerTest {
         long basicUserId = 123L;
         String token = "token";
         String linkToken = "linkToken";
-        Credentials credentials = new Credentials("email", null);
+        Credentials credentials = new Credentials("email", null, false);
         UserDto userDto = new UserDto(credentials.getEmail(), "", "", "ADMIN", "ua");
         userDto.setBasicUserId(basicUserId);
+        HttpServletResponse response = mock(HttpServletResponse.class);
         when(service.login(credentials)).thenReturn(userDto);
         when(provider.createToken(user.getEmail())).thenReturn(token);
 
 
-        UserDto result = controller.login(credentials, linkToken);
+        UserDto result = controller.login(credentials, linkToken, response);
 
 
         assertEquals(userDto, result);
@@ -129,5 +167,49 @@ class AuthenticationControllerTest {
 
 
         verify(userActivationService, times(1)).activateUserAccount(token);
+    }
+
+    @Test
+    void checkAuth_whenUserAuthenticated_shouldReturnOk() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+
+        ResponseEntity<?> responseEntity = controller.checkAuth();
+
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void checkAuth_whenUserNotAuthenticated_shouldReturnUnauthorized() {
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(null);
+        SecurityContextHolder.setContext(securityContext);
+
+
+        ResponseEntity<?> responseEntity = controller.checkAuth();
+
+
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void logout_shouldSetExpiredTokenCookie() {
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        Cookie cookie = new Cookie(Constants.TOKEN_COOKIES_ATTRIBUTE, null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+
+
+        controller.logout(response);
+
+
+        verify(response, times(1)).addCookie(cookie);
     }
 }

@@ -50,14 +50,18 @@ public class UserController {
      * Update registered user email
      *
      * @param emailRequestDto new version of email
-     * @param user  current user
+     * @param user            current user
      * @return updated user
      */
     @PutMapping("/email")
     @Transactional
     public UserDto updateUserEmail(@RequestBody final EmailRequestDto emailRequestDto, @AuthenticationPrincipal UserDto user) {
+        log.info("User with ID {} requested email change", user.getId());
+
         UserDto userDto = userAuthenticationService.updateUserEmail(emailRequestDto.getEmail(), user);
         userDto.setToken(userAuthenticationProvider.createToken(userDto.getEmail()));
+
+        log.info("User with ID {} successfully updated email", user.getId());
         return userDto;
     }
 
@@ -71,7 +75,12 @@ public class UserController {
     @PutMapping("/password")
     @Transactional
     public UserDto updateUserPassword(@RequestBody final PasswordChangeDto passwordChangeDto, @AuthenticationPrincipal UserDto user) {
-        return userAuthenticationService.updateUserPassword(passwordChangeDto.getPassword(), user);
+        log.info("User with ID {} requested password change", user.getId());
+
+        UserDto updatedUser = userAuthenticationService.updateUserPassword(passwordChangeDto.getPassword(), user);
+
+        log.info("User with ID {} successfully changed password", user.getId());
+        return updatedUser;
     }
 
     /**
@@ -83,7 +92,11 @@ public class UserController {
     @Transactional
     @ResponseStatus(HttpStatus.OK)
     public void resendUserActivationEmail(@RequestBody final EmailRequestDto emailRequestDto) {
+        log.info("Resending activation email for a user");
+
         userActivationService.resendActivationEmail(emailRequestDto.getEmail());
+
+        log.info("Activation email resent successfully");
     }
 
     /**
@@ -97,6 +110,7 @@ public class UserController {
     @Transactional
     @ResponseStatus(HttpStatus.OK)
     public void addGameToUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
+        log.info("Add game {} to user {} list ", gameId, user.getId());
         gameService.setFollowGameOption(gameId, user.getId(), true);
     }
 
@@ -111,6 +125,7 @@ public class UserController {
     @Transactional
     @ResponseStatus(HttpStatus.OK)
     public void removeGameFromUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
+        log.info("Remove game {} from user {} list ", gameId, user.getId());
         gameService.setFollowGameOption(gameId, user.getId(), false);
     }
 
@@ -118,13 +133,14 @@ public class UserController {
      * Update user locale
      *
      * @param localeRequestDto new locale
-     * @param user   user
+     * @param user             user
      */
     @PutMapping("/locale")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
     public void updateUserLocale(@RequestBody final LocaleRequestDto localeRequestDto,
                                  @AuthenticationPrincipal UserDto user) {
+        log.info("Change locale to {} for user {}", localeRequestDto.getLocale(), user.getId());
         userManagementService.updateLocale(localeRequestDto.getLocale(), user.getId());
     }
 }

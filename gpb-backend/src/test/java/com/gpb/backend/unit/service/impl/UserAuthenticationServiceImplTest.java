@@ -219,7 +219,7 @@ class UserAuthenticationServiceImplTest {
 
     @Test
     void testLogin_whenSuccess_shouldReturnUserDto() {
-        Credentials credentials = new Credentials("user@example.com", "password".toCharArray());
+        Credentials credentials = new Credentials("user@example.com", "password".toCharArray(), false);
 
         WebUser user = new WebUser();
         user.setActivated(true);
@@ -243,7 +243,7 @@ class UserAuthenticationServiceImplTest {
 
     @Test
     void testLogin_whenUserNotActivated_shouldThrowUserNotActivatedException() {
-        Credentials credentials = new Credentials("user@example.com", null);
+        Credentials credentials = new Credentials("user@example.com", null, false);
 
         WebUser user = new WebUser();
         user.setActivated(false);
@@ -255,7 +255,7 @@ class UserAuthenticationServiceImplTest {
 
     @Test
     void testLogin_whenUserWasLocked_shouldUnlockAndReturnUserDto() {
-        Credentials credentials = new Credentials("user@example.com", "password".toCharArray());
+        Credentials credentials = new Credentials("user@example.com", "password".toCharArray(), false);
 
         WebUser lockedUser = new WebUser();
         lockedUser.setActivated(true);
@@ -287,7 +287,7 @@ class UserAuthenticationServiceImplTest {
 
     @Test
     void testLogin_whenWrongCredentials_shouldIncrementFailedAttempts() {
-        Credentials credentials = new Credentials("user@example.com", "password".toCharArray());
+        Credentials credentials = new Credentials("user@example.com", "password".toCharArray(), false);
 
         WebUser user = WebUser.builder()
                 .isActivated(true)
@@ -315,7 +315,7 @@ class UserAuthenticationServiceImplTest {
 
     @Test
     void testLogin_whenWrongCredentialsAndMaxFailedAttemptsReached_shouldLockUser() {
-        Credentials credentials = new Credentials("user@example.com", "password".toCharArray());
+        Credentials credentials = new Credentials("user@example.com", "password".toCharArray(), false);
 
         WebUser user = WebUser.builder()
                 .isActivated(true)
@@ -343,7 +343,7 @@ class UserAuthenticationServiceImplTest {
 
     @Test
     void testLogin_whenUserIsLocked_shouldThrowUserLockedException() {
-        Credentials credentials = new Credentials("user@example.com", null);
+        Credentials credentials = new Credentials("user@example.com", null, false);
 
         WebUser user = new WebUser();
         user.setActivated(true);

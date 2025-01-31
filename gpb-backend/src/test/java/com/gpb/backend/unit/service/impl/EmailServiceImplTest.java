@@ -47,7 +47,7 @@ class EmailServiceImplTest {
     }
 
     @Test
-    void testSendEmailVerification_whenSuccess_shouldSendVerificationEmailEvent() throws Exception {
+    void testSendEmailVerification_whenUserWithLocale_shouldSendVerificationEmailEventWithUserLocale() throws Exception {
         WebUser user = new WebUser();
         user.setEmail("user@example.com");
         user.setLocale(Locale.FRENCH);
@@ -70,6 +70,33 @@ class EmailServiceImplTest {
                         emailEvent.getSubject().equals("User verification") &&
                         emailEvent.getVariables().equals(expectedVariables) &&
                         emailEvent.getLocale().equals(Locale.FRENCH) &&
+                        emailEvent.getTemplateName().equals("email-user-verification")
+        ));
+    }
+
+    @Test
+    void testSendEmailVerification_whenUserWithoutLocale_shouldSendVerificationEmailEventWithDefaultLocale() throws Exception {
+        WebUser user = new WebUser();
+        user.setEmail("user@example.com");
+
+        UserActivation userActivation = new UserActivation();
+        userActivation.setToken("testToken");
+        userActivation.setUser(user);
+
+        emailService.setFrontendServiceUrl("http://localhost:3000");
+
+
+        emailService.sendEmailVerification(userActivation);
+
+
+        Map<String, Object> expectedVariables = new LinkedHashMap<>();
+        expectedVariables.put("url", "http://localhost:3000/activation?token=testToken");
+
+        verify(kafkaTemplate).send(eq(CommonConstants.EMAIL_SERVICE_TOPIC), any(String.class), argThat(emailEvent ->
+                emailEvent.getRecipient().equals("user@example.com") &&
+                        emailEvent.getSubject().equals("User verification") &&
+                        emailEvent.getVariables().equals(expectedVariables) &&
+                        emailEvent.getLocale().equals(Locale.getDefault()) &&
                         emailEvent.getTemplateName().equals("email-user-verification")
         ));
     }

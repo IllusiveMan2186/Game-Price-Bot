@@ -1,31 +1,43 @@
 import { changeLanguage } from 'i18next';
 import { NotificationManager } from 'react-notifications';
 
-import { setAuthHeader, setEmailHeader, setRoleHeader, setLocaleHeader, getLocale } from '@util/authService';
+import { setAuthToken, setAuthFlag } from '@util/authUtils';
+import { areCookiesEnabled } from '@util/cookieUtils';
+import { setEmail, setUserRole, setLocale, getLocale } from '@util/userDataUtils';
+
 import { handleRequest } from '@util/httpHelper';
 
 
 // Centralized endpoints
 const API_ENDPOINTS = {
     LOGIN: "/login",
-    REGISTER: "/registration"
+    REGISTER: "/registration",
+    LOGOUT: "/logout-user",
 };
 
 
 // Login request function
 export const loginRequest = (email, password, setErrorMessage, navigate) => {
+    const cookiesEnabled = areCookiesEnabled();
+
     handleRequest(
         "POST",
         API_ENDPOINTS.LOGIN,
-        { email, password },
+        { email, password, cookiesEnabled },
         (response) => {
             const { token, email, authorities, locale } = response.data;
-            setAuthHeader(token);
-            setEmailHeader(email);
-            setRoleHeader(authorities[0]?.authority || "user");
-            setLocaleHeader(locale);
+
+            if (!cookiesEnabled) {
+                setAuthToken(token);
+            }
+
+            setEmail(email);
+            setUserRole(authorities[0]?.authority || "user");
+            setLocale(locale);
             changeLanguage(locale);
+            setAuthFlag();
             navigate("/");
+            window.location.reload();
         },
         (errorMessage) => setErrorMessage(errorMessage)
     );
@@ -42,5 +54,16 @@ export const registerRequest = (email, password, setErrorMessage, navigate) => {
             navigate("/");
         },
         (errorMessage) => setErrorMessage(errorMessage)
+    );
+};
+
+// Login request function
+export const logoutRequest = () => {
+    handleRequest(
+        "POST",
+        API_ENDPOINTS.LOGOUT,
+        null,
+        () => console.log("User logout"),
+        (error) => console.log("User logout error:" + error)
     );
 };
