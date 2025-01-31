@@ -1,5 +1,6 @@
-import { handleRequest } from '@util/httpHelper';
-import { setAuthHeader, setEmailHeader, defaultRequestErrorCheck } from '@util/authService';
+import { handleRequest, handleError } from '@util/httpHelper';
+import { setAuthToken, setAuthFlag } from '@util/authUtils';
+import {  setEmail } from '@util/userDataUtils';
 
 // Centralized API Endpoints
 const API_ENDPOINTS = {
@@ -7,18 +8,7 @@ const API_ENDPOINTS = {
     CHANGE_EMAIL: `/user/email`,
     CHANGE_PASSWORD: '/user/password',
     CHANGE_LOCALE: `/user/locale`,
-    ACTIVATE_USER: `/activate`,
-    LINK_USER: `/linker`,
-    TOKE_SET: `/linker/set`,
-};
-
-// Centralized Error Handler
-const handleError = (error, navigate, setErrorMessage) => {
-    defaultRequestErrorCheck(error);
-    if (error?.response?.status === 401) {
-        navigate("/login");
-    }
-    setErrorMessage?.(error?.response?.data || "An unexpected error occurred.");
+    CHECK_AUTH: `/check-auth`,
 };
 
 // Activate user account
@@ -50,8 +40,8 @@ export const emailChangeRequest = (event, email, setErrorMessage, navigate) => {
         API_ENDPOINTS.CHANGE_EMAIL,
         { email },
         (response) => {
-            setEmailHeader(response.data.email);
-            setAuthHeader(response.data.token);
+            setEmail(response.data.email);
+            setAuthToken(response.data.token);
             navigate("/");
         },
         (error) => handleError(error, navigate, setErrorMessage)
@@ -80,41 +70,27 @@ export const localeChangeRequest = (locale) => {
     );
 };
 
-// Link user account
-export const accountLinkRequest = (token, setErrorMessage, navigate) => {
-    handleRequest(
-        "POST",
-        API_ENDPOINTS.LINK_USER,
-        { token },
-        () => { navigate("/"); },
-        (error) => handleError(error, navigate, setErrorMessage)
-    );
-};
-
 // Get linke token for user account link
-export const getLinkTokenRequest = (setToken) => {
-    handleRequest(
-        "GET",
-        API_ENDPOINTS.LINK_USER,
-        null,
-        (response) => {
-            setToken(response.data);
-        },
-        () => console.error("Failed to get link token")
-    );
-};
-
-// Get linke token and redirect to messenger
-export const getLinkTokenForMessengerRequest = (messengeUrl) => {
-    handleRequest(
-        "GET",
-        API_ENDPOINTS.LINK_USER,
-        null,
-        (response) => {
-            if (messengeUrl) {
-                window.open(messengeUrl + response.data, '_blank');
+export const checkAuthRequest = () => {
+    return new Promise((resolve) => {
+        handleRequest(
+            "GET",
+            API_ENDPOINTS.CHECK_AUTH,
+            null,
+            (response) => {
+                if (response && response.status === 200) {
+                    setAuthFlag();
+                    resolve(true);
+                } else {
+                    window.localStorage.removeItem("IS_AUTHENTICATED");
+                    resolve(false);
+                }
+            },
+            () => {
+                console.error("Failed to check auth");
+                window.localStorage.removeItem("IS_AUTHENTICATED");
+                resolve(false);
             }
-        },
-        () => console.error("Failed to get link token")
-    );
+        );
+    });
 };

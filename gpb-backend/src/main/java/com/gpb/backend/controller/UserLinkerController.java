@@ -37,7 +37,11 @@ public class UserLinkerController {
     @ResponseStatus(HttpStatus.OK)
     public void linkUser(@RequestBody final TokenRequestDto token,
                          @AuthenticationPrincipal UserDto user) {
+        log.info("User with ID {} requested account linking", user.getId());
+
         userLinkerService.linkAccounts(token.getToken(), user.getId());
+
+        log.info("User with ID {} successfully linked accounts", user.getId());
     }
 
     /**
@@ -50,6 +54,11 @@ public class UserLinkerController {
     @Transactional
     @ResponseStatus(HttpStatus.OK)
     public String getTelegramUserConnectorToken(@AuthenticationPrincipal UserDto user) {
-        return userLinkerService.getAccountsLinkerToken(user.getId());
+        log.info("User with ID {} requested a connector token", user.getId());
+
+        String token = userLinkerService.getAccountsLinkerToken(user.getId());
+
+        log.info("User with ID {} received a connector token", user.getId()); // Do not log the actual token
+        return token;
     }
 }

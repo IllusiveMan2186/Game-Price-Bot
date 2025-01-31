@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Message from '@util/message';
-import { getLinkTokenRequest } from '@services/userRequests';
+import { getLinkTokenRequest } from '@services/linkRequests';
 
 const GetLinkTokenPage = () => {
     const [token, setToken] = useState('');

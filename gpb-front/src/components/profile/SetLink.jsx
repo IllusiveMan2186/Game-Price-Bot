@@ -1,16 +1,15 @@
 import React, { useEffect } from 'react'; // Import useEffect from React
 
 import { useParams, useNavigate } from 'react-router-dom';
-import { isUserAuth, setLinkToken } from '@util/authService';
-import { accountLinkRequest } from '@services/userRequests';
+import { setLinkToken } from '@util/userDataUtils';
+import { useIsUserAuth } from '@util/authHook';
+import { accountLinkRequest } from '@services/linkRequests';
 
 const SetLink = () => {
     const navigate = useNavigate();
     const { token } = useParams();
 
-    console.info(token)
-
-    if (isUserAuth()) {
+    if (useIsUserAuth()) {
         accountLinkRequest(token, null, navigate);
     } else {
         setLinkToken(token);

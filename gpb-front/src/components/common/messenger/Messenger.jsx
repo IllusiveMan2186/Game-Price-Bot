@@ -1,8 +1,8 @@
 import React from 'react';
 
 import Message from '@util/message';
-import { isUserAuth } from '@util/authService';
-import { getLinkTokenForMessengerRequest } from '@services/userRequests';
+import { useIsUserAuth } from '@util/authHook';
+import { getLinkTokenForMessengerRequest } from '@services/linkRequests';
 
 import telegramImage from '@assets/images/telegram.png';
 
@@ -10,9 +10,11 @@ import './Messenger.css';
 
 const Messenger = () => {
 
+  const isUserAuth = useIsUserAuth();
+
   const onMessangerClick = (linkToMessanger, paramsForSync) => {
-    if (isUserAuth()) {
-      const url = linkToMessanger + paramsForSync
+    if (isUserAuth) { 
+      const url = linkToMessanger + paramsForSync;
       getLinkTokenForMessengerRequest(url);
     } else {
       window.open(linkToMessanger, '_blank');
