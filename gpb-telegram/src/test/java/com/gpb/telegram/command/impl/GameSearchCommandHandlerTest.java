@@ -52,17 +52,19 @@ class GameSearchCommandHandlerTest {
         String chatId = "123456";
         String name = "Some Game Name 2";
         long gameAmount = 1;
+        long basicUserId = 1L;
         Locale locale = new Locale("");
         SendMessage message = new SendMessage();
         Update update = UpdateCreator.getUpdateWithoutCallback("/search " + name, Long.parseLong(chatId));
         List<GameDto> games = Collections.singletonList(new GameDto());
         TelegramUser user = new TelegramUser();
+        user.setBasicUserId(basicUserId);
         TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).user(user).build();
         GameListPageDto page = GameListPageDto.builder()
                 .games(games)
                 .elementAmount(gameAmount)
                 .build();
-        when(gameService.getByName(name, 1)).thenReturn(page);
+        when(gameService.getByName(name, 1, basicUserId)).thenReturn(page);
         when(gameListMapper.mapGameSearchListToTelegramPage(games, request, gameAmount, 1, name))
                 .thenReturn(Collections.singletonList(message));
 
@@ -75,22 +77,26 @@ class GameSearchCommandHandlerTest {
 
     @Test
     void testApply_whenGamesNotFound_shouldGamesNotFoundMessage() {
+        long basicUserId = 1L;
         String chatId = "123456";
         String name = "Some Game Name 2";
         Locale locale = new Locale("");
         String errorMessage = "message";
         SendMessage message = new SendMessage(chatId, errorMessage);
         Update update = UpdateCreator.getUpdateWithoutCallback("/search " + name, Long.parseLong(chatId));
+        TelegramUser user = new TelegramUser();
+        user.setBasicUserId(basicUserId);
         TelegramRequest request = TelegramRequest.builder()
                 .update(update)
                 .locale(locale)
+                .user(user)
                 .build();
         GameListPageDto page = GameListPageDto.builder()
                 .games(new ArrayList<>())
                 .elementAmount(0)
                 .build();
         when(messageSource.getMessage("game.search.not.found.game", null, locale)).thenReturn(errorMessage);
-        when(gameService.getByName(name, 1)).thenReturn(page);
+        when(gameService.getByName(name, 1, basicUserId)).thenReturn(page);
 
 
         TelegramResponse response = controller.apply(request);

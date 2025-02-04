@@ -3,50 +3,65 @@ package com.gpb.telegram.service;
 import com.gpb.common.entity.game.GameInfoDto;
 import com.gpb.common.entity.game.GameListPageDto;
 
+/**
+ * Service interface for managing game-related operations in the Telegram context.
+ * <p>
+ * This interface provides methods for retrieving game details by various criteria,
+ * managing user-specific game lists, and setting game follow options.
+ * </p>
+ */
 public interface GameService {
 
     /**
-     * Get game by id
+     * Retrieves detailed information for a game by its ID.
      *
-     * @param gameId games id
-     * @param userId user id
-     * @return game
+     * @param gameId the unique identifier of the game
+     * @param basicUserId the unique identifier of the user requesting the game information;
+     *               this can be used to tailor the response based on the user's preferences.
+     * @return a {@link GameInfoDto} containing detailed information about the game
      */
-    GameInfoDto getById(long gameId, long userId);
+    GameInfoDto getById(long gameId, long basicUserId);
 
     /**
-     * Get game by name
+     * Retrieves a paginated list of games matching the specified name.
      *
-     * @param name    games name
-     * @param pageNum page number
-     * @return page with all games with needed name
+     * @param name        the name or partial name of the game to search for
+     * @param pageNum     the page number to retrieve (starting from 1)
+     * @param basicUserId the basic user id
+     * @return a {@link GameListPageDto} containing a page of games that match the name,
+     * along with additional paging information
      */
-    GameListPageDto getByName(final String name, final int pageNum);
+    GameListPageDto getByName(String name, int pageNum, long basicUserId);
 
     /**
-     * Get games by sort param
+     * Retrieves a paginated list of games sorted according to the specified parameters.
      *
-     * @param pageNum page number
-     * @param sort    sort parameters
-     * @return list of games with all amount
+     * @param pageNum the page number to retrieve (starting from 1)
+     * @param sort    a string representing the sort criteria (e.g., "discountPrice-ASC")
+     * @param basicUserId the basic user id
+     * @return a {@link GameListPageDto} containing a page of games sorted as requested,
+     * along with the total number of matched records
      */
-    GameListPageDto getGameList(int pageNum, String sort);
+    GameListPageDto getGameList(int pageNum, String sort, long basicUserId);
 
     /**
-     * Set isFollowed field in game for user by game and user id
+     * Sets the follow option for a specific game for a user.
+     * <p>
+     * This determines whether the user is subscribed to updates or notifications for the game.
+     * </p>
      *
-     * @param gameId   games id
-     * @param userId   user id
-     * @param isFollow is program would follow this game for information changing
+     * @param gameId   the unique identifier of the game
+     * @param basicUserId   the unique identifier of the user
+     * @param isFollow {@code true} if the user should follow the game; {@code false} otherwise
      */
-    void setFollowGameOption(long gameId, long userId, boolean isFollow);
+    void setFollowGameOption(long gameId, long basicUserId, boolean isFollow);
 
     /**
-     * Get games of user
+     * Retrieves a paginated list of games associated with the specified user.
      *
-     * @param basicUserId basic user id
-     * @param pageNum     page number
-     * @return list of user`s games with all amount
+     * @param basicUserId the unique identifier of the user (basic user ID)
+     * @param pageNum     the page number to retrieve (starting from 1)
+     * @return a {@link GameListPageDto} containing a page of the user's games along with paging details
      */
     GameListPageDto getUserGames(long basicUserId, int pageNum);
 }

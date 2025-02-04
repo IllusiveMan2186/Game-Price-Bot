@@ -9,85 +9,92 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Class for handling game entity
+ * Service interface for managing game-related operations.
  */
 public interface GameService {
 
     /**
-     * Get game by id
+     * Retrieves detailed information for a game by its ID.
      *
-     * @param gameId games id
-     * @param userId users id
-     * @return game
+     * @param gameId the unique identifier of the game
+     * @param userId the unique identifier of the user requesting the game information;
+     *               this parameter may be used to tailor the response based on the user's preferences.
+     * @return a {@link GameInfoDto} containing detailed information about the game
      */
     GameInfoDto getById(long gameId, long userId);
 
     /**
-     * Get game by name
+     * Retrieves a paginated list of games that match the specified name.
      *
-     * @param name     games name
-     * @param pageSize amount of elements on page
-     * @param pageNum  page number
-     * @param sort     sort parameters
-     * @return game
+     * @param name     the name or partial name of the game to search for
+     * @param pageSize the number of game records per page
+     * @param pageNum  the page number to retrieve (starting from 1)
+     * @param sort     a string representing the sort criteria (e.g., "gamesInShop.discountPrice-ASC")
+     * @return a {@link GameListPageDto} containing a list of games and the total count of matched records
      */
-    GameListPageDto getByName(final String name, final int pageSize, final int pageNum, String sort);
+    GameListPageDto getByName(String name, int pageSize, int pageNum, String sort);
 
     /**
-     * Get game by url
+     * Retrieves detailed information for a game using its store URL.
      *
-     * @param url game url from the store
-     * @return game
+     * @param url the store URL of the game
+     * @return a {@link GameInfoDto} containing detailed information about the game
      */
     GameInfoDto getByUrl(String url);
 
     /**
-     * Get games by genre
+     * Retrieves a paginated list of games filtered by genres, excluding specified product types,
+     * and within a specified price range.
      *
-     * @param genre          genres of the game
-     * @param typesToExclude types of the product to exclude from search
-     * @param pageSize       amount of elements on page
-     * @param pageNum        page number
-     * @param minPrice       minimal price
-     * @param maxPrice       maximal price
-     * @param sort           sort parameters
-     * @return list of games with all amount
+     * @param genre          a list of {@link Genre} values to filter games by (optional)
+     * @param typesToExclude a list of {@link ProductType} values to exclude from the search (optional)
+     * @param pageSize       the number of game records per page
+     * @param pageNum        the page number to retrieve (starting from 1)
+     * @param minPrice       the minimum price of the games to include
+     * @param maxPrice       the maximum price of the games to include
+     * @param sort           a string representing the sort criteria (e.g., "gamesInShop.discountPrice-ASC")
+     * @return a {@link GameListPageDto} containing a list of games matching the specified criteria and the total count
      */
-    GameListPageDto getByGenre(List<Genre> genre, List<ProductType> typesToExclude, int pageSize, int pageNum,
-                               BigDecimal minPrice, BigDecimal maxPrice,
+    GameListPageDto getByGenre(List<Genre> genre,
+                               List<ProductType> typesToExclude,
+                               int pageSize,
+                               int pageNum,
+                               BigDecimal minPrice,
+                               BigDecimal maxPrice,
                                String sort);
 
     /**
-     * Get games of user
+     * Retrieves a paginated list of games associated with a specific user.
      *
-     * @param userId   user id
-     * @param pageSize amount of elements on page
-     * @param pageNum  page number
-     * @param sort     sort parameters
-     * @return list of user`s games with all amount
+     * @param userId   the unique identifier of the user whose games are to be retrieved
+     * @param pageSize the number of game records per page
+     * @param pageNum  the page number to retrieve (starting from 1)
+     * @param sort     a string representing the sort criteria (e.g., "gamesInShop.discountPrice-ASC")
+     * @return a {@link GameListPageDto} containing a list of games for the user and the total count of the user's games
      */
     GameListPageDto getUserGames(long userId, int pageSize, int pageNum, String sort);
 
     /**
-     * Remove game by id
+     * Removes a game from the system by its unique identifier.
      *
-     * @param gameId games id
+     * @param gameId the unique identifier of the game to be removed
      */
     void removeGame(long gameId);
 
     /**
-     * Remove game in store by id
+     * Removes a game in store from by its store-specific identifier.
      *
-     * @param gameInStoreId games id
+     * @param gameInStoreId the unique identifier of the game in the store to be removed
      */
     void removeGameInStore(long gameInStoreId);
 
     /**
-     * Set isFollowed field in game for user by game and user id
+     * Sets the follow option for a game for a specific user. This option determines whether
+     * the user is subscribed to notifications or updates about the game.
      *
-     * @param gameId   games id
-     * @param userId   user id
-     * @param isFollow is program would follow this game for information changing
+     * @param gameId   the unique identifier of the game
+     * @param userId   the unique identifier of the user
+     * @param isFollow {@code true} if the user should follow the game; {@code false} otherwise
      */
     void setFollowGameOption(long gameId, long userId, boolean isFollow);
 }

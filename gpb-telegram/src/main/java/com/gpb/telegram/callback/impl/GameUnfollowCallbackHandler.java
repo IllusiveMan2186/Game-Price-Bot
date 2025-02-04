@@ -11,20 +11,36 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
+/**
+ * Callback handler for unfollowing a game.
+ */
 @Component("unsubscribe")
 @AllArgsConstructor
 @FilterChainMarker(Constants.USER_EXISTING_FILTER)
 public class GameUnfollowCallbackHandler implements CallbackHandler {
 
     private final GameService gameService;
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
 
+    /**
+     * Processes the game unfollow callback.
+     * <p>
+     * This method extracts the game ID from the request arguments and marks the game as unfollowed
+     * for the user by calling {@link GameService#setFollowGameOption(long, long, boolean)} with {@code false}.
+     * </p>
+     *
+     * @param request the {@link TelegramRequest} containing callback details and user context
+     * @return a {@link TelegramResponse} with a confirmation message for the unfollow operation
+     */
     @Override
     @Transactional
-    public TelegramResponse apply(TelegramRequest request) {
-        long gameId = request.getLongArgument(1);
+    public TelegramResponse apply(final TelegramRequest request) {
+        final long gameId = request.getLongArgument(1);
         gameService.setFollowGameOption(gameId, request.getUserBasicId(), false);
-        return new TelegramResponse(request.getChatId(), messageSource.getMessage("game.unsubscribe.success.message",
-                null, request.getLocale()));
+        final String successMessage = messageSource.getMessage(
+                "game.unsubscribe.success.message",
+                null,
+                request.getLocale());
+        return new TelegramResponse(request.getChatId(), successMessage);
     }
 }

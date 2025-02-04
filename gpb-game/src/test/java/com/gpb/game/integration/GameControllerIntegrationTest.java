@@ -100,7 +100,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     @Test
     void testGetGamesByGenre_whenRequestingSecondPage_shouldReturnSecondPageOfGames() throws Exception {
         mockMvc.perform(get("/game/genre")
-                        .param("genre", games.get(0).getGenres().get(0).name())
+                        .param("genres", games.get(0).getGenres().get(0).name())
                         .param("pageNum", "2")
                         .param("pageSize", "1")
                         .param("minPrice", "0")

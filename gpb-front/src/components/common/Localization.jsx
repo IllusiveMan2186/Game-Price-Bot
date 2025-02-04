@@ -7,8 +7,8 @@ import { getLocale, setLocale } from '@util/userDataUtils';
 import { localeChangeRequest } from '@services/userRequests';
 
 const Localization = () => {
-    const [locale, setLocaleState] = useState(getLocale()); // ✅ Using useState for locale
-    const isUserAuth = useIsUserAuth(); // ✅ Hooks work inside function components
+    const [locale, setLocaleState] = useState(getLocale());
+    const isUserAuth = useIsUserAuth();
 
     const onChangeHandler = (value) => {
         setLocaleState(value);

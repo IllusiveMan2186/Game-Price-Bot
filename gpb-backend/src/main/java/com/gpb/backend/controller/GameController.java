@@ -27,78 +27,82 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Controller for handling game-related endpoints.ges.
+ * </p>
+ */
 @Log4j2
 @RestController
 @RequestMapping("/game")
 public class GameController {
 
     private final GameService gameService;
-
     private final ResourceService resourceService;
 
-    public GameController(GameService gameService, ResourceService resourceService) {
+    public GameController(final GameService gameService, final ResourceService resourceService) {
         this.gameService = gameService;
         this.resourceService = resourceService;
     }
 
     /**
-     * Get game by id
+     * Retrieves game information by its ID.
      *
-     * @param gameId games id
-     * @param user   current user
-     * @return game
+     * @param gameId the game ID
+     * @param user   the current user (can be {@code null} for unauthenticated requests)
+     * @return the game information DTO
      */
     @GetMapping(value = "/{gameId}")
     @ResponseStatus(HttpStatus.OK)
-    public GameInfoDto getGameById(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
-        long userId = user == null ? -1 : user.getId();
-
-        log.info("Get game by id {} for user {}", gameId, userId);
-
+    public GameInfoDto getGameById(@PathVariable final long gameId,
+                                   @AuthenticationPrincipal final UserDto user) {
+        final long userId = (user == null) ? -1 : user.getId();
+        log.info("Retrieving game by ID {} for user {}", gameId, userId);
         return gameService.getById(gameId, userId);
     }
 
     /**
-     * Get game by name
+     * Retrieves a paginated list of games by their name.
      *
-     * @param name games name
-     * @return game
+     * @param name     the game name to search for
+     * @param pageSize the number of games per page (default is 25)
+     * @param pageNum  the page number to retrieve (default is 1)
+     * @param sortBy   the sort parameter (default is "gamesInShop.discountPrice-ASC")
+     * @return a paginated list of games matching the name
      */
     @GetMapping(value = "/name/{name}")
     public GameListPageDto getGameByName(@PathVariable final String name,
                                          @RequestParam(required = false, defaultValue = "25") final int pageSize,
                                          @RequestParam(required = false, defaultValue = "1") final int pageNum,
                                          @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC") final String sortBy) {
-        log.info("Get game by name '{}'", name);
-
+        log.info("Searching for game by name '{}'", name);
         checkSortParam(sortBy);
         return gameService.getByName(name, pageSize, pageNum, sortBy);
     }
 
     /**
-     * Get game by url
+     * Retrieves game information by its store URL.
      *
-     * @param url game url from the store
-     * @return game
+     * @param url the game URL from the store
+     * @return the game information DTO
      */
     @GetMapping(value = "/url")
     public GameInfoDto getGameByUrl(@RequestParam final String url) {
-        log.info("Get game by url '{}'", url);
-
+        log.info("Retrieving game by URL '{}'", url);
         return gameService.getByUrl(url);
     }
 
     /**
-     * Get games by genre
+     * Retrieves a paginated list of games filtered by genre, product type, price range, and sort order.
      *
-     * @param genre    genres of the game
-     * @param type     types of product to exclude from search
-     * @param pageSize amount of elements on page
-     * @param pageNum  page number
-     * @param minPrice minimal price
-     * @param maxPrice maximal price
-     * @param sortBy   sort parameter
-     * @return list of games
+     * @param genre    a list of genres to filter by (optional)
+     * @param type     a list of product types to exclude (optional)
+     * @param pageSize the number of games per page (default is 25)
+     * @param pageNum  the page number to retrieve (default is 1)
+     * @param minPrice the minimal price (default is 0)
+     * @param maxPrice the maximal price (default is 10000)
+     * @param sortBy   the sort parameter (default is "gamesInShop.discountPrice-ASC")
+     * @return a paginated list of games matching the filters
+     * @throws PriceRangeException if the price range is invalid (maxPrice < minPrice)
      */
     @GetMapping(value = "/genre")
     @ResponseStatus(HttpStatus.OK)
@@ -109,89 +113,90 @@ public class GameController {
                                             @RequestParam(required = false, defaultValue = "0") final BigDecimal minPrice,
                                             @RequestParam(required = false, defaultValue = "10000") final BigDecimal maxPrice,
                                             @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC") final String sortBy) {
-        log.info("Get games by genres : '{}',types to exclude - '{}',price '{}' - '{}' with '{}' " +
-                        "element on page for '{}' page and sort '{}' ",
+        log.info("Retrieving games for genres: {} with exclusion types: {} and price range {} - {}; pageSize={}, pageNum={}, sortBy={}",
                 genre, type, minPrice, maxPrice, pageSize, pageNum, sortBy);
         checkSortParam(sortBy);
         if (maxPrice.compareTo(minPrice) < 0) {
-            log.info("Invalid price range '{}' - '{}'", minPrice, maxPrice);
+            log.info("Invalid price range: {} - {}", minPrice, maxPrice);
             throw new PriceRangeException();
         }
         return gameService.getByGenre(genre, type, pageSize, pageNum, minPrice, maxPrice, sortBy);
     }
 
     /**
-     * Get user games
+     * Retrieves a paginated list of games to which user is subscribed.
      *
-     * @param pageSize amount of elements on page
-     * @param pageNum  page number
-     * @param user     current user
-     * @param sortBy   sort parameter
-     * @return list of games
+     * @param pageSize the number of games per page (default is 25)
+     * @param pageNum  the page number to retrieve (default is 1)
+     * @param sortBy   the sort parameter (default is "gamesInShop.discountPrice-ASC")
+     * @param user     the authenticated user's details
+     * @return a paginated list of the user's games
      */
     @GetMapping(value = "/user/games")
     @ResponseStatus(HttpStatus.OK)
     public GameListPageDto getGamesOfUser(@RequestParam(required = false, defaultValue = "25") final int pageSize,
                                           @RequestParam(required = false, defaultValue = "1") final int pageNum,
                                           @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC") final String sortBy,
-                                          @AuthenticationPrincipal UserDto user) {
-        log.info("Get games for user '{}' with '{}' element on page for '{}' page and sort '{}' ",
+                                          @AuthenticationPrincipal final UserDto user) {
+        log.info("Retrieving games for user {} with pageSize={}, pageNum={}, sortBy={}",
                 user.getId(), pageSize, pageNum, sortBy);
         checkSortParam(sortBy);
         return gameService.getUserGames(user.getBasicUserId(), pageSize, pageNum, sortBy);
     }
 
     /**
-     * Remove game by id
+     * Removes a game from the database by its ID.
      *
-     * @param gameId games id
+     * @param gameId the ID of the game to remove
      */
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{gameId}")
     @ResponseStatus(HttpStatus.OK)
     public void removeGameById(@PathVariable final long gameId) {
-        log.info("Remove game {} from database", gameId);
-
+        log.info("Removing game with ID {} from database", gameId);
         gameService.removeGame(gameId);
-
-        log.info("Game successfully removed");
+        log.info("Game with ID {} successfully removed", gameId);
     }
 
     /**
-     * Remove game in store by id
+     * Removes a game from the store by its store ID.
+     * <p>This operation is restricted to administrators.</p>
      *
-     * @param gameInStoreId games id
+     * @param gameInStoreId the store-specific game ID to remove
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/store/{gameInStoreId}")
     @ResponseStatus(HttpStatus.OK)
     public void removeGameInStoreById(@PathVariable final long gameInStoreId) {
-        log.info("Remove game in store {} from database", gameInStoreId);
-
+        log.info("Removing game in store with ID {} from database", gameInStoreId);
         gameService.removeGameInStore(gameInStoreId);
-
-        log.info("Game in store successfully removed");
+        log.info("Game in store with ID {} successfully removed", gameInStoreId);
     }
 
-
     /**
-     * Get game images from folder
+     * Retrieves the image of a game by its name.
      *
-     * @param gameName game name
-     * @return image in byte array
+     * @param gameName the name of the game
+     * @return a byte array representing the game image
      */
     @GetMapping(value = "/image/{gameName}")
     @ResponseStatus(HttpStatus.OK)
     public byte[] getGameImage(@PathVariable final String gameName) {
+        log.info("Retrieving image for game '{}'", gameName);
         return resourceService.getGameImage(gameName);
     }
 
-    private void checkSortParam(String sortBy) {
-        Pattern pattern = java.util.regex.Pattern.compile(CommonConstants.SORT_PARAM_REGEX);
+    /**
+     * Validates the sort parameter using a predefined regex pattern.
+     *
+     * @param sortBy the sort parameter to validate
+     * @throws SortParamException if the sort parameter does not match the expected pattern
+     */
+    private void checkSortParam(final String sortBy) {
+        Pattern pattern = Pattern.compile(CommonConstants.SORT_PARAM_REGEX);
         Matcher matcher = pattern.matcher(sortBy);
-
         if (!matcher.matches()) {
-            log.info("Invalid sort params '{}'", sortBy);
+            log.info("Invalid sort parameter '{}'", sortBy);
             throw new SortParamException();
         }
     }

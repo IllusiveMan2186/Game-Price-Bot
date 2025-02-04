@@ -48,6 +48,6 @@ public class KafkaProducerConfig {
 
     @Bean
     public KafkaTemplate<String, LinkUsersEvent> createLinkUsersEventEventTemplate() {
-        return KafkaProducerFactory.createLinkUsersEventEventTemplate(kafkaServer);
+        return KafkaProducerFactory.createLinkUsersEventTemplate(kafkaServer);
     }
 }

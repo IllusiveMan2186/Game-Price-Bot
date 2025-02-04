@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+/**
+ * Configures the application's security settings .
+ */
 @Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties
@@ -20,9 +23,19 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class SecurityConfiguration {
 
     private final UserAuthenticationProvider userAuthenticationProvider;
-
     private final UserAuthenticationEntryPoint userAuthenticationEntryPoint;
 
+    /**
+     * Configures the security filter chain for the application.
+     * <p>
+     * This filter chain configures CORS, disables CSRF protection, adds a custom authentication filter,
+     * sets up endpoint-specific access rules, and defines a custom logout behavior to avoid conflicts.
+     * </p>
+     *
+     * @param http the {@link HttpSecurity} object used to build the security filter chain
+     * @return the configured {@link SecurityFilterChain}
+     * @throws Exception if an error occurs while configuring the filter chain
+     */
     @Bean
     @Order(1)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -30,11 +43,10 @@ public class SecurityConfiguration {
 
         http
                 .cors().and()
-                .exceptionHandling().authenticationEntryPoint(userAuthenticationEntryPoint)
-                .and()
+                .exceptionHandling().authenticationEntryPoint(userAuthenticationEntryPoint).and()
                 .addFilterBefore(authFilter, BasicAuthenticationFilter.class)
                 .csrf().disable()
-                .authorizeHttpRequests((requests) -> requests
+                .authorizeHttpRequests(requests -> requests
                         .requestMatchers(HttpMethod.POST, "/login", "/registration", "/activate").permitAll()
                         .requestMatchers(HttpMethod.GET, "/check-auth").permitAll()
                         .requestMatchers(HttpMethod.POST, "/linker/set").permitAll()
@@ -43,14 +55,15 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/email/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/game/**").permitAll()
                         .anyRequest().authenticated())
+                // Configure a custom logout handler to avoid conflicts with default logout processing.
                 .logout(logout -> logout
-                        .logoutUrl("/do-not-use-logout") // Avoid conflicts by setting a fake logout URL
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(HttpServletResponse.SC_OK); // Prevent redirect
-                        })
+                        // Set a non-functional logout URL to prevent Spring Security from applying its default behavior.
+                        .logoutUrl("/do-not-use-logout")
+                        // On logout success, simply set the response status to 200 OK without a redirect.
+                        .logoutSuccessHandler((request, response, authentication) ->
+                                response.setStatus(HttpServletResponse.SC_OK))
                 );
 
         return http.build();
     }
-
 }

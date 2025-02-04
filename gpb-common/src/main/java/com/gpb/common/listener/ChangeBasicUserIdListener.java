@@ -6,15 +6,14 @@ import com.gpb.common.util.CommonConstants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service interface for handling events related to basic user ID changes.
+ * Listener for handling basic user ID changes events.
  * <p>
- * To use this service in your application, you must:
+ * To use this listener in your application, you must:
  * <ul>
  *   <li>Implement the {@code ChangeUserBasicIdService} interface to define the specific behavior for handling events.</li>
  *   <li>Specify 'spring.kafka.consumer.group-id' in application properties.</li>

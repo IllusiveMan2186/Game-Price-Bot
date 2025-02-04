@@ -29,27 +29,26 @@ public class BasicGameServiceImpl implements BasicGameService {
     private final KafkaTemplate<String, GameFollowEvent> gameFollowEventKafkaTemplate;
 
     @Override
-    public GameInfoDto getById(long gameId, long userId) {
-        log.info("Get game by id '{}' and '{}'", gameId, userId);
+    public GameInfoDto getById(long gameId, long basicUserId) {
+        log.info("Get game by id '{}' and '{}'", gameId, basicUserId);
         String url = "/game/" + gameId;
-        HttpHeaders headers = new HttpHeaders();
-        if (userId > 0) {
-            headers.add(CommonConstants.BASIC_USER_ID_HEADER, String.valueOf(userId));
-        }
-
+        HttpHeaders headers = getBasicUserIdHeader(basicUserId);
         return templateHandlerService.executeRequest(url, HttpMethod.GET, headers, GameInfoDto.class);
     }
 
     @Override
-    public GameListPageDto getByName(String name, int pageSize, int pageNum, String sort) {
+    public GameListPageDto getByName(String name, int pageSize, int pageNum, String sort, long basicUserId) {
         String url = "/game/name/" + name + "?pageSize=" + pageSize + "&pageNum=" + pageNum
                 + "&sortBy=" + sort;
-        return templateHandlerService.executeRequest(url, HttpMethod.GET, null, GameListPageDto.class);
+
+        HttpHeaders headers = getBasicUserIdHeader(basicUserId);
+
+        return templateHandlerService.executeRequest(url, HttpMethod.GET, headers, GameListPageDto.class);
     }
 
     @Override
     public GameListPageDto getByGenre(List<Genre> genres, List<ProductType> types, int pageSize, int pageNum,
-                                      BigDecimal minPrice, BigDecimal maxPrice, String sort) {
+                                      BigDecimal minPrice, BigDecimal maxPrice, String sort, long basicUserId) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance()
                 .path("/game/genre")
                 .queryParam("pageSize", pageSize)
@@ -67,32 +66,43 @@ public class BasicGameServiceImpl implements BasicGameService {
         }
         URI uri = uriBuilder.build().toUri();
 
+        HttpHeaders headers = getBasicUserIdHeader(basicUserId);
+
         return templateHandlerService.executeRequest(
                 uri.getPath() + "?" + uri.getQuery(),
                 HttpMethod.GET,
-                null,
+                headers,
                 GameListPageDto.class);
     }
 
     @Override
-    public GameListPageDto getUserGames(long userId, int pageSize, int pageNum, String sort) {
+    public GameListPageDto getUserGames(long basicUserId, int pageSize, int pageNum, String sort) {
         String url = "/game/user/games?pageSize=" + pageSize + "&pageNum=" + pageNum
                 + "&sortBy=" + sort;
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("BASIC-USER-ID", String.valueOf(userId));
+
+        HttpHeaders headers = getBasicUserIdHeader(basicUserId);
 
         return templateHandlerService.executeRequest(url, HttpMethod.GET, headers, GameListPageDto.class);
     }
 
     @Override
-    public void setFollowGameOption(long gameId, long userId, boolean isFollow) {
+    public void setFollowGameOption(long gameId, long basicUserId, boolean isFollow) {
         String key = UUID.randomUUID().toString();
         if (isFollow) {
-            log.info("Send game follow request for game {} for user {}", userId, gameId);
-            gameFollowEventKafkaTemplate.send(CommonConstants.GAME_FOLLOW_TOPIC, key, new GameFollowEvent(userId, gameId));
+            log.info("Send game follow request for game {} for user {}", gameId, basicUserId);
+            gameFollowEventKafkaTemplate.send(CommonConstants.GAME_FOLLOW_TOPIC, key, new GameFollowEvent(basicUserId, gameId));
         } else {
-            log.info("Send game unfollow request for game {} for user {}", userId, gameId);
-            gameFollowEventKafkaTemplate.send(CommonConstants.GAME_UNFOLLOW_TOPIC, key, new GameFollowEvent(userId, gameId));
+            log.info("Send game unfollow request for game {} for user {}", gameId, basicUserId);
+            gameFollowEventKafkaTemplate.send(CommonConstants.GAME_UNFOLLOW_TOPIC, key, new GameFollowEvent(basicUserId, gameId));
         }
+    }
+
+    private HttpHeaders getBasicUserIdHeader(long basicUserId) {
+        if (basicUserId > 0) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(CommonConstants.BASIC_USER_ID_HEADER, String.valueOf(basicUserId));
+            return headers;
+        }
+        return null;
     }
 }

@@ -9,7 +9,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import translationEN from '@locales/en/translation.json';
 import translationRU from '@locales/ru/translation.json';
-import translationUA from '@locales/ua/translation.json';
+import translationUA from '@locales/ua/translation.json'
 
 
 const locale = window.localStorage.getItem('LOCALE') || navigator.language;
@@ -38,6 +38,9 @@ i18n
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <App />
+    <div>
+        <script src="%PUBLIC_URL%/env.js"></script>
+        <App />
+    </div>
 );
 

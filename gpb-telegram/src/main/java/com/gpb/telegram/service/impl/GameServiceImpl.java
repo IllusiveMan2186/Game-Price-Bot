@@ -21,18 +21,18 @@ public class GameServiceImpl implements GameService {
     private final BasicGameService basicGameService;
 
     @Override
-    public GameInfoDto getById(long gameId, long userId) {
-        return basicGameService.getById(gameId, userId);
+    public GameInfoDto getById(long gameId, long basicUserId) {
+        return basicGameService.getById(gameId, basicUserId);
     }
 
     @Override
-    public GameListPageDto getByName(final String name, final int pageNum) {
+    public GameListPageDto getByName(final String name, final int pageNum, long basicUserId) {
         log.info("Get game by name '{}' for page {}", name, pageNum);
-        return basicGameService.getByName(name, Constants.GAMES_AMOUNT_IN_LIST, pageNum, "name-ASC");
+        return basicGameService.getByName(name, Constants.GAMES_AMOUNT_IN_LIST, pageNum, "name-ASC", basicUserId);
     }
 
     @Override
-    public GameListPageDto getGameList(int pageNum, String sort) {
+    public GameListPageDto getGameList(int pageNum, String sort, long basicUserId) {
         log.info("Get game for page {} and sort by {}", pageNum, sort);
         return basicGameService.getByGenre(
                 new ArrayList<>(),
@@ -41,13 +41,14 @@ public class GameServiceImpl implements GameService {
                 pageNum,
                 new BigDecimal(Constants.GAMES_MIN_PRICE),
                 new BigDecimal(Constants.GAMES_MAX_PRICE),
-                sort);
+                sort,
+                basicUserId);
     }
 
     @Override
-    public void setFollowGameOption(long gameId, long userId, boolean isFollow) {
-        log.info("Set game {} for user {} follow option to {}", gameId, userId, isFollow);
-        basicGameService.setFollowGameOption(gameId, userId, isFollow);
+    public void setFollowGameOption(long gameId, long basicUserId, boolean isFollow) {
+        log.info("Set game {} for user {} follow option to {}", gameId, basicUserId, isFollow);
+        basicGameService.setFollowGameOption(gameId, basicUserId, isFollow);
     }
 
     @Override

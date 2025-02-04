@@ -31,17 +31,22 @@ configurations.all {
 }
 
 dependencies {
-    implementation("commons-io:commons-io:2.11.0")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1")
-    runtimeOnly("com.twelvemonkeys.imageio:imageio-webp:3.10.1")
-    implementation("com.auth0:java-jwt:4.3.0")
-    implementation("org.flywaydb:flyway-core")
+    implementation("com.gpb:common:1.0.20-SNAPSHOT")
 
-    implementation("org.jsoup:jsoup:1.15.3")
-    implementation("com.sun.mail:jakarta.mail:2.0.1")
+    implementation("commons-io:commons-io:2.11.0")
+    implementation("com.auth0:java-jwt:4.3.0")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1")
     implementation("com.google.guava:guava:32.1.2-jre")
-    implementation("org.modelmapper:modelmapper:3.2.0")
+    implementation("com.sun.mail:jakarta.mail:2.0.1")
+
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
+    implementation("org.jsoup:jsoup:1.15.3")
+    implementation("org.modelmapper:modelmapper:3.2.0")
+
+    runtimeOnly("com.twelvemonkeys.imageio:imageio-webp:3.10.1")
+
+    implementation("org.postgresql:postgresql:42.5.1")
+    implementation("org.flywaydb:flyway-core")
 
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
@@ -49,15 +54,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-log4j2:3.1.3")
-    implementation("org.springframework.kafka:spring-kafka")
 
-    implementation("org.postgresql:postgresql:42.5.1")
+    implementation("org.springframework.kafka:spring-kafka")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
     testImplementation("com.h2database:h2:2.2.220")
-
-    implementation("com.gpb:common:1.0.18-SNAPSHOT")
 }
 
 tasks.withType<Test> {

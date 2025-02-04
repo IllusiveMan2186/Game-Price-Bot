@@ -1,7 +1,6 @@
 package com.gpb.common.service.impl;
 
 import com.gpb.common.entity.event.LinkUsersEvent;
-import com.gpb.common.entity.user.TokenRequestDto;
 import com.gpb.common.service.RestTemplateHandlerService;
 import com.gpb.common.util.CommonConstants;
 import org.junit.jupiter.api.Test;

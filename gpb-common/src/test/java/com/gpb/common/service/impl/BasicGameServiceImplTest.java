@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
@@ -40,7 +39,7 @@ class BasicGameServiceImplTest {
     private BasicGameServiceImpl gameService;
 
     @Test
-    void testGetById() {
+    void testGetById_whenWithBasicUserId_shouldReturnGameInfoDto() {
         long gameId = 1L;
         long userId = 123L;
         GameInfoDto mockResponse = new GameInfoDto();
@@ -58,21 +57,42 @@ class BasicGameServiceImplTest {
     }
 
     @Test
+    void testGetById_whenBasicUserIdIsNull_shouldReturnGameInfoDto() {
+        long gameId = 1L;
+        long userId = 0L;
+        GameInfoDto mockResponse = new GameInfoDto();
+
+        String url = "/game/" + gameId;
+
+        when(restTemplateHandler.executeRequest(url, HttpMethod.GET, null, GameInfoDto.class)).thenReturn(mockResponse);
+
+        GameInfoDto result = gameService.getById(gameId, userId);
+
+        assertEquals(mockResponse, result);
+        verify(restTemplateHandler).executeRequest(url, HttpMethod.GET, null, GameInfoDto.class);
+    }
+
+    @Test
     void testGetByName_whenSuccess_shouldReturnGameListPageDto() {
         String name = "TestGame";
         int pageSize = 10;
         int pageNum = 1;
+        long basicUserId = 1;
         String sort = "gamesInShop.price-ASC";
         GameListPageDto mockResponse = new GameListPageDto();
 
         String url = "/game/name/" + name + "?pageSize=" + pageSize + "&pageNum=" + pageNum + "&sortBy=gamesInShop.price-ASC";
 
-        when(restTemplateHandler.executeRequest(url, HttpMethod.GET, null, GameListPageDto.class)).thenReturn(mockResponse);
+        when(restTemplateHandler.executeRequest(
+                url,
+                HttpMethod.GET,
+                getBasicUserIdHeader(basicUserId),
+                GameListPageDto.class)).thenReturn(mockResponse);
 
-        GameListPageDto result = gameService.getByName(name, pageSize, pageNum, sort);
+        GameListPageDto result = gameService.getByName(name, pageSize, pageNum, sort, basicUserId);
 
         assertEquals(mockResponse, result);
-        verify(restTemplateHandler).executeRequest(url, HttpMethod.GET, null, GameListPageDto.class);
+        verify(restTemplateHandler).executeRequest(url, HttpMethod.GET, getBasicUserIdHeader(basicUserId), GameListPageDto.class);
     }
 
 
@@ -129,19 +149,25 @@ class BasicGameServiceImplTest {
         BigDecimal minPrice = BigDecimal.ZERO;
         BigDecimal maxPrice = BigDecimal.valueOf(100);
         String sort = "name-ASC";
+        long basicUserId = 1;
         GameListPageDto mockResponse = new GameListPageDto();
 
-        when(restTemplateHandler.executeRequest(anyString(), eq(HttpMethod.GET), isNull(), eq(GameListPageDto.class)))
+        when(restTemplateHandler.executeRequest(
+                anyString(),
+                eq(HttpMethod.GET),
+                eq(getBasicUserIdHeader(basicUserId)),
+                eq(GameListPageDto.class)))
                 .thenReturn(mockResponse);
 
-        GameListPageDto result = gameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort);
+        GameListPageDto result = gameService
+                .getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort, basicUserId);
 
         assertEquals(mockResponse, result);
         verify(restTemplateHandler)
                 .executeRequest(eq("/game/genre?pageSize=10&pageNum=1&minPrice=0&" +
                                 "maxPrice=100&sortBy=name-ASC&genre=ACTION&type=GAME"),
                         eq(HttpMethod.GET),
-                        isNull(),
+                        eq(getBasicUserIdHeader(basicUserId)),
                         eq(GameListPageDto.class));
     }
 
@@ -155,18 +181,24 @@ class BasicGameServiceImplTest {
         BigDecimal minPrice = BigDecimal.ZERO;
         BigDecimal maxPrice = BigDecimal.valueOf(100);
         String sort = "gamesInShop.name-ASC";
+        long basicUserId = 1;
         GameListPageDto mockResponse = new GameListPageDto();
 
-        when(restTemplateHandler.executeRequest(anyString(), eq(HttpMethod.GET), isNull(), eq(GameListPageDto.class))).thenReturn(mockResponse);
+        when(restTemplateHandler.executeRequest(
+                anyString(),
+                eq(HttpMethod.GET),
+                eq(getBasicUserIdHeader(basicUserId)),
+                eq(GameListPageDto.class))).thenReturn(mockResponse);
 
-        GameListPageDto result = gameService.getByGenre(genres, null, pageSize, pageNum, minPrice, maxPrice, sort);
+        GameListPageDto result = gameService
+                .getByGenre(genres, null, pageSize, pageNum, minPrice, maxPrice, sort, basicUserId);
 
         assertEquals(mockResponse, result);
         verify(restTemplateHandler)
                 .executeRequest(eq("/game/genre?pageSize=10&pageNum=1&minPrice=0&" +
                                 "maxPrice=100&sortBy=gamesInShop.name-ASC&genre=ACTION&genre=SIMULATORS"),
                         eq(HttpMethod.GET),
-                        isNull(),
+                        eq(getBasicUserIdHeader(basicUserId)),
                         eq(GameListPageDto.class));
     }
 
@@ -180,18 +212,32 @@ class BasicGameServiceImplTest {
         BigDecimal minPrice = BigDecimal.ZERO;
         BigDecimal maxPrice = BigDecimal.valueOf(100);
         String sort = "name-ASC";
+        long basicUserId = 1;
         GameListPageDto mockResponse = new GameListPageDto();
 
-        when(restTemplateHandler.executeRequest(anyString(), eq(HttpMethod.GET), isNull(), eq(GameListPageDto.class))).thenReturn(mockResponse);
+        when(restTemplateHandler.executeRequest(
+                anyString(),
+                eq(HttpMethod.GET),
+                eq(getBasicUserIdHeader(basicUserId)),
+                eq(GameListPageDto.class))).thenReturn(mockResponse);
 
-        GameListPageDto result = gameService.getByGenre(null, genres, pageSize, pageNum, minPrice, maxPrice, sort);
+
+        GameListPageDto result = gameService
+                .getByGenre(null, genres, pageSize, pageNum, minPrice, maxPrice, sort, basicUserId);
+
 
         assertEquals(mockResponse, result);
         verify(restTemplateHandler)
                 .executeRequest(eq("/game/genre?pageSize=10&pageNum=1&minPrice=0" +
                                 "&maxPrice=100&sortBy=name-ASC&type=GAME&type=ADDITION"),
                         eq(HttpMethod.GET),
-                        isNull(),
+                        eq(getBasicUserIdHeader(basicUserId)),
                         eq(GameListPageDto.class));
+    }
+
+    private HttpHeaders getBasicUserIdHeader(long basicUserId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(CommonConstants.BASIC_USER_ID_HEADER, String.valueOf(basicUserId));
+        return headers;
     }
 }

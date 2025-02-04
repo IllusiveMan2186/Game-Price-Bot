@@ -56,11 +56,6 @@ public class UserManagementServiceImpl implements UserManagementService, ChangeU
         webUserRepository.save(webUser);
     }
 
-    @Override
-    public List<WebUser> getWebUsers(List<Long> userIds) {
-        return webUserRepository.findAllByIdIn(userIds);
-    }
-
     private WebUser getWebUserById(final long userId) {
         log.info("Get user by id : {}", userId);
 

@@ -64,13 +64,13 @@ class GameServiceImplTest {
         String sort = CommonConstants.NAME_SORT_PARAM + "-" + CommonConstants.SORT_DIRECTION_ASCENDING;
 
 
-        when(basicGameService.getByName(name, pageSize, pageNum, sort))
+        when(basicGameService.getByName(name, pageSize, pageNum, sort,0))
                 .thenReturn(mockResponse);
 
         GameListPageDto result = gameService.getByName(name, pageSize, pageNum, sort);
 
         assertEquals(mockResponse, result);
-        verify(basicGameService).getByName(name, pageSize, pageNum, sort);
+        verify(basicGameService).getByName(name, pageSize, pageNum, sort,0);
     }
 
     @Test
@@ -151,13 +151,13 @@ class GameServiceImplTest {
         String sort = "name-ASC";
         GameListPageDto mockResponse = new GameListPageDto();
 
-        when(basicGameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort))
+        when(basicGameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort,0))
                 .thenReturn(mockResponse);
 
         GameListPageDto result = gameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort);
 
         assertEquals(mockResponse, result);
         verify(basicGameService)
-                .getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort);
+                .getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort,0);
     }
 }
