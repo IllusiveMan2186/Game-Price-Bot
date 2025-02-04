@@ -37,7 +37,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameListPageDto getByName(String name, int pageSize, int pageNum, String sort) {
-        return basicGameService.getByName(name, pageSize, pageNum, sort);
+        return basicGameService.getByName(name, pageSize, pageNum, sort, 0);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameListPageDto getByGenre(List<Genre> genres, List<ProductType> types, int pageSize, int pageNum,
                                       BigDecimal minPrice, BigDecimal maxPrice, String sort) {
-        return basicGameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort);
+        return basicGameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort, 0);
     }
 
     @Override

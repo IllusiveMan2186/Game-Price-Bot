@@ -13,6 +13,14 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Configuration class for Kafka consumers.
+ * <p>
+ * This configuration sets up a {@link ConcurrentKafkaListenerContainerFactory} specifically for consuming
+ * {@link EmailEvent} messages from Kafka. It leverages a type-safe JSON deserializer and externalizes configuration
+ * properties for the Kafka server and consumer group.
+ * </p>
+ */
 @Configuration
 public class KafkaConsumerConfig {
 
@@ -22,6 +30,11 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.consumer.group-id}")
     private String kafkaGroupId;
 
+    /**
+     * Creates a Kafka listener container factory for processing {@link EmailEvent} messages.
+     *
+     * @return a configured {@link ConcurrentKafkaListenerContainerFactory} for EmailEvent consumption
+     */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, EmailEvent> emailEventListener() {
         Map<String, Object> props = new HashMap<>();

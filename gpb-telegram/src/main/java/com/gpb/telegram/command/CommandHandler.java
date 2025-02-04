@@ -10,9 +10,10 @@ import java.util.Locale;
 public interface CommandHandler extends FilteredHandler {
 
     /**
-     * Gives a description about command
+     * Returns a localized description of the change locale command.
      *
-     * @return description
+     * @param locale the {@link Locale} for which the description should be provided
+     * @return a {@link String} containing the localized command description
      */
     String getDescription(Locale locale);
 }

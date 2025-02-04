@@ -1,18 +1,20 @@
 package com.gpb.common.service;
 
 /**
- * Service interface for handling changes to a user's basic ID.
+ * Service interface for handling updates to a user's basic identifier.
  * <p>
- * This interface must be implemented to enable the {@code ChangeBasicUserIdListener}
- * to function correctly within the service.
+ * Implementations of this interface are responsible for updating the basic user ID
+ * in the underlying data store. This functionality is essential for the proper operation
+ * of the {@code ChangeBasicUserIdListener}, which triggers updates when a user's basic ID changes.
+ * </p>
  */
 public interface ChangeUserBasicIdService {
 
     /**
-     * Set new basic user id
+     * Updates the basic user ID for a user.
      *
-     * @param currentBasicUserId current basic user id
-     * @param newBasicUserId     new basic user id
+     * @param currentBasicUserId the current basic user ID.
+     * @param newBasicUserId     the new basic user ID to be set.
      */
     void setBasicUserId(long currentBasicUserId, long newBasicUserId);
 }

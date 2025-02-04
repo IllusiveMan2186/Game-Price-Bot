@@ -52,23 +52,25 @@ class GameServiceImplTest {
     void testGetByName_whenSuccess_shouldReturnGameListPageDto() {
         String name = "TestGame";
         int pageNum = 1;
+        long basicUserId = 1L;
         GameListPageDto mockResponse = new GameListPageDto();
         String sort = CommonConstants.NAME_SORT_PARAM + "-" + CommonConstants.SORT_DIRECTION_ASCENDING;
 
 
-        when(basicGameService.getByName(name, Constants.GAMES_AMOUNT_IN_LIST, pageNum, sort))
+        when(basicGameService.getByName(name, Constants.GAMES_AMOUNT_IN_LIST, pageNum, sort, basicUserId))
                 .thenReturn(mockResponse);
 
-        GameListPageDto result = gameService.getByName(name, pageNum);
+        GameListPageDto result = gameService.getByName(name, pageNum, basicUserId);
 
         assertEquals(mockResponse, result);
-        verify(basicGameService).getByName(name, Constants.GAMES_AMOUNT_IN_LIST, pageNum, sort);
+        verify(basicGameService).getByName(name, Constants.GAMES_AMOUNT_IN_LIST, pageNum, sort, basicUserId);
     }
 
     @Test
     void testGetGameList_whenSuccess_shouldReturnGameListPageDto() {
         String name = "TestGame";
         int pageNum = 1;
+        long basicUserId = 1L;
         GameListPageDto mockResponse = new GameListPageDto();
         String sort = "name-ASC";
 
@@ -81,9 +83,10 @@ class GameServiceImplTest {
                 eq(pageNum),
                 eq(new BigDecimal(Constants.GAMES_MIN_PRICE)),
                 eq(new BigDecimal(Constants.GAMES_MAX_PRICE)),
-                eq(sort))).thenReturn(mockResponse);
+                eq(sort),
+                eq(basicUserId))).thenReturn(mockResponse);
 
-        GameListPageDto result = gameService.getGameList(pageNum, sort);
+        GameListPageDto result = gameService.getGameList(pageNum, sort, basicUserId);
 
         assertEquals(mockResponse, result);
         verify(basicGameService).getByGenre(
@@ -93,7 +96,8 @@ class GameServiceImplTest {
                 eq(pageNum),
                 eq(new BigDecimal(Constants.GAMES_MIN_PRICE)),
                 eq(new BigDecimal(Constants.GAMES_MAX_PRICE)),
-                eq(sort));
+                eq(sort),
+                eq(basicUserId));
     }
 
     @Test

@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
+/**
+ * Command handler for generating a web URL that incorporates the user's link token.
+ */
 @Data
 @Component("url")
 @FilterChainMarker(Constants.USER_EXISTING_FILTER)
@@ -20,23 +23,34 @@ public class GetWebUrlCommandHandler implements CommandHandler {
 
     @Value("${FRONT_SERVICE_URL}")
     private String frontendServiceUrl;
+
     private final MessageSource messageSource;
     private final UserLinkerService userLinkerService;
 
-    public GetWebUrlCommandHandler(MessageSource messageSource, UserLinkerService userLinkerService) {
+    public GetWebUrlCommandHandler(final MessageSource messageSource, final UserLinkerService userLinkerService) {
         this.messageSource = messageSource;
         this.userLinkerService = userLinkerService;
     }
 
     @Override
-    public String getDescription(Locale locale) {
+    public String getDescription(final Locale locale) {
         return messageSource.getMessage("get.web.url.description", null, locale);
     }
 
+    /**
+     * Processes the command to generate a web URL that includes the user's link token.
+     * <p>
+     * The URL is built by concatenating the frontend service URL with a specific link token path and the token
+     * obtained from the {@link UserLinkerService}.
+     * </p>
+     *
+     * @param request the {@link TelegramRequest} containing the user's basic ID
+     * @return a {@link TelegramResponse} containing the generated URL
+     */
     @Override
-    public TelegramResponse apply(TelegramRequest request) {
-        String url = frontendServiceUrl + Constants.SET_LINK_TOKEN +
-                userLinkerService.getAccountsLinkerToken(request.getUserBasicId());
+    public TelegramResponse apply(final TelegramRequest request) {
+        final String token = userLinkerService.getAccountsLinkerToken(request.getUserBasicId());
+        final String url = frontendServiceUrl + Constants.SET_LINK_TOKEN + token;
         return new TelegramResponse(request, url);
     }
 }

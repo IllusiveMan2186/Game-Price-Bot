@@ -4,8 +4,9 @@ import Router from '@routes/Router';
 import Footer from '@components/common/layout/footer/Footer';
 import { BrowserRouter } from "react-router-dom";
 
-
 function App() {
+  
+  console.log("win "+window._env_);
   return (
     <div className="App">
       <BrowserRouter>

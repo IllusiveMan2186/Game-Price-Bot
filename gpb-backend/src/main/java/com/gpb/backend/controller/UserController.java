@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller for handling user-related operations .
+ */
 @RestController
 @Slf4j
 @RequestMapping("/user")
@@ -47,11 +50,15 @@ public class UserController {
 
 
     /**
-     * Update registered user email
+     * Updates the email address for the authenticated user.
      *
-     * @param emailRequestDto new version of email
-     * @param user            current user
-     * @return updated user
+     * <p>This endpoint allows a registered user to update their email by providing the new email address
+     * in the request body. The user's email is updated using the authentication service, and a new token
+     * is generated based on the updated email address.</p>
+     *
+     * @param emailRequestDto the DTO containing the new email information
+     * @param user            the authenticated user's details
+     * @return the updated {@link UserDto} after the email change
      */
     @PutMapping("/email")
     @Transactional
@@ -66,11 +73,16 @@ public class UserController {
     }
 
     /**
-     * Update registered user Password
+     * Updates the password for the authenticated user.
      *
-     * @param passwordChangeDto new version of password
-     * @param user              current user
-     * @return updated user
+     * <p>
+     * This endpoint allows a registered user to update their password by providing the new password details in the request body.
+     * The updated user details are returned upon successful password change.
+     * </p>
+     *
+     * @param passwordChangeDto the DTO containing the new password information
+     * @param user              the authenticated user's details
+     * @return the updated {@link UserDto} after the password change
      */
     @PutMapping("/password")
     @Transactional
@@ -100,47 +112,61 @@ public class UserController {
     }
 
     /**
-     * Add game to user list of games
+     * Adds a game to the authenticated user's list of followed games.
      *
-     * @param gameId games id
-     * @param user   current user
-     * @return updated user
+     * <p>
+     * This endpoint allows the current user to add a game (specified by its ID) to their list of followed games.
+     * The game is added by setting the follow option to {@code true}.
+     * </p>
+     *
+     * @param gameId the ID of the game to add
+     * @param user   the authenticated user's details
      */
     @PostMapping(value = "/games/{gameId}")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public void addGameToUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
-        log.info("Add game {} to user {} list ", gameId, user.getId());
+    public void addGameToUserListOfGames(@PathVariable final long gameId,
+                                         @AuthenticationPrincipal final UserDto user) {
+        log.info("Adding game {} to the list of followed games for user {}", gameId, user.getId());
         gameService.setFollowGameOption(gameId, user.getId(), true);
     }
 
     /**
-     * Add game to user list of games
+     * Removes a game from the authenticated user's list of followed games.
      *
-     * @param gameId games id
-     * @param user   current user
-     * @return updated user
+     * <p>
+     * This endpoint allows the current user to remove a game (specified by its ID) from their list of followed games.
+     * The game is removed by setting the follow option to {@code false}.
+     * </p>
+     *
+     * @param gameId the ID of the game to remove
+     * @param user   the authenticated user's details
      */
     @DeleteMapping(value = "/games/{gameId}")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public void removeGameFromUserListOfGames(@PathVariable final long gameId, @AuthenticationPrincipal UserDto user) {
-        log.info("Remove game {} from user {} list ", gameId, user.getId());
+    public void removeGameFromUserListOfGames(@PathVariable final long gameId,
+                                              @AuthenticationPrincipal final UserDto user) {
+        log.info("Removing game {} from the list of followed games for user {}", gameId, user.getId());
         gameService.setFollowGameOption(gameId, user.getId(), false);
     }
 
     /**
-     * Update user locale
+     * Update the locale for the authenticated user.
      *
-     * @param localeRequestDto new locale
-     * @param user             user
+     * <p>
+     * This endpoint allows an authenticated user to update their locale setting.
+     * </p>
+     *
+     * @param localeRequestDto the DTO containing the new locale value
+     * @param user             the authenticated user's details
      */
     @PutMapping("/locale")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
     public void updateUserLocale(@RequestBody final LocaleRequestDto localeRequestDto,
-                                 @AuthenticationPrincipal UserDto user) {
-        log.info("Change locale to {} for user {}", localeRequestDto.getLocale(), user.getId());
+                                 @AuthenticationPrincipal final UserDto user) {
+        log.info("Updating locale to '{}' for user with ID {}", localeRequestDto.getLocale(), user.getId());
         userManagementService.updateLocale(localeRequestDto.getLocale(), user.getId());
     }
 }

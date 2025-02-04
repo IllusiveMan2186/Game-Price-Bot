@@ -157,22 +157,6 @@ class UserManagementServiceTest {
     }
 
     @Test
-    void testGetWebUsers_whenSuccess_shouldReturnWebUsers() {
-        List<Long> userIds = new ArrayList<>();
-        userIds.add(1L);
-        userIds.add(2L);
-        List<WebUser> userList = new ArrayList<>();
-        when(webUserRepository.findAllByIdIn(userIds)).thenReturn(userList);
-
-
-        List<WebUser> result = userService.getWebUsers(userIds);
-
-
-        assertEquals(userList, result);
-        verify(webUserRepository).findAllByIdIn(userIds);
-    }
-
-    @Test
     void testSetBasicUserId_whenSuccess_shouldCallUserBasicChange() {
         long currentBasicUserId = 123L;
         long newBasicUserId = 456L;

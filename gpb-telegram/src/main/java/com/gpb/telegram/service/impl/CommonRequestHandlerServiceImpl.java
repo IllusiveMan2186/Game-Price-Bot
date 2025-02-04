@@ -36,7 +36,7 @@ public class CommonRequestHandlerServiceImpl implements CommonRequestHandlerServ
 
     @Override
     public TelegramResponse processGameListRequest(TelegramRequest request, int pageNum, String sort) {
-        GameListPageDto page = gameService.getGameList(pageNum, sort);
+        GameListPageDto page = gameService.getGameList(pageNum, sort, request.getUserBasicId());
 
         if (page.getGames().isEmpty()) {
             String errorMessage = messageSource.getMessage(
