@@ -26,12 +26,21 @@ services:
       - gpb-network
 
   react:
-    build: ./gpb-front
+    build:
+      context: ./gpb-front
+      args:
+        BACKEND_SERVICE_URL: ${BACKEND_SERVICE_URL}
+        TELEGRAM_BOT_URL: ${TELEGRAM_BOT_URL}
+        SUPPORT_EMAIL: ${SUPPORT_EMAIL}
     container_name: gpb_front_react
     networks:
       - gpb-network
     ports:
-      - "3000:3000"
+      - "3000:80"
+    environment:
+      BACKEND_SERVICE_URL: ${BACKEND_SERVICE_URL}
+      TELEGRAM_BOT_URL: ${TELEGRAM_BOT_URL}
+      SUPPORT_EMAIL: ${SUPPORT_EMAIL}
 
   postgres:
     image: postgres:latest

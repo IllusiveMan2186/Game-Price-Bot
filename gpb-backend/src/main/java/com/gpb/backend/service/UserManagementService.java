@@ -6,54 +6,46 @@ import com.gpb.backend.entity.dto.UserDto;
 import java.util.List;
 
 /**
- * Handle user info management
+ * Service interface for managing user information.
  */
 public interface UserManagementService {
+
     /**
-     * Get user by ID
+     * Retrieves the user information for a given user ID.
      *
-     * @param userId User's ID
-     * @return User DTO
+     * @param userId the unique identifier of the user
+     * @return a {@link UserDto} representing the user's details
      */
     UserDto getUserById(long userId);
 
     /**
-     * Get user by basic user ID
+     * Retrieves the web user associated with the given basic user ID.
      *
-     * @param basicUserId Basic user ID
-     * @return Web user
+     * @param basicUserId the basic user ID
+     * @return the corresponding {@link WebUser} entity
      */
     WebUser getUserByBasicUserId(long basicUserId);
 
     /**
-     * Get web users by a list of IDs
+     * Retrieves a web user by their email address.
      *
-     * @param ids List of user IDs
-     * @return List of web users
-     */
-    List<WebUser> getWebUsers(List<Long> ids);
-
-    /**
-     * Get web user by email
-     *
-     * @param email users email
-     * @return user
+     * @param email the email address of the user
+     * @return the {@link WebUser} associated with the specified email
      */
     WebUser getWebUserByEmail(String email);
 
     /**
-     * Update the user's locale
+     * Updates the locale setting for the specified user.
      *
-     * @param locale New locale
-     * @param userId User's ID
+     * @param locale the new locale to be set for the user
+     * @param userId the unique identifier of the user whose locale is being updated
      */
     void updateLocale(String locale, long userId);
 
     /**
-     * Activate user by ID
+     * Activates the user account corresponding to the specified user ID.
      *
-     * @param userId User's ID
+     * @param userId the unique identifier of the user to activate
      */
     void activateUser(long userId);
 }
-

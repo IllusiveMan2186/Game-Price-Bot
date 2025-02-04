@@ -17,7 +17,12 @@ import org.springframework.stereotype.Component;
 import java.util.Locale;
 
 /**
- * Create default admin user
+ * Initializes a default admin user at application startup if one does not already exist.
+ * <p>
+ * This component listens for the {@link ContextRefreshedEvent} and checks if an admin user with the configured
+ * email exists. If not, it creates a new admin user using the provided configuration properties and saves it
+ * into the repository.
+ * </p>
  */
 @Slf4j
 @Data
@@ -34,24 +39,41 @@ public class AdminUserInitializer implements ApplicationListener<ContextRefreshe
     @Value("${ADMIN_PASSWORD}")
     private String adminPassword;
 
-    public AdminUserInitializer(WebUserRepository userRepository,
-                                RestTemplateHandlerService restTemplateHandler,
-                                PasswordEncoder passwordEncoder) {
+    /**
+     * Constructs an {@code AdminUserInitializer} with required dependencies.
+     *
+     * @param userRepository      the repository used for accessing web users
+     * @param restTemplateHandler the service used to execute REST requests
+     * @param passwordEncoder     the encoder used for password encryption
+     */
+    public AdminUserInitializer(final WebUserRepository userRepository,
+                                final RestTemplateHandlerService restTemplateHandler,
+                                final PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.restTemplateHandler = restTemplateHandler;
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Called when the application context is refreshed.
+     * <p>
+     * Checks if an admin user exists by searching for the configured admin email. If not found, creates a new admin user.
+     * </p>
+     *
+     * @param event the context refreshed event
+     */
     @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+    public void onApplicationEvent(final ContextRefreshedEvent event) {
         if (userRepository.findByEmail(adminEmail).isEmpty()) {
-            Long basicUserId = restTemplateHandler.executeRequestWithBody("/user",
+            final Long basicUserId = restTemplateHandler.executeRequestWithBody(
+                    "/user",
                     HttpMethod.POST,
                     null,
                     new NotificationRequestDto(UserNotificationType.EMAIL),
-                    Long.class);
+                    Long.class
+            );
 
-            WebUser admin = WebUser.builder()
+            final WebUser admin = WebUser.builder()
                     .id(1L)
                     .email(adminEmail)
                     .password(passwordEncoder.encode(adminPassword))
@@ -60,9 +82,11 @@ public class AdminUserInitializer implements ApplicationListener<ContextRefreshe
                     .isActivated(true)
                     .basicUserId(basicUserId)
                     .build();
-            userRepository.save(admin);
 
-            log.info("Admin user created");
+            userRepository.save(admin);
+            log.info("Admin user with email '{}' has been created successfully.", adminEmail);
+        } else {
+            log.info("Admin user with email '{}' already exists. No initialization required.", adminEmail);
         }
     }
 }

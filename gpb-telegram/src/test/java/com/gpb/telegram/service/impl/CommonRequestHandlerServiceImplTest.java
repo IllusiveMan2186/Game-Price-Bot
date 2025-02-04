@@ -89,13 +89,14 @@ class CommonRequestHandlerServiceImplTest {
         String chatId = "123456";
         int pageNum = 1;
         String sort = "sort";
+        long basicUserId = 123456L;
         TelegramUser user = TelegramUser.builder().basicUserId(123456L).build();
         Update update = UpdateCreator.getUpdateWithCallback("/gameList " + pageNum, Long.parseLong(chatId));
         TelegramRequest request = TelegramRequest.builder().update(update).locale(Locale.ENGLISH).user(user).build();
         GameListPageDto page = new GameListPageDto(1, List.of(new GameDto()));
         SendMessage message = new SendMessage();
 
-        when(gameService.getGameList(pageNum, sort)).thenReturn(page);
+        when(gameService.getGameList(pageNum, sort, basicUserId)).thenReturn(page);
         when(gameListMapper.mapGameListToTelegramPage(page.getGames(), request, page.getElementAmount(), pageNum, sort))
                 .thenReturn(Collections.singletonList(message));
 
@@ -104,7 +105,7 @@ class CommonRequestHandlerServiceImplTest {
 
 
         assertEquals(message, response.getMessages().get(0));
-        verify(gameService, times(1)).getGameList(pageNum, sort);
+        verify(gameService, times(1)).getGameList(pageNum, sort, basicUserId);
     }
 
     @Test
@@ -113,6 +114,7 @@ class CommonRequestHandlerServiceImplTest {
         GameListPageDto emptyPage = new GameListPageDto(0, Collections.emptyList());
         String errorMessage = "message";
         int pageNum = 1;
+        long basicUserId = 123456L;
         String sort = "sort";
         SendMessage message = new SendMessage(chatId, errorMessage);
         Update update = UpdateCreator.getUpdateWithCallback("/gameList " + pageNum,
@@ -120,7 +122,7 @@ class CommonRequestHandlerServiceImplTest {
         TelegramUser user = TelegramUser.builder().basicUserId(123456L).build();
         TelegramRequest request = TelegramRequest.builder().update(update).locale(Locale.ENGLISH).user(user).build();
 
-        when(gameService.getGameList(pageNum, sort)).thenReturn(emptyPage);
+        when(gameService.getGameList(pageNum, sort, basicUserId)).thenReturn(emptyPage);
         when(messageSource.getMessage("game.list.not.found.game", null, Locale.ENGLISH))
                 .thenReturn(errorMessage);
 
@@ -129,6 +131,6 @@ class CommonRequestHandlerServiceImplTest {
 
 
         assertEquals(message, response.getMessages().get(0));
-        verify(gameService, times(1)).getGameList(pageNum, sort);
+        verify(gameService, times(1)).getGameList(pageNum, sort, basicUserId);
     }
 }

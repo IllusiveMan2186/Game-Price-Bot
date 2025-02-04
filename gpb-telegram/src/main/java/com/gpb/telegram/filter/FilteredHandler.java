@@ -4,15 +4,19 @@ import com.gpb.telegram.entity.TelegramRequest;
 import com.gpb.telegram.entity.TelegramResponse;
 
 /**
- * Interface marks class that it could be used with telegram filter
+ * Marker interface for classes that can be used as a Telegram filter handler.
+ * <p>
+ * Implementations of this interface process incoming {@link TelegramRequest} objects
+ * and return a corresponding {@link TelegramResponse} as the output.
+ * </p>
  */
 public interface FilteredHandler {
 
     /**
-     * Apply command from user
+     * Processes the provided Telegram request and returns a response.
      *
-     * @param request telegram request
-     * @return message
+     * @param request the {@link TelegramRequest} containing the user's command and associated data
+     * @return a {@link TelegramResponse} containing the result of processing the request
      */
     TelegramResponse apply(TelegramRequest request);
 }

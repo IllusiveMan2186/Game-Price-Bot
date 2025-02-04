@@ -2,8 +2,9 @@ import axios from 'axios';
 import { getLinkToken} from '@util/userDataUtils'
 import { getAuthToken, setAuthToken } from '@util/authUtils'
 import { setUserRole } from '@util/userDataUtils'
+import config from "@root/config";
 
-axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.baseURL = config.BACKEND_SERVICE_URL;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.defaults.withCredentials = true;
 

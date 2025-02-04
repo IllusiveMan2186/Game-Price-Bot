@@ -9,9 +9,9 @@ import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.EmailService;
 import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserAuthenticationService;
-import com.gpb.backend.util.Constants;
-import com.gpb.common.entity.user.TokenRequestDto;
 import com.gpb.common.service.UserLinkerService;
+import com.gpb.common.entity.user.TokenRequestDto;
+import com.gpb.backend.util.Constants;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -29,6 +29,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller for handling user authentication operations.
+ */
 @Slf4j
 @RestController
 @AllArgsConstructor
@@ -41,25 +44,26 @@ public class AuthenticationController {
     private final EmailService emailService;
 
     /**
-     * Login user to system and return user info with token ,
-     * also link with account if user went from messenger
+     * Authenticates a user with the provided credentials and returns user information along with an authentication token.
+     * If cookies are enabled, the token is stored in a secure HTTP-only cookie.
+     * Optionally links accounts if a link token is provided.
      *
-     * @param credentials credential for login
-     * @param linkToken   token for likening
-     * @return user info with token
+     * @param credentials the user credentials for login
+     * @param linkToken   an optional token for linking accounts (from messenger, etc.)
+     * @param response    the HTTP response used to add authentication cookies if enabled
+     * @return the authenticated user's information (token is omitted if cookies are used)
      */
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto login(@RequestBody Credentials credentials,
-                         @RequestHeader(value = "LinkToken", required = false) String linkToken,
-                         HttpServletResponse response) {
-        log.info("User login attempt with email: {}", credentials.getEmail()); // Logging attempt
-
+    public UserDto login(@RequestBody final Credentials credentials,
+                         @RequestHeader(value = "LinkToken", required = false) final String linkToken,
+                         final HttpServletResponse response) {
+        log.info("User login attempt with email: {}", credentials.getEmail());
         UserDto userDto = userService.login(credentials);
         String token = userAuthenticationProvider.createToken(userDto.getEmail());
 
         if (credentials.isCookiesEnabled()) {
-            response.addCookie(getAuthCookie(token));
+            response.addCookie(createAuthCookie(token));
             userDto.setToken(null);
             log.info("User ID {} logged in with cookies enabled", userDto.getBasicUserId());
         } else {
@@ -69,22 +73,21 @@ public class AuthenticationController {
 
         linkAccounts(linkToken, userDto.getBasicUserId());
         log.info("User ID {} linked accounts if applicable", userDto.getBasicUserId());
-
         return userDto;
     }
 
-
     /**
-     * Create new user
+     * Registers a new user and sends an activation email.
+     * Optionally links accounts if a link token is provided.
      *
-     * @param user      user that would be registered in system
-     * @param linkToken token for likening
+     * @param user      the registration details of the new user
+     * @param linkToken an optional token for linking accounts
      */
-    @PostMapping(value = "/registration")
+    @PostMapping("/registration")
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
     public void userRegistration(@RequestBody final UserRegistration user,
-                                 @RequestHeader(value = "LinkToken", required = false) String linkToken) {
+                                 @RequestHeader(value = "LinkToken", required = false) final String linkToken) {
         WebUser webUser = userService.createUser(user);
         UserActivation activation = userActivationService.createUserActivation(webUser);
         emailService.sendEmailVerification(activation);
@@ -92,54 +95,73 @@ public class AuthenticationController {
     }
 
     /**
-     * Activate user
+     * Activates a user's account using the provided activation token.
      *
-     * @param tokenRequestDto token of user activation
+     * @param tokenRequestDto the DTO containing the activation token
      */
-    @PostMapping(value = "/activate")
+    @PostMapping("/activate")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
     public void userActivation(@RequestBody final TokenRequestDto tokenRequestDto) {
         userActivationService.activateUserAccount(tokenRequestDto.getToken());
     }
 
+    /**
+     * Checks if the current user is authenticated.
+     *
+     * @return a ResponseEntity with status 200 (OK) if the user is authenticated, or 401 (Unauthorized) otherwise
+     */
     @GetMapping("/check-auth")
-    public ResponseEntity<?> checkAuth() {
+    public ResponseEntity<Void> checkAuth() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication != null && authentication.isAuthenticated() &&
+        if (authentication != null &&
+                authentication.isAuthenticated() &&
                 !(authentication instanceof AnonymousAuthenticationToken)) {
             log.info("User authenticated: {}", authentication.getPrincipal());
             return ResponseEntity.ok().build();
         }
-
         log.warn("User is NOT authenticated");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    /**
+     * Logs out the current user by invalidating the authentication token cookie.
+     *
+     * @param response the HTTP response used to remove the authentication cookie
+     */
     @PostMapping("/logout-user")
     @ResponseStatus(HttpStatus.OK)
-    public void logout(HttpServletResponse response) {
-        log.info("User logout request processing");
+    public void logout(final HttpServletResponse response) {
+        log.info("Processing user logout request");
         Cookie cookie = new Cookie(Constants.TOKEN_COOKIES_ATTRIBUTE, null);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setMaxAge(0);
-
+        cookie.setMaxAge(0); // Invalidate cookie immediately
         response.addCookie(cookie);
-        log.info("User successfully logout");
+        log.info("User successfully logged out");
     }
 
-    private void linkAccounts(String linkToken, long currentUserBasicId) {
+    /**
+     * Links accounts if a link token is provided.
+     *
+     * @param linkToken            the token used for linking accounts (can be null)
+     * @param currentUserBasicId   the ID of the current user
+     */
+    private void linkAccounts(final String linkToken, final long currentUserBasicId) {
         log.info("Link token {} for user {}", linkToken, currentUserBasicId);
-
         if (linkToken != null) {
             userLinkerService.linkAccounts(linkToken, currentUserBasicId);
         }
     }
 
-    private Cookie getAuthCookie(String token) {
+    /**
+     * Creates an authentication cookie with the specified token.
+     *
+     * @param token the authentication token
+     * @return the configured authentication Cookie
+     */
+    private Cookie createAuthCookie(final String token) {
         Cookie cookie = new Cookie(Constants.TOKEN_COOKIES_ATTRIBUTE, token);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);

@@ -4,6 +4,8 @@ import Message from '@util/message';
 import { useIsUserAuth } from '@util/authHook';
 import { getLinkTokenForMessengerRequest } from '@services/linkRequests';
 
+import config from "@root/config";
+
 import telegramImage from '@assets/images/telegram.png';
 
 import './Messenger.css';
@@ -28,7 +30,7 @@ const Messenger = () => {
       </h6>
       <button
         className="btn btn-primary btn-floating m-1 Messenger-button"
-        onClick={() => onMessangerClick('https://t.me/GamaPriceTelegramBot', '?start=')}
+        onClick={() => onMessangerClick(config.TELEGRAM_BOT_URL, '?start=')}
       >
         <img
           src={telegramImage}
