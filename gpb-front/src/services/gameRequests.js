@@ -33,23 +33,23 @@ export const getGameRequest = (gameId, setGame, navigate) => {
 };
 
 // Subscribe to game
-export const subscribeForGameRequest = (gameId, navigate) => {
+export const subscribeForGameRequest = (gameId) => {
     handleRequest(
         'POST',
         `${API_ENDPOINTS.GAMES}/${gameId}`,
         {},
-        () => navigate(0),
+        () => console.info(gameId),
         handleError
     );
 };
 
 // Unsubscribe from game
-export const unsubscribeForGameRequest = (gameId, navigate) => {
+export const unsubscribeForGameRequest = (gameId) => {
     handleRequest(
         'DELETE',
         `${API_ENDPOINTS.GAMES}/${gameId}`,
         {},
-        () => navigate(0),
+        () => console.info(gameId),
         handleError
     );
 };

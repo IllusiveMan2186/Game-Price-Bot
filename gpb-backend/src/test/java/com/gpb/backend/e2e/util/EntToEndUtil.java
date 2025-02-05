@@ -17,6 +17,7 @@ public class EntToEndUtil {
 
     public static final String GPB_URL = "http://localhost:3000/";
     public static final long WAIT_TIME = 20;
+    public static final int ATTEMPTS_AMOUNT = 10;
 
     public static WebDriver getGpbWebDriver() {
         WebDriverManager.chromedriver().setup();
