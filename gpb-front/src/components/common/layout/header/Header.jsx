@@ -12,14 +12,20 @@ import './Header.css';
 export default function Header() {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    console.info("logout")
+  const handleLogout = async () => {
+    console.info("logout");
     logout();
+  
     if (areCookiesEnabled()) {
-      logoutRequest();
+      try {
+        await logoutRequest(); // Ensure logoutRequest is awaited
+      } catch (error) {
+        console.error("Logout request failed", error);
+      }
     }
-    navigate(0)
-  };
+  
+    navigate(0);
+  }
 
   const defaultPage = () => {
     navigate("/")

@@ -57,13 +57,21 @@ export const registerRequest = (email, password, setErrorMessage, navigate) => {
     );
 };
 
-// Login request function
+// Logout request function
 export const logoutRequest = () => {
-    handleRequest(
-        "POST",
-        API_ENDPOINTS.LOGOUT,
-        null,
-        () => console.log("User logout"),
-        (error) => console.log("User logout error:" + error)
-    );
+    return new Promise((resolve, reject) => {
+        handleRequest(
+            "POST",
+            API_ENDPOINTS.LOGOUT,
+            null,
+            () => {
+                console.log("User logout");
+                resolve(); // Mark promise as resolved
+            },
+            (error) => {
+                console.log("User logout error:" + error);
+                reject(error); // Mark promise as rejected
+            }
+        );
+    });
 };

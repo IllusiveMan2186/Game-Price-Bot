@@ -1,8 +1,8 @@
 package com.gpb.backend.e2e;
 
 import com.gpb.backend.e2e.util.EntToEndUtil;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -20,7 +20,7 @@ class UserGameListEndToEndTest {
     private final String adminEmail = System.getProperty("e2e.email");
     private final String adminPassword = System.getProperty("e2e.password");
 
-    @Test
+    @RepeatedTest(EntToEndUtil.ATTEMPTS_AMOUNT)
     void testGameSubscription_whenSuccess_shouldSubscribeToGame() {
         WebDriver driver = getNameInfoPAge();
 
@@ -34,7 +34,7 @@ class UserGameListEndToEndTest {
         driver.quit();
     }
 
-    @Test
+    @RepeatedTest(EntToEndUtil.ATTEMPTS_AMOUNT)
     void testGameUnsubscribe_whenSuccess_shouldUnsubscribeToGame() {
         WebDriver driver = getNameInfoPAge();
 
@@ -47,7 +47,7 @@ class UserGameListEndToEndTest {
         driver.quit();
     }
 
-    @Test
+    @RepeatedTest(EntToEndUtil.ATTEMPTS_AMOUNT)
     void testUserGameList_whenSuccess_shouldGameInListAfterSubscription() {
         WebDriver driver = getNameInfoPAge();
 

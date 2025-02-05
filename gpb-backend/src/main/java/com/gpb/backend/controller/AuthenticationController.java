@@ -88,10 +88,12 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.CREATED)
     public void userRegistration(@RequestBody final UserRegistration user,
                                  @RequestHeader(value = "LinkToken", required = false) final String linkToken) {
+        log.info("Processing user registration request");
         WebUser webUser = userService.createUser(user);
         UserActivation activation = userActivationService.createUserActivation(webUser);
         emailService.sendEmailVerification(activation);
         linkAccounts(linkToken, webUser.getBasicUserId());
+        log.info("User successfully registered");
     }
 
     /**
@@ -103,7 +105,9 @@ public class AuthenticationController {
     @Transactional
     @ResponseStatus(HttpStatus.OK)
     public void userActivation(@RequestBody final TokenRequestDto tokenRequestDto) {
+        log.info("Processing user activation request");
         userActivationService.activateUserAccount(tokenRequestDto.getToken());
+        log.info("User successfully activated");
     }
 
     /**
@@ -113,6 +117,7 @@ public class AuthenticationController {
      */
     @GetMapping("/check-auth")
     public ResponseEntity<Void> checkAuth() {
+        log.info("Check user authentication");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null &&
                 authentication.isAuthenticated() &&
@@ -145,8 +150,8 @@ public class AuthenticationController {
     /**
      * Links accounts if a link token is provided.
      *
-     * @param linkToken            the token used for linking accounts (can be null)
-     * @param currentUserBasicId   the ID of the current user
+     * @param linkToken          the token used for linking accounts (can be null)
+     * @param currentUserBasicId the ID of the current user
      */
     private void linkAccounts(final String linkToken, final long currentUserBasicId) {
         log.info("Link token {} for user {}", linkToken, currentUserBasicId);

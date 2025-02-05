@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { isUserAdmin } from '@util/userDataUtils';
 import { useIsUserAuth } from '@util/authHook';
@@ -25,14 +25,22 @@ const RemoveButton = ({ gameId, navigate }) => (
     </button>
 );
 
-const SubscribeButton = ({ isSubscribed, gameId, navigate }) => {
+const SubscribeButton = ({ isSubscribed: initialSubscribed, gameId }) => {
+    const [isSubscribed, setIsSubscribed] = useState(initialSubscribed);
+
+    useEffect(() => {
+        setIsSubscribed(initialSubscribed);
+    }, [initialSubscribed]);
+
     const handleSubscribe = useCallback(() => {
         if (isSubscribed) {
-            unsubscribeForGameRequest(gameId, navigate);
+            unsubscribeForGameRequest(gameId);
+            setIsSubscribed(false);
         } else {
-            subscribeForGameRequest(gameId, navigate);
+            subscribeForGameRequest(gameId);
+            setIsSubscribed(true);
         }
-    }, [isSubscribed, gameId, navigate]);
+    }, [isSubscribed, gameId]);
 
     const isUserAuthenticate = useIsUserAuth();
 
@@ -70,7 +78,7 @@ const GameDetails = ({ game, gameId, navigate }) => (
             <CommonGameInfo game={game} className="App-game-page-info-common-price" />
             <GameGenres genres={game.genres} />
         </div>
-        <SubscribeButton isSubscribed={game.userSubscribed} gameId={gameId} navigate={navigate} />
+        <SubscribeButton isSubscribed={game.userSubscribed} gameId={gameId} />
         {isUserAdmin() && <RemoveButton gameId={gameId} navigate={navigate} />}
         <GameStoresList stores={game.gamesInShop} />
     </div>
