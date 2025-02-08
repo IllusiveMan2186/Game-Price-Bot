@@ -1,13 +1,10 @@
 package com.gpb.game.parser;
 
-import com.gpb.common.entity.game.ClientActivationType;
 import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
-import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import org.jsoup.nodes.Document;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface StoreParser {

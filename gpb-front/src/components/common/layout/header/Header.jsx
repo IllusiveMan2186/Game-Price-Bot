@@ -18,7 +18,7 @@ export default function Header() {
   
     if (areCookiesEnabled()) {
       try {
-        await logoutRequest(); // Ensure logoutRequest is awaited
+        await logoutRequest();
       } catch (error) {
         console.error("Logout request failed", error);
       }

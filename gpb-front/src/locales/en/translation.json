@@ -73,5 +73,6 @@
     "app.user.link.form.button": "Link accounts",
     "app.profile.account.link.token": "Generate Linking Token",
     "app.user.get.link.token.title": "Get token for account linking",
-    "app.user.get.link.token.description": "Enter this token in supported messanger (Telegram)"
+    "app.user.get.link.token.description": "Enter this token in supported messanger (Telegram)",
+    "app.game.search.wait": "The game was not found in our system, so we're searching external sources. This may take up to 30 seconds. We appreciate your patience!"
 }

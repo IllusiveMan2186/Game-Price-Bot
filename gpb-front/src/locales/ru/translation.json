@@ -74,5 +74,6 @@
     "app.user.link.form.button": "Привязать аккаунт",
     "app.profile.account.link.token": "Сгенерировать токен привязки",
     "app.user.get.link.token.title": "Получить токен для привязки аккаунта",
-    "app.user.get.link.token.description": "Введите этот токен в поддерживаемый мессенджер (Telegram)"
+    "app.user.get.link.token.description": "Введите этот токен в поддерживаемый мессенджер (Telegram)",
+    "app.game.search.wait": "Игра не найдена в нашей системе, поэтому мы ищем ее во внешних источниках. Это может занять до 30 секунд. Мы ценим ваше терпение!"
 }
