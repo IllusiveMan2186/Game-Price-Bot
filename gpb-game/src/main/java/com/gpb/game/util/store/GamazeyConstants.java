@@ -13,8 +13,8 @@ public class GamazeyConstants {
     public static final String GAMEZEY_SEARCH_URL = "https://gamazey.com.ua/search?search=";
     public static final String GAME_NAME_PRODUCT_TYPE_PART = "^(Гра|Ігрова валюта|Доповнення) ";
     public static final String GAME_NAME_SPECIFICATION_PART = " для .+ \\(Ключ активації .+\\)| " +
-            "\\(Ключ активації .+\\)| (Ігрова валюта)";
-    public static final String GAME_NAME_PROBLEMATIC_SYMBOLS = "[:|&+]";
+            "\\(Ключ активації .+\\)| \\(Ігрова валюта\\)";
+    public static final String GAME_NAME_PROBLEMATIC_SYMBOLS = " [:|&+-]|[:|&+-]";
     public static final String GAME_GENRES_FIELD = "Жанр";
     public static final int GAME_IMAGE_CROP_WIDTH_START = 20;
     public static final int GAME_IMAGE_CROP_WIDTH_LONG = 320;

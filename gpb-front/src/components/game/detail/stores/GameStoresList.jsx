@@ -10,8 +10,12 @@ const ClientActivationType = ({ clientType }) => {
 
 const StorePriceInfo = ({ price, discount, discountPrice }) => (
     <div className="App-game-page-info-storeList-store-price-section">
-        <div className="App-game-page-info-storeList-store-price">{price}</div>
-        <div className="App-game-page-info-storeList-store-discount">-{discount}%</div>
+        {discountPrice !== price && (
+            <>
+                <div className="App-game-page-info-storeList-store-price">{price}</div>
+                <div className="App-game-page-info-storeList-store-discount">-{discount}%</div>
+            </>
+        )}
         <div className="App-game-page-info-storeList-store-discountPrice">{discountPrice}</div>
     </div>
 );

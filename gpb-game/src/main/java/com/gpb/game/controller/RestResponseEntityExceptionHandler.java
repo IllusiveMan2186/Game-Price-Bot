@@ -27,7 +27,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      * @return a {@link ResponseEntity} containing the error message and a 400 status code.
      */
     @ExceptionHandler(PriceRangeException.class)
-    protected ResponseEntity<Object> handleBadRequest(PriceRangeException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleBadRequest(Exception ex, WebRequest request) {
         log.error("Bad request error: {}", ex.getMessage(), ex);
         return handleExceptionInternal(
                 ex,
@@ -46,7 +46,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      * @return a {@link ResponseEntity} containing the error message and a 404 status code.
      */
     @ExceptionHandler(NotFoundException.class)
-    protected ResponseEntity<Object> handleNotFound(NotFoundException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleNotFound(Exception ex, WebRequest request) {
         log.error("Resource not found: {}", ex.getMessage(), ex);
         return handleExceptionInternal(
                 ex,
@@ -65,7 +65,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      * @return a {@link ResponseEntity} containing the error message and a 409 status code.
      */
     @ExceptionHandler(AccountAlreadyLinkedException.class)
-    protected ResponseEntity<Object> handleConflict(AccountAlreadyLinkedException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {
         log.error("Conflict error: {}", ex.getMessage(), ex);
         return handleExceptionInternal(
                 ex,

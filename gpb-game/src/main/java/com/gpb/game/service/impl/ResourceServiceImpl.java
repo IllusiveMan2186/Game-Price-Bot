@@ -9,14 +9,12 @@ import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,14 +24,26 @@ public class ResourceServiceImpl implements ResourceService {
     private final ResourceConfiguration resourceConfiguration;
 
     @Override
-    public void cropImage(String imageUrl, String gameName, int x, int y, int w, int h) {
+    public void saveImage(String imageUrl, String gameName) {
         try {
-            validateInputs(imageUrl, gameName, w, h);
-            String filePath = resourceConfiguration.getImageFolder() + "/" + gameName + CommonConstants.JPG_IMG_FILE_EXTENSION;
+            validateInputs(imageUrl, gameName);
+            String filePath = getFilePath(gameName);
+            Path outputPath = Paths.get(filePath);
+            BufferedImage image = loadImage(imageUrl);
+            saveImage(image, outputPath);
+        } catch (Exception e) {
+            log.error("Failed to save image '{}'. Exception: {}", imageUrl, e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void saveCroppedImage(String imageUrl, String gameName, int x, int y, int w, int h) {
+        try {
+            validateInputs(imageUrl, gameName);
+            String filePath = getFilePath(gameName);
             Path outputPath = Paths.get(filePath);
             BufferedImage image = loadImage(imageUrl);
             validateCroppingBounds(image, x, y, w, h);
-
             BufferedImage croppedImage = image.getSubimage(x, y, w, h);
             saveImage(croppedImage, outputPath);
         } catch (Exception e) {
@@ -41,15 +51,12 @@ public class ResourceServiceImpl implements ResourceService {
         }
     }
 
-    private void validateInputs(String imageUrl, String gameName, int w, int h) {
+    private void validateInputs(String imageUrl, String gameName) {
         if (imageUrl == null || imageUrl.isEmpty()) {
             throw new IllegalArgumentException("Image URL cannot be null or empty.");
         }
         if (gameName == null || gameName.isEmpty()) {
             throw new IllegalArgumentException("Game name cannot be null or empty.");
-        }
-        if (w <= 0 || h <= 0) {
-            throw new IllegalArgumentException("Width and height must be positive values.");
         }
     }
 
@@ -71,14 +78,18 @@ public class ResourceServiceImpl implements ResourceService {
 
     private void saveImage(BufferedImage image, Path outputPath) throws IOException {
         try {
-            Files.createDirectories(outputPath.getParent()); // Ensure directory exists
-            boolean success = ImageIO.write(image, "JPG", outputPath.toFile());
+            Files.createDirectories(outputPath.getParent());
+            boolean success = ImageIO.write(image, "PNG", outputPath.toFile());
             if (!success) {
                 throw new IOException("Failed to write the image to the specified file.");
             }
-            log.info("Cropped image successfully saved at: {}", outputPath);
+            log.info("Image successfully saved at: {}", outputPath);
         } catch (IOException e) {
-            throw new IOException("Error saving cropped image to file: " + outputPath, e);
+            throw new IOException("Error saving image to file: " + outputPath, e);
         }
+    }
+
+    private String getFilePath(String gameName) {
+        return resourceConfiguration.getImageFolder() + "/" + gameName + CommonConstants.JPG_IMG_FILE_EXTENSION;
     }
 }

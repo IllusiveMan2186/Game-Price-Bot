@@ -61,25 +61,33 @@ public class CardmagStoreParser extends AbstractStoreParser implements StorePars
         Document page = pageFetcher.getPage(CardmagConstants.CARDMAQ_SEARCH_URL + name);
         return page.getElementsByClass(CardmagConstants.GAME_IN_LIST)
                 .stream()
-                .map(element -> element.attr(Constants.ATTRIBUTE_HREF))
+                .map(element -> CardmagConstants.CARDMAQ_HOST_URL.concat(element.attr(Constants.ATTRIBUTE_HREF)))
                 .toList();
     }
 
     @Override
     public List<Genre> getGenres(Document page) {
-        Element title = page.getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_FIELD).get(0);
-        return getGenres(title);
+        String title = getTitle(page);
+        return genreMap.entrySet()
+                .stream()
+                .filter(entry -> title.contains(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .toList();
     }
 
     @Override
     public ProductType getProductType(Document page) {
-        String title = extractTextFromFirstElement(page, CardmagConstants.GAME_PAGE_TITLE_FIELD);
-        return productTypeMap.entrySet()
-                .stream()
+        String title = getTitle(page);
+
+        return productTypeMap.entrySet().stream()
                 .filter(entry -> title.contains(entry.getKey()))
                 .map(Map.Entry::getValue)
                 .findFirst()
-                .orElseGet(() -> ProductType.GAME);
+                .orElseGet(() -> page.getElementsByClass(CardmagConstants.DLC_FIELD)
+                        .stream()
+                        .findAny()
+                        .map(el -> ProductType.ADDITION)
+                        .orElse(ProductType.GAME));
     }
 
     @Override
@@ -87,33 +95,26 @@ public class CardmagStoreParser extends AbstractStoreParser implements StorePars
         Elements elements = page.getElementsByClass(CardmagConstants.GAME_IMG_CLASS);
         String gameName = getName(page);
 
-        if (elements.isEmpty()) {
-            log.warn("Image not found for game: {}", gameName);
-            return;
+        for (Element element : elements) {
+            String altText = element.attr("alt");
+            if (altText.contains(CardmagConstants.MAIN_GAME_IMG_MARK)) {
+                String imgUrl = element.attr("src");
+                resourceService.saveImage(imgUrl, gameName);
+                return;
+            }
         }
 
-        String imgUrl = elements.first().attr("src");
-        resourceService.cropImage(
-                imgUrl,
-                gameName,
-                CardmagConstants.GAME_IMAGE_CROP_WIDTH_START,
-                0,
-                CardmagConstants.GAME_IMAGE_CROP_WIDTH_LONG,
-                CardmagConstants.GAME_IMAGE_HEIGHT
-        );
+        log.warn("Image not found for game: {}", gameName);
     }
 
     private String sanitizeGameName(String nameFromPage) {
         return nameFromPage
                 .replaceAll(CardmagConstants.GAME_NAME_EXTRA_PART, "")
-                .replaceAll(CardmagConstants.GAME_NAME_PROBLEMATIC_SYMBOLS, "-");
+                .replaceAll(CardmagConstants.GAME_NAME_PROBLEMATIC_SYMBOLS, "");
     }
 
     private ClientActivationType getClientActivationTypeFromGameName(Document page) {
-        String title = page
-                .getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_FIELD)
-                .first()
-                .text();
+        String title = getTitle(page);
 
         return clientActivationTypeMap.entrySet()
                 .stream()
@@ -121,6 +122,13 @@ public class CardmagStoreParser extends AbstractStoreParser implements StorePars
                 .map(Map.Entry::getValue)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private String getTitle(Document page) {
+        return page
+                .getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_CLASS)
+                .first()
+                .attr(CardmagConstants.GAME_PAGE_TITLE_ATTR);
     }
 
     private boolean isAvailable(Document page) {

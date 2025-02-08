@@ -7,6 +7,7 @@ import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 /**
  * Parser for retrieving and parsing HTML content from store pages.
@@ -29,9 +30,13 @@ public class StorePageParser {
      */
     public Document getPage(final String url) {
         try {
+            log.info("Get page from url {}", url);
             return Jsoup.connect(url).get();
+        } catch (MalformedURLException e) {
+            log.error("Page with url '{}' not found", url);
+            throw new NotFoundException("app.game.error.url.not.found");
         } catch (IOException e) {
-
+            log.error("Page with url '{}' not found", url);
             throw new NotFoundException("app.game.error.url.not.found");
         }
     }

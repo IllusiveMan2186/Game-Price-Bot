@@ -43,8 +43,8 @@ public class GamazeyStoreParser extends AbstractStoreParser implements StorePars
     public GameInShop parseGameInShopFromPage(Document page) {
         return GameInShop.builder()
                 .nameInStore(getName(page))
-                .price(BigDecimal.valueOf(extractInteger(page, GamazeyConstants.GAME_PAGE_OLD_PRICE_FIELD)))
-                .discountPrice(BigDecimal.valueOf(extractInteger(page, GamazeyConstants.GAME_PAGE_DISCOUNT_PRICE_FIELD)))
+                .price(extractOldPrice(page, GamazeyConstants.GAME_PAGE_OLD_PRICE_FIELD))
+                .discountPrice(extractDiscountPrice(page))
                 .discount(extractDiscount(page))
                 .isAvailable(isGameAvailable(page))
                 .clientType(getClientActivationTypeFromGameName(page))
@@ -90,6 +90,7 @@ public class GamazeyStoreParser extends AbstractStoreParser implements StorePars
     @Override
     public void saveImage(Document page) {
         String gameName = getName(page);
+
         List<Element> elements = page.getElementsByClass(GamazeyConstants.GAME_IMG_CLASS);
         if (elements.size() < 2) {
             log.warn("No suitable image found for {}", gameName);
@@ -97,7 +98,7 @@ public class GamazeyStoreParser extends AbstractStoreParser implements StorePars
         }
 
         String imgUrl = elements.get(1).attr("src");
-        resourceService.cropImage(imgUrl, gameName,
+        resourceService.saveCroppedImage(imgUrl, gameName,
                 GamazeyConstants.GAME_IMAGE_CROP_WIDTH_START, 0,
                 GamazeyConstants.GAME_IMAGE_CROP_WIDTH_LONG, GamazeyConstants.GAME_IMAGE_HEIGHT);
     }
@@ -106,7 +107,7 @@ public class GamazeyStoreParser extends AbstractStoreParser implements StorePars
         return nameFromPage
                 .replaceAll(GamazeyConstants.GAME_NAME_PRODUCT_TYPE_PART, "")
                 .replaceAll(GamazeyConstants.GAME_NAME_SPECIFICATION_PART, "")
-                .replaceAll(GamazeyConstants.GAME_NAME_PROBLEMATIC_SYMBOLS, "-");
+                .replaceAll(GamazeyConstants.GAME_NAME_PROBLEMATIC_SYMBOLS, "");
 
     }
 
@@ -124,14 +125,30 @@ public class GamazeyStoreParser extends AbstractStoreParser implements StorePars
         return page.getElementsByClass(GamazeyConstants.GAME_PAGE_IS_AVAILABLE).isEmpty();
     }
 
-    private int extractInteger(Document page, String field) {
+    private BigDecimal extractOldPrice(Document page, String field) {
         String text = extractTextFromFirstElement(page, field);
         String sanitized = text.replaceAll("\\D", "");
-        return sanitized.isEmpty() ? 0 : Integer.parseInt(sanitized);
+        return BigDecimal.valueOf(sanitized.isEmpty() ? 0 : Integer.parseInt(sanitized));
     }
+
+    private BigDecimal extractDiscountPrice(Document page) {
+        String text = page.getElementsByClass(GamazeyConstants.GAME_PAGE_DISCOUNT_PRICE_FIELD).get(0)
+                .child(1).text();
+        String sanitized = text.replaceAll("\\D", "");
+        return BigDecimal.valueOf(sanitized.isEmpty() ? 0 : Integer.parseInt(sanitized));
+    }
+
     private int extractDiscount(Document page) {
         String text = page.getElementById(GamazeyConstants.GAME_PAGE_DISCOUNT_FIELD).text();
         String sanitized = text.replaceAll("\\D", "");
         return sanitized.isEmpty() ? 0 : Integer.parseInt(sanitized);
+    }
+
+    private List<Genre> getGenres(Element genreElement) {
+        return genreMap.entrySet()
+                .stream()
+                .filter(entry -> genreElement.text().contains(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .toList();
     }
 }

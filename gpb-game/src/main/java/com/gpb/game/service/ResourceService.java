@@ -2,5 +2,23 @@ package com.gpb.game.service;
 
 public interface ResourceService {
 
-    void cropImage(String gameName, String imageFolder, int x, int y, int w, int h);
+    /**
+     * Saves an image from a given URL to a specified file path without cropping.
+     *
+     * @param imageUrl The URL of the image to be saved.
+     * @param gameName The name of the game (used for naming the file).
+     */
+    void saveImage(String imageUrl, String gameName);
+
+    /**
+     * Crops a specified rectangular region from an image and saves it to a file.
+     *
+     * @param imageUrl The URL of the image to be cropped.
+     * @param gameName The name of the game (used for naming the file).
+     * @param x        The X coordinate of the upper-left corner of the cropping region.
+     * @param y        The Y coordinate of the upper-left corner of the cropping region.
+     * @param w        The width of the cropping region.
+     * @param h        The height of the cropping region.
+     */
+    void saveCroppedImage(String imageUrl, String gameName, int x, int y, int w, int h);
 }

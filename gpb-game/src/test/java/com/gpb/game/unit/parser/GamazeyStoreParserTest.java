@@ -24,8 +24,13 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class GamazeyStoreParserTest {
@@ -46,7 +51,7 @@ class GamazeyStoreParserTest {
     private Map<String, Genre> genreMap;
 
     private GamazeyStoreParser parser;
-    private GamazeyEnumMapper gamazeyEnumMapper = new GamazeyEnumMapper();
+    private final GamazeyEnumMapper gamazeyEnumMapper = new GamazeyEnumMapper();
 
     @Mock
     private Document mockDocument;
@@ -62,36 +67,37 @@ class GamazeyStoreParserTest {
                 resourceService,
                 gamazeyEnumMapper.gamazeyGenreMap(),
                 gamazeyEnumMapper.gamazeyProductTypeMap(),
-                gamazeyEnumMapper.gamazeyClientActivationMap());
+                gamazeyEnumMapper.gamazeyClientActivationMap()
+        );
     }
 
     @Test
-    void testParseGameInShopFromPage_whenSuccess_shouldReturnGameInShop() {
+    void shouldReturnGameInShop_whenParsingIsSuccessful_shouldReturnGameInShop() {
         setUpParseGamePage(
-                mockDocument,
                 "Доповнення Test Game - Some Dlc для ПК (Ключ активації Steam)",
                 "6 299 ₴",
                 "2 699 ₴",
-                "-57%");
-
+                "-57%"
+        );
 
         GameInShop result = parser.parseGameInShopFromPage(mockDocument);
 
-
-        assertNotNull(result);
         GameInShop expectedGameInShop = GameInShop.builder()
-                .nameInStore("Test Game - Some Dlc")
+                .nameInStore("Test Game Some Dlc")
                 .price(new BigDecimal("6299"))
                 .discountPrice(new BigDecimal("2699"))
                 .discount(57)
                 .clientType(ClientActivationType.STEAM)
                 .isAvailable(false)
                 .build();
-        assertEquals(expectedGameInShop, result);
+
+        assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedGameInShop);
     }
 
     @Test
-    void testGetName_whenSuccess_shouldReturnName() {
+    void shouldReturnGameName_whenGetNameIsCalled_shouldReturnName() {
         Element nameElement = mock(Element.class);
         when(mockDocument.getElementsByClass(GamazeyConstants.GAME_PAGE_NAME_FIELD))
                 .thenReturn(new Elements(nameElement));
@@ -99,12 +105,11 @@ class GamazeyStoreParserTest {
 
         String name = parser.getName(mockDocument);
 
-
-        assertEquals("Game Name", name);
+        assertThat(name).isEqualTo("Game Name");
     }
 
     @Test
-    void testParseSearchResults_whenSuccess_shouldReturnListOfUrls() {
+    void shouldReturnListOfUrls_whenSearchResultsParsedSuccessfully_shouldReturnUrlList() {
         Document searchPage = mock(Document.class);
         when(storePageParser.getPage(anyString())).thenReturn(searchPage);
 
@@ -115,43 +120,40 @@ class GamazeyStoreParserTest {
         when(element1.attr(Constants.ATTRIBUTE_HREF)).thenReturn("/game1");
         when(element2.attr(Constants.ATTRIBUTE_HREF)).thenReturn("/game2");
 
-        Elements elements = new Elements();
-        elements.add(element1);
-        elements.add(element2);
+        Elements elements = new Elements(List.of(element1, element2));
 
         when(searchPage.getElementsByClass(GamazeyConstants.GAME_IN_LIST)).thenReturn(elements);
 
+
         List<String> results = parser.parseSearchResults("Test", storePageParser);
 
-        assertEquals(2, results.size());
-        assertEquals("/game1", results.get(0));
-        assertEquals("/game2", results.get(1));
+
+        assertThat(results).containsExactly("/game1", "/game2");
     }
 
     @Test
-    void testGetGenres_whenSuccess_shouldGetGenres() {
+    void shouldReturnGenres_whenGameHasGenres_shouldReturnGenres() {
         Element genreElement = mock(Element.class);
         when(genreElement.text()).thenReturn("Action, RPG");
         when(mockDocument.getElementsByClass(GamazeyConstants.GAME_PAGE_CHARACTERISTICS))
                 .thenReturn(new Elements(genreElement));
 
         List<Genre> genres = parser.getGenres(mockDocument);
-        assertNotNull(genres);
+
+        assertThat(genres).isNotNull();
     }
 
     @Test
-    void testGetProductType_whenSuccess_shouldReturnProductType() {
+    void shouldReturnProductType_whenGamePageContainsProductType_shouldReturnGameProductType() {
         String name = "name";
         Element nameElement = mock(Element.class);
         when(mockDocument.getElementsByClass(GamazeyConstants.GAME_PAGE_NAME_FIELD))
                 .thenReturn(new Elements(nameElement));
         when(nameElement.text()).thenReturn(name);
 
-
         ProductType type = parser.getProductType(mockDocument);
 
-
-        assertEquals(ProductType.GAME, type);
+        assertThat(type).isEqualTo(ProductType.GAME);
     }
 
     @Test
@@ -168,7 +170,7 @@ class GamazeyStoreParserTest {
         parser.saveImage(mockDocument);
 
 
-        verify(resourceService, times(1)).cropImage(
+        verify(resourceService, times(1)).saveCroppedImage(
                 "http://image.url/game.jpg", "Game Name",
                 GamazeyConstants.GAME_IMAGE_CROP_WIDTH_START, 0,
                 GamazeyConstants.GAME_IMAGE_CROP_WIDTH_LONG, GamazeyConstants.GAME_IMAGE_HEIGHT);
@@ -184,43 +186,50 @@ class GamazeyStoreParserTest {
         parser.saveImage(mockDocument);
 
 
-        verify(resourceService, times(0)).cropImage(
+        verify(resourceService, times(0)).saveCroppedImage(
                 "http://image.url/game.jpg", "Game Name",
                 GamazeyConstants.GAME_IMAGE_CROP_WIDTH_START, 0,
                 GamazeyConstants.GAME_IMAGE_CROP_WIDTH_LONG, GamazeyConstants.GAME_IMAGE_HEIGHT);
     }
 
-    void setUpParseGamePage(Document document,
-                            String name,
-                            String price,
-                            String discountPrice,
-                            String discount) {
-        Element nameElement = mock(Element.class);
-        Element priceElement = mock(Element.class);
+    @Test
+    void testGetGenres_whenSuccess_shouldGetGenres() {
+        Element genreElement = mock(Element.class);
+        when(genreElement.text()).thenReturn("Жанр Екшен, Рольові");
+        when(mockDocument.getElementsByClass(GamazeyConstants.GAME_PAGE_CHARACTERISTICS))
+                .thenReturn(new Elements(genreElement));
+
+
+        List<Genre> genres = parser.getGenres(mockDocument);
+
+
+        assertEquals(2, genres.size());
+        assertThat(genres).contains(Genre.ACTION, Genre.RPG);
+    }
+
+    private void setUpParseGamePage(String name, String price, String discountPrice, String discount) {
+        setElementForClass(GamazeyConstants.GAME_PAGE_NAME_FIELD, name);
+        setElementForClass(GamazeyConstants.GAME_PAGE_OLD_PRICE_FIELD, price);
+
         Element discountPriceElement = mock(Element.class);
-        Element discountElement = mock(Element.class);
-        Element availableElement = mock(Element.class);
-
-        when(document.getElementsByClass(GamazeyConstants.GAME_PAGE_NAME_FIELD))
-                .thenReturn(new Elements(nameElement));
-        when(nameElement.text()).thenReturn(name);
-
-        when(document.getElementsByClass(GamazeyConstants.GAME_PAGE_OLD_PRICE_FIELD))
-                .thenReturn(new Elements(priceElement));
-        when(priceElement.text()).thenReturn(price);
-
-        when(document.getElementsByClass(GamazeyConstants.GAME_PAGE_DISCOUNT_PRICE_FIELD))
+        Element discountPriceChildElement = mock(Element.class);
+        when(discountPriceElement.child(1)).thenReturn(discountPriceChildElement);
+        when(discountPriceChildElement.text()).thenReturn(discountPrice);
+        when(mockDocument.getElementsByClass(GamazeyConstants.GAME_PAGE_DISCOUNT_PRICE_FIELD))
                 .thenReturn(new Elements(discountPriceElement));
-        when(discountPriceElement.text()).thenReturn(discountPrice);
 
-        when(document.getElementById(GamazeyConstants.GAME_PAGE_DISCOUNT_FIELD))
-                .thenReturn(discountElement);
+        Element discountElement = mock(Element.class);
         when(discountElement.text()).thenReturn(discount);
+        when(mockDocument.getElementById(GamazeyConstants.GAME_PAGE_DISCOUNT_FIELD))
+                .thenReturn(discountElement);
 
-        when(document.getElementsByClass(GamazeyConstants.GAME_PAGE_IS_AVAILABLE))
-                .thenReturn(new Elements(availableElement));
+        setElementForClass(GamazeyConstants.GAME_PAGE_IS_AVAILABLE, null);
+    }
 
-
+    private void setElementForClass(String className, String text) {
+        Element element = mock(Element.class);
+        when(mockDocument.getElementsByClass(className))
+                .thenReturn(new Elements(element));
+        if (text != null) when(element.text()).thenReturn(text);
     }
 }
-

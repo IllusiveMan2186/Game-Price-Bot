@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -32,15 +33,19 @@ public class GameStoresServiceImpl implements GameStoresService {
 
             List<Game> createdGames = service.findUncreatedGameByName(name);
             for (Game createdGame : createdGames) {
-                if (games.stream()
-                        .map(Game::getName)
-                        .noneMatch(gameName -> gameName.equals(createdGame.getName()))) {
+                if (isName(games, createdGame)) {
                     setGameFromAllStores(createdGame, service);
                     games.add(createdGame);
                 }
             }
         }
         return games;
+    }
+
+    private boolean isName(List<Game> games, Game createdGame) {
+        return games.stream()
+                .map(Game::getName)
+                .noneMatch(gameName -> gameName.equals(createdGame.getName()));
     }
 
     @Override
@@ -95,8 +100,10 @@ public class GameStoresServiceImpl implements GameStoresService {
 
         List<GameInShop> gameInShopList = services.stream()
                 .map(storeService1 -> storeService1.findByName(game.getName()))
+                .filter(Objects::nonNull)
                 .toList();
 
         game.getGamesInShop().addAll(gameInShopList);
+        gameInShopList.stream().forEach(gameInShop -> gameInShop.setGame(game));
     }
 }

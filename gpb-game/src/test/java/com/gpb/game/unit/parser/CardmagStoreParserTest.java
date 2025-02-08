@@ -16,15 +16,17 @@ import org.jsoup.select.Elements;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 public class CardmagStoreParserTest {
     @Mock
@@ -39,7 +41,7 @@ public class CardmagStoreParserTest {
     private StorePageParser pageFetcher;
 
     private CardmagStoreParser parser;
-    private CardmagEnumMapper cardmagEnumMapper = new CardmagEnumMapper();
+    private final CardmagEnumMapper cardmagEnumMapper = new CardmagEnumMapper();
 
     @BeforeEach
     void setUp() {
@@ -48,146 +50,163 @@ public class CardmagStoreParserTest {
                 resourceService,
                 cardmagEnumMapper.cardmagGenreMap(),
                 cardmagEnumMapper.cardmagProductTypeMap(),
-                cardmagEnumMapper.cardmagClientActivationMap());
+                cardmagEnumMapper.cardmagClientActivationMap()
+        );
     }
 
     @Test
-    void testParseGameInShopFromPage_whenSuccess_shouldReturnGameInShop() {
+    void testParseGameInShopFromPage_whenParsingIsSuccessful_shouldReturnGameInShop() {
         setUpParseGamePage(
-                mockDocument,
                 "Test Game - Some DLC (Xbox One) - Xbox Live Key - UNITED STATES",
                 "1 200 ₴",
                 "КАТАЛОГ ПРОДУКЦІЇ Gaming DLCs Test Game - Some Dlc (Xbox One) - Xbox Live Key - UNITED STATES"
         );
 
-
         GameInShop result = parser.parseGameInShopFromPage(mockDocument);
 
-
-        assertNotNull(result);
-        GameInShop expectedGameInShop = GameInShop.builder()
-                .nameInStore("Test Game - Some DLC")
-                .price(new BigDecimal("1200"))
-                .discountPrice(new BigDecimal("1200"))
-                .discount(0)
-                .isAvailable(true)
-                .clientType(ClientActivationType.MICROSOFT)
-                .build();
-        assertEquals(expectedGameInShop, result);
+        assertThat(result).isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(GameInShop.builder()
+                        .nameInStore("Test Game Some DLC")
+                        .price(new BigDecimal("1200"))
+                        .discountPrice(new BigDecimal("1200"))
+                        .discount(0)
+                        .isAvailable(true)
+                        .clientType(ClientActivationType.MICROSOFT)
+                        .build());
     }
 
     @Test
-    void testGetName_whenSuccess_shouldReturnName() {
+    void testGetName_whenGameNameIsPresent_shouldReturnName() {
         when(mockDocument.getElementsByClass(CardmagConstants.GAME_PAGE_NAME_FIELD)).thenReturn(mockElements);
         when(mockElements.first()).thenReturn(mockElement);
         when(mockElement.text()).thenReturn("Game Name");
 
-
         String name = parser.getName(mockDocument);
 
-
-        assertEquals("Game Name", name);
+        assertThat(name).isEqualTo("Game Name");
     }
 
     @Test
-    void testParseSearchResults_whenSuccess_shouldReturnListOfUrls() {
+    void testParseSearchResults_whenSearchResultsParsedSuccessfully_shouldReturnListOfUrls() {
         when(pageFetcher.getPage(anyString())).thenReturn(mockDocument);
         when(mockDocument.getElementsByClass(CardmagConstants.GAME_IN_LIST)).thenReturn(mockElements);
         when(mockElements.stream()).thenReturn(List.of(mockElement).stream());
         when(mockElement.attr(Constants.ATTRIBUTE_HREF)).thenReturn("/game-link");
 
-
         List<String> results = parser.parseSearchResults("Some Game", pageFetcher);
 
-
-        assertEquals(1, results.size());
-        assertEquals("/game-link", results.get(0));
+        assertThat(results).containsExactly("https://cardmag.com.ua/game-link");
     }
 
     @Test
-    void testGetGenres_whenSuccess_shouldGetGenres() {
-        when(mockDocument.getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_FIELD)).thenReturn(mockElements);
-        when(mockElements.get(0)).thenReturn(mockElement);
-        when(mockElement.text()).thenReturn("Action RPG");
+    void testGetGenres_whenGamePageHasGenres_shouldReturnGenres() {
+        when(mockDocument.getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_CLASS)).thenReturn(mockElements);
+        when(mockElements.first()).thenReturn(mockElement);
+        when(mockElement.attr(CardmagConstants.GAME_PAGE_TITLE_ATTR)).thenReturn("Action RPG");
 
 
         List<Genre> genres = parser.getGenres(mockDocument);
 
 
-        assertNotNull(genres);
+        assertThat(genres).isNotNull();
     }
 
     @Test
-    void testGetProductType_whenSuccess_shouldReturnProductType() {
-        when(mockDocument.getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_FIELD)).thenReturn(mockElements);
+    void testGetProductType_whenAdditionInTitle_shouldReturnProductType() {
+        when(mockDocument.getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_CLASS)).thenReturn(mockElements);
         when(mockElements.first()).thenReturn(mockElement);
-        when(mockElement.text()).thenReturn("КАТАЛОГ ПРОДУКЦІЇ Gaming DLCs Test Game - Some Dlc (Xbox One) - Xbox Live Key - UNITED STATES");
+        when(mockElement.attr(CardmagConstants.GAME_PAGE_TITLE_ATTR))
+                .thenReturn("КАТАЛОГ ПРОДУКЦІЇ Gaming DLCs Test Game - Some Dlc (Xbox One) - Xbox Live Key - UNITED STATES");
 
 
         ProductType productType = parser.getProductType(mockDocument);
 
 
-        assertEquals(ProductType.ADDITION, productType);
+        assertThat(productType).isEqualTo(ProductType.ADDITION);
     }
 
     @Test
-    void testSaveImage_whenSuccess_shouldSaveImage() {
-        when(mockDocument.getElementsByClass(CardmagConstants.GAME_IMG_CLASS)).thenReturn(mockElements);
-        when(mockElements.isEmpty()).thenReturn(false);
+    void testGetProductType_whenTitleNotContainTypeButDlcElement_shouldReturnAdditionProductType() {
+        when(mockDocument.getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_CLASS)).thenReturn(mockElements);
         when(mockElements.first()).thenReturn(mockElement);
-        when(mockElement.attr("src")).thenReturn("http://image.url/game.jpg");
-        when(mockDocument.getElementsByClass(CardmagConstants.GAME_PAGE_NAME_FIELD)).thenReturn(mockElements);
-        when(mockElements.first()).thenReturn(mockElement);
-        when(mockElement.text()).thenReturn("Game Name");
+        when(mockElement.attr(CardmagConstants.GAME_PAGE_TITLE_ATTR))
+                .thenReturn("КАТАЛОГ ПРОДУКЦІЇ Xbox Live Key - UNITED STATES");
+        when(mockDocument.getElementsByClass(CardmagConstants.DLC_FIELD)).thenReturn(new Elements(mock(Element.class)));
 
 
-        parser.saveImage(mockDocument);
+        ProductType productType = parser.getProductType(mockDocument);
 
 
-        verify(resourceService, times(1)).cropImage(anyString(), anyString(), anyInt(), anyInt(), anyInt(), anyInt());
+        assertThat(productType).isEqualTo(ProductType.ADDITION);
     }
 
     @Test
-    void testSaveImage_whenImageNotFound_shouldNotCallMethod() {
-        when(mockDocument.getElementsByClass(CardmagConstants.GAME_IMG_CLASS)).thenReturn(new Elements());
-
-        when(mockDocument.getElementsByClass(CardmagConstants.GAME_PAGE_NAME_FIELD)).thenReturn(mockElements);
+    void testGetProductType_whenTitleNotContainType_shouldReturnGameProductType() {
+        when(mockDocument.getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_CLASS)).thenReturn(mockElements);
         when(mockElements.first()).thenReturn(mockElement);
-        when(mockElement.text()).thenReturn("Game Name");
+        when(mockElement.attr(CardmagConstants.GAME_PAGE_TITLE_ATTR))
+                .thenReturn("КАТАЛОГ ПРОДУКЦІЇ Xbox Live Key - UNITED STATES");
+        when(mockDocument.getElementsByClass(CardmagConstants.DLC_FIELD)).thenReturn(new Elements());
 
 
-        parser.saveImage(mockDocument);
+        ProductType productType = parser.getProductType(mockDocument);
 
 
-        verify(resourceService, times(0)).cropImage(anyString(), anyString(), anyInt(), anyInt(), anyInt(), anyInt());
+        assertThat(productType).isEqualTo(ProductType.GAME);
     }
 
-    void setUpParseGamePage(Document document, String name, String price, String title) {
+    @Test
+    void testSaveImage_whenImageIsAvailable_shouldSaveImage() {
+        String url = "http://image.url/game.jpg";
+        String name = "Game Name";
+
         Element nameElement = mock(Element.class);
-        Element priceElement = mock(Element.class);
-        Element availableElement = mock(Element.class);
-        Element titleElement = mock(Element.class);
-
-        when(document.getElementsByClass(CardmagConstants.GAME_PAGE_NAME_FIELD))
-                .thenReturn(new Elements(nameElement));
+        when(mockDocument.getElementsByClass(CardmagConstants.GAME_IMG_CLASS)).thenReturn(new Elements(mockElement));
+        when(mockElement.attr("src")).thenReturn(url);
+        when(mockElement.attr("alt")).thenReturn("Game Name, фото 1");
+        when(mockDocument.getElementsByClass(CardmagConstants.GAME_PAGE_NAME_FIELD)).thenReturn(new Elements(nameElement));
         when(nameElement.text()).thenReturn(name);
 
-        when(document.select(CardmagConstants.GAME_PRICE_FIELD))
+
+        parser.saveImage(mockDocument);
+
+
+        verify(resourceService).saveImage(url, name);
+    }
+
+    @Test
+    void testSaveImage_whenNoImageFound_shouldNotSaveImage() {
+        when(mockDocument.getElementsByClass(CardmagConstants.GAME_IMG_CLASS)).thenReturn(new Elements());
+        when(mockDocument.getElementsByClass(CardmagConstants.GAME_PAGE_NAME_FIELD)).thenReturn(mockElements);
+        when(mockElements.first()).thenReturn(mockElement);
+        when(mockElement.text()).thenReturn("Game Name");
+
+        parser.saveImage(mockDocument);
+
+        verifyNoInteractions(resourceService);
+    }
+
+    private void setUpParseGamePage(String name, String price, String title) {
+        setElementForClass(CardmagConstants.GAME_PAGE_NAME_FIELD, name);
+        setElementForClass(CardmagConstants.GAME_PAGE_IS_AVAILABLE, "");
+
+        Element priceElement = mock(Element.class);
+        Element titleElement = mock(Element.class);
+
+        when(mockDocument.select(CardmagConstants.GAME_PRICE_FIELD))
                 .thenReturn(new Elements(priceElement));
         when(priceElement.text()).thenReturn(price);
 
-        when(document.getElementsByClass(CardmagConstants.GAME_PAGE_IS_AVAILABLE))
-                .thenReturn(new Elements(availableElement));
-
-
-        when(document.getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_FIELD))
+        when(mockDocument.getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_CLASS))
                 .thenReturn(new Elements(titleElement));
-        when(titleElement.text()).thenReturn(title);
+        when(titleElement.attr(CardmagConstants.GAME_PAGE_TITLE_ATTR)).thenReturn(title);
+    }
 
-        Element imageElement = mock(Element.class);
-        when(document.getElementsByClass(CardmagConstants.GAME_IMG_CLASS))
-                .thenReturn(new Elements(imageElement));
-        when(imageElement.attr("src")).thenReturn("imgUrl");
-
+    private void setElementForClass(String className, String text) {
+        Element element = mock(Element.class);
+        when(mockDocument.getElementsByClass(className))
+                .thenReturn(new Elements(element));
+        when(element.text()).thenReturn(text);
     }
 }

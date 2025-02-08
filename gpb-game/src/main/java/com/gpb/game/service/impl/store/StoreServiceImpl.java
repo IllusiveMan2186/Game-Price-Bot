@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class StoreServiceImpl implements StoreService {
 
         Game game = Game.builder()
                 .name(gameInShop.getNameInStore())
-                .gamesInShop(Set.of(gameInShop))
+                .gamesInShop(new HashSet<>(Set.of(gameInShop)))
                 .genres(storeParser.getGenres(page))
                 .type(storeParser.getProductType(page))
                 .build();
@@ -82,7 +83,12 @@ public class StoreServiceImpl implements StoreService {
         String url = storeParser
                 .parseSearchResults(name, pageFetcher)
                 .stream()
-                .findFirst().orElseThrow(() -> new NotFoundException("app.game.error.url.not.found"));
+                .findFirst()
+                .orElse(null);
+
+        if (url == null) {
+            return null;
+        }
 
         Document page = pageFetcher.getPage(url);
         GameInShop game = storeParser.parseGameInShopFromPage(page);
@@ -90,6 +96,7 @@ public class StoreServiceImpl implements StoreService {
 
         return game;
     }
+
 
     @Override
     public List<GameInShop> checkGameInStoreForChange(List<GameInShop> gameInShops) {
