@@ -1,242 +1,161 @@
 package com.gpb.game.unit.service.impl.store;
 
-import com.gpb.common.entity.game.ClientActivationType;
 import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
-import com.gpb.game.configuration.ResourceConfiguration;
+import com.gpb.common.exception.NotFoundException;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.parser.StorePageParser;
-import com.gpb.game.service.impl.store.GamazeyStoreService;
+import com.gpb.game.parser.StoreParser;
+import com.gpb.game.service.impl.store.StoreServiceImpl;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-class GamazeyStoreServiceTest {
+@ExtendWith(MockitoExtension.class)
+public class GamazeyStoreServiceTest {
 
-    private static final String GAME_PAGE_NAME_FIELD = "rm-product-title order-1 order-md-0";
-    private static final String GAME_PAGE_OLD_PRICE_FIELD = "rm-product-center-price-old";
-    private static final String GAME_PAGE_DISCOUNT_FIELD = "main-product-you-save";
-    private static final String GAME_PAGE_IS_AVAILABLE = "rm-module-stock rm-out-of-stock";
-    private static final String GAME_PAGE_CHARACTERISTICS = "rm-product-attr-list-item d-flex d-sm-block";
-    private static final String GAME_PAGE_DISCOUNT_PRICE_FIELD = "rm-product-center-price";
-    private static final String GAMEZEY_SEARCH_URL = "https://gamazey.com.ua/search?search=";
-    private static final String GAME_IMG_CLASS = "img-fluid";
+    @Mock
+    private StorePageParser pageFetcher;
 
-    private static final String GENRE_ELEMENT = """
-            <div class="rm-product-attr-list-item d-flex d-sm-block">
-            <div>Жанр</div>
-            <div>Симуляторы, Стратегии</div>
-            </div>""";
+    @Mock
+    private StoreParser storeParser;
 
-    StorePageParser parser = mock(StorePageParser.class);
+    @Mock
+    private Document document;
 
-    Map<String, Genre> genereMap = new HashMap<>();
+    @InjectMocks
+    private StoreServiceImpl storeService;
 
-    Map<String, ProductType> productTypeMap = Collections.singletonMap("Гра", ProductType.GAME);
+    private final String TEST_URL = "https://example.com/game";
+    private final String TEST_NAME = "Test Game";
 
-    Map<String, ClientActivationType> clientActivationTypeMap
-            = Collections.singletonMap("steam", ClientActivationType.STEAM);
+    private GameInShop gameInShop;
+    private Game game;
 
-    ResourceConfiguration resourceConfiguration = new ResourceConfiguration();
-
-    GamazeyStoreService storeService = new GamazeyStoreService(parser, genereMap, productTypeMap,
-            clientActivationTypeMap, resourceConfiguration);
-
-    @Test
-    void testGetUncreatedGameByUrl_whenSuccess_shouldReturnNewGame() {
-        final GameInShop gameInShop = getGameInStore();
-        final Game game = Game.builder()
-                .name(gameInShop.getNameInStore())
-                .type(ProductType.GAME)
-                .gamesInShop(Collections.singleton(gameInShop))
-                .build();
-        gameInShop.setGame(game);
-        String url = "url";
-
-        getDocumentForUncreatedGameByUrl(gameInShop, url);
-
-        Game result = storeService.findUncreatedGameByUrl(url);
-
-        assertEquals("Game", result.getName());
-        assertEquals(game.getGamesInShop().size(), result.getGamesInShop().size());
-        assertEquals(game.getType(), result.getType());
-        GameInShop resulGameInStore = result.getGamesInShop().stream().toList().get(0);
-        assertEquals(gameInShop.getNameInStore(), resulGameInStore.getNameInStore());
-        assertEquals(gameInShop.getDiscount(), resulGameInStore.getDiscount());
-        assertEquals(gameInShop.getUrl(), resulGameInStore.getUrl());
-        assertEquals(gameInShop.getGame().getName(), resulGameInStore.getGame().getName());
-    }
-
-    @Test
-    void testGetGameInStoreByUrl_whenSuccess_shouldReturnNewGameInStore() {
-        final GameInShop gameInShop = getGameInStore();
-        String url = "url";
-
-        getDocumentForGameByUrl(gameInShop, url);
-
-        GameInShop result = storeService.findByUrl(url);
-
-        assertEquals(gameInShop, result);
-    }
-
-    @Test
-    void testFindUncreatedGameByName_whenSuccess_shouldReturnGameList() {
-        final GameInShop gameInShop = getGameInStore();
-        final Game game = Game.builder()
-                .name(gameInShop.getNameInStore())
-                .gamesInShop(Collections.singleton(gameInShop))
-                .build();
-        gameInShop.setGame(game);
-        String url = "url";
-
-        Document page = getDocumentForUncreatedGameByUrl(gameInShop, url);
-
-        String name = "name";
-        when(parser.getPage(GAMEZEY_SEARCH_URL + name)).thenReturn(page);
-        Elements titleElements = mock(Elements.class);
-        Element titleElement = mock(Element.class);
-        Element hrefTitleElements = mock(Element.class);
-
-        when(page.getElementsByClass("rm-module-title")).thenReturn(titleElements);
-        when(titleElements.iterator()).thenReturn(Collections.singletonList(titleElement).iterator());
-        when(titleElement.child(0)).thenReturn(hrefTitleElements);
-        when(hrefTitleElements.attr("href")).thenReturn(url);
-
-
-        List<Game> resultList = storeService.findUncreatedGameByName(name);
-        Game result = resultList.get(0);
-
-        assertEquals("Game", result.getName());
-        assertEquals(game.getGamesInShop().size(), result.getGamesInShop().size());
-        GameInShop resulGameInStore = result.getGamesInShop().stream().toList().get(0);
-        assertEquals(gameInShop.getNameInStore(), resulGameInStore.getNameInStore());
-        assertEquals(gameInShop.getDiscount(), resulGameInStore.getDiscount());
-        assertEquals(gameInShop.getUrl(), resulGameInStore.getUrl());
-        assertEquals(gameInShop.getGame().getName(), resulGameInStore.getGame().getName());
-    }
-
-    @Test
-    void testFindGameByName_whenSuccess_shouldReturnGame() {
-        final GameInShop gameInShop = getGameInStore();
-        String url = "url";
-
-        Document page = getDocumentForUncreatedGameByUrl(gameInShop, url);
-
-        String name = "name";
-        when(parser.getPage(GAMEZEY_SEARCH_URL + name)).thenReturn(page);
-        Elements titleElements = mock(Elements.class);
-        Element titleElement = mock(Element.class);
-        Element hrefTitleElements = mock(Element.class);
-
-        when(page.getElementsByClass("rm-module-title")).thenReturn(titleElements);
-        when(titleElements.get(0)).thenReturn(titleElement);
-        when(titleElement.child(0)).thenReturn(hrefTitleElements);
-        when(hrefTitleElements.attr("href")).thenReturn(url);
-
-
-        GameInShop result = storeService.findByName(name);
-
-
-        assertEquals(gameInShop.getNameInStore(), result.getNameInStore());
-        assertEquals(gameInShop.getDiscount(), result.getDiscount());
-        assertEquals(gameInShop.getUrl(), result.getUrl());
-    }
-
-    @Test
-    void testCheckGameInStoreForChange_whenSuccess_shouldReturnListOfGameInShop() {
-        List<GameInShop> gameInShops = new ArrayList<>();
-        GameInShop gameInShop = GameInShop.builder()
-                .nameInStore("Test Game")
-                .url("https://gamazey.com.ua/game-url")
-                .price(new BigDecimal("500"))
-                .discountPrice(new BigDecimal("450"))
+    @BeforeEach
+    void setUp() {
+        gameInShop = GameInShop.builder()
+                .nameInStore(TEST_NAME)
+                .price(BigDecimal.TEN)
+                .discountPrice(BigDecimal.valueOf(8))
                 .isAvailable(true)
+                .url(TEST_URL)
                 .build();
-        gameInShops.add(gameInShop);
 
-        getDocumentForUncreatedGameByUrl(gameInShop, gameInShop.getUrl());
-
-
-        List<GameInShop> changedGames = storeService.checkGameInStoreForChange(gameInShops);
-
-
-        assertNotNull(changedGames);
-        assertEquals(1L, changedGames.size());
-        assertEquals(gameInShop, changedGames.get(0));
+        game = Game.builder()
+                .name(TEST_NAME)
+                .gamesInShop(Set.of(gameInShop))
+                .build();
     }
 
+    @Test
+    void findUncreatedGameByUrl_Success() {
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+        when(storeParser.parseGameInShopFromPage(document)).thenReturn(gameInShop);
+        when(storeParser.getGenres(document)).thenReturn(List.of(Genre.ACTION, Genre.ADVENTURES));
+        when(storeParser.getProductType(document)).thenReturn(ProductType.GAME);
 
-    private Document getDocumentForUncreatedGameByUrl(GameInShop gameInShop, String url) {
-        Document page = getDocumentForGameByUrl(gameInShop, url);
-        when(parser.getPage(url)).thenReturn(page);
+        Game result = storeService.findUncreatedGameByUrl(TEST_URL);
 
-        Elements characteristicsElement = mock(Elements.class);
-        Element genreElement = mock(Element.class);
-        Elements imgElements = mock(Elements.class);
-        Element imgElement = mock(Element.class);
-
-        when(page.getElementsByClass(GAME_PAGE_CHARACTERISTICS)).thenReturn(characteristicsElement);
-        when(characteristicsElement.get(3)).thenReturn(genreElement);
-        when(page.getElementsByClass(GAME_IMG_CLASS)).thenReturn(imgElements);
-        when(imgElements.get(1)).thenReturn(imgElement);
-
-        when(genreElement.text()).thenReturn(GENRE_ELEMENT);
-        when(imgElement.attr("src")).thenReturn("url");
-
-        return page;
+        assertNotNull(result);
+        assertEquals(TEST_NAME, result.getName());
+        assertEquals(1, result.getGamesInShop().size());
+        verify(storeParser).saveImage(document);
     }
 
-    private Document getDocumentForGameByUrl(GameInShop gameInShop, String url) {
-        String nameOnPage = String.format("Гра %s: для ПК (Ключ активації Steam)", gameInShop.getNameInStore());
-        Document page = mock(Document.class);
-        when(parser.getPage(url)).thenReturn(page);
-        Elements nameFieldElement = mock(Elements.class);
-        Elements priceFieldElement = mock(Elements.class);
-        Element discountFieldElement = mock(Document.class);
-        Elements isAvailableElement = mock(Elements.class);
-        Elements discountPriceFieldElements = mock(Elements.class);
-        Element discountPriceFieldElement = mock(Element.class);
-        Element discountPriceFieldElementChild = mock(Element.class);
+    @Test
+    void findUncreatedGameByUrl_NotFound() {
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+        when(storeParser.parseGameInShopFromPage(document)).thenReturn(null);
 
-        when(page.getElementsByClass(GAME_PAGE_NAME_FIELD)).thenReturn(nameFieldElement);
-        when(page.getElementsByClass(GAME_PAGE_OLD_PRICE_FIELD)).thenReturn(priceFieldElement);
-        when(page.getElementById(GAME_PAGE_DISCOUNT_FIELD)).thenReturn(discountFieldElement);
-        when(page.getElementsByClass(GAME_PAGE_IS_AVAILABLE)).thenReturn(isAvailableElement);
-        when(page.getElementsByClass(GAME_PAGE_DISCOUNT_PRICE_FIELD)).thenReturn(discountPriceFieldElements);
-
-        when(nameFieldElement.text()).thenReturn(nameOnPage);
-        when(priceFieldElement.text()).thenReturn(gameInShop.getPrice().toString());
-        when(discountFieldElement.text()).thenReturn(String.valueOf(gameInShop.getDiscount()));
-        when(isAvailableElement.isEmpty()).thenReturn(gameInShop.isAvailable());
-        when(discountPriceFieldElements.get(0)).thenReturn(discountPriceFieldElement);
-        when(discountPriceFieldElement.child(1)).thenReturn(discountPriceFieldElementChild);
-        when(discountPriceFieldElementChild.text()).thenReturn(gameInShop.getDiscountPrice().toString());
-
-        return page;
+        assertThrows(NotFoundException.class, () -> storeService.findUncreatedGameByUrl(TEST_URL));
     }
 
-    private GameInShop getGameInStore() {
-        return GameInShop.builder()
-                .nameInStore("Game")
-                .price(new BigDecimal(10))
-                .discountPrice(new BigDecimal(9))
-                .url("url")
-                .discount(10)
+    @Test
+    void findByUrl_Success() {
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+        when(storeParser.parseGameInShopFromPage(document)).thenReturn(gameInShop);
+
+        GameInShop result = storeService.findByUrl(TEST_URL);
+
+        assertNotNull(result);
+        assertEquals(TEST_URL, result.getUrl());
+    }
+
+    @Test
+    void findByUrl_NotFound() {
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+        when(storeParser.parseGameInShopFromPage(document)).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> storeService.findByUrl(TEST_URL));
+    }
+
+    @Test
+    void findUncreatedGameByName_Success() {
+        when(storeParser.parseSearchResults(TEST_NAME, pageFetcher)).thenReturn(List.of(TEST_URL));
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+        when(storeParser.parseGameInShopFromPage(document)).thenReturn(gameInShop);
+        when(storeParser.getGenres(document)).thenReturn(List.of(Genre.ARCADE));
+        when(storeParser.getProductType(document)).thenReturn(ProductType.GAME);
+
+        List<Game> results = storeService.findUncreatedGameByName(TEST_NAME);
+
+        assertFalse(results.isEmpty());
+        assertEquals(1, results.size());
+        assertEquals(TEST_NAME, results.get(0).getName());
+    }
+
+    @Test
+    void findByName_Success() {
+        when(storeParser.parseSearchResults(TEST_NAME, pageFetcher)).thenReturn(List.of(TEST_URL));
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+        when(storeParser.parseGameInShopFromPage(document)).thenReturn(gameInShop);
+
+        GameInShop result = storeService.findByName(TEST_NAME);
+
+        assertNotNull(result);
+        assertEquals(TEST_URL, result.getUrl());
+    }
+
+    @Test
+    void checkGameInStoreForChange_NoChanges() {
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+        when(storeParser.parseGameInShopFromPage(document)).thenReturn(gameInShop);
+
+        List<GameInShop> results = storeService.checkGameInStoreForChange(List.of(gameInShop));
+
+        assertTrue(results.isEmpty());
+    }
+
+    @Test
+    void checkGameInStoreForChange_WithChanges() {
+        GameInShop updatedGame = GameInShop.builder()
+                .nameInStore(TEST_NAME)
+                .price(BigDecimal.valueOf(12))
+                .discountPrice(BigDecimal.valueOf(10))
                 .isAvailable(true)
+                .url(TEST_URL)
                 .build();
+
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+        when(storeParser.parseGameInShopFromPage(document)).thenReturn(updatedGame);
+
+        List<GameInShop> results = storeService.checkGameInStoreForChange(List.of(gameInShop));
+
+        assertFalse(results.isEmpty());
+        assertEquals(1, results.size());
+        assertEquals(BigDecimal.valueOf(12), results.get(0).getPrice());
     }
 }

@@ -1,4 +1,4 @@
-package com.gpb.game.configuration;
+package com.gpb.game.configuration.mapper;
 
 import com.gpb.common.entity.game.ClientActivationType;
 import com.gpb.common.entity.game.Genre;
@@ -17,7 +17,7 @@ import java.util.Map;
  * </p>
  */
 @Configuration
-public class GamezeyEnumMapper {
+public class GamazeyEnumMapper {
 
     /**
      * Provides a mapping between localized genre names from Gamezey and their corresponding {@link Genre} enums.
@@ -25,8 +25,8 @@ public class GamezeyEnumMapper {
      * @return a {@link Map} where the keys are localized genre names
      * and the values are the corresponding {@link Genre} enums.
      */
-    @Bean
-    public Map<String, Genre> gamezeyGenreMap() {
+    @Bean(name = "gamazeyGenres")
+    public Map<String, Genre> gamazeyGenreMap() {
         Map<String, Genre> genreMap = new HashMap<>();
         genreMap.put("Екшен", Genre.ACTION);
         genreMap.put("Пригоди", Genre.ADVENTURES);
@@ -48,8 +48,8 @@ public class GamezeyEnumMapper {
      * @return a {@link Map} where the keys are client activation type names and the values are the corresponding
      * {@link ClientActivationType} enums.
      */
-    @Bean
-    public Map<String, ClientActivationType> gamezeyClientActivationMap() {
+    @Bean(name = "gamazeyClientActivation")
+    public Map<String, ClientActivationType> gamazeyClientActivationMap() {
         Map<String, ClientActivationType> clientActivationMap = new HashMap<>();
         clientActivationMap.put("EA App", ClientActivationType.EA);
         clientActivationMap.put("Epic Games", ClientActivationType.EPIC);
@@ -68,8 +68,8 @@ public class GamezeyEnumMapper {
      * @return a {@link Map} where the keys are localized product type names
      * and the values are the corresponding {@link ProductType} enums.
      */
-    @Bean
-    public Map<String, ProductType> gamezeyProductTypeMap() {
+    @Bean(name = "gamazeyProductTypes")
+    public Map<String, ProductType> gamazeyProductTypeMap() {
         Map<String, ProductType> productTypeMap = new HashMap<>();
         productTypeMap.put("Гра", ProductType.GAME);
         productTypeMap.put("Ігрова валюта", ProductType.CURRENCY);
