@@ -64,6 +64,16 @@ class GameServiceImplTest {
     }
 
     @Test
+    void testGetAllGamesInShop_whenNotExist_ShouldThrowException() {
+        when(gameInShopRepository.findAll()).thenReturn(List.of(gameInShop));
+
+        List<GameInShop> result = gameService.getAllGamesInShop();
+
+        assertEquals(1, result.size());
+        assertEquals(gameInShop, result.get(0));
+    }
+
+    @Test
     void testGetSubscribedGames_whenSuccess_thenShouldGetGames() {
         List<GameInShop> games = new ArrayList<>();
         when(gameInShopRepository.findSubscribedGames()).thenReturn(games);
@@ -86,7 +96,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void  testGetGameById_whenNotFound_shouldThrowException() {
+    void testGetGameById_whenNotFound_shouldThrowException() {
         int id = 1;
         when(gameRepository.findById(id)).thenReturn(null);
 

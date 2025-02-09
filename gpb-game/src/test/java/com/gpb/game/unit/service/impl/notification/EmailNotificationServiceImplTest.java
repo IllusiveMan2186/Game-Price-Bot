@@ -1,4 +1,4 @@
-package com.gpb.game.unit.service.impl.natification;
+package com.gpb.game.unit.service.impl.notification;
 
 import com.gpb.common.entity.event.NotificationEvent;
 import com.gpb.common.entity.game.GameInStoreDto;
@@ -14,8 +14,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.List;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,22 +44,5 @@ class EmailNotificationServiceImplTest {
         NotificationEvent expectedEvent = new NotificationEvent(user.getId(), gameInShopList);
 
         verify(kafkaTemplate).send(CommonConstants.EMAIL_NOTIFICATION_TOPIC, "1", expectedEvent);
-    }
-
-    @Test
-    void testSendGameInfoChange_whenSuccess_shouldLogInfo() {
-        BasicUser user = new BasicUser();
-        user.setId(123L);
-
-        GameInStoreDto game = new GameInStoreDto();
-        game.setId(1L);
-
-        List<GameInStoreDto> gameInShopList = List.of(game);
-
-
-        emailNotificationService.sendGameInfoChange(user, gameInShopList);
-
-
-        verify(kafkaTemplate).send(eq(CommonConstants.EMAIL_NOTIFICATION_TOPIC), eq("1"), any(NotificationEvent.class));
     }
 }

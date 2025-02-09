@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -187,6 +186,7 @@ public class GameServiceImpl implements GameService {
 
         for (Game game : games) {
             if (gameRepository.findByName(game.getName()) == null) {
+                log.info("Game added '{}' with game in shop {}", game.getName(), game.getGamesInShop());
                 addedGames.add(gameRepository.save(game));
             } else {
                 log.info("Game with name '{}' already exists and will not be added.", game.getName());
@@ -197,18 +197,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private GameDto gameMap(Game game) {
-        GameDto gameDto = modelMapper.map(game, GameDto.class);
-        BigDecimal minPrice = game.getGamesInShop().stream()
-                .map(GameInShop::getDiscountPrice)
-                .max(Comparator.naturalOrder())
-                .orElse(null);
-        BigDecimal maxPrice = game.getGamesInShop().stream()
-                .map(GameInShop::getDiscountPrice)
-                .min(Comparator.naturalOrder())
-                .orElse(null);
-        gameDto.setMinPrice(minPrice);
-        gameDto.setMaxPrice(maxPrice);
-        return gameDto;
+        return modelMapper.map(game, GameDto.class);
     }
 
     private List<ProductType> getProductTypeThatNotExcluded(List<ProductType> typesToExclude) {

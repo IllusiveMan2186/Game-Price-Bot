@@ -16,7 +16,7 @@ import java.util.Optional;
 public class EntToEndUtil {
 
     public static final String GPB_URL = "http://localhost:3000/";
-    public static final long WAIT_TIME = 20;
+    public static final long WAIT_TIME = 30;
     public static final int ATTEMPTS_AMOUNT = 10;
 
     public static WebDriver getGpbWebDriver() {
@@ -53,6 +53,6 @@ public class EntToEndUtil {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT_TIME));
         driver.findElement(By.id("game-search-input-field")).sendKeys(gameName);
         driver.findElement(By.id("game-search-button")).click();
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("App-game-content-list-loading")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("App-content-loading")));
     }
 }

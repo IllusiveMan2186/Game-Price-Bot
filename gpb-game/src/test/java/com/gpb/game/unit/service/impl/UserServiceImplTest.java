@@ -42,6 +42,32 @@ class UserServiceImplTest {
     UserServiceImpl userService;
 
     @Test
+    void testGetUsersById_whenSuccess_shouldGetUser() {
+        long userId = 1L;
+        BasicUser user = new BasicUser();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        BasicUser result = userService.getUserById(userId);
+
+        assertEquals(user, result);
+    }
+
+    @Test
+    void testGetUsersById_whenNotFound_shouldThrowException() {
+        long userId = 1L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+
+        assertThrows(
+                NotFoundException.class,
+                () -> {
+                    userService.getUserById(userId);
+                }
+        );
+
+    }
+
+    @Test
     void testGetUsersChangedGames_whenSuccess_shouldGetUsers() {
         List<BasicUser> users = new ArrayList<>();
         GameInShop gameInShop1 = GameInShop.builder().id(0).build();
