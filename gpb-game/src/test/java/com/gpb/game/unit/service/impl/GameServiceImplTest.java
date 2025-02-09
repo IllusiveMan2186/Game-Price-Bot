@@ -24,9 +24,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -148,7 +150,7 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetGameByUrl_whenSuccess_shouldReturnGame() {
+    void testGetGameByUrl_whenGameWithUrlAlreadyRegistered_shouldReturnRegisteredGame() {
         String url = "url";
         GameInShop gameInShop = GameInShop.builder().game(game).build();
         when(gameInShopRepository.findByUrl(url)).thenReturn(gameInShop);
@@ -174,6 +176,23 @@ class GameServiceImplTest {
 
         assertEquals(gameInfoDto, result);
     }
+
+    @Test
+    void testAddGameInStore_whenSuccess_shouldReturnGameWithNewGameInStore() {
+        String url = "url";
+        long gameId = 1L;
+        Game gameAfterAdding = Game.builder().gamesInShop(Set.of(gameInShop)).build();
+        when(gameRepository.findById(gameId)).thenReturn(game, gameAfterAdding);
+        when(gameStoresService.findGameInShopByUrl(url)).thenReturn(gameInShop);
+        GameInfoDto gameInfoDto = modelMapper.map(gameAfterAdding, GameInfoDto.class);
+
+        GameInfoDto result = gameService.addGameInStore(gameId, url);
+
+        assertEquals(gameInfoDto, result);
+        gameInShop.setGame(game);
+        verify(gameInShopRepository).save(gameInShop);
+    }
+
 
     @Test
     void testFindByGenre_whenSuccess_shouldReturnGameList() {

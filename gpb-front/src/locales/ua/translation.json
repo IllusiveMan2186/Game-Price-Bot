@@ -27,6 +27,7 @@
     "app.game.error.id.not.found": "Гру з цим ідентифікатором не знайдено",
     "app.game.error.name.not.found": "Гру з такою назвою не знайдено",
     "app.game.error.url.not.found": "Гра з цією URL-адресою не знайдена",
+    "app.game.error.host.not.supported": "GPB не підтримує обробку ігор з цього хосту.",
     "app.game.error.name.already.exists": "Гра з такою назвою вже існує",
     "app.game.error.url.already.exists": "Гра з цією URL-адресою вже існує",
     "app.user.error.account.locked": "Ваш обліковий запис заблоковано на 24 години через багато невдалих спроб входу.",

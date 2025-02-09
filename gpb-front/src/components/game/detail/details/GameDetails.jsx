@@ -80,7 +80,7 @@ const GameDetails = ({ game, gameId, navigate }) => (
         </div>
         <SubscribeButton isSubscribed={game.userSubscribed} gameId={gameId} />
         {isUserAdmin() && <RemoveButton gameId={gameId} navigate={navigate} />}
-        <GameStoresList stores={game.gamesInShop} />
+        <GameStoresList stores={game.gamesInShop} navigate={navigate} />
     </div>
 );
 

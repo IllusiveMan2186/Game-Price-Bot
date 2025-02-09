@@ -3,7 +3,8 @@ import { handleRequest, handleError } from '@util/httpHelper';
 // Centralized API Endpoints
 const API_ENDPOINTS = {
     GAMES: '/user/games',
-    GAME: '/game'
+    GAME: '/game',
+    GAME_STORE: '/game/store'
 };
 
 // Get games
@@ -60,7 +61,24 @@ export const removeGameRequest = (gameId, navigate) => {
         'DELETE',
         `${API_ENDPOINTS.GAME}/${gameId}`,
         {},
-        () => navigate('/'),
+        () => {
+            setTimeout(() => {
+                navigate('/');
+            }, 100);
+        },
+        handleError
+    );
+};
+
+// Remove game in store
+export const removeGameInStoreRequest = (gameInStoreId, onSuccess) => {
+    handleRequest(
+        'DELETE',
+        `${API_ENDPOINTS.GAME_STORE}/${gameInStoreId}`,
+        {},
+        () => {
+            onSuccess();
+        },
         handleError
     );
 };

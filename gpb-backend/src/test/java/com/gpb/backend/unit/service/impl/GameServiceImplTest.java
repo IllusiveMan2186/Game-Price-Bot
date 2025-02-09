@@ -1,6 +1,7 @@
 package com.gpb.backend.unit.service.impl;
 
 import com.gpb.backend.service.impl.GameServiceImpl;
+import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.common.entity.game.GameInfoDto;
 import com.gpb.common.entity.game.GameListPageDto;
 import com.gpb.common.entity.game.Genre;
@@ -30,6 +31,9 @@ class GameServiceImplTest {
 
     @Mock
     private KafkaTemplate<String, Long> kafkaTemplate;
+
+    @Mock
+    private KafkaTemplate<String, AddGameInStoreDto> addGameInStoreDtoKafkaTemplate;
 
     @Mock
     private RestTemplateHandlerService restTemplateHandler;
@@ -64,13 +68,13 @@ class GameServiceImplTest {
         String sort = CommonConstants.NAME_SORT_PARAM + "-" + CommonConstants.SORT_DIRECTION_ASCENDING;
 
 
-        when(basicGameService.getByName(name, pageSize, pageNum, sort,0))
+        when(basicGameService.getByName(name, pageSize, pageNum, sort, 0))
                 .thenReturn(mockResponse);
 
         GameListPageDto result = gameService.getByName(name, pageSize, pageNum, sort);
 
         assertEquals(mockResponse, result);
-        verify(basicGameService).getByName(name, pageSize, pageNum, sort,0);
+        verify(basicGameService).getByName(name, pageSize, pageNum, sort, 0);
     }
 
     @Test
@@ -90,6 +94,15 @@ class GameServiceImplTest {
         String expectedUrl = "/game/url?url=/game/genre?pageSize=10&pageNum=1" +
                 "&minPrice=0&maxPrice=100&sortBy=name-ASC&genre=ACTION&type=GAME";
         verify(restTemplateHandler).executeRequest(expectedUrl, HttpMethod.GET, null, GameInfoDto.class);
+    }
+
+    @Test
+    void testAddGameInStore_whenSuccess_shouldCall() {
+        AddGameInStoreDto addGameInStoreDto = new AddGameInStoreDto();
+
+        gameService.addGameInStore(addGameInStoreDto);
+
+        verify(addGameInStoreDtoKafkaTemplate).send(CommonConstants.GAME_IN_STORE_ADD_TOPIC, "1", addGameInStoreDto);
     }
 
     @Test
@@ -151,13 +164,13 @@ class GameServiceImplTest {
         String sort = "name-ASC";
         GameListPageDto mockResponse = new GameListPageDto();
 
-        when(basicGameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort,0))
+        when(basicGameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort, 0))
                 .thenReturn(mockResponse);
 
         GameListPageDto result = gameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort);
 
         assertEquals(mockResponse, result);
         verify(basicGameService)
-                .getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort,0);
+                .getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort, 0);
     }
 }

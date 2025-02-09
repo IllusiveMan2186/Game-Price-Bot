@@ -27,6 +27,7 @@
     "app.game.error.id.not.found": "Game with this id not found",
     "app.game.error.name.not.found": "The game with this name was not found",
     "app.game.error.url.not.found": "The game with this url was not found",
+    "app.game.error.host.not.supported": "GPB does not support processing games from this host.",
     "app.game.error.name.already.exists": "Game with this name already exist",
     "app.game.error.url.already.exists": "Game with this url already exist",
     "app.user.error.account.locked": "Your account has been locked for 24 hours due to many failed login attempts.",

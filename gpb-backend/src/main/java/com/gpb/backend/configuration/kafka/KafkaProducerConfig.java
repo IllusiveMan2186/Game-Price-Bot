@@ -3,6 +3,7 @@ package com.gpb.backend.configuration.kafka;
 import com.gpb.common.entity.event.EmailEvent;
 import com.gpb.common.entity.event.GameFollowEvent;
 import com.gpb.common.entity.event.LinkUsersEvent;
+import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.common.util.KafkaProducerFactory;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongSerializer;
@@ -49,5 +50,14 @@ public class KafkaProducerConfig {
     @Bean
     public KafkaTemplate<String, LinkUsersEvent> createLinkUsersEventEventTemplate() {
         return KafkaProducerFactory.createLinkUsersEventTemplate(kafkaServer);
+    }
+
+    @Bean
+    public KafkaTemplate<String, AddGameInStoreDto> kafkaGameInStoreAddEventTemplate() {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
+        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(configs));
     }
 }

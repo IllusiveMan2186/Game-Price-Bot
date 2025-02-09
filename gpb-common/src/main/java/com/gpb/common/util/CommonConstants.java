@@ -59,9 +59,14 @@ public class CommonConstants {
     public static final String GAME_IN_STORE_REMOVE_TOPIC = "gpb_game_in_store_remove";
 
     /**
+     * Kafka topic for add a game in store.
+     */
+    public static final String GAME_IN_STORE_ADD_TOPIC = "gpb_game_in_store_add";
+
+    /**
      * Kafka topic for link users.
      */
-    public static final String LINK_USERS_TOPIC = "gpb_link_user_";
+    public static final String LINK_USERS_TOPIC = "gpb_link_user";
 
     /**
      * Kafka topic for change basic user id.

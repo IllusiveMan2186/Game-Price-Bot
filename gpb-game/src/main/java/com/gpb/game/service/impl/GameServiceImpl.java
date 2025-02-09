@@ -19,10 +19,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -92,6 +95,17 @@ public class GameServiceImpl implements GameService {
         }
 
         return modelMapper.map(gameInShop.getGame(), GameInfoDto.class);
+    }
+
+    @Override
+    public GameInfoDto addGameInStore(long gameId, String url) {
+        log.info("Get game in store by url {} and adding to game {}", url, gameId);
+
+        final Game game = getById(gameId);
+        final GameInShop gameInShop = gameStoresService.findGameInShopByUrl(url);
+        gameInShop.setGame(game);
+        gameInShopRepository.save(gameInShop);
+        return modelMapper.map(getById(gameId), GameInfoDto.class);
     }
 
     @Override
@@ -166,10 +180,27 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeGameInStore(long gameInStoreId) {
         log.info("Remove game in store by id : {}", gameInStoreId);
+        Optional<GameInShop> optionalGameInShop = gameInShopRepository.findById(gameInStoreId);
+        if (optionalGameInShop.isEmpty()) {
+            log.error("Game with id '{}' not found.", gameInStoreId);
+            return;
+        }
+        GameInShop gameInShop = optionalGameInShop.get();
 
-        gameInShopRepository.deleteById(gameInStoreId);
+        Game game = gameInShop.getGame();
+
+        if (game.getGamesInShop().size() <= 1) {
+            log.info("Removes game due to last game in store info removed : {}", game.getId());
+            gameRepository.deleteById(game.getId());
+        }else {
+            game.getGamesInShop().remove(gameInShop);
+            gameRepository.save(game);
+            gameInShopRepository.deleteById(gameInShop.getId());
+            log.info("Game in store by id {} successfully removed", gameInStoreId);
+        }
     }
 
     @Override

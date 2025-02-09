@@ -31,6 +31,14 @@ public interface GameStoresService {
     Game findGameByUrl(String url);
 
     /**
+     * Retrieves detailed information for a game in shop based on its URL.
+     *
+     * @param url the URL associated with the game in the store.
+     * @return a {@link GameInfoDto} containing the game's detailed information.
+     */
+    GameInShop findGameInShopByUrl(String url);
+
+    /**
      * Checks for updates in the provided list of games from the store.
      * <p>
      * This method compares the current game information with the latest details from the store and returns the list

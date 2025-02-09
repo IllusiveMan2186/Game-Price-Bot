@@ -64,6 +64,15 @@ public interface GameService {
     GameInfoDto getByUrl(String url);
 
     /**
+     * Add game from store to created game by url and return game with new info
+     *
+     * @param url    url to game in store
+     * @param gameId the unique identifier of the game to which game in store would be added
+     * @return a {@link GameInfoDto} containing detailed information about the game with added game in store
+     */
+    GameInfoDto addGameInStore(long gameId, String url);
+
+    /**
      * Retrieves a paginated list of games filtered by genre, product types to exclude, and price range.
      *
      * @param genres         a list of genres to include in the search.
