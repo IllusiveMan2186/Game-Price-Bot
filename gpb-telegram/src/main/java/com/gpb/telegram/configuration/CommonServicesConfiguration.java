@@ -55,7 +55,6 @@ public class CommonServicesConfiguration {
     @Bean
     public BasicGameService basicGameService(RestTemplateHandlerService restTemplateHandler,
                                              KafkaTemplate<String, GameFollowEvent> gameFollowEventKafkaTemplate) {
-        System.out.println("111111111111111111111111111111111111111111111111111");
         return new BasicGameServiceImpl(restTemplateHandler, gameFollowEventKafkaTemplate);
     }
 }

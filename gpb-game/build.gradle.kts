@@ -31,7 +31,7 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.gpb:common:1.0.20-SNAPSHOT")
+    implementation("com.gpb:common:1.0.21-SNAPSHOT")
 
     implementation("commons-io:commons-io:2.11.0")
     implementation("com.auth0:java-jwt:4.3.0")

@@ -7,6 +7,17 @@ Currently, support only gamezey store
 
 Currently, support only telegram messenger
 
+🚨 Disclaimer 🚨
+
+This project is created for educational and technology exploration purposes only. It is not intended for commercial use.
+
+ * All data is collected from publicly available sources.
+  * Links to the original stores are provided in the application.
+  * No copyrighted content is stored or distributed by this application.
+
+If you are the owner of any listed store and have concerns about data usage, please contact us, 
+and we will take appropriate action.
+
 # You can run the app using Docker or launch it directly in your development environment.
 
 ## Setup for development environment:
@@ -127,3 +138,10 @@ Dependency Configuration:
   * Set password to account for reading dependency repository
 
 You also could stop some docker parts and run part on yours development environment
+
+-------------------------------------
+
+## License
+This project is licensed under the **MIT License (Modified for Non-Commercial Use)**.  
+You are free to use, modify, and distribute the software **for non-commercial purposes only**.  
+**Commercial use is strictly prohibited.**

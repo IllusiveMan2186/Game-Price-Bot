@@ -74,5 +74,6 @@
     "app.user.link.form.button": "Пов'язати облікові записи",
     "app.profile.account.link.token": "Згенерувати токен прив'язки",
     "app.user.get.link.token.title": "Отримати токен для прив'язки облікового запису",
-    "app.user.get.link.token.description": "Введіть цей токен у підтримуваний месенджер (Telegram)"
+    "app.user.get.link.token.description": "Введіть цей токен у підтримуваний месенджер (Telegram)",
+    "app.game.search.wait": "Гру не знайдено в нашій системі, тому ми шукаємо зовнішні джерела. Це може зайняти до 30 секунд. Ми цінуємо ваше терпіння!"
 }
