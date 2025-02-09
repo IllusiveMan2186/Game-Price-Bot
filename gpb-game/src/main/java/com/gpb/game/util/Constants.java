@@ -9,5 +9,5 @@ public class Constants {
 
     public static final String ATTRIBUTE_HREF = "href";
 
-    public static final long SEARCH_REQUEST_WAITING_TIME = 10_000;//23 seconds
+    public static final long SEARCH_REQUEST_WAITING_TIME = 5_000;// seconds * 1000
 }

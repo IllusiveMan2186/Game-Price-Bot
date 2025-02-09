@@ -7,7 +7,7 @@ import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.parser.StorePageParser;
 import com.gpb.game.parser.StoreParser;
-import com.gpb.game.service.impl.store.StoreServiceImpl;
+import com.gpb.game.service.impl.store.CommonStoreServiceImpl;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class StoreServiceImplTest {
+public class CommonStoreServiceImplTest {
 
     @Mock
     private StorePageParser pageFetcher;
@@ -41,7 +41,7 @@ public class StoreServiceImplTest {
     private Document document;
 
     @InjectMocks
-    private StoreServiceImpl storeService;
+    private CommonStoreServiceImpl storeService;
 
     private final String TEST_URL = "https://example.com/game";
     private final String TEST_NAME = "Test Game";

@@ -18,7 +18,7 @@ import java.util.Set;
 
 @Slf4j
 @AllArgsConstructor
-public class StoreServiceImpl implements StoreService {
+public class CommonStoreServiceImpl implements StoreService {
 
     protected final StorePageParser pageFetcher;
     protected final StoreParser storeParser;

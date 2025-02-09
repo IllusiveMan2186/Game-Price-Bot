@@ -28,18 +28,22 @@ public class GameStoresServiceImpl implements GameStoresService {
     public List<Game> findGameByName(String name) {
 
         log.info("Getting host from link : '{}'", name);
-        List<Game> games = new ArrayList<>();
+        List<Game> newGames = new ArrayList<>();
         for (StoreService service : storeServices.values()) {
 
-            List<Game> createdGames = service.findUncreatedGameByName(name);
-            for (Game createdGame : createdGames) {
-                if (isName(games, createdGame)) {
-                    setGameFromAllStores(createdGame, service);
-                    games.add(createdGame);
+            List<Game> foundedGames = service.findUncreatedGameByName(name);
+            if (!foundedGames.isEmpty()) {
+                for (Game createdGame : foundedGames) {
+                    if (isName(newGames, createdGame)) {
+                        setGameFromAllStores(createdGame, service);
+                        newGames.add(createdGame);
+                    }
                 }
+                log.info("{} new games was founded by name {}", newGames.size(), name);
+                return newGames;
             }
         }
-        return games;
+        return newGames;
     }
 
     private boolean isName(List<Game> games, Game createdGame) {
@@ -60,7 +64,7 @@ public class GameStoresServiceImpl implements GameStoresService {
             setGameFromAllStores(game, storeService);
             return game;
         } catch (MalformedURLException e) {
-            log.info("Game with url {} not found cause of exception : {}}", link, e.getMessage());
+            log.info("Game with url {} not found cause of exception : {}", link, e.getMessage());
         }
         return null;
     }
@@ -93,6 +97,12 @@ public class GameStoresServiceImpl implements GameStoresService {
         return false;
     }
 
+    /**
+     * Searches for the game in different stores besides the one where it was found
+     *
+     * @param game          game for search
+     * @param serviceToSkip service where it was found and that need to skip
+     */
     private void setGameFromAllStores(Game game, StoreService serviceToSkip) {
         log.info("Set game from all stores for  : '{}'", game.getName());
         ArrayList<StoreService> services = new ArrayList<>(storeServices.values());
