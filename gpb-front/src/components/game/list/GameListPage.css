@@ -1,4 +1,4 @@
-.App-game {
+.app-game {
   background-color: #13538881;
   box-sizing: border-box;
   width: 100%;
@@ -15,7 +15,7 @@
   display: flex;
 }
 
-.App-game-content {
+.app-game-content {
   border: 1px solid rgb(39, 47, 71);
   margin-left: 5px;
   border-radius: 10px;
@@ -27,9 +27,7 @@
   border: 3px solid rgb(0, 0, 0);
 }
 
-.App-game-content-list-game-info-genre {}
-
-.App-game-search-content {
+.app-game-search-content {
   border: 1px solid rgb(39, 47, 71);
   margin-left: 5px;
   border-radius: 10px;

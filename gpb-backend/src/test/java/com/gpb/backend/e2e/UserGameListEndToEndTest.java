@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Tag("e2e")
 class UserGameListEndToEndTest {
 
-    private static final String GAME_NAME = "Minecraft Java & Bedrock Edition";
+    private static final String GAME_NAME = "Minecraft";
     private final String adminEmail = System.getProperty("e2e.email");
     private final String adminPassword = System.getProperty("e2e.password");
 
@@ -51,7 +51,7 @@ class UserGameListEndToEndTest {
     void testUserGameList_whenSuccess_shouldGameInListAfterSubscription() {
         WebDriver driver = getNameInfoPAge();
 
-        String gameName = driver.findElement(By.className("App-game-page-info-title")).getText();
+        String gameName = driver.findElement(By.className("app-game__title")).getText();
 
         clickSubscribeButtonIfNeededCondition(driver, "Unsubscribe");
 
@@ -59,8 +59,8 @@ class UserGameListEndToEndTest {
         driver.findElement(By.id("user-gameList-button")).click();
 
 
-        String gameNameInList = driver.findElements(By.className("App-game-content-list-game")).get(0)
-                .findElement(By.className("App-game-content-list-game-info-title")).getText();
+        String gameNameInList = driver.findElements(By.className("app-list__game")).get(0)
+                .findElement(By.className("app-list__game-title")).getText();
         assertEquals(gameName, gameNameInList);
 
         driver.quit();
@@ -87,12 +87,12 @@ class UserGameListEndToEndTest {
 
         EntToEndUtil.loginInToGpb(driver, adminEmail, adminPassword);
 
-        if (driver.findElements(By.className("App-game-content-list-game")).isEmpty()) {
+        if (driver.findElements(By.className("app-list__game")).isEmpty()) {
             EntToEndUtil.gameSearch(driver, GAME_NAME);
         }
 
 
-        driver.findElement(By.className("App-game-content-list-game")).click();
+        driver.findElement(By.className("app-list__game")).click();
         return driver;
     }
 }

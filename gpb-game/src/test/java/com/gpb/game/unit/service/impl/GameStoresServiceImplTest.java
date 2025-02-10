@@ -1,5 +1,6 @@
 package com.gpb.game.unit.service.impl;
 
+import com.gpb.common.exception.NotFoundException;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.service.GameStoresService;
@@ -7,6 +8,7 @@ import com.gpb.game.service.StoreService;
 import com.gpb.game.service.impl.GameStoresServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.crossstore.ChangeSetPersister;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +20,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -73,7 +76,7 @@ class GameStoresServiceImplTest {
     }
 
     @Test
-    void testGetGameByUrl_whenSuccess_ShouldReturnNewGame() {
+    void testFindGameByUrl_whenSuccess_ShouldReturnNewGame() {
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
         final GameInShop gameInShop2 = new GameInShop();
@@ -93,7 +96,7 @@ class GameStoresServiceImplTest {
     }
 
     @Test
-    void testGetGameByUrl_whenNotFound_shouldThrowException() {
+    void testFindGameByUrl_whenNotFound_shouldThrowException() {
         final Game game = new Game();
         final GameInShop gameInShop1 = new GameInShop();
         game.setGamesInShop(Set.of(gameInShop1));
@@ -101,10 +104,24 @@ class GameStoresServiceImplTest {
         when(storeService2.findUncreatedGameByUrl(url)).thenReturn(null);
 
 
-        Game result = gameStoresService.findGameByUrl(url);
+        assertThrows(
+                NotFoundException.class,
+                () -> {
+                    gameStoresService.findGameByUrl(url);
+                });
+    }
+
+    @Test
+    void testFindGameInShopByUrl_whenSuccess_ShouldReturnNewGameInShop() {
+        final GameInShop gameInShop = new GameInShop();
+        String url = "https://gamazey.com.ua/games/steam/sid-meiers-civilization-vi";
+        when(storeService2.findByUrl(url)).thenReturn(gameInShop);
 
 
-        assertNull(result);
+        GameInShop result = gameStoresService.findGameInShopByUrl(url);
+
+
+        assertEquals(gameInShop, result);
     }
 
     @Test

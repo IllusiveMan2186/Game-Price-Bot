@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ import lombok.ToString;
 import java.math.BigDecimal;
 import java.util.Date;
 
+@Data
 @Entity
 @Builder
 @NoArgsConstructor
@@ -32,49 +34,29 @@ public class GameInShop {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
     private long id;
 
-    @Getter
-    @Setter
     private String nameInStore;
 
-    @Getter
-    @Setter
     private String url;
 
-    @Getter
-    @Setter
     private BigDecimal price;
 
-    @Getter
-    @Setter
     private BigDecimal discountPrice;
 
-    @Getter
-    @Setter
     private boolean isAvailable;
 
-    @Getter
-    @Setter
     private int discount;
 
-    @Getter
-    @Setter
     private Date discountDate;
 
-    @Getter
-    @Setter
     @Enumerated(EnumType.STRING)
     private ClientActivationType clientType;
 
-    @Getter
-    @Setter
-    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn
     @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @ManyToOne
     private Game game;
 }

@@ -15,24 +15,24 @@ const GameList = ({ games = [] }) => { // Destructure `games` from the passed ob
     }
 
     return (
-        <div className="App-game-content-list">
+        <div className="app-list">
             {games.map(game => (
                 <div
                     key={game.id} // Ensure each child element has a unique key
-                    className="App-game-content-list-game"
+                    className="app-list__game"
                     onClick={() => navigate('/game/' + game.id)}
                 >
                     <GameImage
-                        className="App-game-content-list-game-info-img"
+                        className="app-list__game-img"
                         gameName={game.name}
                     />
-                    <div className="App-game-content-list-game-info">
-                        <div className="App-game-content-list-game-info-title">
+                    <div className="app-list__game-info">
+                        <div className="app-list__game-title ">
                             {game.name}
                         </div>
                         <CommonGameInfo
                             game={game}
-                            className="App-game-content-list-game-info-bottom"
+                            className="app-list__game-bottom"
                         />
                     </div>
                 </div>

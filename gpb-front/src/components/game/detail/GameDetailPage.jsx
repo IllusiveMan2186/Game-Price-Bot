@@ -28,13 +28,13 @@ const GameDetailPage = () => {
   if (!game) return <Loading/>;
 
   return (
-    <div className="App-game">
-      <div className="App-game-page-template">
-        <div className="App-game-page">
-          <div className="App-game-page-image">
-            <GameImage className="App-game-content-list-game-info-img" gameName={game.name} />
+    <div className="app-game">
+      <div className="app-game-page-template">
+        <div className="app-game-page">
+          <div className="app-game-page-image">
+            <GameImage gameName={game.name} />
           </div>
-          <div className="App-game-page-info-half">
+          <div className="app-game-page-info">
             <GameDetails game={game} gameId={gameId} navigate={navigate} />
           </div>
         </div>

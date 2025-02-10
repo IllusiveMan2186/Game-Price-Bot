@@ -4,6 +4,7 @@ import com.gpb.backend.controller.GameController;
 import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.GameService;
 import com.gpb.backend.service.ResourceService;
+import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.common.entity.game.GameInfoDto;
 import com.gpb.common.entity.game.GameListPageDto;
 import com.gpb.common.entity.game.Genre;
@@ -124,6 +125,15 @@ class GameControllerTest {
 
         assertNotNull(result);
         verify(gameService).getByUrl(url);
+    }
+
+    @Test
+    void testAddGameInStore_whenSuccess_shouldReturnGameInfo() {
+        AddGameInStoreDto addGameInStoreDto = new AddGameInStoreDto();
+
+        gameController.addGameInStoreToCreatedGameByUrl(addGameInStoreDto);
+
+        verify(gameService).addGameInStore(addGameInStoreDto);
     }
 
     @Test

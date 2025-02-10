@@ -1,4 +1,4 @@
-.App-game-page-template {
+.app-game-page-template {
     background-color: #13538881;
     box-sizing: border-box;
     width: 100%;
@@ -13,7 +13,7 @@
     display: flex;
   }
   
-  .App-game-page {
+  .app-game-page {
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -21,17 +21,17 @@
     align-items: center;
   }
   
-  .App-game-page-image {
+  .app-game-page-image {
     flex: 0 0 50%;
     max-width: 50%;
   }
   
-  .App-game-page-image img {
+  .app-game-page-image img {
     width: 85%;
     height: auto;
   }
   
-  .App-game-page {
+  .app-game-page {
     
     display: flex;
     flex-direction: row;
@@ -39,7 +39,7 @@
     align-items: center;
   }
   
-  .App-game-page-info-half{
+  .app-game-page-info{
     flex: 0 0 50%;
     width: 50%;
     height: 100%;

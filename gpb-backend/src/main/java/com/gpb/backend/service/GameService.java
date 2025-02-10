@@ -1,5 +1,6 @@
 package com.gpb.backend.service;
 
+import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.common.entity.game.GameInfoDto;
 import com.gpb.common.entity.game.GameListPageDto;
 import com.gpb.common.entity.game.Genre;
@@ -41,6 +42,14 @@ public interface GameService {
      * @return a {@link GameInfoDto} containing detailed information about the game
      */
     GameInfoDto getByUrl(String url);
+
+    /**
+     * Add game from store to created game by url
+     *
+     * @param addGameInStoreDto the dto containing the game ID to which game in store
+     *                          should be added and game in store url.
+     */
+    void addGameInStore(AddGameInStoreDto addGameInStoreDto);
 
     /**
      * Retrieves a paginated list of games filtered by genres, excluding specified product types,
