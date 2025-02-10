@@ -33,9 +33,9 @@ export default function Header() {
   };
 
   return (
-    <header className="App-header">
-      <div className="App-title" onClick={defaultPage}>
-        <img src={logo} className="App-logo" alt="logo" />
+    <header className="app-header">
+      <div className="app-title" onClick={defaultPage}>
+        <img src={logo} className="app-logo" alt="logo" />
         <h1 style={{ fontSize: 'auto' }}>GPB</h1>
       </div>
 

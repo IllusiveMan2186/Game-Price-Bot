@@ -1,6 +1,7 @@
 package com.gpb.game.unit.listener;
 
 import com.gpb.common.entity.event.GameFollowEvent;
+import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.listener.GameRequestListener;
@@ -127,5 +128,19 @@ class GameRequestListenerTest {
 
 
         Mockito.verify(gameService).removeGameInStore(gameId);
+    }
+
+    @Test
+    void testListenAddGameInStore_whenSuccess_shouldCallAddGameInStoreMethod() {
+        long gameId = 102L;
+        String url = "url";
+        AddGameInStoreDto dto = AddGameInStoreDto.builder().gameId(gameId).url(url).build();
+        ConsumerRecord<String, AddGameInStoreDto> record = new ConsumerRecord<>("topic", 0, 0, "key", dto);
+
+
+        gameRequestListener.listenAddGameInStore(record);
+
+
+        Mockito.verify(gameService).addGameInStore(gameId, url);
     }
 }

@@ -7,6 +7,8 @@ import Message from '@util/message';
 import { loginRequest } from '@services/auth';
 import { resendActivationEmailRequest } from '@services/userRequests';
 
+import './LoginForm.css';
+
 export default function LoginForm() {
 
     const navigate = useNavigate();

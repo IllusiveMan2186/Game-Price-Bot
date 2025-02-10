@@ -12,7 +12,7 @@ body {
   --bs-gutter-x: 0 !important;
 }
 
-.App {
+.app {
   min-height: 100vh;
   display: block;
   overflow: auto;
@@ -24,7 +24,7 @@ body {
   justify-content: space-between;
 }
 
-.App-footer {
+.app-footer {
   background-color: #000000;
   min-height: 8vh;
   display: flex;
@@ -39,16 +39,7 @@ body {
   color: #911010;
 }
 
-.Resend-link {
-  color: #4eb2ec;
-  text-decoration: underline;
-}
-
-.Resend-link:hover {
-  cursor: pointer;
-}
-
-.App-user-info {
+.app-user-info {
   background-color: #13538881;
   box-sizing: border-box;
   width: 100%;
@@ -68,7 +59,7 @@ body {
   align-items: center;
 }
 
-.App-user-info-title {
+.app-user-info-title {
   font-size: 2.5rem;
 }
 

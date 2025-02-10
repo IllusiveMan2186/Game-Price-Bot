@@ -1,0 +1,20 @@
+.app-game__add-store {
+    margin-top: 25px;
+    height: 35px;
+    width: 100%;
+}
+
+.app-add-icon {
+    height: 50px;
+}
+
+.add-store-form {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.add-store-form input {
+    width: 80%;
+}

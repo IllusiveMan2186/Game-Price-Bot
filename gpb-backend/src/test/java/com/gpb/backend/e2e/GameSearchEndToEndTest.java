@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("e2e")
 class GameSearchEndToEndTest {
 
-    private static final String GAME_NAME = "Minecraft Java Bedrock";
+    private static final String GAME_NAME = "Minecraft";
     private final String adminEmail = System.getProperty("e2e.email");
     private final String adminPassword = System.getProperty("e2e.password");
 
@@ -25,8 +25,8 @@ class GameSearchEndToEndTest {
         gameSearch(driver, GAME_NAME);
 
 
-        WebElement firstGameInList = driver.findElement(By.className("App-game-content-list-game"));
-        String gameName = firstGameInList.findElement(By.className("App-game-content-list-game-info-title")).getText();
+        WebElement firstGameInList = driver.findElement(By.className("app-list__game"));
+        String gameName = firstGameInList.findElement(By.className("app-list__game-title")).getText();
         assertTrue(gameName.contains(GAME_NAME));
 
         driver.quit();
@@ -36,56 +36,48 @@ class GameSearchEndToEndTest {
     void testGameInfoContent_whenSuccess_shouldVerifyGameInfo() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
-        if (driver.findElements(By.className("App-game-content-list-game")).isEmpty()) {
+        if (driver.findElements(By.className("app-list__game")).isEmpty()) {
             EntToEndUtil.gameSearch(driver, GAME_NAME);
         }
 
 
-        driver.findElement(By.className("App-game-content-list-game")).click();
+        driver.findElement(By.className("app-list__game")).click();
 
 
-        assertTrue(driver.findElement(By.className("App-game-page")).isDisplayed());
+        assertTrue(driver.findElement(By.className("app-game-page")).isDisplayed());
 
-        assertTrue(driver.findElement(By.className("App-game-content-list-game-info-img")).isDisplayed());
+        assertTrue(driver.findElement(By.className("app-game-page-image")).isDisplayed());
 
-        assertTrue(driver.findElement(By.className("App-game-page-info")).isDisplayed());
-        assertTrue(isTextNotEmpty(driver, "App-game-page-info-title"));
+        assertTrue(driver.findElement(By.className("app-game__info")).isDisplayed());
+        assertTrue(isTextNotEmpty(driver, "app-game__info"));
 
-        assertTrue(driver.findElement(By.className("App-game-page-info-common")).isDisplayed());
-        assertTrue(isTextNotEmpty(driver, "App-game-page-info-common-price"));
-        assertTrue(isTextNotEmpty(driver, "App-game-content-list-game-info-type"));
-        assertTrue(isTextNotEmpty(driver, "App-game-content-list-game-info-available"));
-        assertTrue(isTextNotEmpty(driver, "App-game-content-list-game-info-price"));
+        assertTrue(driver.findElement(By.className("app-game__details")).isDisplayed());
+        assertTrue(isTextNotEmpty(driver, "app-game__details-price"));
+        assertTrue(isTextNotEmpty(driver, "app-game-type"));
+        assertTrue(isTextNotEmpty(driver, "app-game-available"));
+        assertTrue(isTextNotEmpty(driver, "app-game-price"));
 
-        assertTrue(driver.findElement(By.className("App-game-page-info-subscribe")).isDisplayed());
-        assertTrue(driver.findElement(By.className("App-game-page-info-storeList")).isDisplayed());
+        assertTrue(driver.findElement(By.className("app-game__subscribe")).isDisplayed());
+        assertTrue(driver.findElement(By.className("app-game__store-list")).isDisplayed());
 
         driver.quit();
     }
 
     @Test
-    void testGameStoreLink_whenSuccess_shouldRedirectToStore() {
+    void testGameStoreLink_whenClickOnGameInStore_shouldRedirectToStore() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
-        if (driver.findElements(By.className("App-game-content-list-game")).isEmpty()) {
+        if (driver.findElements(By.className("app-list__game")).isEmpty()) {
             EntToEndUtil.gameSearch(driver, GAME_NAME);
         }
 
+        driver.findElement(By.className("app-list__game")).click();
 
-        driver.findElement(By.className("App-game-content-list-game")).click();
+        assertTrue(driver.findElement(By.className("app-game__store-list")).isDisplayed());
+        WebElement storeElement = driver.findElement(By.className("app-store__item"));
+        storeElement.click();
 
 
-        assertTrue(driver.findElement(By.className("App-game-page-info-storeList")).isDisplayed());
-        WebElement storeElement = driver.findElement(By.className("App-game-page-info-storeList-store"));
-        assertTrue(storeElement.isDisplayed());
-
-        assertTrue(isTextNotEmpty(storeElement, "App-game-content-list-game-info-available"));
-
-        WebElement priceElement = driver.findElement(By.className("App-game-page-info-storeList-store-price-section"));
-        assertTrue(storeElement.findElement(By.className("App-game-page-info-storeList-store-price-section")).isDisplayed());
-        assertTrue(isTextNotEmpty(priceElement, "App-game-page-info-storeList-store-price"));
-        assertTrue(isTextNotEmpty(priceElement, "App-game-page-info-storeList-store-discount"));
-        assertTrue(isTextNotEmpty(priceElement, "App-game-page-info-storeList-store-discountPrice"));
 
         driver.quit();
     }

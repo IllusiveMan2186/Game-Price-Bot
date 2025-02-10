@@ -3,6 +3,7 @@ package com.gpb.backend.controller;
 import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.GameService;
 import com.gpb.backend.service.ResourceService;
+import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.common.entity.game.GameInfoDto;
 import com.gpb.common.entity.game.GameListPageDto;
 import com.gpb.common.entity.game.Genre;
@@ -17,6 +18,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -89,6 +92,22 @@ public class GameController {
     public GameInfoDto getGameByUrl(@RequestParam final String url) {
         log.info("Retrieving game by URL '{}'", url);
         return gameService.getByUrl(url);
+    }
+
+    /**
+     * Processes a game in store add event from url to registered game .
+     * <p>
+     * This method add the game in store by url to game by the given ID
+     * </p>
+     *
+     * @param addGameInStoreDto the dto containing the game ID to which game in store
+     *                          should be added and game in store url.
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping(value = "/url")
+    public void addGameInStoreToCreatedGameByUrl(@RequestBody final AddGameInStoreDto addGameInStoreDto) {
+        log.info("Add to game {} game from store by URL '{}'", addGameInStoreDto.getGameId(), addGameInStoreDto.getUrl());
+        gameService.addGameInStore(addGameInStoreDto);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.gpb.game.service.impl;
 
+import com.gpb.common.exception.NotFoundException;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.service.GameStoresService;
@@ -54,19 +55,36 @@ public class GameStoresServiceImpl implements GameStoresService {
 
     @Override
     public Game findGameByUrl(String link) {
+        StoreService storeService = getStoreFromHostUrl(link);
+        Game game = storeService.findUncreatedGameByUrl(link);
+        setGameFromAllStores(game, storeService);
+        return game;
+
+    }
+
+    @Override
+    public GameInShop findGameInShopByUrl(String url) {
+        StoreService storeService = getStoreFromHostUrl(url);
+        return storeService.findByUrl(url);
+    }
+
+    private StoreService getStoreFromHostUrl(String link) {
+        log.info("Getting host from link : '{}'", link);
         try {
-            log.info("Getting host from link : '{}'", link);
             URL url = new URL(link);
             StoreService storeService = storeServices.get(url.getHost());
 
             log.info("Getting store service from link : '{}'", url.getHost());
-            Game game = storeService.findUncreatedGameByUrl(link);
-            setGameFromAllStores(game, storeService);
-            return game;
+
+            if(storeService!=null){
+                return storeService;
+            }
+            log.error("Store host '{}' not support by app.", url.getHost());
+            throw new NotFoundException("app.game.error.host.not.supported");
         } catch (MalformedURLException e) {
             log.info("Game with url {} not found cause of exception : {}", link, e.getMessage());
+            throw new NotFoundException("app.game.error.url.not.found");
         }
-        return null;
     }
 
     @Override

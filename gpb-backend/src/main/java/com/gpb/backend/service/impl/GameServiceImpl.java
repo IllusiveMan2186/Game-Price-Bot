@@ -1,6 +1,7 @@
 package com.gpb.backend.service.impl;
 
 import com.gpb.backend.service.GameService;
+import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.common.entity.game.GameInfoDto;
 import com.gpb.common.entity.game.GameListPageDto;
 import com.gpb.common.entity.game.Genre;
@@ -27,6 +28,7 @@ import java.util.UUID;
 public class GameServiceImpl implements GameService {
 
     private final KafkaTemplate<String, Long> removeKafkaTemplate;
+    private final KafkaTemplate<String, AddGameInStoreDto> addGameInStoreDtoKafkaTemplate;
     private final RestTemplateHandlerService restTemplateHandler;
     private final BasicGameService basicGameService;
 
@@ -45,6 +47,14 @@ public class GameServiceImpl implements GameService {
         String apiUrl = "/game/url?url=" + url;
 
         return restTemplateHandler.executeRequest(apiUrl, HttpMethod.GET, null, GameInfoDto.class);
+    }
+
+    @Override
+    public void addGameInStore(AddGameInStoreDto addGameInStoreDto) {
+        log.info("Send adding game in store event with url '{}' to game {} ",
+                addGameInStoreDto.getUrl(),
+                addGameInStoreDto.getGameId());
+        addGameInStoreDtoKafkaTemplate.send(CommonConstants.GAME_IN_STORE_ADD_TOPIC, "1", addGameInStoreDto);
     }
 
     @Override

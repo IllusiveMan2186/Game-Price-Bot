@@ -27,6 +27,7 @@
     "app.game.error.id.not.found": "Game with this id not found",
     "app.game.error.name.not.found": "The game with this name was not found",
     "app.game.error.url.not.found": "The game with this url was not found",
+    "app.game.error.host.not.supported": "GPB does not support processing games from this host.",
     "app.game.error.name.already.exists": "Game with this name already exist",
     "app.game.error.url.already.exists": "Game with this url already exist",
     "app.user.error.account.locked": "Your account has been locked for 24 hours due to many failed login attempts.",
@@ -74,5 +75,8 @@
     "app.profile.account.link.token": "Generate Linking Token",
     "app.user.get.link.token.title": "Get token for account linking",
     "app.user.get.link.token.description": "Enter this token in supported messanger (Telegram)",
-    "app.game.search.wait": "The game was not found in our system, so we're searching external sources. This may take up to 30 seconds. We appreciate your patience!"
+    "app.game.search.wait": "The game was not found in our system, so we're searching external sources. This may take up to 30 seconds. We appreciate your patience!",
+    "app.game.add.placeholder": "Enter link to the game",
+    "app.game.add.button": "Add",
+    "app.game.add.send.message": "Request for adding game from url sended"
 }

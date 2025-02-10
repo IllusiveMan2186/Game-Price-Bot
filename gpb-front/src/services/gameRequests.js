@@ -3,7 +3,10 @@ import { handleRequest, handleError } from '@util/httpHelper';
 // Centralized API Endpoints
 const API_ENDPOINTS = {
     GAMES: '/user/games',
-    GAME: '/game'
+    GAME: '/game',
+    GAME_STORE: '/game/store',
+    GAME_URL: '/game/url',
+    GAME_URL_GET: '/game/url?url='
 };
 
 // Get games
@@ -60,7 +63,46 @@ export const removeGameRequest = (gameId, navigate) => {
         'DELETE',
         `${API_ENDPOINTS.GAME}/${gameId}`,
         {},
-        () => navigate('/'),
+        () => {
+            setTimeout(() => {
+                navigate('/');
+            }, 100);
+        },
         handleError
+    );
+};
+
+// Remove game in store
+export const removeGameInStoreRequest = (gameInStoreId, onSuccess) => {
+    handleRequest(
+        'DELETE',
+        `${API_ENDPOINTS.GAME_STORE}/${gameInStoreId}`,
+        {},
+        () => {
+            onSuccess();
+        },
+        handleError
+    );
+};
+
+// Get game by url
+export const getGameByUrlRequest = (url, navigate) => {
+    handleRequest(
+        'GET',
+        `${API_ENDPOINTS.GAME_URL_GET}${url}`,
+        null,
+        (response) => { navigate(`/game/${response.data.id}`) },
+        (error) => handleError(error, navigate)
+    );
+};
+
+// Get game by url
+export const addGameInStoreByUrlRequest = (gameId, url) => {
+    handleRequest(
+        'POST',
+        `${API_ENDPOINTS.GAME_URL}`,
+        { gameId, url },
+        (response) => { },
+        (error) => handleError(error)
     );
 };

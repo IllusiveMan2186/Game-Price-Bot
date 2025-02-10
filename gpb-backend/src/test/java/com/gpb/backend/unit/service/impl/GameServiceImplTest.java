@@ -1,6 +1,7 @@
 package com.gpb.backend.unit.service.impl;
 
 import com.gpb.backend.service.impl.GameServiceImpl;
+import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.common.entity.game.GameInfoDto;
 import com.gpb.common.entity.game.GameListPageDto;
 import com.gpb.common.entity.game.Genre;
@@ -8,10 +9,12 @@ import com.gpb.common.entity.game.ProductType;
 import com.gpb.common.service.BasicGameService;
 import com.gpb.common.service.RestTemplateHandlerService;
 import com.gpb.common.util.CommonConstants;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -22,23 +25,29 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class GameServiceImplTest {
 
-    @Mock
-    private KafkaTemplate<String, Long> kafkaTemplate;
+    private KafkaTemplate<String, Long> kafkaTemplate = mock(KafkaTemplate.class);
 
-    @Mock
-    private RestTemplateHandlerService restTemplateHandler;
+    private KafkaTemplate<String, AddGameInStoreDto> addGameInStoreDtoKafkaTemplate = mock(KafkaTemplate.class);
 
-    @Mock
-    private BasicGameService basicGameService;
 
-    @InjectMocks
+    private RestTemplateHandlerService restTemplateHandler = mock(RestTemplateHandlerService.class);
+
+
+    private BasicGameService basicGameService = mock(BasicGameService.class);
+
     private GameServiceImpl gameService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        gameService = new GameServiceImpl(kafkaTemplate, addGameInStoreDtoKafkaTemplate, restTemplateHandler, basicGameService);
+    }
 
     @Test
     void testGetById_whenSuccess_shouldReturnGameInfoDto() {
@@ -64,13 +73,13 @@ class GameServiceImplTest {
         String sort = CommonConstants.NAME_SORT_PARAM + "-" + CommonConstants.SORT_DIRECTION_ASCENDING;
 
 
-        when(basicGameService.getByName(name, pageSize, pageNum, sort,0))
+        when(basicGameService.getByName(name, pageSize, pageNum, sort, 0))
                 .thenReturn(mockResponse);
 
         GameListPageDto result = gameService.getByName(name, pageSize, pageNum, sort);
 
         assertEquals(mockResponse, result);
-        verify(basicGameService).getByName(name, pageSize, pageNum, sort,0);
+        verify(basicGameService).getByName(name, pageSize, pageNum, sort, 0);
     }
 
     @Test
@@ -90,6 +99,16 @@ class GameServiceImplTest {
         String expectedUrl = "/game/url?url=/game/genre?pageSize=10&pageNum=1" +
                 "&minPrice=0&maxPrice=100&sortBy=name-ASC&genre=ACTION&type=GAME";
         verify(restTemplateHandler).executeRequest(expectedUrl, HttpMethod.GET, null, GameInfoDto.class);
+    }
+
+    @Test
+    void testAddGameInStore_whenSuccess_shouldMakeKafkaCall() {
+        AddGameInStoreDto addGameInStoreDto = new AddGameInStoreDto();
+
+        gameService.addGameInStore(addGameInStoreDto);
+
+        verify(addGameInStoreDtoKafkaTemplate)
+                .send(eq(CommonConstants.GAME_IN_STORE_ADD_TOPIC), anyString(), eq(addGameInStoreDto));
     }
 
     @Test
@@ -133,11 +152,10 @@ class GameServiceImplTest {
     @Test
     void testRemoveGameGameInStore_whenSuccess_shouldSendRemoveGameInStoreEvent() {
         long gameInStoreId = 1L;
-        String expectedTopic = CommonConstants.GAME_IN_STORE_REMOVE_TOPIC;
 
         gameService.removeGameInStore(gameInStoreId);
 
-        verify(kafkaTemplate).send(eq(expectedTopic), anyString(), eq(gameInStoreId));
+        verify(kafkaTemplate).send(eq(CommonConstants.GAME_IN_STORE_REMOVE_TOPIC), anyString(), eq(gameInStoreId));
     }
 
     @Test
@@ -151,13 +169,13 @@ class GameServiceImplTest {
         String sort = "name-ASC";
         GameListPageDto mockResponse = new GameListPageDto();
 
-        when(basicGameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort,0))
+        when(basicGameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort, 0))
                 .thenReturn(mockResponse);
 
         GameListPageDto result = gameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort);
 
         assertEquals(mockResponse, result);
         verify(basicGameService)
-                .getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort,0);
+                .getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort, 0);
     }
 }

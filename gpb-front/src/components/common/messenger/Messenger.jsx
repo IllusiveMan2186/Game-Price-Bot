@@ -29,13 +29,13 @@ const Messenger = () => {
         <Message string={'app.footer.messenger'} />
       </h6>
       <button
-        className="btn btn-primary btn-floating m-1 Messenger-button"
+        className="btn btn-primary btn-floating m-1 messenger-button"
         onClick={() => onMessangerClick(config.TELEGRAM_BOT_URL, '?start=')}
       >
         <img
           src={telegramImage}
           alt="Telegram Icon"
-          className="Messenger-button-icon"
+          className="messenger-button-icon"
         />
       </button>
     </div>
