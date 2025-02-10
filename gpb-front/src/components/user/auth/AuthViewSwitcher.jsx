@@ -2,8 +2,8 @@ import * as React from 'react';
 import classNames from 'classnames';
 
 import Message from '@util/message';
-import LoginForm from '@components/auth/login/LoginForm';
-import RegistrationForm from '@components/auth/registration/RegistrationForm';
+import LoginForm from '@components/user/auth/login/LoginForm';
+import RegistrationForm from '@components/user/auth/registration/RegistrationForm';
 
 import './AuthViewSwitcher.css';
 
@@ -41,7 +41,7 @@ export default function AuthViewSwitcher() {
                     </li>
                 </ul>
 
-                <div className="tab-content Column">
+                <div className="tab-content column">
                     <div
                         className={classNames("tab-pane", "fade", {
                             "show active": activeForm === LOGIN,

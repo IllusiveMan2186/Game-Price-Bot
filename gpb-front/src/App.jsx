@@ -8,7 +8,7 @@ function App() {
   
   console.log("win "+window._env_);
   return (
-    <div className="App">
+    <div className="app">
       <BrowserRouter>
         <div className="row">
           <div className="col">

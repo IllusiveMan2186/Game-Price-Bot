@@ -1,4 +1,4 @@
-.App-content-loading {
+.app-content-loading {
     width: 100%;
     margin-top: 10%;
     margin-bottom: 20%;
@@ -12,6 +12,6 @@
 
 @media (prefers-reduced-motion: no-preference) {
     .loading-img  {
-        animation: App-logo-spin infinite 10s linear reverse;
+        animation: app-logo-spin infinite 10s linear reverse;
     }
 }

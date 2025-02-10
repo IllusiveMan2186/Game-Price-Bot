@@ -93,7 +93,7 @@ const GameListPage = ({ mode: propMode }) => {
 
     return (
         <>
-            <div class='App-game'>
+            <div class='app-game'>
                 {(mode === "list") &&
                     <GameListFilter
                         getParameterOrDefaultValue={getParameterOrDefaultValue}
@@ -104,7 +104,7 @@ const GameListPage = ({ mode: propMode }) => {
                     />
                 }
 
-                <div className={(mode === "list") ? "App-game-content" : "App-game-search-content"}>
+                <div className={(mode === "list") ? "app-game-content" : "app-game-search-content"}>
                     <GameListPageHeader
                         searchParams={searchParams}
                         updateSearchParams={updateSearchParams}

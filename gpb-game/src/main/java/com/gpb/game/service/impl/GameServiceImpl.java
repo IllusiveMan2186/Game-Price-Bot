@@ -91,7 +91,7 @@ public class GameServiceImpl implements GameService {
         final GameInShop gameInShop = gameInShopRepository.findByUrl(url);
         if (gameInShop == null) {
             Game game = gameStoresService.findGameByUrl(url);
-            return modelMapper.map(game, GameInfoDto.class);
+            return modelMapper.map(gameRepository.save(game), GameInfoDto.class);
         }
 
         return modelMapper.map(gameInShop.getGame(), GameInfoDto.class);

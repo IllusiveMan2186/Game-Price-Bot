@@ -1,9 +1,9 @@
-.App-game-content-list {
+.app-list {
     display: flex;
     flex-wrap: wrap;
 }
 
-.App-game-content-fotter {
+.app-game-footer {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -11,7 +11,7 @@
   
   }
 
-  .App-game-content-fotter button {
+  .app-game-footer button {
     border: none;
     background-color: #000000;
     margin: 20px;
@@ -24,10 +24,10 @@
   
   }
   
-  .App-game-content-fotter a:hover {
+  .app-game-footer a:hover {
     background-color: rgb(56, 113, 219);
   }
   
-  .App-game-content-fotter-active {
+  .app-game-footer-active {
     background-color: rgb(56, 113, 219);
   }

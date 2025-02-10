@@ -42,8 +42,8 @@ export default function LinkPage() {
     };
 
     return (
-        <div className="App-user-info">
-            <span className="App-user-info-title">
+        <div className="app-user-info">
+            <span className="app-user-info-title">
                 <Message string="app.user.link.enter" />
             </span>
             {errorMessage && (

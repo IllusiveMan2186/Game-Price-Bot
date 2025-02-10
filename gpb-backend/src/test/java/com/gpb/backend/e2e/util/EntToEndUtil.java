@@ -53,6 +53,6 @@ public class EntToEndUtil {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT_TIME));
         driver.findElement(By.id("game-search-input-field")).sendKeys(gameName);
         driver.findElement(By.id("game-search-button")).click();
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("App-content-loading")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("app-content-loading")));
     }
 }

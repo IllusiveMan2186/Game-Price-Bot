@@ -7,7 +7,7 @@ export const CommonGameInfo = ({ game, className }) => (
   <div className={className}>
     <ProductType type={game.type} />
     <GameAvailability available={game.available} />
-    <div className="App-game-content-list-game-info-price">
+    <div className="app-game-price">
       {game.minPrice} - {game.maxPrice} ₴
     </div>
   </div>

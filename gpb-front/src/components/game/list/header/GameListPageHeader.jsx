@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { getGameByUrlRequest } from '@services/gameRequests';
 import Select from 'react-select';
 
 import * as constants from '@util/constants';
@@ -14,7 +15,7 @@ const Search = ({ handleSearchChange, handleSearch }) => {
     const placeholder = t('app.game.filter.search.title');
 
     return (
-        <div className="App-game-content-header-search">
+        <div className="app-header__search">
             <input
                 id="game-search-input-field"
                 type="search"
@@ -49,8 +50,13 @@ const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, reloa
     }, [updateSearchParams, reloadPage]);
 
     const handleSearch = useCallback(() => {
-        navigate(`/search/${name}/${searchParams.toString()}`);
-        navigate(0);
+        try {
+            new URL(name);
+            getGameByUrlRequest(name, navigate);
+        } catch {
+            navigate(`/search/${name}/${searchParams.toString()}`);
+            navigate(0);
+        }
     }, [navigate, name, searchParams]);
 
     const findArrayElementByValue = (array, value) => {
@@ -58,14 +64,14 @@ const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, reloa
     };
 
     return (
-        <div className="App-game-content-header">
+        <div className="app-list-header">
             {!(mode === 'usersGames') && (
                 <Search
                     handleSearchChange={handleSearchChange}
                     handleSearch={handleSearch}
                 />
             )}
-            <div className="App-game-content-header-sort">
+            <div className="app-header__sort">
                 <Select
                     classNamePrefix=""
                     defaultValue={findArrayElementByValue(constants.sortsOptions, sortBy)}
@@ -76,7 +82,7 @@ const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, reloa
                     isSearchable={false}
                 />
             </div>
-            <div className="App-game-content-header-sort">
+            <div className="app-header__sort">
                 <Select
                     defaultValue={findArrayElementByValue(constants.pageSizesOptions, pageSize)}
                     options={constants.pageSizesOptions}

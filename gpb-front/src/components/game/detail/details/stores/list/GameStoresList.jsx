@@ -13,14 +13,14 @@ const ClientActivationType = ({ clientType }) => {
 };
 
 const StorePriceInfo = ({ price, discount, discountPrice }) => (
-    <div className="App-game-page-info-storeList-store-price-section">
+    <div className="app-store__price-section">
         {discount > 0 && discountPrice < price && (
             <>
-                <div className="App-game-page-info-storeList-store-price">{price}</div>
-                <div className="App-game-page-info-storeList-store-discount">-{discount}%</div>
+                <div className="app-store__price">{price}</div>
+                <div className="app-store__discount">-{discount}%</div>
             </>
         )}
-        <div className="App-game-page-info-storeList-store-discountPrice">{discountPrice}</div>
+        <div className="app-store__discount-price ">{discountPrice}</div>
     </div>
 );
 
@@ -35,7 +35,7 @@ const GameInStoreRemove = ({ gameId, onRemove }) => {
         <div onClick={handleRemove} role="button" aria-label="Remove game">
             <img
                 alt="Remove"
-                className="App-game-page-info-storeList-store-trash-icon"
+                className="app-store__trash-icon"
                 src={trash}
             />
         </div>
@@ -43,20 +43,13 @@ const GameInStoreRemove = ({ gameId, onRemove }) => {
 };
 
 
-const GameStoresList = ({ stores: initialStores, navigate }) => {
-    const [stores, setStores] = useState(initialStores);
-
-    const handleRemoveStore = (storeId) => {
-        setStores((prevStores) => {
-            const newStores = prevStores.filter((store) => store.id !== storeId);
-            if (newStores.length === 0) {
-                // Wait 500ms before navigating
-                setTimeout(() => {
-                    navigate('/');
-                }, 100);
-            }
-            return newStores;
-        });
+const GameStoresList = ({ stores, navigate }) => {
+    const handleRemoveStore = () => {
+        if (stores.length === 1) {
+            navigate('/');
+        } else {
+            navigate(0);
+        }
     };
 
     const renderedStores = useMemo(() => {
@@ -65,9 +58,9 @@ const GameStoresList = ({ stores: initialStores, navigate }) => {
             const imagePath = `/assets/images/${domain}.png`;
 
             return (
-                <div key={store.id} className="App-game-page-info-storeList-store-common">
+                <div key={store.id} className="app-store__item-common">
                     <a
-                        className="App-game-page-info-storeList-store"
+                        className="app-store__item"
                         href={store.url}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -92,7 +85,7 @@ const GameStoresList = ({ stores: initialStores, navigate }) => {
         });
     }, [stores]);
 
-    return <div className="App-game-page-info-storeList">{renderedStores}</div>;
+    return <div className="app-game__store-list">{renderedStores}</div>;
 };
 
 export default GameStoresList;

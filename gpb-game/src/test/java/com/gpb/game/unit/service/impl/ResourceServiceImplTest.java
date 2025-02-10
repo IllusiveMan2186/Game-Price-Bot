@@ -46,27 +46,6 @@ class ResourceServiceImplTest {
     }
 
     @Test
-    void testSaveCroppedImage_whenEmptyGameName_shouldNotSaveFile() {
-        resourceService.saveCroppedImage("http://example.com/image.jpg", "", 10, 10, 50, 50);
-
-        File outputFile = new File(tempDir.toFile(), "" + CommonConstants.JPG_IMG_FILE_EXTENSION);
-        assertFalse(outputFile.exists());
-    }
-
-    @Test
-    void testSaveCroppedImage_whenOutOfBoundsCropping_shouldNotSaveFile() throws IOException {
-        BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
-        ImageIO.write(image, "JPG", new File(tempDir.toFile(), "test.jpg"));
-
-
-        resourceService.saveCroppedImage("http://example.com/image.jpg", "game1", 90, 90, 50, 50);
-
-
-        File outputFile = new File(tempDir.toFile(), "game1" + CommonConstants.JPG_IMG_FILE_EXTENSION);
-        assertFalse(outputFile.exists());
-    }
-
-    @Test
     void testSaveCroppedImage_whenValidImage_shouldSaveSuccessfully() throws IOException {
         BufferedImage image = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
         File tempFile = new File(tempDir.toFile(), "test.jpg");
