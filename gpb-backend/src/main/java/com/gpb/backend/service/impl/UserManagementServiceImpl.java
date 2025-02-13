@@ -1,16 +1,13 @@
 package com.gpb.backend.service.impl;
 
 import com.gpb.backend.entity.WebUser;
-import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.UserManagementService;
 import com.gpb.common.exception.NotFoundException;
 import com.gpb.common.service.ChangeUserBasicIdService;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -18,17 +15,16 @@ import java.util.Locale;
 public class UserManagementServiceImpl implements UserManagementService, ChangeUserBasicIdService {
 
     private final WebUserRepository webUserRepository;
-    private final ModelMapper modelMapper;
 
-    public UserManagementServiceImpl(WebUserRepository webUserRepository,
-                                     ModelMapper modelMapper) {
+    public UserManagementServiceImpl(WebUserRepository webUserRepository) {
         this.webUserRepository = webUserRepository;
-        this.modelMapper = modelMapper;
     }
 
     @Override
-    public UserDto getUserById(long userId) {
-        return modelMapper.map(getWebUserById(userId), UserDto.class);
+    public WebUser getWebUserById(final long userId) {
+        log.info("Get user by id : {}", userId);
+        return webUserRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("app.user.error.id.not.found"));
     }
 
     @Override
@@ -54,13 +50,6 @@ public class UserManagementServiceImpl implements UserManagementService, ChangeU
         webUser.setLocale(new Locale(locale));
 
         webUserRepository.save(webUser);
-    }
-
-    private WebUser getWebUserById(final long userId) {
-        log.info("Get user by id : {}", userId);
-
-        return webUserRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("app.user.error.id.not.found"));
     }
 
     @Override

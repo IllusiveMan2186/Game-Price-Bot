@@ -45,14 +45,14 @@ class GameControllerTest {
         user.setId(123L);
 
         GameInfoDto gameInfo = new GameInfoDto();
-        when(gameService.getById(gameId, user.getId())).thenReturn(gameInfo);
+        when(gameService.getById(gameId, user.getBasicUserId())).thenReturn(gameInfo);
 
 
         GameInfoDto result = gameController.getGameById(gameId, user);
 
 
         assertNotNull(result);
-        verify(gameService).getById(gameId, user.getId());
+        verify(gameService).getById(gameId, user.getBasicUserId());
     }
 
     @Test

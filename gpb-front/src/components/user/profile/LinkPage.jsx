@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 import * as Yup from 'yup';
 
+import { useNavigation } from "@contexts/NavigationContext";
 import Message from '@util/message';
-import { accountLinkRequest } from '@services/linkRequests';
+import { useLinkActions } from '@hooks/user/useLinkActions';
 
 export default function LinkPage() {
-    const navigate = useNavigate();
+    const navigate = useNavigation();
+    const { accountLinkRequest } = useLinkActions();
 
     const [token, setToken] = useState('');
     const [errorToken, setErrorToken] = useState('');

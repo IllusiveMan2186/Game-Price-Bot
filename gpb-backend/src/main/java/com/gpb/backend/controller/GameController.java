@@ -58,9 +58,9 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     public GameInfoDto getGameById(@PathVariable final long gameId,
                                    @AuthenticationPrincipal final UserDto user) {
-        final long userId = (user == null) ? -1 : user.getId();
-        log.info("Retrieving game by ID {} for user {}", gameId, userId);
-        return gameService.getById(gameId, userId);
+        final long basicUserId = (user == null) ? -1 : user.getBasicUserId();
+        log.info("Retrieving game by ID {} for basic user {}", gameId, basicUserId);
+        return gameService.getById(gameId, basicUserId);
     }
 
     /**

@@ -69,35 +69,29 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void testGetUserByEmail_whenSuccess_shouldReturnUser() {
-        String email = "email";
+    void testGetUserById_whenSuccess_shouldReturnUserDto() {
+        long userId = 1L;
         WebUser webUser = new WebUser();
-        UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
-        when(webUserRepository.findByEmail(email)).thenReturn(Optional.of(webUser));
+        UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
+        when(webUserRepository.findById(userId)).thenReturn(Optional.of(webUser));
         when(modelMapper.map(webUser, UserDto.class)).thenReturn(userDto);
 
 
-        UserDto result = userService.getUserByEmail(email);
+        UserDto result = userService.getUserById(userId);
 
 
-        assertEquals(userDto, result);
-        verify(webUserRepository).findByEmail(email);
+        assertNotNull(result);
+        verify(webUserRepository).findById(userId);
+        verify(modelMapper).map(webUser, UserDto.class);
     }
 
     @Test
-    void testGetUserByEmail_whenUserNotFound_shouldThrowNotFoundException() {
-        String email = "email";
-
-        when(webUserRepository.findByEmail(email)).thenReturn(Optional.empty());
-
-
-        NotFoundException exception = assertThrows(
-                NotFoundException.class,
-                () -> userService.getUserByEmail(email)
-        );
+    void testGetUserById_whenUserNotFound_shouldThrowNotFoundException() {
+        long userId = 1L;
+        when(webUserRepository.findById(userId)).thenReturn(Optional.empty());
 
 
-        assertEquals("app.user.error.email.not.found", exception.getMessage());
+        assertThrows(NotFoundException.class, () -> userService.getUserById(userId));
     }
 
     @Test
@@ -228,17 +222,15 @@ class UserAuthenticationServiceImplTest {
 
         when(webUserRepository.findByEmail(credentials.getEmail())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(CharBuffer.wrap(credentials.getPassword()), user.getPassword())).thenReturn(true);
-        UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
-        when(modelMapper.map(user, UserDto.class)).thenReturn(userDto);
+        when(webUserRepository.save(user)).thenReturn(user);
 
 
-        UserDto result = userService.login(credentials);
+        WebUser result = userService.login(credentials);
 
 
         assertNotNull(result);
         verify(webUserRepository).findByEmail(credentials.getEmail());
         verify(passwordEncoder).matches(CharBuffer.wrap(credentials.getPassword()), user.getPassword());
-        verify(modelMapper).map(user, UserDto.class);
     }
 
     @Test
@@ -273,16 +265,16 @@ class UserAuthenticationServiceImplTest {
         when(passwordEncoder.matches(CharBuffer.wrap(credentials.getPassword()), lockedUser.getPassword())).thenReturn(true);
         UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
         when(modelMapper.map(lockedUser, UserDto.class)).thenReturn(userDto);
+        when(webUserRepository.save(expectedUSerAfterUnlock)).thenReturn(expectedUSerAfterUnlock);
 
 
-        UserDto result = userService.login(credentials);
+        WebUser result = userService.login(credentials);
 
 
-        assertNotNull(result);
+        assertEquals(expectedUSerAfterUnlock, result);
         verify(webUserRepository).findByEmail(credentials.getEmail());
         verify(webUserRepository).save(expectedUSerAfterUnlock);
         verify(passwordEncoder).matches(CharBuffer.wrap(credentials.getPassword()), lockedUser.getPassword());
-        verify(modelMapper).map(lockedUser, UserDto.class);
     }
 
     @Test

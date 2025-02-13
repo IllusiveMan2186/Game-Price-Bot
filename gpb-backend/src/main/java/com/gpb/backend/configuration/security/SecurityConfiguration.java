@@ -48,7 +48,7 @@ public class SecurityConfiguration {
                 .csrf().disable()
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(HttpMethod.POST, "/login", "/registration", "/activate").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/check-auth").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/refresh-token").permitAll()
                         .requestMatchers(HttpMethod.POST, "/linker/set").permitAll()
                         .requestMatchers(HttpMethod.POST, "/logout-user").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/resend/email/**").permitAll()

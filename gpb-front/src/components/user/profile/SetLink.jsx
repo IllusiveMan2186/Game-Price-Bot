@@ -1,15 +1,19 @@
-import React, { useEffect } from 'react'; // Import useEffect from React
+import { useEffect } from 'react'; // Import useEffect from React
 
-import { useParams, useNavigate } from 'react-router-dom';
-import { setLinkToken } from '@util/userDataUtils';
-import { useIsUserAuth } from '@util/authHook';
-import { accountLinkRequest } from '@services/linkRequests';
+import { useParams } from 'react-router-dom';
+
+import { useNavigation } from "@contexts/NavigationContext";
+import { useAuth } from "@contexts/AuthContext";
+import { useLinkActions } from '@hooks/user/useLinkActions';
 
 const SetLink = () => {
-    const navigate = useNavigate();
+    const navigate = useNavigation();
+    const { accountLinkRequest } = useLinkActions();
+
+    const { isUserAuth, setLinkToken } = useAuth();
     const { token } = useParams();
 
-    if (useIsUserAuth()) {
+    if (isUserAuth()) {
         accountLinkRequest(token, null, navigate);
     } else {
         setLinkToken(token);
