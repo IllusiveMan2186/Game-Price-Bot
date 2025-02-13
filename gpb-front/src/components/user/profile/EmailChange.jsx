@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 import * as Yup from 'yup';
 
+import { useNavigation } from "@contexts/NavigationContext";
+
 import Message from '@util/message';
-import { emailChangeRequest } from '@services/userRequests';
+import { useUserActions } from '@hooks/user/useUserActions';
 
 export default function EmailChange() {
-    const navigate = useNavigate();
+    const navigate = useNavigation();
+    const { emailChangeRequest } = useUserActions();
 
     const [email, setEmail] = useState('');
     const [errorEmail, setErrorEmail] = useState('');

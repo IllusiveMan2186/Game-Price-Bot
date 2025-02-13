@@ -1,8 +1,9 @@
 import React, { useEffect, useCallback } from 'react';
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useNavigation } from "@contexts/NavigationContext";
 
 import * as constants from '@util/constants';
-import { getGamesRequest } from '@services/gameRequests';
+import { useGameActions } from '@hooks/game/useGameActions';
 
 import GameListFilter from '@components/game/list/filter/GameListFilter';
 import GameListLoader from '@components/game/list/loader/GameListLoader';
@@ -22,10 +23,11 @@ const GameListPage = ({ mode: propMode }) => {
             window.removeEventListener('popstate', handlePopState);
         };
     }, []);
-    
+
     const { url, searchName } = useParams(); // Extract URL params
     const mode = propMode; // Use mode passed from the route
-    const navigate = useNavigate();
+    const navigate = useNavigation();
+    const { getGamesRequest } = useGameActions();
 
     const [searchParams, setSearchParams] = React.useState(new URLSearchParams(url));
 
@@ -61,8 +63,8 @@ const GameListPage = ({ mode: propMode }) => {
     const reloadPage = useCallback(() => {
         const path =
             mode === 'usersGames' ? `/user/games/` :
-            mode === 'search' ? `/search/${name}/` :
-            '/games/';
+                mode === 'search' ? `/search/${name}/` :
+                    '/games/';
         navigate(`${path}${searchParams.toString()}`);
         navigate(0);
     }, [mode, name, searchParams, navigate]);
@@ -93,7 +95,7 @@ const GameListPage = ({ mode: propMode }) => {
 
     return (
         <>
-            <div class='app-game'>
+            <div className='app-game'>
                 {(mode === "list") &&
                     <GameListFilter
                         getParameterOrDefaultValue={getParameterOrDefaultValue}

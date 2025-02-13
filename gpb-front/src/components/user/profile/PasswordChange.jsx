@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 import * as Yup from 'yup';
 
+import { useNavigation } from "@contexts/NavigationContext";
 import Message from '@util/message';
-import { passwordChangeRequest } from '@services/userRequests';
+import { useUserActions } from '@hooks/user/useUserActions';
 
 export default function PasswordChange() {
-    const navigate = useNavigate();
+    const navigate = useNavigation();
+    const { passwordChangeRequest } = useUserActions();
 
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');

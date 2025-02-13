@@ -49,7 +49,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     }
 
     @Override
-    public UserDto login(Credentials credentials) {
+    public WebUser login(Credentials credentials) {
         log.info("Login attempt for user with email.");
 
         WebUser user = webUserRepository.findByEmail(credentials.getEmail())
@@ -65,8 +65,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
         if (user.isPasswordValid(CharBuffer.wrap(credentials.getPassword()), passwordEncoder)) {
             user.unlockAccount();
-            webUserRepository.save(user);
-            return modelMapper.map(user, UserDto.class);
+            return webUserRepository.save(user);
         }
 
         user.incrementFailedAttempts(Constants.MAX_FAILED_ATTEMPTS);
@@ -101,11 +100,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     }
 
     @Override
-    public UserDto getUserByEmail(final String email) {
-        log.info("Get user by email : {}", email);
-        final WebUser user = webUserRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("app.user.error.email.not.found"));
-        return modelMapper.map(user, UserDto.class);
+    public UserDto getUserById(long userId) {
+        return modelMapper.map(getWebUserById(userId), UserDto.class);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.gpb.backend.unit.service.impl;
 
 import com.gpb.backend.entity.WebUser;
-import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.impl.UserManagementServiceImpl;
 import com.gpb.common.exception.NotFoundException;
@@ -12,13 +11,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,23 +34,6 @@ class UserManagementServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void testGetUserById_whenSuccess_shouldReturnUserDto() {
-        long userId = 1L;
-        WebUser webUser = new WebUser();
-        UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
-        when(webUserRepository.findById(userId)).thenReturn(Optional.of(webUser));
-        when(modelMapper.map(webUser, UserDto.class)).thenReturn(userDto);
-
-
-        UserDto result = userService.getUserById(userId);
-
-
-        assertNotNull(result);
-        verify(webUserRepository).findById(userId);
-        verify(modelMapper).map(webUser, UserDto.class);
     }
 
     @Test
@@ -116,15 +95,6 @@ class UserManagementServiceTest {
 
 
         assertEquals("app.user.error.email.not.found", exception.getMessage());
-    }
-
-    @Test
-    void testGetUserById_whenUserNotFound_shouldThrowNotFoundException() {
-        long userId = 1L;
-        when(webUserRepository.findById(userId)).thenReturn(Optional.empty());
-
-
-        assertThrows(NotFoundException.class, () -> userService.getUserById(userId));
     }
 
     @Test

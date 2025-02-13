@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { GameAvailability } from '@components/game/shared/availability/GameAvailability';
-import { isUserAdmin } from '@util/userDataUtils';
-import { removeGameInStoreRequest } from '@services/gameRequests';
+import { useAuth } from "@contexts/AuthContext";
+import { useGameStoreActions, } from '@hooks/game/useGameStoreActions';
 import trash from '@assets/images/trash.png';
 import './GameStoresList.css';
 
@@ -25,6 +25,8 @@ const StorePriceInfo = ({ price, discount, discountPrice }) => (
 );
 
 const GameInStoreRemove = ({ gameId, onRemove }) => {
+    const { removeGameInStoreRequest } = useGameStoreActions();
+
     const handleRemove = () => {
         removeGameInStoreRequest(gameId, () => {
             onRemove(gameId);
@@ -44,6 +46,8 @@ const GameInStoreRemove = ({ gameId, onRemove }) => {
 
 
 const GameStoresList = ({ stores, navigate }) => {
+    const { isUserAdmin } = useAuth();
+
     const handleRemoveStore = () => {
         if (stores.length === 1) {
             navigate('/');

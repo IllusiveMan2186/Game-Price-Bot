@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useNavigation } from "@contexts/NavigationContext";
 
-import { getGameRequest } from '@services/gameRequests';
+import { useGameActions } from '@hooks/game/useGameActions';
 import GameImage from '@components/game/shared/GameImage';
 import GameDetails from '@components/game/detail/details/GameDetails';
 import Loading from '@components/game/shared/loading/Loading';
@@ -10,13 +11,14 @@ import './GameDetailPage.css';
 
 const GameDetailPage = () => {
   const [game, setGame] = useState(null);
-  const navigate = useNavigate();
+  const navigate = useNavigation();
   const { gameId } = useParams();
+  const { getGameRequest } = useGameActions();
 
   useEffect(() => {
     const fetchGame = async () => {
       try {
-        await getGameRequest(gameId, setGame, navigate);
+        await getGameRequest(gameId, setGame);
       } catch (error) {
         console.error('Failed to fetch game details:', error);
         navigate('/error'); // Redirect to error page
@@ -25,7 +27,7 @@ const GameDetailPage = () => {
     fetchGame();
   }, [gameId, navigate]);
 
-  if (!game) return <Loading/>;
+  if (!game) return <Loading />;
 
   return (
     <div className="app-game">

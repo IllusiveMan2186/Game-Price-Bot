@@ -2,32 +2,36 @@ package com.gpb.backend.controller;
 
 import com.gpb.backend.configuration.security.UserAuthenticationProvider;
 import com.gpb.backend.entity.Credentials;
+import com.gpb.backend.entity.RefreshToken;
 import com.gpb.backend.entity.UserActivation;
 import com.gpb.backend.entity.UserRegistration;
 import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.entity.dto.UserDto;
+import com.gpb.backend.exception.RefreshTokenException;
 import com.gpb.backend.service.EmailService;
+import com.gpb.backend.service.RefreshTokenService;
 import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserAuthenticationService;
-import com.gpb.common.service.UserLinkerService;
-import com.gpb.common.entity.user.TokenRequestDto;
 import com.gpb.backend.util.Constants;
+import com.gpb.backend.util.CookieUtil;
+import com.gpb.common.entity.user.TokenRequestDto;
+import com.gpb.common.service.UserLinkerService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 /**
  * Controller for handling user authentication operations.
@@ -42,6 +46,8 @@ public class AuthenticationController {
     private final UserActivationService userActivationService;
     private final UserLinkerService userLinkerService;
     private final EmailService emailService;
+    private final RefreshTokenService refreshTokenService;
+    private final ModelMapper modelMapper;
 
     /**
      * Authenticates a user with the provided credentials and returns user information along with an authentication token.
@@ -53,26 +59,25 @@ public class AuthenticationController {
      * @param response    the HTTP response used to add authentication cookies if enabled
      * @return the authenticated user's information (token is omitted if cookies are used)
      */
+    @Transactional
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public UserDto login(@RequestBody final Credentials credentials,
-                         @RequestHeader(value = "LinkToken", required = false) final String linkToken,
+                         @RequestHeader(value = "LinkToken", required = false) Optional<String> linkToken,
                          final HttpServletResponse response) {
-        log.info("User login attempt with email: {}", credentials.getEmail());
-        UserDto userDto = userService.login(credentials);
-        String token = userAuthenticationProvider.createToken(userDto.getEmail());
+        log.info("User login attempt");
+        WebUser webUser = userService.login(credentials);
 
-        if (credentials.isCookiesEnabled()) {
-            response.addCookie(createAuthCookie(token));
-            userDto.setToken(null);
-            log.info("User ID {} logged in with cookies enabled", userDto.getBasicUserId());
-        } else {
-            userDto.setToken(token);
-            log.info("User ID {} logged in with token-based authentication", userDto.getBasicUserId());
-        }
+        String refreshToken = userAuthenticationProvider.generateRefreshToken(webUser);
+        response.addCookie(createAuthCookie(refreshToken));
 
-        linkAccounts(linkToken, userDto.getBasicUserId());
-        log.info("User ID {} linked accounts if applicable", userDto.getBasicUserId());
+        String accessToken = userAuthenticationProvider.generateAccessToken(webUser.getId());
+
+        linkToken.ifPresent(token -> linkAccounts(token, webUser.getBasicUserId()));
+        log.info("User login successful: ID {}", webUser.getId());
+
+        UserDto userDto = modelMapper.map(webUser, UserDto.class);
+        userDto.setToken(accessToken);
         return userDto;
     }
 
@@ -115,18 +120,18 @@ public class AuthenticationController {
      *
      * @return a ResponseEntity with status 200 (OK) if the user is authenticated, or 401 (Unauthorized) otherwise
      */
-    @GetMapping("/check-auth")
-    public ResponseEntity<Void> checkAuth() {
-        log.info("Check user authentication");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null &&
-                authentication.isAuthenticated() &&
-                !(authentication instanceof AnonymousAuthenticationToken)) {
-            log.info("User authenticated: {}", authentication.getPrincipal());
-            return ResponseEntity.ok().build();
-        }
-        log.warn("User is NOT authenticated");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    @PostMapping("/refresh-token")
+    @Transactional
+    public String refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        log.info("Refresh user authentication token");
+        String token = CookieUtil.getRefreshToken(request).orElseThrow(RefreshTokenException::new);
+
+        RefreshToken refreshToken = refreshTokenService.getByToken(token).orElseThrow(RefreshTokenException::new);
+
+        String newRefreshToken = userAuthenticationProvider.generateRefreshToken(refreshToken.getUser());
+        response.addCookie(createAuthCookie(newRefreshToken));
+
+        return userAuthenticationProvider.generateAccessToken(refreshToken.getUser().getId());
     }
 
     /**
@@ -138,12 +143,8 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.OK)
     public void logout(final HttpServletResponse response) {
         log.info("Processing user logout request");
-        Cookie cookie = new Cookie(Constants.TOKEN_COOKIES_ATTRIBUTE, null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // Invalidate cookie immediately
-        response.addCookie(cookie);
+        SecurityContextHolder.clearContext();
+        response.addCookie(invalidateAuthCookie());
         log.info("User successfully logged out");
     }
 
@@ -167,11 +168,23 @@ public class AuthenticationController {
      * @return the configured authentication Cookie
      */
     private Cookie createAuthCookie(final String token) {
-        Cookie cookie = new Cookie(Constants.TOKEN_COOKIES_ATTRIBUTE, token);
+        Cookie cookie = new Cookie(Constants.REFRESH_TOKEN_COOKIES_ATTRIBUTE, token);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setMaxAge(Constants.TOKEN_EXPIRATION);
+        cookie.setMaxAge(Constants.REFRESH_TOKEN_EXPIRATION / 1000);
+        return cookie;
+    }
+
+    /**
+     * Creates an invalidated authentication cookie for logout.
+     */
+    private Cookie invalidateAuthCookie() {
+        Cookie cookie = new Cookie(Constants.REFRESH_TOKEN_COOKIES_ATTRIBUTE, null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
         return cookie;
     }
 }

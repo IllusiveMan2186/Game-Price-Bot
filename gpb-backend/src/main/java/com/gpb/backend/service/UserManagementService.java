@@ -1,22 +1,14 @@
 package com.gpb.backend.service;
 
 import com.gpb.backend.entity.WebUser;
-import com.gpb.backend.entity.dto.UserDto;
-
-import java.util.List;
 
 /**
  * Service interface for managing user information.
  */
 public interface UserManagementService {
 
-    /**
-     * Retrieves the user information for a given user ID.
-     *
-     * @param userId the unique identifier of the user
-     * @return a {@link UserDto} representing the user's details
-     */
-    UserDto getUserById(long userId);
+
+    WebUser getWebUserById(final long userId);
 
     /**
      * Retrieves the web user associated with the given basic user ID.

@@ -21,10 +21,10 @@ const GameListLoader = ({ games, elementAmount, page, mode, updateSearchParams, 
 
     return (
         <div>
-            <div class="app-list">
+            <div className="app-list">
                 <GameList games={games} />
             </div>
-            <div class="app-game-footer">
+            <div className="app-game-footer">
                 <Pagination
                     elementAmount={elementAmount}
                     page={page}

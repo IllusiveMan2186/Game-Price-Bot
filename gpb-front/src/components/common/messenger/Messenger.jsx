@@ -1,8 +1,8 @@
 import React from 'react';
 
 import Message from '@util/message';
-import { useIsUserAuth } from '@util/authHook';
-import { getLinkTokenForMessengerRequest } from '@services/linkRequests';
+import { useAuth } from "@contexts/AuthContext";
+import { useLinkActions } from '@hooks/user/useLinkActions';
 
 import config from "@root/config";
 
@@ -12,10 +12,12 @@ import './Messenger.css';
 
 const Messenger = () => {
 
-  const isUserAuth = useIsUserAuth();
+  const { getLinkTokenForMessengerRequest } = useLinkActions();
+
+  const { isUserAuth } = useAuth();
 
   const onMessangerClick = (linkToMessanger, paramsForSync) => {
-    if (isUserAuth) { 
+    if (isUserAuth) {
       const url = linkToMessanger + paramsForSync;
       getLinkTokenForMessengerRequest(url);
     } else {

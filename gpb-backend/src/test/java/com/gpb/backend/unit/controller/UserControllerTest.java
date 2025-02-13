@@ -45,12 +45,13 @@ class UserControllerTest {
     void testUpdateUserEmail_whenSuccess_shouldReturnUpdatedUser() {
         String newEmail = "newemail@example.com";
         UserDto user = new UserDto("username", "password", "token", "role", "ua");
-        user.setId(123L);
+        user.setBasicUserId(123L);
+        user.setBasicUserId(12L);
 
         UserDto updatedUser = new UserDto("username", "password", "token", "role", "ua");
         updatedUser.setEmail(newEmail);
         when(userAuthenticationService.updateUserEmail(newEmail, user)).thenReturn(updatedUser);
-        when(userAuthenticationProvider.createToken(newEmail)).thenReturn("new-token");
+        when(userAuthenticationProvider.generateAccessToken(user.getId())).thenReturn("new-token");
 
 
         UserDto result = userController.updateUserEmail(new EmailRequestDto(newEmail), user);
@@ -60,7 +61,7 @@ class UserControllerTest {
         assertEquals(newEmail, result.getEmail());
         assertEquals("new-token", result.getToken());
         verify(userAuthenticationService).updateUserEmail(newEmail, user);
-        verify(userAuthenticationProvider).createToken(newEmail);
+        verify(userAuthenticationProvider).generateAccessToken(user.getId());
     }
 
     @Test
@@ -97,26 +98,26 @@ class UserControllerTest {
     void testAddGameToUserListOfGames_whenSuccess_shouldReturnUpdatedUser() {
         long gameId = 1L;
         UserDto user = new UserDto("username", "password", "token", "role", "ua");
-        user.setId(123L);
+        user.setBasicUserId(123L);
 
 
         userController.addGameToUserListOfGames(gameId, user);
 
 
-        verify(gameService).setFollowGameOption(gameId, user.getId(), true);
+        verify(gameService).setFollowGameOption(gameId, user.getBasicUserId(), true);
     }
 
     @Test
     void testRemoveGameFromUserListOfGames_whenSuccess_shouldReturnUpdatedUser() {
         long gameId = 1L;
         UserDto user = new UserDto("username", "password", "token", "role", "ua");
-        user.setId(123L);
+        user.setBasicUserId(123L);
 
 
         userController.removeGameFromUserListOfGames(gameId, user);
 
 
-        verify(gameService).setFollowGameOption(gameId, user.getId(), false);
+        verify(gameService).setFollowGameOption(gameId, user.getBasicUserId(), false);
     }
 
     @Test

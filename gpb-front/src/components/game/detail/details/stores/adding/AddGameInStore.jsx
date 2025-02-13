@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Message from '@util/message';
 
-import { addGameInStoreByUrlRequest, } from '@services/gameRequests';
+import { useGameStoreActions, } from '@hooks/game/useGameStoreActions';
 
 import addIcon from '@assets/images/add.png';
 
@@ -13,6 +13,7 @@ const AddGameInStore = ({ gameId }) => {
     const [url, setUrl] = useState('');
     const [isSent, setIsSent] = useState(false);
     const { t } = useTranslation();
+    const { addGameInStoreByUrlRequest } = useGameStoreActions();
 
     const handleIconClick = () => {
         setIsFormOpen(true);
@@ -20,7 +21,6 @@ const AddGameInStore = ({ gameId }) => {
 
     const handleSend = async () => {
         if (!url) return; // Optionally, validate the URL
-
         try {
             await addGameInStoreByUrlRequest(gameId, url);
             setIsSent(true);

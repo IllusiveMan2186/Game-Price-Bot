@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Message from '@util/message';
-import { getLinkTokenRequest } from '@services/linkRequests';
+import { useLinkActions } from '@hooks/user/useLinkActions';
 
 const GetLinkTokenPage = () => {
     const [token, setToken] = useState('');
+    const { getLinkTokenRequest } = useLinkActions();
 
     if (!token) {
         getLinkTokenRequest(setToken);
