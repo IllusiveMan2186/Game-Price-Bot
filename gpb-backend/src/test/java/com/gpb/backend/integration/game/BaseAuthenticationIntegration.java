@@ -113,6 +113,8 @@ public class BaseAuthenticationIntegration {
         System.setProperty("FRONT_SERVICE_URL", "");
         System.setProperty("KAFKA_SERVER_URL", "");
         System.setProperty("GAME_SERVICE_URL", GAME_SERVICE_URL);
+        System.setProperty("TOKEN_SECRET_KEY", "");
+        System.setProperty("REFRESH_TOKEN_SECRET_KEY", "");
     }
 
     @BeforeEach

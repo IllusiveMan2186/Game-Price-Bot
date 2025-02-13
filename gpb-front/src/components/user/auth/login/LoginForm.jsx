@@ -1,17 +1,16 @@
 import * as React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
 
 import Message from '@util/message';
-import { loginRequest } from '@services/auth';
-import { resendActivationEmailRequest } from '@services/userRequests';
+import { useAuthActions } from '@hooks/user/useAuthActions';
+import { useActivationActions } from '@hooks/user/useActivationActions';
 
 import './LoginForm.css';
 
 export default function LoginForm() {
-
-    const navigate = useNavigate();
+    const { loginRequest } = useAuthActions()
+    const { resendActivationEmailRequest } = useActivationActions();
 
     const [errorMessage, setErrorMessage] = React.useState("");
     const [confirmedEmail, setConfirmedEmail] = React.useState("");
@@ -22,12 +21,12 @@ export default function LoginForm() {
     });
 
     const onSubmitResendEmail = () => {
-        resendActivationEmailRequest(confirmedEmail, navigate)
+        resendActivationEmailRequest(confirmedEmail)
     }
 
     const handleSubmit = (values, { }) => {
         setConfirmedEmail(values.email);
-        loginRequest(values.email, values.password, setErrorMessage, navigate);
+        loginRequest(values.email, values.password, setErrorMessage);
     };
 
     return (

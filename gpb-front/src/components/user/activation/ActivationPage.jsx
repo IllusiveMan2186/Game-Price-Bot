@@ -1,12 +1,13 @@
 
 import { useSearchParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { activateUserAccountRequest } from '@services/userRequests';
+import { useNavigation } from "@contexts/NavigationContext";
+import { useLinkActions } from '@hooks/user/useLinkActions';
 
 const ActivationPage = () => {
-    const navigate = useNavigate();
+    const navigate = useNavigation();
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
+    const { activateUserAccountRequest } = useLinkActions();
 
     activateUserAccountRequest(token, navigate);
 

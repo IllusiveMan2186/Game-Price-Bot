@@ -3,6 +3,7 @@ package com.gpb.backend.controller;
 import com.gpb.backend.exception.EmailAlreadyExistException;
 import com.gpb.backend.exception.GameImageNotFoundException;
 import com.gpb.backend.exception.LoginFailedException;
+import com.gpb.backend.exception.RefreshTokenException;
 import com.gpb.backend.exception.UserDataNotChangedException;
 import com.gpb.backend.exception.UserLockedException;
 import com.gpb.backend.exception.UserNotActivatedException;
@@ -67,6 +68,19 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     protected ResponseEntity<Object> handleLockedRequest(RuntimeException ex, WebRequest request) {
         log.error("Locked exception: {}", ex.getMessage(), ex);
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.LOCKED, request);
+    }
+
+    /**
+     * Handles authorization exceptions
+     *
+     * @param ex      the exception that occurred
+     * @param request the current web request
+     * @return a ResponseEntity with status INTERNAL_SERVER_ERROR and the exception message
+     */
+    @ExceptionHandler(value = {RefreshTokenException.class, SecurityException.class})
+    protected ResponseEntity<Object> handleAuthorizationError(RuntimeException ex, WebRequest request) {
+        log.error("Authorization error: {}", ex.getMessage(), ex);
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
 
     /**

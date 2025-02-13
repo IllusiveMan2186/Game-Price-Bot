@@ -66,7 +66,7 @@ public class UserController {
         log.info("User with ID {} requested email change", user.getId());
 
         UserDto userDto = userAuthenticationService.updateUserEmail(emailRequestDto.getEmail(), user);
-        userDto.setToken(userAuthenticationProvider.createToken(userDto.getEmail()));
+        userDto.setToken(userAuthenticationProvider.generateAccessToken(userDto.getId()));
 
         log.info("User with ID {} successfully updated email", user.getId());
         return userDto;
@@ -128,7 +128,7 @@ public class UserController {
     public void addGameToUserListOfGames(@PathVariable final long gameId,
                                          @AuthenticationPrincipal final UserDto user) {
         log.info("Adding game {} to the list of followed games for user {}", gameId, user.getId());
-        gameService.setFollowGameOption(gameId, user.getId(), true);
+        gameService.setFollowGameOption(gameId, user.getBasicUserId(), true);
     }
 
     /**
@@ -148,7 +148,7 @@ public class UserController {
     public void removeGameFromUserListOfGames(@PathVariable final long gameId,
                                               @AuthenticationPrincipal final UserDto user) {
         log.info("Removing game {} from the list of followed games for user {}", gameId, user.getId());
-        gameService.setFollowGameOption(gameId, user.getId(), false);
+        gameService.setFollowGameOption(gameId, user.getBasicUserId(), false);
     }
 
     /**

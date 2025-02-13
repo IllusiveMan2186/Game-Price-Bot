@@ -1,29 +1,24 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigation } from "@contexts/NavigationContext";
 
 import Buttons from '@components/common/button/Buttons';
-import { logout } from '@util/authUtils';
-import { areCookiesEnabled } from '@util/cookieUtils';
-import { logoutRequest } from '@services/auth';
+import { useAuth } from "@contexts/AuthContext";
+import { useAuthActions } from '@hooks/user/useAuthActions';
 
 import logo from '@assets/images/logo.png';
 import './Header.css';
 
 export default function Header() {
-  const navigate = useNavigate();
+  const navigate = useNavigation();
+  const { userLogoutRequest } = useAuthActions()
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
     console.info("logout");
     logout();
-  
-    if (areCookiesEnabled()) {
-      try {
-        await logoutRequest();
-      } catch (error) {
-        console.error("Logout request failed", error);
-      }
-    }
-  
+
+    await userLogoutRequest();
+
     navigate(0);
   }
 

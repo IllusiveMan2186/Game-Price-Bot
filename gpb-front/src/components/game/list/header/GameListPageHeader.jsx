@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getGameByUrlRequest } from '@services/gameRequests';
+import { useGameActions, } from '@hooks/game/useGameActions';
+import { useNavigation } from "@contexts/NavigationContext";
 import Select from 'react-select';
 
 import * as constants from '@util/constants';
@@ -30,9 +30,10 @@ const Search = ({ handleSearchChange, handleSearch }) => {
 };
 
 const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, reloadPage, mode, pageSize }) => {
-    const navigate = useNavigate();
+    const navigate = useNavigation();
     const sortBy = searchParams.get('sortBy') || 'name-ASC';
     const [name, setName] = React.useState(nameValue);
+    const { getGameByUrlRequest } = useGameActions();
 
     const handleSortByChange = useCallback((selectedOption) => {
         updateSearchParams('sortBy', selectedOption.value, 'name-ASC');

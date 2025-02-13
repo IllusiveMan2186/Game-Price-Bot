@@ -7,7 +7,7 @@ export default function Loading(props) {
     return (
         <div className='app-content-loading'>
             <div ><Message string="app.game.search.wait" /></div>
-            <img class="loading-img" src={image} on />
+            <img className="loading-img" src={image} />
         </div>
 
     )

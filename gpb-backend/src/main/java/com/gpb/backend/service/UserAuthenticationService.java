@@ -14,9 +14,9 @@ public interface UserAuthenticationService {
      * Authenticates a user using the provided credentials.
      *
      * @param credentials the {@link Credentials} containing the user's authentication information
-     * @return an authenticated {@link UserDto} representing the user
+     * @return an authenticated {@link WebUser} representing the user
      */
-    UserDto login(Credentials credentials);
+    WebUser login(Credentials credentials);
 
     /**
      * Updates the password for the specified user.
@@ -45,10 +45,10 @@ public interface UserAuthenticationService {
     WebUser createUser(UserRegistration userRegistration);
 
     /**
-     * Retrieves a user by their email address.
+     * Retrieves the user information for a given user ID.
      *
-     * @param email the email address of the user to retrieve
-     * @return the corresponding {@link UserDto} for the specified email, or {@code null} if not found
+     * @param userId the unique identifier of the user
+     * @return a {@link UserDto} representing the user's details
      */
-    UserDto getUserByEmail(String email);
+    UserDto getUserById(long userId);
 }

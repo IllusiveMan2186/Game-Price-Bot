@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 import { changeLanguage } from 'i18next';
 
 import Message from '@util/message';
-import { useIsUserAuth } from '@util/authHook';
+import { useAuth } from "@contexts/AuthContext";
 import { getLocale, setLocale } from '@util/userDataUtils';
-import { localeChangeRequest } from '@services/userRequests';
+import { useUserActions } from '@hooks/user/useUserActions';
 
 const Localization = () => {
     const [locale, setLocaleState] = useState(getLocale());
-    const isUserAuth = useIsUserAuth();
+    const { isUserAuth } = useAuth();
+    const { localeChangeRequest } = useUserActions();
 
     const onChangeHandler = (value) => {
         setLocaleState(value);
         changeLanguage(value);
         setLocale(value);
-        
+
         if (isUserAuth) {
             localeChangeRequest(value);
         }

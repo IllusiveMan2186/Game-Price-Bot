@@ -1,20 +1,20 @@
 import * as React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
 
+import { useNavigation } from "@contexts/NavigationContext";
 import Message from '@util/message';
-import { registerRequest } from '@services/auth';
+import { useAuthActions } from '@hooks/user/useAuthActions';
 
 export default function RegistrationForm() {
 
-    const navigate = useNavigate();
-
+    const navigate = useNavigation();
+    const { registerRequest } = useAuthActions()
     const [errorMessage, setErrorMessage] = React.useState("");
 
     const RegistrationSchema = Yup.object().shape({
         email: Yup.string().email(<Message string={'app.login.form.error.wrong.email'} />)
-        .required(<Message string={'app.login.form.error.empty.email'} />),
+            .required(<Message string={'app.login.form.error.empty.email'} />),
         password: Yup.string().required(<Message string={'app.login.form.error.empty.password'} />),
         confirmPassword: Yup.string()
             .oneOf([Yup.ref('password'), null], <Message string={'app.registr.form.error.not.match.pass.conf'} />)

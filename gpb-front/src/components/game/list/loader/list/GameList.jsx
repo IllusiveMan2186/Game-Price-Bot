@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigation } from "@contexts/NavigationContext";
 import GameImage from '@components/game/shared/GameImage';
 import { CommonGameInfo } from '@components/game/shared/info/CommonGameInfo';
 
 import './GameList.css';
 
 const GameList = ({ games = [] }) => { // Destructure `games` from the passed object
-    const navigate = useNavigate();
+    const navigate = useNavigation();
 
     if (!Array.isArray(games)) { // Safeguard to ensure `games` is an array
         console.error("Expected games to be an array but got:", games);

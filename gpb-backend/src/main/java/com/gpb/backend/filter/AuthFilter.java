@@ -1,22 +1,24 @@
 package com.gpb.backend.filter;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.gpb.backend.configuration.security.UserAuthenticationProvider;
+import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.util.Constants;
+import com.gpb.backend.util.CookieUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Optional;
 
 @Slf4j
@@ -30,64 +32,58 @@ public class AuthFilter extends OncePerRequestFilter {
             HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        log.info("Processing request: {}", request.getRequestURL());
+        log.debug("Processing request: {}", request.getRequestURL());
 
-        Cookie[] cookies = request.getCookies();
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (cookies != null && cookies.length > 0) {
-            authenticateWithCookies(cookies);
-        } else {
-            authenticateWithHeader(request);
+        if (header != null && header.startsWith(Constants.AUTHORIZATION_HEADER_BEARER)) {
+            processAuthorizationHeader(header, request, response);
+        } else if (header != null) {
+            log.warn("Invalid Authorization header format");
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private void authenticateWithHeader(HttpServletRequest request) {
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-        if (header != null) {
-            String[] authElements = header.split(" ");
-
-            if (authElements.length == 2 && "Bearer".equalsIgnoreCase(authElements[0])) {
-                try {
-                    log.info("Authenticating user via Authorization header...");
-                    SecurityContextHolder.getContext().setAuthentication(
-                            userAuthenticationProvider.validateToken(authElements[1])
-                    );
-                } catch (RuntimeException e) {
-                    log.warn("Invalid token in Authorization header: {}", e.getMessage());
-                    SecurityContextHolder.clearContext();
-                }
-            } else {
-                log.warn("Invalid Authorization header format");
-            }
+    private void processAuthorizationHeader(String header, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            log.debug("Authenticating user via Authorization header...");
+            Authentication authentication = userAuthenticationProvider.validateAuthToken(header);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (TokenExpiredException e) {
+            log.warn("Access token expired: {}", e.getMessage());
+            handleExpiredToken(request, response);
+        } catch (Exception e) {
+            log.warn("Invalid token in Authorization header: {}", e.getMessage());
+            SecurityContextHolder.clearContext();
         }
     }
 
-    private void authenticateWithCookies(Cookie[] cookies) {
-        Optional<String> token = Arrays.stream(cookies)
-                .filter(cookie -> Constants.TOKEN_COOKIES_ATTRIBUTE.equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .filter(value -> !value.isEmpty())
-                .findFirst();
+    private void handleExpiredToken(HttpServletRequest request, HttpServletResponse response) {
+        Optional<String> refreshToken = CookieUtil.getRefreshToken(request);
 
-        token.ifPresentOrElse(
-                this::validateTokenFromCookie,
-                () -> log.warn("No valid authentication cookie found")
-        );
-    }
+        if (refreshToken.isPresent()) {
+            try {
+                log.debug("Attempting to refresh access token...");
+                UserDto user = userAuthenticationProvider.validateRefreshToken(refreshToken.get());
+                String newAccessToken = userAuthenticationProvider.generateAccessToken(user.getId());
 
-    private void validateTokenFromCookie(String token) {
-        try {
-            log.info("Check user authenticating via cookie.");
-            Authentication authentication = userAuthenticationProvider.validateToken(token);
+                response.setHeader(HttpHeaders.AUTHORIZATION, Constants.AUTHORIZATION_HEADER_BEARER + newAccessToken);
+                Authentication authentication =
+                        new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("Authentication successful via cookie: {}", authentication.getPrincipal());
-        } catch (RuntimeException e) {
-            log.warn("Invalid token in cookie: {}", e.getMessage());
-            SecurityContextHolder.clearContext();
+                log.info("User token successfully refreshed");
+            } catch (Exception e) {
+                log.warn("Invalid refresh token: {}", e.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer error=\"invalid_token\"");
+                SecurityContextHolder.clearContext();
+            }
+        } else {
+            log.warn("No valid refresh token found");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer error=\"invalid_token\"");
         }
     }
 }
