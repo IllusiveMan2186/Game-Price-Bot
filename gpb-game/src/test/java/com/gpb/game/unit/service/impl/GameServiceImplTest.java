@@ -12,6 +12,7 @@ import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.repository.GameInShopRepository;
 import com.gpb.game.repository.GameRepository;
+import com.gpb.game.repository.GameRepositoryCustom;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.impl.GameServiceImpl;
@@ -45,9 +46,12 @@ class GameServiceImplTest {
 
     GameStoresService gameStoresService = mock(GameStoresService.class);
 
+    GameRepositoryCustom gameRepositoryCustom = mock(GameRepositoryCustom.class);
+
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
-    GameService gameService = new GameServiceImpl(gameRepository, gameInShopRepository, gameStoresService, modelMapper);
+    GameService gameService = new GameServiceImpl(gameRepository, gameInShopRepository, gameStoresService,
+            gameRepositoryCustom, modelMapper);
 
     private final GameInShop gameInShop = GameInShop.builder()
             .price(new BigDecimal(2))
@@ -118,8 +122,8 @@ class GameServiceImplTest {
         List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        when(gameRepository.findByNameContainingIgnoreCase(name, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(gameList);
-        when(gameRepository.countAllByNameContainingIgnoreCase(name)).thenReturn(1L);
+        when(gameRepositoryCustom.searchByNameFullText(name, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(gameList);
+        when(gameRepositoryCustom.countByNameFullText(name)).thenReturn(1L);
 
 
         GameListPageDto result = gameService.getByName(name, pageSize, pageNum, sort);
@@ -138,7 +142,7 @@ class GameServiceImplTest {
         List<Long> gameIds = Collections.singletonList(1L);
         List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        when(gameRepository.findByNameContainingIgnoreCase(name, PageRequest.of(pageNum - 1, pageSize, sort)))
+        when(gameRepositoryCustom.searchByNameFullText(name, PageRequest.of(pageNum - 1, pageSize, sort)))
                 .thenReturn(new ArrayList<>());
         when(gameStoresService.findGameByName(name)).thenReturn(Collections.singletonList(game));
         when(gameRepository.findByName(name)).thenReturn(null);
