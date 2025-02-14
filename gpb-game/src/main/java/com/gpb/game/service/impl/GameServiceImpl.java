@@ -11,6 +11,7 @@ import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.repository.GameInShopRepository;
 import com.gpb.game.repository.GameRepository;
+import com.gpb.game.repository.GameRepositoryCustom;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.GameStoresService;
 import lombok.AllArgsConstructor;
@@ -35,6 +36,7 @@ public class GameServiceImpl implements GameService {
     private final GameRepository gameRepository;
     private final GameInShopRepository gameInShopRepository;
     private final GameStoresService gameStoresService;
+    private final GameRepositoryCustom gameRepositoryCustom;
     private final ModelMapper modelMapper;
 
     @Override
@@ -67,13 +69,13 @@ public class GameServiceImpl implements GameService {
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
         long elementAmount;
 
-        List<Game> games = gameRepository.findByNameContainingIgnoreCase(name, pageRequest);
+        List<Game> games = gameRepositoryCustom.searchByNameFullText(name, pageRequest);
         if (games.isEmpty()) {
             List<Game> foundedGames = gameStoresService.findGameByName(name);
             games = addGames(foundedGames);
             elementAmount = games.size();
         } else {
-            elementAmount = gameRepository.countAllByNameContainingIgnoreCase(name);
+            elementAmount = gameRepositoryCustom.countByNameFullText(name);
         }
 
         List<GameDto> gameDtos = games.stream()

@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.0.4"
+    id("org.springframework.boot") version "3.1.2"
     id("io.spring.dependency-management") version "1.1.0"
 }
 
@@ -28,6 +28,9 @@ repositories {
 
 configurations.all {
     exclude(module = "spring-boot-starter-logging")
+    resolutionStrategy {
+        force("org.jboss.logging:jboss-logging:3.4.5.Final")
+    }
 }
 
 dependencies {
@@ -35,7 +38,7 @@ dependencies {
 
     implementation("commons-io:commons-io:2.11.0")
     implementation("com.auth0:java-jwt:4.3.0")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.18.2")
     implementation("com.google.guava:guava:32.1.2-jre")
     implementation("com.sun.mail:jakarta.mail:2.0.1")
 
@@ -47,6 +50,10 @@ dependencies {
 
     implementation("org.postgresql:postgresql:42.5.1")
     implementation("org.flywaydb:flyway-core")
+
+    implementation("org.hibernate.search:hibernate-search-mapper-orm:7.2.2.Final")
+    implementation("org.hibernate.search:hibernate-search-backend-lucene:7.2.2.Final")
+    implementation("org.jboss.logging:jboss-logging:3.6.0.Final")
 
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
@@ -60,6 +67,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
     testImplementation("com.h2database:h2:2.2.220")
+    testImplementation("org.mockito:mockito-inline:4.8.0")
 }
 
 tasks.withType<Test> {
