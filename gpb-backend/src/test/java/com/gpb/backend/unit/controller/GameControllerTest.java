@@ -74,12 +74,6 @@ class GameControllerTest {
     }
 
     @Test
-    void testGetGameByName_whenInvalidSortParam_shouldReturnGameList() {
-        assertThrows(SortParamException.class, () ->
-                gameController.getGameByName("name", 25, 1, "gamesInShop.price-ASC"));
-    }
-
-    @Test
     void testGetGamesForGenre_whenInvalidPriceRange_shouldThrowException() {
         BigDecimal minPrice = BigDecimal.valueOf(100);
         BigDecimal maxPrice = BigDecimal.valueOf(50);

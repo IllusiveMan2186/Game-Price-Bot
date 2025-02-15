@@ -15,7 +15,17 @@ export default function RegistrationForm() {
     const RegistrationSchema = Yup.object().shape({
         email: Yup.string().email(<Message string={'app.login.form.error.wrong.email'} />)
             .required(<Message string={'app.login.form.error.empty.email'} />),
-        password: Yup.string().required(<Message string={'app.login.form.error.empty.password'} />),
+
+        password: Yup.string()
+            .min(8, <Message string={'app.login.form.error.short.password'} />)
+            .max(64, <Message string={'app.login.form.error.long.password'} />)
+            .matches(/[A-Z]/, <Message string={'app.registr.form.error.uppercase.password'} />)
+            .matches(/[a-z]/, <Message string={'app.registr.form.error.lowercase.password'} />)
+            .matches(/[0-9]/, <Message string={'app.registr.form.error.number.password'} />)
+            .matches(/[@$!%*?&]/, <Message string={'app.registr.form.error.specialchar.password'} />)
+            .matches(/^[^<>]*$/, <Message string={'app.registr.form.error.xss.password'} />)
+            .required(<Message string={'app.login.form.error.empty.password'} />),
+
         confirmPassword: Yup.string()
             .oneOf([Yup.ref('password'), null], <Message string={'app.registr.form.error.not.match.pass.conf'} />)
             .required(<Message string={'app.registr.form.error.empty.pass.conf'} />),

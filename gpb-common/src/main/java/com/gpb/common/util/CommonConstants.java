@@ -96,9 +96,12 @@ public class CommonConstants {
     /**
      * Pattern of sort string
      */
-    public static final String SORT_PARAM_REGEX = String.format("((%s)|(%s))-(%s|%s)",
-            CommonConstants.PRICE_SORT_PARAM,
-            CommonConstants.NAME_SORT_PARAM,
-            CommonConstants.SORT_DIRECTION_ASCENDING,
-            CommonConstants.SORT_DIRECTION_DESCENDING);
+    public static final String SORT_PARAM_REGEX =
+            "^(gamesInShop.discountPrice|name)-(ASC|DESC)$";
+
+    public static final String URL_REGEX_PATTERN = "^(https?|ftp)://[a-zA-Z0-9\\-_.]+\\.[a-zA-Z]{2,}(/.*)?$";
+
+    public static final String NAME_REGEX_PATTERN = "^[\\p{L}0-9\\s&!:'()_.,-]+$";
+
+    public static final String TOKEN_REGEX_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 }

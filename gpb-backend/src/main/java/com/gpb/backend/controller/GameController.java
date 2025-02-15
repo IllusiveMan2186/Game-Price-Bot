@@ -9,8 +9,11 @@ import com.gpb.common.entity.game.GameListPageDto;
 import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
 import com.gpb.common.exception.PriceRangeException;
-import com.gpb.common.exception.SortParamException;
 import com.gpb.common.util.CommonConstants;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,8 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Controller for handling game-related endpoints.ges.
@@ -56,8 +57,12 @@ public class GameController {
      */
     @GetMapping(value = "/{gameId}")
     @ResponseStatus(HttpStatus.OK)
-    public GameInfoDto getGameById(@PathVariable final long gameId,
-                                   @AuthenticationPrincipal final UserDto user) {
+    public GameInfoDto getGameById(
+            @PathVariable
+            @Positive final long gameId,
+
+            @AuthenticationPrincipal final UserDto user
+    ) {
         final long basicUserId = (user == null) ? -1 : user.getBasicUserId();
         log.info("Retrieving game by ID {} for basic user {}", gameId, basicUserId);
         return gameService.getById(gameId, basicUserId);
@@ -73,12 +78,20 @@ public class GameController {
      * @return a paginated list of games matching the name
      */
     @GetMapping(value = "/name/{name}")
-    public GameListPageDto getGameByName(@PathVariable final String name,
-                                         @RequestParam(required = false, defaultValue = "25") final int pageSize,
-                                         @RequestParam(required = false, defaultValue = "1") final int pageNum,
-                                         @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC") final String sortBy) {
+    public GameListPageDto getGameByName(
+            @PathVariable
+            @Pattern(regexp = CommonConstants.NAME_REGEX_PATTERN) final String name,
+
+            @RequestParam(required = false, defaultValue = "25")
+            @Min(value = 1) final int pageSize,
+
+            @RequestParam(required = false, defaultValue = "1")
+            @Min(value = 1) final int pageNum,
+
+            @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC")
+            @Pattern(regexp = CommonConstants.SORT_PARAM_REGEX) final String sortBy
+    ) {
         log.info("Searching for game by name '{}'", name);
-        checkSortParam(sortBy);
         return gameService.getByName(name, pageSize, pageNum, sortBy);
     }
 
@@ -89,7 +102,11 @@ public class GameController {
      * @return the game information DTO
      */
     @GetMapping(value = "/url")
-    public GameInfoDto getGameByUrl(@RequestParam final String url) {
+    public GameInfoDto getGameByUrl(
+            @RequestParam
+            @NotBlank
+            @Pattern(regexp = CommonConstants.URL_REGEX_PATTERN) final String url
+    ) {
         log.info("Retrieving game by URL '{}'", url);
         return gameService.getByUrl(url);
     }
@@ -125,16 +142,27 @@ public class GameController {
      */
     @GetMapping(value = "/genre")
     @ResponseStatus(HttpStatus.OK)
-    public GameListPageDto getGamesForGenre(@RequestParam(required = false) final List<Genre> genre,
-                                            @RequestParam(required = false) final List<ProductType> type,
-                                            @RequestParam(required = false, defaultValue = "25") final int pageSize,
-                                            @RequestParam(required = false, defaultValue = "1") final int pageNum,
-                                            @RequestParam(required = false, defaultValue = "0") final BigDecimal minPrice,
-                                            @RequestParam(required = false, defaultValue = "10000") final BigDecimal maxPrice,
-                                            @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC") final String sortBy) {
+    public GameListPageDto getGamesForGenre(
+            @RequestParam(required = false) final List<Genre> genre,
+            @RequestParam(required = false) final List<ProductType> type,
+
+            @RequestParam(required = false, defaultValue = "25")
+            @Positive final int pageSize,
+
+            @RequestParam(required = false, defaultValue = "1")
+            @Positive final int pageNum,
+
+            @RequestParam(required = false, defaultValue = "0")
+            @Min(value = 0) final BigDecimal minPrice,
+
+            @RequestParam(required = false, defaultValue = "10000")
+            @Min(value = 0) final BigDecimal maxPrice,
+
+            @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC")
+            @Pattern(regexp = CommonConstants.SORT_PARAM_REGEX) final String sortBy
+    ) {
         log.info("Retrieving games for genres: {} with exclusion types: {} and price range {} - {}; pageSize={}, pageNum={}, sortBy={}",
                 genre, type, minPrice, maxPrice, pageSize, pageNum, sortBy);
-        checkSortParam(sortBy);
         if (maxPrice.compareTo(minPrice) < 0) {
             log.info("Invalid price range: {} - {}", minPrice, maxPrice);
             throw new PriceRangeException();
@@ -153,13 +181,20 @@ public class GameController {
      */
     @GetMapping(value = "/user/games")
     @ResponseStatus(HttpStatus.OK)
-    public GameListPageDto getGamesOfUser(@RequestParam(required = false, defaultValue = "25") final int pageSize,
-                                          @RequestParam(required = false, defaultValue = "1") final int pageNum,
-                                          @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC") final String sortBy,
-                                          @AuthenticationPrincipal final UserDto user) {
+    public GameListPageDto getGamesOfUser(
+            @RequestParam(required = false, defaultValue = "25")
+            @Positive final int pageSize,
+
+            @RequestParam(required = false, defaultValue = "1")
+            @Positive final int pageNum,
+
+            @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC")
+            @Pattern(regexp = CommonConstants.SORT_PARAM_REGEX) final String sortBy,
+
+            @AuthenticationPrincipal final UserDto user
+    ) {
         log.info("Retrieving games for user {} with pageSize={}, pageNum={}, sortBy={}",
                 user.getId(), pageSize, pageNum, sortBy);
-        checkSortParam(sortBy);
         return gameService.getUserGames(user.getBasicUserId(), pageSize, pageNum, sortBy);
     }
 
@@ -171,7 +206,10 @@ public class GameController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{gameId}")
     @ResponseStatus(HttpStatus.OK)
-    public void removeGameById(@PathVariable final long gameId) {
+    public void removeGameById(
+            @PathVariable
+            @Positive final long gameId
+    ) {
         log.info("Removing game with ID {} from database", gameId);
         gameService.removeGame(gameId);
         log.info("Game with ID {} successfully removed", gameId);
@@ -186,7 +224,10 @@ public class GameController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/store/{gameInStoreId}")
     @ResponseStatus(HttpStatus.OK)
-    public void removeGameInStoreById(@PathVariable final long gameInStoreId) {
+    public void removeGameInStoreById(
+            @PathVariable
+            @Positive final long gameInStoreId
+    ) {
         log.info("Removing game in store with ID {} from database", gameInStoreId);
         gameService.removeGameInStore(gameInStoreId);
         log.info("Game in store with ID {} successfully removed", gameInStoreId);
@@ -200,23 +241,12 @@ public class GameController {
      */
     @GetMapping(value = "/image/{gameName}")
     @ResponseStatus(HttpStatus.OK)
-    public byte[] getGameImage(@PathVariable final String gameName) {
+    public byte[] getGameImage(
+            @PathVariable
+            @NotBlank
+            @Pattern(regexp = CommonConstants.NAME_REGEX_PATTERN) final String gameName
+    ) {
         log.info("Retrieving image for game '{}'", gameName);
         return resourceService.getGameImage(gameName);
-    }
-
-    /**
-     * Validates the sort parameter using a predefined regex pattern.
-     *
-     * @param sortBy the sort parameter to validate
-     * @throws SortParamException if the sort parameter does not match the expected pattern
-     */
-    private void checkSortParam(final String sortBy) {
-        Pattern pattern = Pattern.compile(CommonConstants.SORT_PARAM_REGEX);
-        Matcher matcher = pattern.matcher(sortBy);
-        if (!matcher.matches()) {
-            log.info("Invalid sort parameter '{}'", sortBy);
-            throw new SortParamException();
-        }
     }
 }

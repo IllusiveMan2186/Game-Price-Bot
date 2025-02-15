@@ -8,7 +8,6 @@ import { useGameActions } from '@hooks/game/useGameActions';
 import GameListFilter from '@components/game/list/filter/GameListFilter';
 import GameListLoader from '@components/game/list/loader/GameListLoader';
 import GameListPageHeader from '@components/game/list/header/GameListPageHeader';
-import Loading from '@components/game/shared/loading/Loading';
 
 import './GameListPage.css';
 
@@ -113,7 +112,7 @@ const GameListPage = ({ mode: propMode }) => {
                         nameValue={name}
                         mode={mode}
                         reloadPage={reloadPage}
-                        navigate={navigate}
+                        pageSize={pageSize}
                     />
                     <GameListLoader
                         games={games}

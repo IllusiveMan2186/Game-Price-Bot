@@ -31,7 +31,7 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.gpb:common:1.0.24-SNAPSHOT")
+    implementation("com.gpb:common:1.0.25-SNAPSHOT")
 
     implementation("commons-io:commons-io:2.11.0")
     implementation("com.auth0:java-jwt:4.3.0")
@@ -44,6 +44,7 @@ dependencies {
     implementation("org.modelmapper:modelmapper:3.2.0")
     implementation("org.postgresql:postgresql:42.5.1")
     implementation("org.seleniumhq.selenium:selenium-java:4.16.1")
+    implementation("jakarta.validation:jakarta.validation-api:3.1.1")
 
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")

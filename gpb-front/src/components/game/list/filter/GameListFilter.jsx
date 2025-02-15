@@ -27,10 +27,13 @@ export default function GameListFilter({ searchParams, parameterSetOrRemove, rel
   const handlePriceChange = useCallback(
     (event) => {
       const { name, value } = event.target;
-      setFormState((prev) => ({ ...prev, [name]: +value }));
+      
+      let sanitizedValue = Math.max(0, +value); 
+  
+      setFormState((prev) => ({ ...prev, [name]: sanitizedValue }));
       setFormChanged(true);
-
-      const { minPrice, maxPrice } = { ...formState, [name]: +value };
+  
+      const { minPrice, maxPrice } = { ...formState, [name]: sanitizedValue };
       if (minPrice <= maxPrice) {
         setPriceError("");
       } else {
@@ -38,7 +41,7 @@ export default function GameListFilter({ searchParams, parameterSetOrRemove, rel
       }
     },
     [formState]
-  );
+  );  
 
   const isChecked = useCallback(
     (value, field, isNotExcludedFieldType) =>
@@ -100,6 +103,7 @@ export default function GameListFilter({ searchParams, parameterSetOrRemove, rel
           <div className="App-game-filter-price-inputs">
             <input
               type="number"
+              min="0"
               name="minPrice"
               value={formState.minPrice}
               onChange={handlePriceChange}
@@ -107,6 +111,7 @@ export default function GameListFilter({ searchParams, parameterSetOrRemove, rel
             <span>-</span>
             <input
               type="number"
+              min="0"
               name="maxPrice"
               value={formState.maxPrice}
               onChange={handlePriceChange}

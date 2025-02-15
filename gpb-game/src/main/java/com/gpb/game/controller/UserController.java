@@ -4,6 +4,7 @@ import com.gpb.common.entity.user.NotificationRequestDto;
 import com.gpb.common.entity.user.TokenRequestDto;
 import com.gpb.common.util.CommonConstants;
 import com.gpb.game.service.UserService;
+import jakarta.validation.constraints.Positive;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,7 +52,10 @@ public class UserController {
      */
     @PostMapping("/token")
     @ResponseStatus(HttpStatus.CREATED)
-    public String createAccountLinkerToken(@RequestHeader(CommonConstants.BASIC_USER_ID_HEADER) final long userId) {
+    public String createAccountLinkerToken(
+            @RequestHeader(CommonConstants.BASIC_USER_ID_HEADER)
+            @Positive final long userId
+    ) {
         log.info("Creating account linker token for user with id: {}", userId);
         return userService.createAccountLinkerToken(userId);
     }
@@ -68,8 +72,12 @@ public class UserController {
      */
     @PostMapping("/link")
     @ResponseStatus(HttpStatus.OK)
-    public Long userAccountLink(@RequestBody final TokenRequestDto tokenDto,
-                                @RequestHeader(CommonConstants.BASIC_USER_ID_HEADER) final long userId) {
+    public Long userAccountLink(
+            @RequestBody final TokenRequestDto tokenDto,
+
+            @RequestHeader(CommonConstants.BASIC_USER_ID_HEADER)
+            @Positive final long userId
+    ) {
         log.info("Linking account for user with id: {} using token: {}", userId, tokenDto.getToken());
         return userService.linkUsers(tokenDto.getToken(), userId).getId();
     }
