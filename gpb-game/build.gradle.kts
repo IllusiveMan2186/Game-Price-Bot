@@ -34,13 +34,14 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.gpb:common:1.0.24-SNAPSHOT")
+    implementation("com.gpb:common:1.0.25-SNAPSHOT")
 
     implementation("commons-io:commons-io:2.11.0")
     implementation("com.auth0:java-jwt:4.3.0")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.18.2")
     implementation("com.google.guava:guava:32.1.2-jre")
     implementation("com.sun.mail:jakarta.mail:2.0.1")
+    implementation("jakarta.validation:jakarta.validation-api:3.1.1")
 
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
     implementation("org.jsoup:jsoup:1.15.3")

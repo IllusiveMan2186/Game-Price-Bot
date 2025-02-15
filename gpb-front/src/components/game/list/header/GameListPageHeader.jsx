@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useGameActions, } from '@hooks/game/useGameActions';
 import { useNavigation } from "@contexts/NavigationContext";
 import Select from 'react-select';
+import DOMPurify from 'dompurify';
+import { NotificationManager } from 'react-notifications';
 
 import * as constants from '@util/constants';
 import Message from '@util/message';
@@ -29,11 +31,16 @@ const Search = ({ handleSearchChange, handleSearch }) => {
     );
 };
 
-const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, reloadPage, mode, pageSize }) => {
+const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, mode, reloadPage, pageSize }) => {
     const navigate = useNavigation();
     const sortBy = searchParams.get('sortBy') || 'name-ASC';
     const [name, setName] = React.useState(nameValue);
     const { getGameByUrlRequest } = useGameActions();
+    console.info(pageSize)
+    if (!pageSize) {
+        pageSize = 25;
+        console.info(pageSize)
+    }
 
     const handleSortByChange = useCallback((selectedOption) => {
         updateSearchParams('sortBy', selectedOption.value, 'name-ASC');
@@ -51,17 +58,34 @@ const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, reloa
     }, [updateSearchParams, reloadPage]);
 
     const handleSearch = useCallback(() => {
-        try {
-            new URL(name);
-            getGameByUrlRequest(name, navigate);
-        } catch {
+        if (!name) {
+            NotificationManager.error(<Message string={'app.game.error.name.empty'} />, <Message string={'app.game.error.title'} />);
+
+            return;
+        }
+
+        const validNamePattern = /^[a-zA-Z0-9\s&!:'()_.,-]*$/;
+        const validUrlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+)(\/.*)?$/;
+
+        if (validUrlPattern.test(name)) {
+            try {
+                new URL(name);
+                getGameByUrlRequest(name, navigate);
+            } catch {
+                NotificationManager.error(<Message string={'app.game.error.url.not.supported'} />, <Message string={'app.game.error.title'} />);
+            }
+        } else if (validNamePattern.test(name)) {
             navigate(`/search/${name}/${searchParams.toString()}`);
             navigate(0);
+        } else {
+            NotificationManager.error(<Message string={'app.game.error.name.incorrect'} />, <Message string={'app.game.error.title'} />);
         }
     }, [navigate, name, searchParams]);
 
     const findArrayElementByValue = (array, value) => {
-        return array.find((element) => element.value === value);
+        const el = array.find((element) => element.value === value);
+        console.info(el)
+        return el;
     };
 
     return (
@@ -72,26 +96,28 @@ const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, reloa
                     handleSearch={handleSearch}
                 />
             )}
-            <div className="app-header__sort">
-                <Select
-                    classNamePrefix=""
-                    defaultValue={findArrayElementByValue(constants.sortsOptions, sortBy)}
-                    options={constants.sortsOptions}
-                    onChange={handleSortByChange}
-                    styles={constants.selectStyles}
-                    components={{ IndicatorSeparator: () => null }}
-                    isSearchable={false}
-                />
-            </div>
-            <div className="app-header__sort">
-                <Select
-                    defaultValue={findArrayElementByValue(constants.pageSizesOptions, pageSize)}
-                    options={constants.pageSizesOptions}
-                    onChange={handlePageSizeChange}
-                    styles={constants.selectStyles}
-                    components={{ IndicatorSeparator: () => null }}
-                    isSearchable={false}
-                />
+            <div className='app-list-header-sort'>
+                <div className="app-header__sort">
+                    <Select
+                        defaultValue={findArrayElementByValue(constants.pageSizesOptions, pageSize)}
+                        options={constants.pageSizesOptions}
+                        onChange={handlePageSizeChange}
+                        styles={constants.selectStyles}
+                        components={{ IndicatorSeparator: () => null }}
+                        isSearchable={false}
+                    />
+                </div>
+                <div className="app-header__sort">
+                    <Select
+                        classNamePrefix=""
+                        defaultValue={findArrayElementByValue(constants.sortsOptions, sortBy)}
+                        options={constants.sortsOptions}
+                        onChange={handleSortByChange}
+                        styles={constants.selectStyles}
+                        components={{ IndicatorSeparator: () => null }}
+                        isSearchable={false}
+                    />
+                </div>
             </div>
         </div>
     );

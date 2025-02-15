@@ -10,6 +10,7 @@ import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserAuthenticationService;
 import com.gpb.backend.service.UserManagementService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.Positive;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -125,8 +126,12 @@ public class UserController {
     @PostMapping(value = "/games/{gameId}")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public void addGameToUserListOfGames(@PathVariable final long gameId,
-                                         @AuthenticationPrincipal final UserDto user) {
+    public void addGameToUserListOfGames(
+            @PathVariable
+            @Positive final long gameId,
+
+            @AuthenticationPrincipal final UserDto user
+    ) {
         log.info("Adding game {} to the list of followed games for user {}", gameId, user.getId());
         gameService.setFollowGameOption(gameId, user.getBasicUserId(), true);
     }
@@ -145,8 +150,12 @@ public class UserController {
     @DeleteMapping(value = "/games/{gameId}")
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public void removeGameFromUserListOfGames(@PathVariable final long gameId,
-                                              @AuthenticationPrincipal final UserDto user) {
+    public void removeGameFromUserListOfGames(
+            @PathVariable
+            @Positive final long gameId,
+
+            @AuthenticationPrincipal final UserDto user
+    ) {
         log.info("Removing game {} from the list of followed games for user {}", gameId, user.getId());
         gameService.setFollowGameOption(gameId, user.getBasicUserId(), false);
     }

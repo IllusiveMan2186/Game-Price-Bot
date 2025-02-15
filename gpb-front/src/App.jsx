@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "@contexts/AuthContext";
 import { RefreshProvider } from "@contexts/RefreshContext";
 import { NavigationProvider } from "@contexts/NavigationContext";
+import { NotificationContainer } from 'react-notifications';
 
 function App() {
   return (
@@ -14,6 +15,10 @@ function App() {
         <NavigationProvider>
           <AuthProvider>
             <RefreshProvider>
+              <div className="notification-wrapper">
+                <NotificationContainer />
+              </div>
+
               <div className="row">
                 <div className="col">
                   <Router />

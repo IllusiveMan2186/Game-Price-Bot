@@ -12,7 +12,7 @@ import SetLink from '@components/user/profile/SetLink';
 import LinkPage from '@components/user/profile/LinkPage';
 import GetLinkTokenPage from '@components/user/profile/GetLinkTokenPage';
 
-export default function AppContent() {
+export default function Router() {
 
     return (
         <>

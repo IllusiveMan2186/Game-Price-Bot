@@ -16,10 +16,13 @@ import com.gpb.backend.util.Constants;
 import com.gpb.backend.util.CookieUtil;
 import com.gpb.common.entity.user.TokenRequestDto;
 import com.gpb.common.service.UserLinkerService;
+import com.gpb.common.util.CommonConstants;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -62,9 +65,14 @@ public class AuthenticationController {
     @Transactional
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto login(@RequestBody final Credentials credentials,
-                         @RequestHeader(value = "LinkToken", required = false) Optional<String> linkToken,
-                         final HttpServletResponse response) {
+    public UserDto login(
+            @RequestBody final Credentials credentials,
+
+            @RequestHeader(value = "LinkToken", required = false)
+            @Pattern(regexp = CommonConstants.TOKEN_REGEX_PATTERN) Optional<String> linkToken,
+
+            final HttpServletResponse response
+    ) {
         log.info("User login attempt");
         WebUser webUser = userService.login(credentials);
 
@@ -92,7 +100,11 @@ public class AuthenticationController {
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
     public void userRegistration(@RequestBody final UserRegistration user,
-                                 @RequestHeader(value = "LinkToken", required = false) final String linkToken) {
+
+                                 @RequestHeader(value = "LinkToken", required = false)
+                                 @Nullable
+                                 @Pattern(regexp = CommonConstants.TOKEN_REGEX_PATTERN) final String linkToken
+    ) {
         log.info("Processing user registration request");
         WebUser webUser = userService.createUser(user);
         UserActivation activation = userActivationService.createUserActivation(webUser);
