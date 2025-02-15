@@ -11,7 +11,10 @@ import com.gpb.common.util.CommonConstants;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.UserService;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import lombok.extern.log4j.Log4j2;
+import org.checkerframework.checker.index.qual.Positive;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * REST controller for handling game-related requests.
@@ -39,7 +41,7 @@ import java.util.regex.Pattern;
 @RequestMapping("/game")
 public class GameController {
 
-    private static final Pattern SORT_PARAM_PATTERN = Pattern.compile(CommonConstants.SORT_PARAM_REGEX);
+    private static final java.util.regex.Pattern SORT_PARAM_PATTERN = java.util.regex.Pattern.compile(CommonConstants.SORT_PARAM_REGEX);
 
     private final GameService gameService;
     private final UserService userService;
@@ -58,8 +60,12 @@ public class GameController {
      */
     @GetMapping("/{gameId}")
     @ResponseStatus(HttpStatus.OK)
-    public GameInfoDto getGameById(@PathVariable final long gameId,
-                                   @RequestHeader(name = CommonConstants.BASIC_USER_ID_HEADER, required = false) final Long userId) {
+    public GameInfoDto getGameById(
+            @PathVariable
+            @Positive final long gameId,
+
+            @RequestHeader(name = CommonConstants.BASIC_USER_ID_HEADER, required = false) final Long userId
+    ) {
         log.info("Fetching game with id {} for user {}", gameId, userId);
         GameInfoDto gameInfo = gameService.getDtoById(gameId);
         return markUserSubscription(gameInfo, userId);
@@ -78,11 +84,21 @@ public class GameController {
      */
     @GetMapping("/name/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public GameListPageDto getGameByName(@PathVariable final String name,
-                                         @RequestParam final int pageSize,
-                                         @RequestParam final int pageNum,
-                                         @RequestParam final String sortBy,
-                                         @RequestHeader(name = CommonConstants.BASIC_USER_ID_HEADER, required = false) final Long userId) {
+    public GameListPageDto getGameByName(
+            @PathVariable
+            @Pattern(regexp = CommonConstants.NAME_REGEX_PATTERN) final String name,
+
+            @RequestParam
+            @Min(value = 1) final int pageSize,
+
+            @RequestParam
+            @Min(value = 1) final int pageNum,
+
+            @RequestParam
+            @Pattern(regexp = CommonConstants.SORT_PARAM_REGEX) final String sortBy,
+
+            @RequestHeader(name = CommonConstants.BASIC_USER_ID_HEADER, required = false) final Long userId
+    ) {
         log.info("Searching games by name '{}' for page {} with {} items per page sorted by {}",
                 name, pageNum, pageSize, sortBy);
         GameListPageDto gamePage = gameService.getByName(name, pageSize, pageNum, parseSortBy(sortBy));
@@ -97,7 +113,10 @@ public class GameController {
      */
     @GetMapping("/url")
     @ResponseStatus(HttpStatus.OK)
-    public GameInfoDto getGameByUrl(@RequestParam final String url) {
+    public GameInfoDto getGameByUrl(
+            @RequestParam
+            @Pattern(regexp = CommonConstants.URL_REGEX_PATTERN) final String url
+    ) {
         log.info("Fetching game by URL: {}", url);
         return gameService.getByUrl(url);
     }
@@ -119,14 +138,26 @@ public class GameController {
      */
     @GetMapping("/genre")
     @ResponseStatus(HttpStatus.OK)
-    public GameListPageDto getGamesForGenre(@RequestParam(required = false) final List<Genre> genres,
-                                            @RequestParam(required = false) final List<ProductType> typesToExclude,
-                                            @RequestParam final int pageSize,
-                                            @RequestParam final int pageNum,
-                                            @RequestParam final BigDecimal minPrice,
-                                            @RequestParam final BigDecimal maxPrice,
-                                            @RequestParam final String sortBy,
-                                            @RequestHeader(name = CommonConstants.BASIC_USER_ID_HEADER, required = false) final Long userId) {
+    public GameListPageDto getGamesForGenre(
+            @RequestParam(required = false) final List<Genre> genres,
+            @RequestParam(required = false) final List<ProductType> typesToExclude,
+
+            @RequestParam
+            @Positive final int pageSize,
+
+            @RequestParam
+            @Positive final int pageNum,
+
+            @RequestParam
+            @Min(value = 0) final BigDecimal minPrice,
+
+            @RequestParam
+            @Min(value = 0) final BigDecimal maxPrice,
+
+            @RequestParam
+            @Pattern(regexp = CommonConstants.SORT_PARAM_REGEX) final String sortBy,
+
+            @RequestHeader(name = CommonConstants.BASIC_USER_ID_HEADER, required = false) final Long userId) {
         log.info("Fetching games by genres: {} with exclusion of types: {} and price range: {} - {}. Page: {} with {} items per page sorted by {}",
                 genres, typesToExclude, minPrice, maxPrice, pageNum, pageSize, sortBy);
         if (maxPrice.compareTo(minPrice) < 0) {
@@ -149,10 +180,18 @@ public class GameController {
      */
     @GetMapping("/user/games")
     @ResponseStatus(HttpStatus.OK)
-    public GameListPageDto getGamesOfUser(@RequestParam final int pageSize,
-                                          @RequestParam final int pageNum,
-                                          @RequestParam final String sortBy,
-                                          @RequestHeader(CommonConstants.BASIC_USER_ID_HEADER) final long userId) {
+    public GameListPageDto getGamesOfUser(
+            @RequestParam
+            @Positive final int pageSize,
+
+            @RequestParam
+            @Positive final int pageNum,
+
+            @RequestParam
+            @Pattern(regexp = CommonConstants.SORT_PARAM_REGEX) final String sortBy,
+
+            @RequestHeader(CommonConstants.BASIC_USER_ID_HEADER) final long userId
+    ) {
         log.info("Fetching games for user {}. Page: {} with {} items per page sorted by {}",
                 userId, pageNum, pageSize, sortBy);
         return gameService.getUserGames(userId, pageSize, pageNum, parseSortBy(sortBy));

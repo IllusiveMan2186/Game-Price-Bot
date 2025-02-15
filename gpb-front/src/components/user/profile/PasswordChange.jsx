@@ -19,7 +19,15 @@ export default function PasswordChange() {
     // Yup validation schema
     const validationSchema = Yup.object().shape({
         password: Yup.string()
-            .required(<Message string="app.login.form.error.empty.password" />),
+            .min(8, <Message string={'app.login.form.error.short.password'} />)
+            .max(64, <Message string={'app.login.form.error.long.password'} />)
+            .matches(/[A-Z]/, <Message string={'app.registr.form.error.uppercase.password'} />)
+            .matches(/[a-z]/, <Message string={'app.registr.form.error.lowercase.password'} />)
+            .matches(/[0-9]/, <Message string={'app.registr.form.error.number.password'} />)
+            .matches(/[@$!%*?&]/, <Message string={'app.registr.form.error.specialchar.password'} />)
+            .matches(/^[^<>]*$/, <Message string={'app.registr.form.error.xss.password'} />)
+            .required(<Message string={'app.login.form.error.empty.password'} />),
+
         confirmPassword: Yup.string()
             .oneOf([Yup.ref('password'), null], <Message string="app.registr.form.error.not.match.pass.conf" />)
             .required(<Message string="app.login.form.error.empty.password" />),
