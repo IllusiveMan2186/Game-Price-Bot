@@ -1,5 +1,8 @@
 import { useNavigation } from "@contexts/NavigationContext";
 import { useHttpHelper } from "@hooks/useHttpHelper";
+import { NotificationManager } from 'react-notifications';
+
+import Message from '@util/message';
 
 const API_ENDPOINTS = {
     RESEND_EMAIL: `/user/resend/email`,
@@ -20,6 +23,8 @@ export const useUserActions = () => {
             API_ENDPOINTS.CHANGE_EMAIL,
             { email },
             (response) => {
+                NotificationManager.success(<Message string={'app.email.change.success.message'} />, <Message string={'app.request.success.title'} />);
+
                 navigate("/");
             },
             setErrorMessage
@@ -27,12 +32,16 @@ export const useUserActions = () => {
     };
 
     // Change Password
-    const passwordChangeRequest = (event, password, setErrorMessage) => {
+    const passwordChangeRequest = (oldPassword, newPassword, setErrorMessage, logoutCall) => {
+
         handleRequest(
             "PUT",
             API_ENDPOINTS.CHANGE_PASSWORD,
-            { password },
-            () => navigate("/"),
+            { oldPassword, newPassword },
+            () => {
+                NotificationManager.success(<Message string={'app.password.change.success.message'} />, <Message string={'app.request.success.title'} />);
+                logoutCall();
+            },
             setErrorMessage
         );
     };

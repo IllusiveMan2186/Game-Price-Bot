@@ -1,4 +1,5 @@
 {
+    "app.request.success.title": "Успешный запрос",
     "app.gpb.default.error": "В настоящее время у нас возникли технические неполадки. Повторите попытку позже. Если проблема не устранена, обратитесь в службу поддержки.",
     "app.login": "Войти",
     "app.profile": "Профиль",
@@ -26,6 +27,8 @@
     "app.registr.form.error.empty.pass.conf": "Пожалуйста, введите подтверждение пароля",
     "app.registr.form.error.not.match.pass.conf": "Пароль и подтверждение пароля не совпадают",
     "app.registr.form.reg.buttom": "Зарегистрироваться",
+    "app.registr.success.title": "Регистрация прошла успешно!",
+    "app.registr.success.message": "Проверьте почту",
     "app.footer.gpb.info": "GPB проверит игры на наличие сниженных цен или скидок в магазинах и уведомит об этом .",
     "app.footer.contact": "КОНТАКТ",
     "app.footer.follow": "НАШИ КОНТАКТЫ",
@@ -80,6 +83,7 @@
     "app.game.info.type.addition": "Дополнение",
     "app.user.error.account.not.activated": "Пользователь не активирован. Пожалуйста, активируйте пользователя по ссылке, отправленной по электронной почте",
     "app.user.error.account.not.activated.send": "Отправьте электронное письмо еще раз",
+    "app.user.error.wrong.password":"Неверный старый пароль",
     "app.user.link.enter": "Введите токен для привязки",
     "app.user.link.enter.description": "Может быть взят из одного из ботов Messenger",
     "app.user.link.token.error.not.found": "Токен не найден. Укажите действительный токен.",
@@ -91,5 +95,10 @@
     "app.game.search.wait": "Игра не найдена в нашей системе, поэтому мы ищем ее во внешних источниках. Это может занять до 30 секунд. Мы ценим ваше терпение!",
     "app.game.add.placeholder": "Введите ссылку на игру",
     "app.game.add.button": "Добавить",
-    "app.game.add.send.message": "Запрос на добавление игры с URL отправлен"
+    "app.game.add.send.message": "Запрос на добавление игры с URL отправлен",
+    "app.account.link.success.message": "Запрос на объединение аккаунтов отправлен",
+    "app.email.change.success.message": "Email успешно изменен",
+    "app.password.change.success.message": "Пароль успешно изменен",
+    "app.old.password":"Старый пароль",
+    "app.new.password":"Новый пароль"
 }

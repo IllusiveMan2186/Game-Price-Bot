@@ -9,6 +9,7 @@ import com.gpb.backend.exception.LoginFailedException;
 import com.gpb.backend.exception.UserDataNotChangedException;
 import com.gpb.backend.exception.UserLockedException;
 import com.gpb.backend.exception.UserNotActivatedException;
+import com.gpb.backend.exception.WrongPasswordException;
 import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.impl.UserAuthenticationServiceImpl;
 import com.gpb.backend.util.Constants;
@@ -145,14 +146,40 @@ class UserAuthenticationServiceImplTest {
         UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
         userDto.setId(userId);
         char[] newPassword = "newPassword".toCharArray();
+        char[] oldPassword = "oldPassword".toCharArray();
 
         when(webUserRepository.findById(userId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> userService.updateUserPassword(newPassword, userDto));
+                () -> userService.updateUserPassword(oldPassword, newPassword, userDto));
 
         assertEquals("app.user.error.id.not.found", exception.getMessage());
         verify(webUserRepository, times(1)).findById(userId);
+    }
+
+    @Test
+    void testUpdateUserPassword_whenOldPasswordWrong_shouldThrowWrongPasswordException() {
+        long userId = 1L;
+        UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
+        userDto.setId(userId);
+        char[] newPassword = "samePassword".toCharArray();
+        char[] oldPassword = "oldPassword".toCharArray();
+        WebUser webUser = new WebUser();
+        webUser.setId(userId);
+        webUser.setPassword("encodedPassword");
+
+        when(webUserRepository.findById(userDto.getId())).thenReturn(Optional.of(webUser));
+        when(passwordEncoder.matches(CharBuffer.wrap(oldPassword), webUser.getPassword())).thenReturn(false);
+
+
+        WrongPasswordException exception = assertThrows(WrongPasswordException.class,
+                () -> userService.updateUserPassword(oldPassword, newPassword, userDto));
+
+
+        assertEquals("app.user.error.wrong.password", exception.getMessage());
+        verify(webUserRepository, times(1)).findById(userId);
+        verify(passwordEncoder, times(1)).matches(CharBuffer.wrap(oldPassword), webUser.getPassword());
+        verify(passwordEncoder, times(0)).matches(CharBuffer.wrap(newPassword), webUser.getPassword());
     }
 
     @Test
@@ -161,16 +188,18 @@ class UserAuthenticationServiceImplTest {
         UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
         userDto.setId(userId);
         char[] newPassword = "samePassword".toCharArray();
+        char[] oldPassword = "oldPassword".toCharArray();
         WebUser webUser = new WebUser();
         webUser.setId(userId);
         webUser.setPassword("encodedPassword");
 
         when(webUserRepository.findById(userDto.getId())).thenReturn(Optional.of(webUser));
+        when(passwordEncoder.matches(CharBuffer.wrap(oldPassword), webUser.getPassword())).thenReturn(true);
         when(passwordEncoder.matches(CharBuffer.wrap(newPassword), webUser.getPassword())).thenReturn(true);
 
 
         UserDataNotChangedException exception = assertThrows(UserDataNotChangedException.class,
-                () -> userService.updateUserPassword(newPassword, userDto));
+                () -> userService.updateUserPassword(oldPassword, newPassword, userDto));
 
 
         assertEquals("app.user.error.did.not.changed", exception.getMessage());
@@ -183,6 +212,7 @@ class UserAuthenticationServiceImplTest {
         long userId = 1L;
         UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
         userDto.setId(userId);
+        char[] oldPassword = "oldPassword".toCharArray();
         char[] newPassword = "newPassword".toCharArray();
         WebUser webUser = new WebUser();
         webUser.setId(userId);
@@ -196,12 +226,13 @@ class UserAuthenticationServiceImplTest {
         updatedUserDto.setId(userId);
 
         when(webUserRepository.findById(userId)).thenReturn(Optional.of(webUser));
+        when(passwordEncoder.matches(CharBuffer.wrap(oldPassword), webUser.getPassword())).thenReturn(true);
         when(passwordEncoder.matches(CharBuffer.wrap(newPassword), webUser.getPassword())).thenReturn(false);
         when(passwordEncoder.encode(CharBuffer.wrap(newPassword))).thenReturn("newEncodedPassword");
         when(webUserRepository.save(webUser)).thenReturn(updatedUser);
         when(modelMapper.map(updatedUser, UserDto.class)).thenReturn(updatedUserDto);
 
-        UserDto result = userService.updateUserPassword(newPassword, userDto);
+        UserDto result = userService.updateUserPassword(oldPassword, newPassword, userDto);
 
         assertNotNull(result);
         assertEquals(userId, result.getId());

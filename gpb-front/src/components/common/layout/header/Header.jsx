@@ -14,7 +14,6 @@ export default function Header() {
   const { logout } = useAuth();
 
   const handleLogout = async () => {
-    console.info("logout");
     logout();
 
     await userLogoutRequest();

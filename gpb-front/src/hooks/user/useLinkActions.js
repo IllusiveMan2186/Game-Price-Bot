@@ -1,6 +1,10 @@
 import { useNavigation } from "@contexts/NavigationContext";
 import { useHttpHelper } from "@hooks/useHttpHelper"
 
+import { NotificationManager } from 'react-notifications';
+
+import Message from '@util/message';
+
 // Centralized API endpoints
 const API_ENDPOINTS = {
     ACTIVATE_USER: `/activate`,
@@ -13,12 +17,16 @@ export const useLinkActions = () => {
     const { handleRequest } = useHttpHelper();
 
     // Link user account
-    const accountLinkRequest = (token, setErrorMessage) => {
+    const accountLinkRequest = (token) => {
         handleRequest(
             "POST",
             API_ENDPOINTS.LINK_USER,
             { token },
-            () => { navigate("/"); }
+            () => {
+                NotificationManager.success(<Message string={'app.account.link.success.message'} />, <Message string={'app.request.success.title'} />);
+
+                navigate("/");
+            }
         );
     };
 

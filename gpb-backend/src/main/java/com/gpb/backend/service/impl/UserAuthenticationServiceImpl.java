@@ -9,6 +9,7 @@ import com.gpb.backend.exception.LoginFailedException;
 import com.gpb.backend.exception.UserDataNotChangedException;
 import com.gpb.backend.exception.UserLockedException;
 import com.gpb.backend.exception.UserNotActivatedException;
+import com.gpb.backend.exception.WrongPasswordException;
 import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.UserAuthenticationService;
 import com.gpb.backend.util.Constants;
@@ -124,16 +125,20 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     }
 
     @Override
-    public UserDto updateUserPassword(char[] password, UserDto userDto) {
+    public UserDto updateUserPassword(char[] oldPassword, char[] newPassword, UserDto userDto) {
         log.info("Updating password for user.");
 
         WebUser user = getWebUserById(userDto.getId());
 
-        if (user.isPasswordValid(CharBuffer.wrap(password), passwordEncoder)) {
+        if (!user.isPasswordValid(CharBuffer.wrap(oldPassword), passwordEncoder)) {
+            throw new WrongPasswordException();
+        }
+
+        if (user.isPasswordValid(CharBuffer.wrap(newPassword), passwordEncoder)) {
             throw new UserDataNotChangedException();
         }
 
-        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(password)));
+        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(newPassword)));
         webUserRepository.save(user);
 
         return modelMapper.map(user, UserDto.class);
