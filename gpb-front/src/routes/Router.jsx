@@ -11,6 +11,7 @@ import EmailChange from '@components/user/profile/EmailChange';
 import SetLink from '@components/user/profile/SetLink';
 import LinkPage from '@components/user/profile/LinkPage';
 import GetLinkTokenPage from '@components/user/profile/GetLinkTokenPage';
+import ErrorPage from '@components/common/ErrorPage';
 
 export default function Router() {
 
@@ -45,6 +46,7 @@ export default function Router() {
                     <Route path="/link" element={<LinkPage />} />
                     <Route path="/link/token" element={<GetLinkTokenPage />} />
                     <Route path="/token/:token" element={<SetLink />} />
+                    <Route path="/error" element={<ErrorPage />} />
                 </Route>
             </Routes>
         </>

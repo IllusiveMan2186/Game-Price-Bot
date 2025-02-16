@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.net.ConnectException;
+
 /**
  * Global exception handler that intercepts and handles exceptions thrown from REST controllers.
  * <p>
@@ -90,9 +92,9 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      * @param request the current web request
      * @return a ResponseEntity with status INTERNAL_SERVER_ERROR and the exception message
      */
-    @ExceptionHandler(value = {RestTemplateRequestException.class})
+    @ExceptionHandler(value = {RestTemplateRequestException.class, ConnectException.class})
     protected ResponseEntity<Object> handleServerError(RuntimeException ex, WebRequest request) {
         log.error("Server error: {}", ex.getMessage(), ex);
-        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+        return handleExceptionInternal(ex, "", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 }
