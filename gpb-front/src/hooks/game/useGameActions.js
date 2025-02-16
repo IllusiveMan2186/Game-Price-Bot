@@ -31,7 +31,8 @@ export const useGameActions = () => {
             'GET',
             `${API_ENDPOINTS.GAME}/${gameId}`,
             null,
-            (response) => setGame(response.data)
+            (response) => setGame(response.data),
+            (error) => onError(error)
         );
     };
 

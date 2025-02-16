@@ -1,4 +1,5 @@
 {
+    "app.gpb.default.error": "We're experiencing technical difficulties at the moment. Please try again later. If the issue persists, contact support.",
     "app.login": "Login",
     "app.profile": "Profile",
     "app.user.change.email": "Change email",
