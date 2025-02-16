@@ -12,7 +12,7 @@ fun getEnvOrProperty(name: String): String {
 }
 
 group = "com.gpb"
-version = "1.0.25-SNAPSHOT"
+version = "1.0.27-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
