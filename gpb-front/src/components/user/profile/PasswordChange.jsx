@@ -80,8 +80,6 @@ export default function PasswordChange() {
 
     // Checks if the form is valid
     const isFormValid = () => {
-console.info(1 + " "+oldPassword.trim() !== '' && newPassword.trim() !== '' && confirmPassword.trim() !== '')
-
 
         return !oldErrorPassword && !newErrorPassword && !errorConfirmPassword
             && oldPassword.trim() !== '' && newPassword.trim() !== '' && confirmPassword.trim() !== '';
@@ -173,6 +171,7 @@ console.info(1 + " "+oldPassword.trim() !== '' && newPassword.trim() !== '' && c
                         <button
                             type="submit"
                             className="btn btn-primary btn-block mb-3"
+                            disabled={!isFormValid()}
                         >
                             <Message string="app.registr.form.reg.buttom" />
                         </button>
