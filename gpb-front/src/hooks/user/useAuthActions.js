@@ -4,6 +4,9 @@ import { changeLanguage } from "i18next";
 import { setLocale, getLocale } from "@util/userDataUtils";
 import { useHttpHelper } from "@hooks/useHttpHelper"
 import { logoutRequest } from "@services/httpService";
+import { NotificationManager } from 'react-notifications';
+
+import Message from '@util/message';
 
 // Centralized API endpoints
 const API_ENDPOINTS = {
@@ -43,6 +46,7 @@ export const useAuthActions = () => {
             API_ENDPOINTS.REGISTER,
             { email, password, locale: getLocale() },
             () => {
+                NotificationManager.success(<Message string={'app.registr.success.message'} />, <Message string={'app.registr.success.title'} />);
                 navigate("/");
             },
             (errorMessage) => setErrorMessage(errorMessage)

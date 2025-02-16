@@ -63,14 +63,12 @@ public class UserController {
      */
     @PutMapping("/email")
     @Transactional
-    public UserDto updateUserEmail(@RequestBody final EmailRequestDto emailRequestDto, @AuthenticationPrincipal UserDto user) {
+    public void updateUserEmail(@RequestBody final EmailRequestDto emailRequestDto, @AuthenticationPrincipal UserDto user) {
         log.info("User with ID {} requested email change", user.getId());
 
-        UserDto userDto = userAuthenticationService.updateUserEmail(emailRequestDto.getEmail(), user);
-        userDto.setToken(userAuthenticationProvider.generateAccessToken(userDto.getId()));
+        userAuthenticationService.updateUserEmail(emailRequestDto.getEmail(), user);
 
         log.info("User with ID {} successfully updated email", user.getId());
-        return userDto;
     }
 
     /**
@@ -90,7 +88,10 @@ public class UserController {
     public UserDto updateUserPassword(@RequestBody final PasswordChangeDto passwordChangeDto, @AuthenticationPrincipal UserDto user) {
         log.info("User with ID {} requested password change", user.getId());
 
-        UserDto updatedUser = userAuthenticationService.updateUserPassword(passwordChangeDto.getPassword(), user);
+        UserDto updatedUser = userAuthenticationService.updateUserPassword(
+                passwordChangeDto.getOldPassword(),
+                passwordChangeDto.getNewPassword(),
+                user);
 
         log.info("User with ID {} successfully changed password", user.getId());
         return updatedUser;

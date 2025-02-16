@@ -21,11 +21,12 @@ public interface UserAuthenticationService {
     /**
      * Updates the password for the specified user.
      *
-     * @param password the new password as a character array for enhanced security
-     * @param user     the current authenticated {@link UserDto} whose password is to be updated
+     * @param oldPassword the old password
+     * @param newPassword the new password
+     * @param user        the current authenticated {@link UserDto} whose password is to be updated
      * @return an updated {@link UserDto} after the password change
      */
-    UserDto updateUserPassword(char[] password, UserDto user);
+    UserDto updateUserPassword(char[] oldPassword, char[] newPassword, UserDto user);
 
     /**
      * Updates the email address for the specified user.

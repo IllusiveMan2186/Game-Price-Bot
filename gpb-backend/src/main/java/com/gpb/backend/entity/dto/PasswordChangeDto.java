@@ -13,5 +13,12 @@ public class PasswordChangeDto {
     @Pattern(
             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"
     )
-    private char[] password;
+    private char[] oldPassword;
+
+    @ToString.Exclude
+    @NotEmpty
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"
+    )
+    private char[] newPassword;
 }

@@ -7,6 +7,7 @@ import com.gpb.backend.exception.RefreshTokenException;
 import com.gpb.backend.exception.UserDataNotChangedException;
 import com.gpb.backend.exception.UserLockedException;
 import com.gpb.backend.exception.UserNotActivatedException;
+import com.gpb.backend.exception.WrongPasswordException;
 import com.gpb.common.exception.NotFoundException;
 import com.gpb.common.exception.PriceRangeException;
 import com.gpb.common.exception.RestTemplateRequestException;
@@ -40,7 +41,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      * @return a ResponseEntity with status BAD_REQUEST and the exception message
      */
     @ExceptionHandler(value = {EmailAlreadyExistException.class, UserDataNotChangedException.class,
-            LoginFailedException.class, PriceRangeException.class, UserNotActivatedException.class})
+            LoginFailedException.class, PriceRangeException.class, UserNotActivatedException.class,
+            WrongPasswordException.class})
     protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
         log.error("Bad request exception: {}", ex.getMessage(), ex);
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
