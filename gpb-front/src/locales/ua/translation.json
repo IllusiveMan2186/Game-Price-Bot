@@ -1,4 +1,5 @@
 {
+    "app.request.success.title": "Успішний запит",
     "app.gpb.default.error": "На даний момент у нас виникли технічні проблеми. Спробуйте пізніше. Якщо проблема не зникне, зверніться до служби підтримки.",
     "app.login": "Вхід",
     "app.profile": "Профіль",
@@ -26,6 +27,8 @@
     "app.registr.form.error.empty.pass.conf": "Будь ласка, введіть пароль підтвердження",
     "app.registr.form.error.not.match.pass.conf": "Пароль і пароль підтвердження не збігаються",
     "app.registr.form.reg.buttom": "Зареєструватися",
+    "app.registr.success.title": "Реєстрація успішна!",
+    "app.registr.success.message": "Перевірте свою електронну пошту",
     "app.footer.gpb.info": "GPB перевіряє ігри на наявність знижок або знижок у магазинах і повідомляє .",
     "app.footer.contact": "КОНТАКТ",
     "app.footer.follow": "НАШІ КОНТАКТИ",
@@ -80,6 +83,7 @@
     "app.game.info.type.addition": "Доповнення",
     "app.user.error.account.not.activated": "Користувача не активовано. Активуйте користувача за посиланням, надісланим електронною поштою",
     "app.user.error.account.not.activated.send": "Надіслати електронний лист ще раз",
+    "app.user.error.wrong.password":"Неправильний старий пароль",
     "app.user.link.enter": "Введіть токен для зв'язування",
     "app.user.link.enter.description": "Можна взяти з одного з ботів месенджера",
     "app.user.link.token.error.not.found": "Токен не знайдено. Укажіть дійсний маркер.",
@@ -91,5 +95,10 @@
     "app.game.search.wait": "Гру не знайдено в нашій системі, тому ми шукаємо зовнішні джерела. Це може зайняти до 30 секунд. Ми цінуємо ваше терпіння!",
     "app.game.add.placeholder": "Введіть посилання на гру",
     "app.game.add.button": "Додати",
-    "app.game.add.send.message": "Запит на додавання гри з url надіслано"
+    "app.game.add.send.message": "Запит на додавання гри з url надіслано",
+    "app.account.link.success.message": "Запит на об'єднання облікових записів надіслано",
+    "app.email.change.success.message": "Електронна адреса успішно змінена",
+    "app.password.change.success.message": "Пароль успішно змінено",
+    "app.old.password":"Старий пароль",
+    "app.new.password":"Новий пароль"
 }

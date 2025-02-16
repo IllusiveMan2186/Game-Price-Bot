@@ -2,23 +2,36 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import * as Yup from 'yup';
 
+
+import { useAuthActions } from '@hooks/user/useAuthActions';
+import { useAuth } from "@contexts/AuthContext";
+
 import { useNavigation } from "@contexts/NavigationContext";
-import Message from '@util/message';
 import { useUserActions } from '@hooks/user/useUserActions';
+
+import Message from '@util/message';
 
 export default function PasswordChange() {
     const navigate = useNavigation();
     const { passwordChangeRequest } = useUserActions();
 
-    const [password, setPassword] = useState('');
+    const { userLogoutRequest } = useAuthActions()
+    const { logout } = useAuth();
+
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [errorPassword, setErrorPassword] = useState('');
+    const [oldErrorPassword, setOLdErrorPassword] = useState('');
+    const [newErrorPassword, setNewErrorPassword] = useState('');
     const [errorConfirmPassword, setErrorConfirmPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
     // Yup validation schema
     const validationSchema = Yup.object().shape({
-        password: Yup.string()
+        oldPassword: Yup.string()
+            .required(<Message string={'app.login.form.error.empty.password'} />),
+
+        newPassword: Yup.string()
             .min(8, <Message string={'app.login.form.error.short.password'} />)
             .max(64, <Message string={'app.login.form.error.long.password'} />)
             .matches(/[A-Z]/, <Message string={'app.registr.form.error.uppercase.password'} />)
@@ -29,7 +42,7 @@ export default function PasswordChange() {
             .required(<Message string={'app.login.form.error.empty.password'} />),
 
         confirmPassword: Yup.string()
-            .oneOf([Yup.ref('password'), null], <Message string="app.registr.form.error.not.match.pass.conf" />)
+            .oneOf([Yup.ref('newPassword'), null], <Message string="app.registr.form.error.not.match.pass.conf" />)
             .required(<Message string="app.login.form.error.empty.password" />),
     });
 
@@ -37,9 +50,12 @@ export default function PasswordChange() {
     const onChangeHandler = (event) => {
         const { name, value } = event.target;
 
-        if (name === 'password') {
-            setPassword(value);
-            validateField('password', value);
+        if (name === 'oldPassword') {
+            setOldPassword(value);
+            validateField('oldPassword', value);
+        } else if (name === 'newPassword') {
+            setNewPassword(value);
+            validateField('newPassword', value);
         } else if (name === 'confirmPassword') {
             setConfirmPassword(value);
             validateField('confirmPassword', value);
@@ -49,29 +65,44 @@ export default function PasswordChange() {
     // Validates a single field using Yup
     const validateField = (fieldName, value) => {
         validationSchema
-            .validateAt(fieldName, { password, confirmPassword: fieldName === 'confirmPassword' ? value : confirmPassword })
+            .validateAt(fieldName, { newPassword, confirmPassword: fieldName === 'confirmPassword' ? value : confirmPassword })
             .then(() => {
-                if (fieldName === 'password') setErrorPassword('');
+                if (fieldName === 'oldPassword') setOLdErrorPassword('');
+                if (fieldName === 'newPassword') setNewErrorPassword('');
                 if (fieldName === 'confirmPassword') setErrorConfirmPassword('');
             })
             .catch((error) => {
-                if (fieldName === 'password') setErrorPassword(error.message);
+                if (fieldName === 'oldPassword') setOLdErrorPassword(error.message);
+                if (fieldName === 'newPassword') setNewErrorPassword(error.message);
                 if (fieldName === 'confirmPassword') setErrorConfirmPassword(error.message);
             });
     };
 
     // Checks if the form is valid
     const isFormValid = () => {
-        return !errorPassword && !errorConfirmPassword && password.trim() !== '' && confirmPassword.trim() !== '';
+console.info(1 + " "+oldPassword.trim() !== '' && newPassword.trim() !== '' && confirmPassword.trim() !== '')
+
+
+        return !oldErrorPassword && !newErrorPassword && !errorConfirmPassword
+            && oldPassword.trim() !== '' && newPassword.trim() !== '' && confirmPassword.trim() !== '';
+    };
+
+
+    const logoutCall = async () => {
+        console.info("logout");
+        logout();
+
+        await userLogoutRequest();
+        navigate("/")
     };
 
     // Handles form submission
     const onSubmitPasswordChange = (event) => {
         event.preventDefault();
         validationSchema
-            .validate({ password, confirmPassword })
+            .validate({ oldPassword, newPassword, confirmPassword })
             .then(() => {
-                passwordChangeRequest(event, password, setErrorMessage, navigate);
+                passwordChangeRequest(oldPassword, newPassword, setErrorMessage, logoutCall);
             })
             .catch((error) => {
                 setErrorMessage(error.message);
@@ -92,19 +123,35 @@ export default function PasswordChange() {
                 <div className={classNames('tab-pane', 'fade', 'show', 'active')} id="pills-register">
                     <form onSubmit={onSubmitPasswordChange}>
                         <div className="form-outline mb-4">
-                            <label className="form-label" htmlFor="registerPassword">
-                                <Message string="app.login.form.password" />
+                            <label className="form-label" htmlFor="registerOldPassword">
+                                <Message string="app.old.password" />
                             </label>
                             <input
                                 type="password"
-                                id="registerPassword"
-                                name="password"
+                                id="registerOldPassword"
+                                name="oldPassword"
                                 className="form-control"
-                                value={password}
+                                value={oldPassword}
                                 onChange={onChangeHandler}
-                                onBlur={() => validateField('password', password)}
+                                onBlur={() => validateField('oldPassword', oldPassword)}
                             />
-                            {errorPassword && <span className="Error">{errorPassword}</span>}
+                            {newErrorPassword && <span className="Error">{newErrorPassword}</span>}
+                        </div>
+
+                        <div className="form-outline mb-4">
+                            <label className="form-label" htmlFor="registerNewPassword">
+                                <Message string="app.new.password" />
+                            </label>
+                            <input
+                                type="password"
+                                id="registerNewPassword"
+                                name="newPassword"
+                                className="form-control"
+                                value={newPassword}
+                                onChange={onChangeHandler}
+                                onBlur={() => validateField('newPassword', newPassword)}
+                            />
+                            {newErrorPassword && <span className="Error">{newErrorPassword}</span>}
                         </div>
 
                         <div className="form-outline mb-4">
@@ -126,7 +173,6 @@ export default function PasswordChange() {
                         <button
                             type="submit"
                             className="btn btn-primary btn-block mb-3"
-                            disabled={!isFormValid()}
                         >
                             <Message string="app.registr.form.reg.buttom" />
                         </button>

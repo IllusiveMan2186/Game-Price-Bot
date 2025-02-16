@@ -14,7 +14,7 @@ const SetLink = () => {
     const { token } = useParams();
 
     if (isUserAuth()) {
-        accountLinkRequest(token, null, navigate);
+        accountLinkRequest(token);
     } else {
         setLinkToken(token);
     }

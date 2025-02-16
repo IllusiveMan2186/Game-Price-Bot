@@ -99,6 +99,10 @@ body {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
 }
 
+.notification-success {
+  background: #223393;
+}
+
 .notification {
   padding: 10px;
   border-radius: 12px;

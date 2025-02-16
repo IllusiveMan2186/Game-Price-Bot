@@ -31,10 +31,7 @@ class UserControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .content(objectToJson(new EmailRequestDto(email)))
                         .sessionAttr("SPRING_SECURITY_CONTEXT", getSecurityContext()))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.email").value(email));
+                .andExpect(status().isOk());
     }
 
     @Test

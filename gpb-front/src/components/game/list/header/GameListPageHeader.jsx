@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useGameActions, } from '@hooks/game/useGameActions';
 import { useNavigation } from "@contexts/NavigationContext";
 import Select from 'react-select';
-import DOMPurify from 'dompurify';
 import { NotificationManager } from 'react-notifications';
 
 import * as constants from '@util/constants';

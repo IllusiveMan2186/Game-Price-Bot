@@ -50,37 +50,33 @@ class UserControllerTest {
 
         UserDto updatedUser = new UserDto("username", "password", "token", "role", "ua");
         updatedUser.setEmail(newEmail);
-        when(userAuthenticationService.updateUserEmail(newEmail, user)).thenReturn(updatedUser);
-        when(userAuthenticationProvider.generateAccessToken(user.getId())).thenReturn("new-token");
 
 
-        UserDto result = userController.updateUserEmail(new EmailRequestDto(newEmail), user);
+        userController.updateUserEmail(new EmailRequestDto(newEmail), user);
 
 
-        assertNotNull(result);
-        assertEquals(newEmail, result.getEmail());
-        assertEquals("new-token", result.getToken());
         verify(userAuthenticationService).updateUserEmail(newEmail, user);
-        verify(userAuthenticationProvider).generateAccessToken(user.getId());
     }
 
     @Test
     void testUpdateUserPassword_whenSuccess_shouldReturnUpdatedUser() {
-        char[] password = "newPassword123".toCharArray();
+        char[] oldPassword = "oldPassword123".toCharArray();
+        char[] newPassword = "newPassword123".toCharArray();
         PasswordChangeDto passwordChangeDto = new PasswordChangeDto();
-        passwordChangeDto.setPassword(password);
+        passwordChangeDto.setOldPassword(oldPassword);
+        passwordChangeDto.setNewPassword(newPassword);
         UserDto user = new UserDto("username", "password", "token", "role", "ua");
         user.setId(123L);
 
         UserDto updatedUser = new UserDto("username", "password", "token", "role", "ua");
-        when(userAuthenticationService.updateUserPassword(password, user)).thenReturn(updatedUser);
+        when(userAuthenticationService.updateUserPassword(oldPassword, newPassword, user)).thenReturn(updatedUser);
 
 
         UserDto result = userController.updateUserPassword(passwordChangeDto, user);
 
 
         assertNotNull(result);
-        verify(userAuthenticationService).updateUserPassword(password, user);
+        verify(userAuthenticationService).updateUserPassword(oldPassword, newPassword, user);
     }
 
     @Test
