@@ -106,18 +106,9 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     }
 
     @Override
-    public UserDto updateUserEmail(String newEmail, UserDto userDto) {
+    public UserDto updateUserEmail(String newEmail, WebUser user) {
         log.info("Updating email for user.");
 
-        if (newEmail.equals(userDto.getEmail())) {
-            throw new UserDataNotChangedException();
-        }
-
-        if (webUserRepository.findByEmail(newEmail).isPresent()) {
-            throw new EmailAlreadyExistException();
-        }
-
-        WebUser user = getWebUserById(userDto.getId());
         user.setEmail(newEmail);
         webUserRepository.save(user);
 

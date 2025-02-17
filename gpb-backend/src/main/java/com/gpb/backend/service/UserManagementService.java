@@ -2,6 +2,8 @@ package com.gpb.backend.service;
 
 import com.gpb.backend.entity.WebUser;
 
+import java.util.Optional;
+
 /**
  * Service interface for managing user information.
  */
@@ -24,7 +26,7 @@ public interface UserManagementService {
      * @param email the email address of the user
      * @return the {@link WebUser} associated with the specified email
      */
-    WebUser getWebUserByEmail(String email);
+    Optional<WebUser> getWebUserByEmail(String email);
 
     /**
      * Updates the locale setting for the specified user.

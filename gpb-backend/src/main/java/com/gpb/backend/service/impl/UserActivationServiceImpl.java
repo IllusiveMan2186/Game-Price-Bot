@@ -7,6 +7,7 @@ import com.gpb.backend.repository.UserActivationRepository;
 import com.gpb.backend.service.EmailService;
 import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserManagementService;
+import com.gpb.common.exception.NotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,8 @@ public class UserActivationServiceImpl implements UserActivationService {
     public void resendActivationEmail(String email) {
         log.info("Resend the activation email to the user for user: {}", email);
 
-        WebUser user = userService.getWebUserByEmail(email);
+        WebUser user = userService.getWebUserByEmail(email)
+                .orElseThrow(() -> new NotFoundException("app.user.error.email.not.found"));
         UserActivation userActivation = userActivationRepository.findByUser(user);
         emailService.sendEmailVerification(userActivation);
     }

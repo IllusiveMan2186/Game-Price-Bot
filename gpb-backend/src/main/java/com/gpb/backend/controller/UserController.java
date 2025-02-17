@@ -49,28 +49,6 @@ public class UserController {
         this.userAuthenticationProvider = userAuthenticationProvider;
     }
 
-
-    /**
-     * Updates the email address for the authenticated user.
-     *
-     * <p>This endpoint allows a registered user to update their email by providing the new email address
-     * in the request body. The user's email is updated using the authentication service, and a new token
-     * is generated based on the updated email address.</p>
-     *
-     * @param emailRequestDto the DTO containing the new email information
-     * @param user            the authenticated user's details
-     * @return the updated {@link UserDto} after the email change
-     */
-    @PutMapping("/email")
-    @Transactional
-    public void updateUserEmail(@RequestBody final EmailRequestDto emailRequestDto, @AuthenticationPrincipal UserDto user) {
-        log.info("User with ID {} requested email change", user.getId());
-
-        userAuthenticationService.updateUserEmail(emailRequestDto.getEmail(), user);
-
-        log.info("User with ID {} successfully updated email", user.getId());
-    }
-
     /**
      * Updates the password for the authenticated user.
      *
@@ -98,22 +76,6 @@ public class UserController {
     }
 
     /**
-     * Resend the activation email to the user
-     *
-     * @param emailRequestDto email for resending activation message
-     */
-    @PostMapping(value = "/resend/email")
-    @Transactional
-    @ResponseStatus(HttpStatus.OK)
-    public void resendUserActivationEmail(@RequestBody final EmailRequestDto emailRequestDto) {
-        log.info("Resending activation email for a user");
-
-        userActivationService.resendActivationEmail(emailRequestDto.getEmail());
-
-        log.info("Activation email resent successfully");
-    }
-
-    /**
      * Adds a game to the authenticated user's list of followed games.
      *
      * <p>
@@ -126,7 +88,7 @@ public class UserController {
      */
     @PostMapping(value = "/games/{gameId}")
     @Transactional
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addGameToUserListOfGames(
             @PathVariable
             @Positive final long gameId,
@@ -150,7 +112,7 @@ public class UserController {
      */
     @DeleteMapping(value = "/games/{gameId}")
     @Transactional
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeGameFromUserListOfGames(
             @PathVariable
             @Positive final long gameId,
@@ -173,7 +135,7 @@ public class UserController {
      */
     @PutMapping("/locale")
     @Transactional
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateUserLocale(@RequestBody final LocaleRequestDto localeRequestDto,
                                  @AuthenticationPrincipal final UserDto user) {
         log.info("Updating locale to '{}' for user with ID {}", localeRequestDto.getLocale(), user.getId());

@@ -1,6 +1,6 @@
 CREATE TABLE refresh_token (
     token VARCHAR(255) NOT NULL UNIQUE,
-    user_id INT REFERENCES web_user(id) ,
+    user_id BIGINT NOT NULL,
     expires_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     PRIMARY KEY (token),

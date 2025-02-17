@@ -100,5 +100,9 @@
     "app.email.change.success.message": "Електронна адреса успішно змінена",
     "app.password.change.success.message": "Пароль успішно змінено",
     "app.old.password":"Старий пароль",
-    "app.new.password":"Новий пароль"
+    "app.new.password":"Новий пароль",
+    "app.email.change.check.emails": "Листи з підтвердженням, надіслані на стару та нову електронні адреси",
+    "app.email.change.confirm.success.message":"Цю електронну адресу підтверджено, підтвердьте іншу для завершення зміни",
+    "app.email.change.token.expire": "Час підтвердження минув, почніть змінювати знову",
+    "app.email.change.token.not.found": "Маркер не знайдено"
 }
