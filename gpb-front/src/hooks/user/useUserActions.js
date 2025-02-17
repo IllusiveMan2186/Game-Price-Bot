@@ -6,7 +6,7 @@ import Message from '@util/message';
 
 const API_ENDPOINTS = {
     RESEND_EMAIL: `/user/resend/email`,
-    CHANGE_EMAIL: `/user/email`,
+    CHANGE_EMAIL: `/email`,
     CHANGE_PASSWORD: '/user/password',
     CHANGE_LOCALE: `/user/locale`,
     CHECK_AUTH: `/check-auth`,
@@ -48,6 +48,7 @@ export const useUserActions = () => {
 
     // Change Locale
     const localeChangeRequest = (locale) => {
+        console.info(locale)
         handleRequest(
             "PUT",
             API_ENDPOINTS.CHANGE_LOCALE,

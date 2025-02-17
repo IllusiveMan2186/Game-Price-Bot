@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -34,10 +35,9 @@ public class UserManagementServiceImpl implements UserManagementService, ChangeU
     }
 
     @Override
-    public WebUser getWebUserByEmail(String email) {
+    public Optional<WebUser> getWebUserByEmail(String email) {
         log.info("Get web user by email : {}", email);
-        return webUserRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("app.user.error.email.not.found"));
+        return webUserRepository.findByEmail(email);
     }
 
 

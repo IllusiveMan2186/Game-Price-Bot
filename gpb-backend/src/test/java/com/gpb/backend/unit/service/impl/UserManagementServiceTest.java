@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -74,27 +75,11 @@ class UserManagementServiceTest {
         when(webUserRepository.findByEmail(email)).thenReturn(Optional.of(webUser));
 
 
-        WebUser result = userService.getWebUserByEmail(email);
+        Optional<WebUser> result = userService.getWebUserByEmail(email);
 
-
-        assertEquals(webUser, result);
+        assertTrue(result.isPresent());
+        assertEquals(webUser, result.get());
         verify(webUserRepository).findByEmail(email);
-    }
-
-    @Test
-    void testGetWebUserByEmail_whenUserNotFound_shouldThrowNotFoundException() {
-        String email = "email";
-
-        when(webUserRepository.findByEmail(email)).thenReturn(Optional.empty());
-
-
-        NotFoundException exception = assertThrows(
-                NotFoundException.class,
-                () -> userService.getWebUserByEmail(email)
-        );
-
-
-        assertEquals("app.user.error.email.not.found", exception.getMessage());
     }
 
     @Test

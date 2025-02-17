@@ -35,7 +35,7 @@ public interface UserAuthenticationService {
      * @param user     the current authenticated {@link UserDto} whose email is to be updated
      * @return an updated {@link UserDto} after the email change
      */
-    UserDto updateUserEmail(String newEmail, UserDto user);
+    UserDto updateUserEmail(String newEmail, WebUser user);
 
     /**
      * Registers a new user using the provided registration details.

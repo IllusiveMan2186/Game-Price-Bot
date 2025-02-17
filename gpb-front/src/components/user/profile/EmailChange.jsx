@@ -5,11 +5,11 @@ import * as Yup from 'yup';
 import { useNavigation } from "@contexts/NavigationContext";
 
 import Message from '@util/message';
-import { useUserActions } from '@hooks/user/useUserActions';
+import { useEmailActions } from '@hooks/user/useEmailActions';
 
 export default function EmailChange() {
     const navigate = useNavigation();
-    const { emailChangeRequest } = useUserActions();
+    const { emailChangeRequest } = useEmailActions();
 
     const [email, setEmail] = useState('');
     const [errorEmail, setErrorEmail] = useState('');
@@ -41,7 +41,7 @@ export default function EmailChange() {
     // Submits the email change request
     const onSubmitEmailChange = (event) => {
         event.preventDefault();
-        emailChangeRequest(event, email, setErrorMessage, navigate);
+        emailChangeRequest(email, setErrorMessage);
     };
 
     return (

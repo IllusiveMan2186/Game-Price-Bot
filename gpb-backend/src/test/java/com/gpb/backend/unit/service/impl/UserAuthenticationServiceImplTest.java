@@ -379,25 +379,10 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void testUpdateUserEmail_whenEmailAlreadyExists_shouldThrowEmailAlreadyExistException() {
+    void testUpdateUserEmail_whenSuccess_shouldReturnUpdatedUserDto() {
         String newEmail = "newemail@example.com";
-        UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
-        userDto.setId(1L);
-
-        when(webUserRepository.findByEmail(newEmail)).thenReturn(Optional.of(new WebUser()));
-
-        assertThrows(EmailAlreadyExistException.class, () -> userService.updateUserEmail(newEmail, userDto));
-    }
-
-    @Test
-    void testUpdateUserEmail_whenEmailAlreadyExist_shouldReturnUpdatedUserDto() {
-        String newEmail = "newemail@example.com";
-        UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
-        userDto.setId(1L);
 
         WebUser webUser = new WebUser();
-        when(webUserRepository.findById(userDto.getId())).thenReturn(Optional.of(webUser));
-        when(webUserRepository.findByEmail(newEmail)).thenReturn(Optional.empty());
         when(webUserRepository.save(any(WebUser.class))).thenReturn(webUser);
 
         UserDto updatedUserDto = new UserDto("username", "password", "token", "role", "ua");
@@ -405,13 +390,11 @@ class UserAuthenticationServiceImplTest {
         when(modelMapper.map(webUser, UserDto.class)).thenReturn(updatedUserDto);
 
 
-        UserDto result = userService.updateUserEmail(newEmail, userDto);
+        UserDto result = userService.updateUserEmail(newEmail, webUser);
 
 
         assertNotNull(result);
         assertEquals(newEmail, result.getEmail());
-        verify(webUserRepository).findById(userDto.getId());
-        verify(webUserRepository).findByEmail(newEmail);
         verify(webUserRepository).save(any(WebUser.class));
         verify(modelMapper).map(webUser, UserDto.class);
     }
