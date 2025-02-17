@@ -8,11 +8,16 @@ import com.gpb.backend.service.EmailService;
 import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserManagementService;
 import com.gpb.backend.service.impl.UserActivationServiceImpl;
+import com.gpb.common.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -63,16 +68,32 @@ class UserActivationServiceImplTest {
     }
 
     @Test
+    void testResendActivationEmail_whenEmailNotFound_shouldThrowException() {
+        String email = "email";
+        when(userService.getWebUserByEmail(email)).thenReturn(Optional.empty());
+
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> userActivationService.resendActivationEmail(email),
+                "app.user.error.email.not.found");
+
+
+        assertEquals("app.user.error.email.not.found", exception.getMessage());
+        verify(emailService, never()).sendEmailVerification(any());
+    }
+
+    @Test
     void testResendActivationEmail_whenSuccessful_shouldSendEmail() {
         String email = "email";
         WebUser user = new WebUser();
         UserActivation userActivation = UserActivation.builder()
                 .user(user)
                 .build();
-        when(userService.getWebUserByEmail(email)).thenReturn(user);
+        when(userService.getWebUserByEmail(email)).thenReturn(Optional.of(user));
         when(userActivationRepository.findByUser(user)).thenReturn(userActivation);
 
+
         userActivationService.resendActivationEmail(email);
+
 
         verify(emailService).sendEmailVerification(userActivation);
     }

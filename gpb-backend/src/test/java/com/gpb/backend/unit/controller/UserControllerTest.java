@@ -42,23 +42,6 @@ class UserControllerTest {
     private UserController userController;
 
     @Test
-    void testUpdateUserEmail_whenSuccess_shouldReturnUpdatedUser() {
-        String newEmail = "newemail@example.com";
-        UserDto user = new UserDto("username", "password", "token", "role", "ua");
-        user.setBasicUserId(123L);
-        user.setBasicUserId(12L);
-
-        UserDto updatedUser = new UserDto("username", "password", "token", "role", "ua");
-        updatedUser.setEmail(newEmail);
-
-
-        userController.updateUserEmail(new EmailRequestDto(newEmail), user);
-
-
-        verify(userAuthenticationService).updateUserEmail(newEmail, user);
-    }
-
-    @Test
     void testUpdateUserPassword_whenSuccess_shouldReturnUpdatedUser() {
         char[] oldPassword = "oldPassword123".toCharArray();
         char[] newPassword = "newPassword123".toCharArray();
@@ -77,17 +60,6 @@ class UserControllerTest {
 
         assertNotNull(result);
         verify(userAuthenticationService).updateUserPassword(oldPassword, newPassword, user);
-    }
-
-    @Test
-    void testResendUserActivationEmail_whenSuccess_shouldInvokeServiceMethod() {
-        String email = "user@example.com";
-
-
-        userController.resendUserActivationEmail(new EmailRequestDto(email));
-
-
-        verify(userActivationService).resendActivationEmail(email);
     }
 
     @Test

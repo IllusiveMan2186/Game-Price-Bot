@@ -1,5 +1,6 @@
 package com.gpb.backend.service;
 
+import com.gpb.backend.entity.EmailChanging;
 import com.gpb.backend.entity.UserActivation;
 import com.gpb.backend.entity.WebUser;
 import com.gpb.common.entity.event.NotificationEvent;
@@ -27,4 +28,11 @@ public interface EmailService {
      * @param userActivation the {@link UserActivation} instance containing activation details
      */
     void sendEmailVerification(UserActivation userActivation);
+
+    /**
+     * Sends confirmations emails to new and old emails
+     *
+     * @param emailChanging the {@link EmailChanging} instance containing confirmation details
+     */
+    void sendEmailChange(EmailChanging emailChanging);
 }

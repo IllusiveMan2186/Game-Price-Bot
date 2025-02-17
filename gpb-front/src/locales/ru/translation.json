@@ -100,5 +100,9 @@
     "app.email.change.success.message": "Email успешно изменен",
     "app.password.change.success.message": "Пароль успешно изменен",
     "app.old.password":"Старый пароль",
-    "app.new.password":"Новый пароль"
+    "app.new.password":"Новый пароль",
+    "app.email.change.check.emails": "Письма с подтверждением отправлены на старые и новые адреса электронной почты",
+    "app.email.change.confirm.success.message":"Этот адрес электронной почты подтвержден, подтвердите другой для завершения изменения",
+    "app.email.change.token.expire":"Время подтверждения истекло, начните изменение снова",
+    "app.email.change.token.not.found":"Токен не найден"
 }

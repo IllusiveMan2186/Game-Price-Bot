@@ -96,5 +96,9 @@
     "app.game.add.button": "Add",
     "app.game.add.send.message": "Request for adding game from url sended",
     "app.old.password":"Old password",
-    "app.new.password":"New password"
+    "app.new.password":"New password",
+    "app.email.change.check.emails": "Confiramation emails sended to old and new emails",
+    "app.email.change.confirm.success.message":"This email confirmed, please confirm other one for completing changing",
+    "app.email.change.token.expire":"Time for confirming expired, please start changing again",
+    "app.email.change.token.not.found":"Token not found"
 }
