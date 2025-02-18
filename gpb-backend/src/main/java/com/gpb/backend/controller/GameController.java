@@ -78,6 +78,7 @@ public class GameController {
      * @return a paginated list of games matching the name
      */
     @GetMapping(value = "/name/{name}")
+    @ResponseStatus(HttpStatus.OK)
     public GameListPageDto getGameByName(
             @PathVariable
             @Pattern(regexp = CommonConstants.NAME_REGEX_PATTERN) final String name,
@@ -102,6 +103,7 @@ public class GameController {
      * @return the game information DTO
      */
     @GetMapping(value = "/url")
+    @ResponseStatus(HttpStatus.OK)
     public GameInfoDto getGameByUrl(
             @RequestParam
             @NotBlank
@@ -122,6 +124,7 @@ public class GameController {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/url")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addGameInStoreToCreatedGameByUrl(@RequestBody final AddGameInStoreDto addGameInStoreDto) {
         log.info("Add to game {} game from store by URL '{}'", addGameInStoreDto.getGameId(), addGameInStoreDto.getUrl());
         gameService.addGameInStore(addGameInStoreDto);
@@ -205,7 +208,7 @@ public class GameController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{gameId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeGameById(
             @PathVariable
             @Positive final long gameId
@@ -223,7 +226,7 @@ public class GameController {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/store/{gameInStoreId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeGameInStoreById(
             @PathVariable
             @Positive final long gameInStoreId

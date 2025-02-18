@@ -1,7 +1,6 @@
 package com.gpb.backend.controller;
 
 import com.gpb.backend.entity.dto.UserDto;
-import com.gpb.backend.service.UserManagementService;
 import com.gpb.common.entity.user.TokenRequestDto;
 import com.gpb.common.service.UserLinkerService;
 import jakarta.transaction.Transactional;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserLinkerController {
 
     private final UserLinkerService userLinkerService;
-    private final UserManagementService userManagementService;
 
     /**
      * Connects a Telegram user account to the current web user's account.
@@ -40,7 +38,7 @@ public class UserLinkerController {
      */
     @PostMapping
     @Transactional
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void linkUser(@RequestBody final TokenRequestDto token,
                          @AuthenticationPrincipal final UserDto user) {
         log.info("User with ID {} requested account linking", user.getId());
@@ -60,7 +58,7 @@ public class UserLinkerController {
      */
     @GetMapping
     @Transactional
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public String getTelegramUserConnectorToken(@AuthenticationPrincipal final UserDto user) {
         log.info("User with ID {} requested a connector token", user.getId());
         String token = userLinkerService.getAccountsLinkerToken(user.getId());
