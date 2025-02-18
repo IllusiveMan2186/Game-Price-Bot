@@ -17,6 +17,7 @@ import com.gpb.game.service.GameStoresService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -68,14 +69,16 @@ public class GameServiceImpl implements GameService {
         log.info("Get game by name : {}", name);
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
         long elementAmount;
+        List<Game> games;
 
-        List<Game> games = gameRepositoryCustom.searchByNameFullText(name, pageRequest);
-        if (games.isEmpty()) {
+        Page<Game> gamePage = gameRepositoryCustom.searchByNameFullText(name, pageRequest);
+        if (gamePage.isEmpty()) {
             List<Game> foundedGames = gameStoresService.findGameByName(name);
             games = addGames(foundedGames);
             elementAmount = games.size();
         } else {
-            elementAmount = gameRepositoryCustom.countByNameFullText(name);
+            games = gamePage.toList();
+            elementAmount = gamePage.getTotalElements();
         }
 
         List<GameDto> gameDtos = games.stream()
@@ -116,23 +119,17 @@ public class GameServiceImpl implements GameService {
         log.info("Get games by genres : '{}',types to exclude - '{}',price '{}' - '{}' with '{}' " +
                 "element on page for '{}' page ", genre, typesToExclude, minPrice, maxPrice, pageSize, pageNum);
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
-        List<Game> games;
-        long elementAmount;
+        Page<Game> games;
         List<ProductType> types = getProductTypeThatNotExcluded(typesToExclude);
-        if (genre == null) {
-            games = gameRepository.findAllByTypeInAndGamesInShop_DiscountPriceBetween(pageRequest, types, minPrice
-                    , maxPrice);
-            elementAmount = gameRepository.countAllByTypeInAndGamesInShop_DiscountPriceBetween(types, minPrice, maxPrice);
-        } else {
-            games = gameRepository.findByGenresInAndTypeInAndGamesInShop_DiscountPriceBetween(genre, types, pageRequest
-                    , minPrice, maxPrice);
-            elementAmount = gameRepository.countByGenresInAndTypeIn(genre, types);
-        }
+
+        games = gameRepositoryCustom.findGamesByGenreAndTypeWithSorting(genre, types, minPrice
+                , maxPrice, pageRequest);
+
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)
                 .toList();
 
-        return new GameListPageDto(elementAmount, gameDtos);
+        return new GameListPageDto(games.getTotalElements(), gameDtos);
     }
 
     @Override
@@ -140,17 +137,13 @@ public class GameServiceImpl implements GameService {
         log.info("Get games for user '{}' with '{}' element on page for '{}' page ",
                 userId, pageSize, pageNum);
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
-        BasicUser user = new BasicUser();
-        user.setId(userId);
 
-        List<Game> games = gameRepository.findByUserList(user, pageRequest);
-        long elementAmount = gameRepository.countAllByUserList(user);
+        Page<Game> games = gameRepositoryCustom.findGamesByUserWithSorting(userId, pageRequest);
 
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)
                 .toList();
-
-        return new GameListPageDto(elementAmount, gameDtos);
+        return new GameListPageDto(games.getTotalElements(), gameDtos);
     }
 
     @Override
@@ -197,7 +190,7 @@ public class GameServiceImpl implements GameService {
         if (game.getGamesInShop().size() <= 1) {
             log.info("Removes game due to last game in store info removed : {}", game.getId());
             gameRepository.deleteById(game.getId());
-        }else {
+        } else {
             game.getGamesInShop().remove(gameInShop);
             gameRepository.save(game);
             gameInShopRepository.deleteById(gameInShop.getId());
