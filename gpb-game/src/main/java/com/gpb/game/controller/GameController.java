@@ -139,8 +139,8 @@ public class GameController {
     @GetMapping("/genre")
     @ResponseStatus(HttpStatus.OK)
     public GameListPageDto getGamesForGenre(
-            @RequestParam(required = false) final List<Genre> genres,
-            @RequestParam(required = false) final List<ProductType> typesToExclude,
+            @RequestParam(required = false) final List<Genre> genre,
+            @RequestParam(required = false) final List<ProductType> type,
 
             @RequestParam
             @Positive final int pageSize,
@@ -159,12 +159,12 @@ public class GameController {
 
             @RequestHeader(name = CommonConstants.BASIC_USER_ID_HEADER, required = false) final Long userId) {
         log.info("Fetching games by genres: {} with exclusion of types: {} and price range: {} - {}. Page: {} with {} items per page sorted by {}",
-                genres, typesToExclude, minPrice, maxPrice, pageNum, pageSize, sortBy);
+                genre, type, minPrice, maxPrice, pageNum, pageSize, sortBy);
         if (maxPrice.compareTo(minPrice) < 0) {
             log.error("Invalid price range: minPrice {} is greater than maxPrice {}", minPrice, maxPrice);
             throw new PriceRangeException();
         }
-        GameListPageDto gamePage = gameService.getByGenre(genres, typesToExclude, pageSize, pageNum, minPrice, maxPrice, parseSortBy(sortBy));
+        GameListPageDto gamePage = gameService.getByGenre(genre, type, pageSize, pageNum, minPrice, maxPrice, parseSortBy(sortBy));
         return markUserSubscription(gamePage, userId);
     }
 

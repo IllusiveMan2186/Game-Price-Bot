@@ -100,7 +100,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     @Test
     void testGetGamesByGenre_whenRequestingSecondPage_shouldReturnSecondPageOfGames() throws Exception {
         mockMvc.perform(get("/game/genre")
-                        .param("genres", games.get(0).getGenres().get(0).name())
+                        .param("genre", games.get(0).getGenres().get(0).name())
                         .param("pageNum", "2")
                         .param("pageSize", "1")
                         .param("minPrice", "0")
@@ -114,6 +114,37 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                 .andExpect(jsonPath("$.games").isArray())
                 .andExpect(jsonPath("$.games", hasSize(1)))
                 .andExpect(jsonPath("$.games[0].id").value(3));
+    }
+
+    @Test
+    void testGetGamesByGenre_whenRequestingWithType_shouldReturnOnlyGame() throws Exception {
+        GameInShop gameInShop1 = gameInShopCreation("url1", new BigDecimal(100), new BigDecimal(100));
+
+        Game game = Game.builder()
+                .name("testGame")
+                .gamesInShop(Set.of(gameInShop1))
+                .genres(Collections.singletonList(Genre.STRATEGIES)).build();
+        game.getGamesInShop().forEach(gameInShop -> gameInShop.setGame(game));
+        game.setType(ProductType.CURRENCY);
+        gameRepository.save(game);
+
+        mockMvc.perform(get("/game/genre")
+                        .param("type", String.valueOf(ProductType.CURRENCY))
+                        .param("pageNum", "1")
+                        .param("pageSize", "5")
+                        .param("minPrice", "0")
+                        .param("maxPrice", "10000")
+                        .param("sortBy", "gamesInShop.discountPrice-ASC")
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.elementAmount").value(3))
+                .andExpect(jsonPath("$.games").isArray())
+                .andExpect(jsonPath("$.games", hasSize(3)))
+                .andExpect(jsonPath("$.games[0].id").value(1))
+                .andExpect(jsonPath("$.games[1].id").value(2))
+                .andExpect(jsonPath("$.games[2].id").value(3));
     }
 
     @Test
@@ -144,8 +175,8 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                 .andExpect(jsonPath("$.elementAmount").value(3))
                 .andExpect(jsonPath("$.games").isArray())
                 .andExpect(jsonPath("$.games", hasSize(3)))
-                .andExpect(jsonPath("$.games[0].id").value(2))
-                .andExpect(jsonPath("$.games[1].id").value(4))
+                .andExpect(jsonPath("$.games[0].id").value(4))
+                .andExpect(jsonPath("$.games[1].id").value(2))
                 .andExpect(jsonPath("$.games[2].id").value(3));
     }
 
