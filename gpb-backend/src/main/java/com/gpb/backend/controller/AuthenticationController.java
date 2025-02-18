@@ -120,7 +120,7 @@ public class AuthenticationController {
      */
     @PostMapping("/activate")
     @Transactional
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void userActivation(@RequestBody final TokenRequestDto tokenRequestDto) {
         log.info("Processing user activation request");
         userActivationService.activateUserAccount(tokenRequestDto.getToken());
@@ -134,6 +134,7 @@ public class AuthenticationController {
      */
     @PostMapping("/refresh-token")
     @Transactional
+    @ResponseStatus(HttpStatus.OK)
     public String refreshToken(HttpServletRequest request, HttpServletResponse response) {
         log.info("Refresh user authentication token");
         String token = CookieUtil.getRefreshToken(request).orElseThrow(RefreshTokenException::new);
@@ -152,7 +153,7 @@ public class AuthenticationController {
      * @param response the HTTP response used to remove the authentication cookie
      */
     @PostMapping("/logout-user")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(final HttpServletResponse response) {
         log.info("Processing user logout request");
         SecurityContextHolder.clearContext();
