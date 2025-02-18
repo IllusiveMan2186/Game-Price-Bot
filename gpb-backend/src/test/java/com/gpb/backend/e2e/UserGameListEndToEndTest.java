@@ -22,7 +22,7 @@ class UserGameListEndToEndTest {
 
     @RepeatedTest(EntToEndUtil.ATTEMPTS_AMOUNT)
     void testGameSubscription_whenSuccess_shouldSubscribeToGame() {
-        WebDriver driver = getNameInfoPAge();
+        WebDriver driver = getNameInfoPage();
 
 
         clickSubscribeButtonIfNeededCondition(driver, "Unsubscribe");
@@ -36,7 +36,7 @@ class UserGameListEndToEndTest {
 
     @RepeatedTest(EntToEndUtil.ATTEMPTS_AMOUNT)
     void testGameUnsubscribe_whenSuccess_shouldUnsubscribeToGame() {
-        WebDriver driver = getNameInfoPAge();
+        WebDriver driver = getNameInfoPage();
 
         clickSubscribeButtonIfNeededCondition(driver, "Subscribe");
 
@@ -49,7 +49,7 @@ class UserGameListEndToEndTest {
 
     @RepeatedTest(EntToEndUtil.ATTEMPTS_AMOUNT)
     void testUserGameList_whenSuccess_shouldGameInListAfterSubscription() {
-        WebDriver driver = getNameInfoPAge();
+        WebDriver driver = getNameInfoPage();
 
         String gameName = driver.findElement(By.className("app-game__title")).getText();
 
@@ -82,7 +82,7 @@ class UserGameListEndToEndTest {
 
     }
 
-    private WebDriver getNameInfoPAge() {
+    private WebDriver getNameInfoPage() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
         EntToEndUtil.loginInToGpb(driver, adminEmail, adminPassword);

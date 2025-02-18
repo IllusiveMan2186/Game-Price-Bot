@@ -58,7 +58,7 @@ public class UserLinkerController {
      */
     @GetMapping
     @Transactional
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public String getTelegramUserConnectorToken(@AuthenticationPrincipal final UserDto user) {
         log.info("User with ID {} requested a connector token", user.getId());
         String token = userLinkerService.getAccountsLinkerToken(user.getId());

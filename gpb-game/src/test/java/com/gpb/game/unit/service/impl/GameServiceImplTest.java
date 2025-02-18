@@ -18,7 +18,10 @@ import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.impl.GameServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
@@ -117,14 +120,15 @@ class GameServiceImplTest {
     void testGetGameByName_whenSuccess_shouldReturnGame() {
         String name = "name";
         int pageSize = 2;
-        int pageNum = 2;
+        int pageNum = 1;
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        when(gameRepositoryCustom.searchByNameFullText(name, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(gameList);
-        when(gameRepositoryCustom.countByNameFullText(name)).thenReturn(1L);
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
 
+        when(gameRepositoryCustom.searchByNameFullText(name, pageable))
+                .thenReturn(new PageImpl<>(gameList, pageable, 1L));
 
         GameListPageDto result = gameService.getByName(name, pageSize, pageNum, sort);
 
@@ -134,16 +138,20 @@ class GameServiceImplTest {
 
     @Test
     void testGetGameByName_whenThatNotRegistered_shouldFindGameFromStoresService() {
+        Page page = mock(Page.class);
         String name = "name";
         int pageSize = 2;
-        int pageNum = 2;
+        int pageNum = 1;
         game.setName(name);
         List<Game> gameList = Collections.singletonList(game);
         List<Long> gameIds = Collections.singletonList(1L);
         List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
+
         when(gameRepositoryCustom.searchByNameFullText(name, PageRequest.of(pageNum - 1, pageSize, sort)))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(new PageImpl<>(new ArrayList<>(), pageable, 1L));
+        when(page.stream()).thenReturn(new ArrayList<>().stream());
         when(gameStoresService.findGameByName(name)).thenReturn(Collections.singletonList(game));
         when(gameRepository.findByName(name)).thenReturn(null);
         when(gameRepository.save(game)).thenReturn(game);
@@ -207,6 +215,7 @@ class GameServiceImplTest {
 
     @Test
     void testFindByGenre_whenSuccess_shouldReturnGameList() {
+        Page page = mock(Page.class);
         List<Genre> genre = Collections.singletonList(Genre.STRATEGIES);
         int pageSize = 2;
         List<ProductType> types = Collections.singletonList(ProductType.GAME);
@@ -215,10 +224,12 @@ class GameServiceImplTest {
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        when(gameRepository.findByGenresInAndTypeInAndGamesInShop_DiscountPriceBetween(genre, types,
-                PageRequest.of(pageNum - 1, pageSize, sort), new BigDecimal(0), new BigDecimal(1)))
-                .thenReturn(gameList);
-        when(gameRepository.countByGenresInAndTypeIn(genre, types)).thenReturn(1L);
+        when(gameRepositoryCustom.findGamesByGenreAndTypeWithSorting(
+                genre, types, new BigDecimal(0),
+                new BigDecimal(1),PageRequest.of(pageNum - 1, pageSize, sort)))
+                .thenReturn(page);
+        when(page.stream()).thenReturn(gameList.stream());
+        when(page.getTotalElements()).thenReturn(1L);
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
 
         GameListPageDto result = gameService.getByGenre(genre, typesToExclude, pageSize, pageNum,
@@ -231,14 +242,14 @@ class GameServiceImplTest {
     void testFindUserGames_whenSuccess_shouldReturnGameList() {
         int pageSize = 1;
         int pageNum = 1;
-        int userId = 1;
-        BasicUser user = new BasicUser();
-        user.setId(userId);
+        long userId = 1;
+        Page page = mock(Page.class);
         List<Game> gameList = Collections.singletonList(game);
         List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        when(gameRepository.findByUserList(user, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(gameList);
-        when(gameRepository.countAllByUserList(user)).thenReturn(1L);
+        when(gameRepositoryCustom.findGamesByUserWithSorting(userId, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(page);
+        when(page.stream()).thenReturn(gameList.stream());
+        when(page.getTotalElements()).thenReturn(1L);
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
 
         GameListPageDto result = gameService.getUserGames(userId, pageSize, pageNum, sort);
