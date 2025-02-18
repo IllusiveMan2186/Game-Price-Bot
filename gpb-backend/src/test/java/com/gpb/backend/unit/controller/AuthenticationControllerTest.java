@@ -55,6 +55,7 @@ class AuthenticationControllerTest {
     RefreshTokenService refreshTokenService;
     @Mock
     ModelMapper modelMapper;
+
     @Mock
     private HttpServletRequest request;
     @Mock

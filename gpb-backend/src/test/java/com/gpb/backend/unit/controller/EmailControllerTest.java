@@ -17,8 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 
@@ -36,7 +34,6 @@ public class EmailControllerTest {
 
     @Mock
     private UserManagementService userManagementService;
-
     @Mock
     private UserActivationService userActivationService;
     @Mock
@@ -114,11 +111,10 @@ public class EmailControllerTest {
         when(emailChangingService.confirmEmailChangingToken(token)).thenReturn(response);
 
 
-        ResponseEntity<String> result = emailController.emailConformation(new TokenRequestDto(token));
+        String result = emailController.emailConformation(new TokenRequestDto(token));
 
 
-        assertEquals(HttpStatusCode.valueOf(200),result.getStatusCode());
-        assertEquals(response,result.getBody());
+        assertEquals(response, result);
         verify(emailChangingService).confirmEmailChangingToken(token);
     }
 }

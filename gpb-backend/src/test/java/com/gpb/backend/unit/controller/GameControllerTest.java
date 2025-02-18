@@ -10,7 +10,6 @@ import com.gpb.common.entity.game.GameListPageDto;
 import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
 import com.gpb.common.exception.PriceRangeException;
-import com.gpb.common.exception.SortParamException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,7 +30,6 @@ class GameControllerTest {
 
     @Mock
     private GameService gameService;
-
     @Mock
     private ResourceService resourceService;
 

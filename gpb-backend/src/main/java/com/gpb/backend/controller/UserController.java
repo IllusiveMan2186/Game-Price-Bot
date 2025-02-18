@@ -1,12 +1,9 @@
 package com.gpb.backend.controller;
 
-import com.gpb.backend.configuration.security.UserAuthenticationProvider;
-import com.gpb.backend.entity.dto.EmailRequestDto;
 import com.gpb.backend.entity.dto.LocaleRequestDto;
 import com.gpb.backend.entity.dto.PasswordChangeDto;
 import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.GameService;
-import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserAuthenticationService;
 import com.gpb.backend.service.UserManagementService;
 import jakarta.transaction.Transactional;
@@ -34,19 +31,13 @@ public class UserController {
     private final UserManagementService userManagementService;
     private final UserAuthenticationService userAuthenticationService;
     private final GameService gameService;
-    private final UserActivationService userActivationService;
-    private final UserAuthenticationProvider userAuthenticationProvider;
 
     public UserController(UserManagementService userManagementService,
                           UserAuthenticationService userAuthenticationService,
-                          GameService gameService,
-                          UserActivationService userActivationService,
-                          UserAuthenticationProvider userAuthenticationProvider) {
+                          GameService gameService) {
         this.userManagementService = userManagementService;
         this.userAuthenticationService = userAuthenticationService;
         this.gameService = gameService;
-        this.userActivationService = userActivationService;
-        this.userAuthenticationProvider = userAuthenticationProvider;
     }
 
     /**
@@ -59,20 +50,20 @@ public class UserController {
      *
      * @param passwordChangeDto the DTO containing the new password information
      * @param user              the authenticated user's details
-     * @return the updated {@link UserDto} after the password change
      */
     @PutMapping("/password")
     @Transactional
-    public UserDto updateUserPassword(@RequestBody final PasswordChangeDto passwordChangeDto, @AuthenticationPrincipal UserDto user) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateUserPassword(@RequestBody final PasswordChangeDto passwordChangeDto,
+                                      @AuthenticationPrincipal UserDto user) {
         log.info("User with ID {} requested password change", user.getId());
 
-        UserDto updatedUser = userAuthenticationService.updateUserPassword(
+        userAuthenticationService.updateUserPassword(
                 passwordChangeDto.getOldPassword(),
                 passwordChangeDto.getNewPassword(),
                 user);
 
         log.info("User with ID {} successfully changed password", user.getId());
-        return updatedUser;
     }
 
     /**
