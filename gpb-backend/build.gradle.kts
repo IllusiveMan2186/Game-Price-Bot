@@ -35,8 +35,6 @@ dependencies {
 
     implementation("commons-io:commons-io:2.11.0")
     implementation("com.auth0:java-jwt:4.3.0")
-    implementation("com.google.guava:guava:32.1.2-jre")
-    implementation("com.sun.mail:jakarta.mail:2.0.1")
     implementation("io.github.bonigarcia:webdrivermanager:5.7.0")
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
     implementation("org.flywaydb:flyway-core")
@@ -45,6 +43,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.5.1")
     implementation("org.seleniumhq.selenium:selenium-java:4.16.1")
     implementation("jakarta.validation:jakarta.validation-api:3.1.1")
+    implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
 
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
@@ -56,10 +55,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+
 
     implementation("org.springframework:spring-context")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("org.springframework.security:spring-security-config")
+    implementation("org.springframework.retry:spring-retry")
 
     testImplementation("com.h2database:h2:2.2.220")
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
