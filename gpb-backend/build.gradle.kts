@@ -41,7 +41,8 @@ dependencies {
     implementation("org.jsoup:jsoup:1.15.3")
     implementation("org.modelmapper:modelmapper:3.2.0")
     implementation("org.postgresql:postgresql:42.5.1")
-    implementation("org.seleniumhq.selenium:selenium-java:4.16.1")
+    implementation("org.seleniumhq.selenium:selenium-java:4.12.0")
+    implementation("org.seleniumhq.selenium:selenium-devtools-v116:4.12.0")
     implementation("jakarta.validation:jakarta.validation-api:3.1.1")
     implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
 

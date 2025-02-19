@@ -37,7 +37,7 @@ public class AuthFilter extends OncePerRequestFilter {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (header != null && header.startsWith(Constants.AUTHORIZATION_HEADER_BEARER)) {
-            processAuthorizationHeader(header, request, response);
+            processAuthorizationHeader(header);
         } else if (header != null) {
             log.warn("Invalid Authorization header format");
         }
@@ -45,45 +45,14 @@ public class AuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void processAuthorizationHeader(String header, HttpServletRequest request, HttpServletResponse response) {
+    private void processAuthorizationHeader(String header) {
         try {
             log.debug("Authenticating user via Authorization header...");
             Authentication authentication = userAuthenticationProvider.validateAuthToken(header);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (TokenExpiredException e) {
-            log.warn("Access token expired: {}", e.getMessage());
-            handleExpiredToken(request, response);
         } catch (Exception e) {
             log.warn("Invalid token in Authorization header: {}", e.getMessage());
             SecurityContextHolder.clearContext();
-        }
-    }
-
-    private void handleExpiredToken(HttpServletRequest request, HttpServletResponse response) {
-        Optional<String> refreshToken = CookieUtil.getRefreshToken(request);
-
-        if (refreshToken.isPresent()) {
-            try {
-                log.debug("Attempting to refresh access token...");
-                UserDto user = userAuthenticationProvider.validateRefreshToken(refreshToken.get());
-                String newAccessToken = userAuthenticationProvider.generateAccessToken(user.getId());
-
-                response.setHeader(HttpHeaders.AUTHORIZATION, Constants.AUTHORIZATION_HEADER_BEARER + newAccessToken);
-                Authentication authentication =
-                        new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                log.info("User token successfully refreshed");
-            } catch (Exception e) {
-                log.warn("Invalid refresh token: {}", e.getMessage());
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer error=\"invalid_token\"");
-                SecurityContextHolder.clearContext();
-            }
-        } else {
-            log.warn("No valid refresh token found");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer error=\"invalid_token\"");
         }
     }
 }

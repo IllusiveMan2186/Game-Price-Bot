@@ -14,11 +14,9 @@ export default function Header() {
   const { logout } = useAuth();
 
   const handleLogout = async () => {
-    logout();
+    logout(navigate);
 
     await userLogoutRequest();
-
-    navigate(0);
   }
 
   const defaultPage = () => {
