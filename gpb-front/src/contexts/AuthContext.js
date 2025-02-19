@@ -1,4 +1,7 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { NotificationManager } from 'react-notifications';
+import { createContext, useContext, } from "react";
+
+import Message from '@util/message';
 
 const AuthContext = createContext();
 
@@ -27,10 +30,11 @@ export function AuthProvider({ children }) {
         window.localStorage.setItem('USER_ROLE', token);
     };
 
-    const logout = () => {
+    const logout = (navigate) => {
         setAccessToken(null);
         window.localStorage.removeItem('LINK_TOKEN');
         window.localStorage.removeItem('USER_ROLE');
+        navigate(0);
     };
 
     const isUserAuth = () => {

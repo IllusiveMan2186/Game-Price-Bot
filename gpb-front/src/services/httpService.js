@@ -37,7 +37,7 @@ const onTokenRefreshed = (newToken) => {
  * @param {Function} logout - Function to log out the user.
  * @returns {Promise<string|null>} The new access token or null if refresh failed.
  */
-export const refreshToken = async (setAccessToken, logout) => {
+export const refreshToken = async (setAccessToken, logout, navigate) => {
   try {
     const response = await apiClient.post("/refresh-token");
     const newAccessToken = response.data;
@@ -49,7 +49,7 @@ export const refreshToken = async (setAccessToken, logout) => {
 
     if (error.response && error.response.status === 401) {
       console.info("Refresh token failed with 401, logging out...");
-      await logoutRequest(logout);
+      await logoutRequest(logout, navigate);
     } else {
       // Notify all subscribers that the token refresh failed.
       onTokenRefreshed(null);
@@ -62,10 +62,12 @@ export const refreshToken = async (setAccessToken, logout) => {
  * Logs out the user by calling the logout endpoint.
  * @param {Function} logout - Function to perform logout.
  */
-export const logoutRequest = async (logout) => {
+export const logoutRequest = async (logout, navigate) => {
   try {
     await apiClient.post("/logout-user");
-    logout();
+    if (logout) {
+      logout(navigate);
+    }
   } catch (error) {
     console.error("Failed to logout:", error);
   }
@@ -76,7 +78,7 @@ export const logoutRequest = async (logout) => {
  * @param {Function} setAccessToken - Function to update the access token.
  * @param {Function} logout - Function to log out the user.
  */
-export const setupInterceptors = (setAccessToken, logout) => {
+export const setupInterceptors = (setAccessToken, logout, navigate) => {
   apiClient.interceptors.response.use(
     (response) => response, // Return successful responses as-is.
     async (error) => {
@@ -104,7 +106,7 @@ export const setupInterceptors = (setAccessToken, logout) => {
 
         if (!isRefreshing) {
           isRefreshing = true;
-          const newToken = await refreshToken(setAccessToken, logout);
+          const newToken = await refreshToken(setAccessToken, logout, navigate);
           isRefreshing = false;
 
           if (newToken) {

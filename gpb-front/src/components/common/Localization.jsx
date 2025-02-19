@@ -27,6 +27,7 @@ const Localization = () => {
                 <Message string={'app.footer.language'} />
             </h6>
             <button
+                id='ru-locale'
                 className="btn btn-primary btn-floating m-1"
                 style={{ backgroundColor: locale === "ru" ? "#0082ca" : "#333333" }}
                 onClick={() => onChangeHandler('ru')}
@@ -34,6 +35,7 @@ const Localization = () => {
                 RU
             </button>
             <button
+                id='ua-locale'
                 className="btn btn-primary btn-floating m-1"
                 style={{ backgroundColor: locale === "ua" ? "#0082ca" : "#333333" }}
                 onClick={() => onChangeHandler('ua')}
@@ -41,6 +43,7 @@ const Localization = () => {
                 UA
             </button>
             <button
+                id='en-locale'
                 className="btn btn-primary btn-floating m-1"
                 style={{ backgroundColor: locale === "en" ? "#0082ca" : "#333333" }}
                 onClick={() => onChangeHandler('en')}
