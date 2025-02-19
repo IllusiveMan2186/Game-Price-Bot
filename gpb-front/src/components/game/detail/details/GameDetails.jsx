@@ -51,12 +51,12 @@ const SubscribeButton = ({ isSubscribed: initialSubscribed, gameId }) => {
                 id="subscribe-button"
                 type="button"
                 className="btn btn-primary btn-block mb-3"
-                disabled={!isUserAuth}
+                disabled={!isUserAuth()}
                 onClick={handleSubscribe}
             >
                 <Message string={isSubscribed ? 'app.game.info.unsubscribe' : 'app.game.info.subscribe'} />
             </button>
-            {!isUserAuth && <Message string="app.game.info.need.auth" />}
+            {!isUserAuth() && <Message string="app.game.info.need.auth" />}
         </div>
     );
 };

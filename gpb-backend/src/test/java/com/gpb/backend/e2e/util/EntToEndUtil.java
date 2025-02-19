@@ -2,6 +2,7 @@ package com.gpb.backend.e2e.util;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -10,8 +11,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.Optional;
 
 public class EntToEndUtil {
 
@@ -30,29 +29,41 @@ public class EntToEndUtil {
         return driver;
     }
 
-    public static WebDriver loginInToGpb(WebDriver driver, String adminEmail, String adminPassword) {
-        driver.findElement(By.id("login-button")).click();
+    public static void loginInToGpb(WebDriver driver, String adminEmail, String adminPassword) {
+        EntToEndUtil.waitToBeClickable(driver, "login-button").click();
         driver.findElement(By.name("email")).sendKeys(adminEmail);
         driver.findElement(By.name("password")).sendKeys(adminPassword);
-        driver.findElement(By.id("pills-login")).findElement(By.className("btn")).click();
+        EntToEndUtil.waitToBeClickable(driver, "pills-login")
+                .findElement(By.className("btn")).click();
 
-        choseLocale(driver, "EN");
-        return driver;
+        choseLocale(driver);
     }
 
-    private static void choseLocale(WebDriver driver, String locale) {
-        List<WebElement> elementList = driver.findElement(By.id("footer-language-choice"))
-                .findElements(By.className("btn"));
-        Optional<WebElement> englishLanguageChoice = elementList.stream()
-                .filter(element -> element.getText().equals(locale))
-                .findFirst();
-        englishLanguageChoice.ifPresent(WebElement::click);
+    private static void choseLocale(WebDriver driver) {
+        if (!driver.findElements(By.id("profile-dropdown-button")).isEmpty() &&
+                !driver.findElement(By.id("profile-dropdown-button")).getText().equals("Profile")) {
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();",
+                    EntToEndUtil.waitToBeClickable(driver, "EN".toLowerCase() + "-locale"));
+        }
     }
+
 
     public static void gameSearch(WebDriver driver, String gameName) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT_TIME));
         driver.findElement(By.id("game-search-input-field")).sendKeys(gameName);
         driver.findElement(By.id("game-search-button")).click();
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("app-content-loading")));
+    }
+
+    public static WebElement waitToBeClickable(WebDriver driver, String elementId) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1));
+        return wait.until(ExpectedConditions.elementToBeClickable(By.id(elementId)));
     }
 }

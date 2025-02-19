@@ -28,7 +28,7 @@ class UserGameListEndToEndTest {
         clickSubscribeButtonIfNeededCondition(driver, "Unsubscribe");
 
 
-        WebElement subscribeButton = waitToBeClickable(driver, "subscribe-button");
+        WebElement subscribeButton = EntToEndUtil.waitToBeClickable(driver, "subscribe-button");
         assertEquals("Unsubscribe", subscribeButton.getText());
 
         driver.quit();
@@ -41,7 +41,7 @@ class UserGameListEndToEndTest {
         clickSubscribeButtonIfNeededCondition(driver, "Subscribe");
 
 
-        WebElement subscribeButton = waitToBeClickable(driver, "subscribe-button");
+        WebElement subscribeButton = EntToEndUtil.waitToBeClickable(driver, "subscribe-button");
         assertEquals("Subscribe", subscribeButton.getText());
 
         driver.quit();
@@ -55,7 +55,7 @@ class UserGameListEndToEndTest {
 
         clickSubscribeButtonIfNeededCondition(driver, "Unsubscribe");
 
-        waitToBeClickable(driver, "profile-dropdown-button").click();
+        EntToEndUtil.waitToBeClickable(driver, "profile-dropdown-button").click();
         driver.findElement(By.id("user-gameList-button")).click();
 
 
@@ -64,11 +64,6 @@ class UserGameListEndToEndTest {
         assertEquals(gameName, gameNameInList);
 
         driver.quit();
-    }
-
-    private WebElement waitToBeClickable(WebDriver driver, String elementId) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1));
-        return wait.until(ExpectedConditions.elementToBeClickable(By.id(elementId)));
     }
 
     private void clickSubscribeButtonIfNeededCondition(WebDriver driver, String unwantedButtonState) {
