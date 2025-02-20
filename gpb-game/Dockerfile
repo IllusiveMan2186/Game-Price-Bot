@@ -16,8 +16,8 @@ ENV DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD
 RUN gradle clean build
 
 # Stage 2: Create the final image
-FROM openjdk:20
-ENV ARTIFACT_NAME=gpb-game-1.0.0.jar
+FROM openjdk:17
+ENV ARTIFACT_NAME=gpb-game-1.1.0.jar
 ENV APP_HOME=/gpb/game/
 
 WORKDIR $APP_HOME

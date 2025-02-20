@@ -1,67 +1,45 @@
 package com.gpb.backend.service;
 
 import com.gpb.backend.entity.WebUser;
-import com.gpb.backend.entity.dto.UserDto;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
- * Handle user info management
+ * Service interface for managing user information.
  */
 public interface UserManagementService {
-    /**
-     * Get user by ID
-     *
-     * @param userId User's ID
-     * @return User DTO
-     */
-    UserDto getUserById(long userId);
+
+
+    WebUser getWebUserById(final long userId);
 
     /**
-     * Get user by basic user ID
+     * Retrieves the web user associated with the given basic user ID.
      *
-     * @param basicUserId Basic user ID
-     * @return Web user
+     * @param basicUserId the basic user ID
+     * @return the corresponding {@link WebUser} entity
      */
     WebUser getUserByBasicUserId(long basicUserId);
 
     /**
-     * Get web users by a list of IDs
+     * Retrieves a web user by their email address.
      *
-     * @param ids List of user IDs
-     * @return List of web users
+     * @param email the email address of the user
+     * @return the {@link WebUser} associated with the specified email
      */
-    List<WebUser> getWebUsers(List<Long> ids);
+    Optional<WebUser> getWebUserByEmail(String email);
 
     /**
-     * Get web user by email
+     * Updates the locale setting for the specified user.
      *
-     * @param email users email
-     * @return user
-     */
-    WebUser getWebUserByEmail(String email);
-
-    /**
-     * Update the user's locale
-     *
-     * @param locale New locale
-     * @param userId User's ID
+     * @param locale the new locale to be set for the user
+     * @param userId the unique identifier of the user whose locale is being updated
      */
     void updateLocale(String locale, long userId);
 
     /**
-     * Activate user by ID
+     * Activates the user account corresponding to the specified user ID.
      *
-     * @param userId User's ID
+     * @param userId the unique identifier of the user to activate
      */
     void activateUser(long userId);
-
-    /**
-     * Set new basic user id
-     *
-     * @param currentBasicUserId current basic user id
-     * @param newBasicUserId     new basic user id
-     */
-    void setBasicUserId(long currentBasicUserId, long newBasicUserId);
 }
-

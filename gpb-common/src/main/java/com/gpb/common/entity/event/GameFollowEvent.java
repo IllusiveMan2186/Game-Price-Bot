@@ -11,6 +11,6 @@ import lombok.ToString;
 @ToString
 public class GameFollowEvent {
 
-    long userId;
-    long gameId;
+    private long userId;
+    private long gameId;
 }

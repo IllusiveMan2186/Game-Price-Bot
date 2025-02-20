@@ -12,8 +12,8 @@ body {
   --bs-gutter-x: 0 !important;
 }
 
-.App {
-  height: 100%;
+.app {
+  min-height: 100vh;
   display: block;
   overflow: auto;
   text-align: center;
@@ -24,7 +24,7 @@ body {
   justify-content: space-between;
 }
 
-.App-footer {
+.app-footer {
   background-color: #000000;
   min-height: 8vh;
   display: flex;
@@ -39,16 +39,7 @@ body {
   color: #911010;
 }
 
-.Resend-link {
-  color: #4eb2ec;
-  text-decoration: underline;
-}
-
-.Resend-link:hover {
-  cursor: pointer;
-}
-
-.App-user-info {
+.app-user-info {
   background-color: #13538881;
   box-sizing: border-box;
   width: 100%;
@@ -68,10 +59,55 @@ body {
   align-items: center;
 }
 
-.App-user-info-title {
+.app-user-info-title {
   font-size: 2.5rem;
 }
 
 .login-form {
   margin-top: 20px !important;
+}
+
+.notification-wrapper {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  max-width: 500px;
+  z-index: 1000;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.notification-container-empty {
+  opacity: 0;
+  visibility: hidden !important;
+  pointer-events: none;
+}
+
+.notification-container {
+  opacity: 1;
+  visibility: visible;
+  width: 100%;
+  background: #000000;
+  color: white;
+  background-color: #147acd81;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.notification-success {
+  background: #223393;
+}
+
+.notification {
+  padding: 10px;
+  border-radius: 12px;
+}
+
+.notification-error {
+  background: #851212;
 }

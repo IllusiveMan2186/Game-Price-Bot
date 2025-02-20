@@ -4,6 +4,7 @@ import com.gpb.backend.controller.GameController;
 import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.GameService;
 import com.gpb.backend.service.ResourceService;
+import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.common.entity.game.GameInfoDto;
 import com.gpb.common.entity.game.GameListPageDto;
 import com.gpb.common.entity.game.Genre;
@@ -29,7 +30,6 @@ class GameControllerTest {
 
     @Mock
     private GameService gameService;
-
     @Mock
     private ResourceService resourceService;
 
@@ -43,14 +43,14 @@ class GameControllerTest {
         user.setId(123L);
 
         GameInfoDto gameInfo = new GameInfoDto();
-        when(gameService.getById(gameId, user.getId())).thenReturn(gameInfo);
+        when(gameService.getById(gameId, user.getBasicUserId())).thenReturn(gameInfo);
 
 
         GameInfoDto result = gameController.getGameById(gameId, user);
 
 
         assertNotNull(result);
-        verify(gameService).getById(gameId, user.getId());
+        verify(gameService).getById(gameId, user.getBasicUserId());
     }
 
     @Test
@@ -58,7 +58,7 @@ class GameControllerTest {
         String name = "Test Game";
         int pageSize = 25;
         int pageNum = 1;
-        String sortBy = "gamesInShop.price-ASC";
+        String sortBy = "gamesInShop.discountPrice-ASC";
 
         GameListPageDto gameList = new GameListPageDto();
         when(gameService.getByName(name, pageSize, pageNum, sortBy)).thenReturn(gameList);
@@ -78,7 +78,7 @@ class GameControllerTest {
 
 
         assertThrows(PriceRangeException.class, () ->
-                gameController.getGamesForGenre(List.of(), List.of(), 25, 1, minPrice, maxPrice, "gamesInShop.price-ASC"));
+                gameController.getGamesForGenre(List.of(), List.of(), 25, 1, minPrice, maxPrice, "gamesInShop.discountPrice-ASC"));
     }
 
     @Test
@@ -90,11 +90,11 @@ class GameControllerTest {
         int pageNum = 1;
         BigDecimal minPrice = BigDecimal.ZERO;
         BigDecimal maxPrice = BigDecimal.valueOf(100);
-        String sortBy = "gamesInShop.price-ASC";
+        String sortBy = "gamesInShop.discountPrice-ASC";
 
         GameListPageDto gameList = new GameListPageDto();
         when(gameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice,
-                "gamesInShop.price-ASC")).thenReturn(gameList);
+                "gamesInShop.discountPrice-ASC")).thenReturn(gameList);
 
 
         GameListPageDto result = gameController.getGamesForGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sortBy);
@@ -102,7 +102,7 @@ class GameControllerTest {
 
         assertNotNull(result);
         verify(gameService).getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice,
-                "gamesInShop.price-ASC");
+                "gamesInShop.discountPrice-ASC");
     }
 
     @Test
@@ -117,6 +117,15 @@ class GameControllerTest {
 
         assertNotNull(result);
         verify(gameService).getByUrl(url);
+    }
+
+    @Test
+    void testAddGameInStore_whenSuccess_shouldReturnGameInfo() {
+        AddGameInStoreDto addGameInStoreDto = new AddGameInStoreDto();
+
+        gameController.addGameInStoreToCreatedGameByUrl(addGameInStoreDto);
+
+        verify(gameService).addGameInStore(addGameInStoreDto);
     }
 
     @Test
@@ -162,7 +171,7 @@ class GameControllerTest {
 
         int pageSize = 25;
         int pageNum = 1;
-        String sortBy = "gamesInShop.price-ASC";
+        String sortBy = "gamesInShop.discountPrice-ASC";
 
         GameListPageDto gameList = new GameListPageDto();
         when(gameService.getUserGames(user.getBasicUserId(), pageSize, pageNum, sortBy)).thenReturn(gameList);

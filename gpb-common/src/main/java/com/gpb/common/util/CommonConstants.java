@@ -34,6 +34,11 @@ public class CommonConstants {
     public static final String EMAIL_NOTIFICATION_TOPIC = "gpb_email_notification";
 
     /**
+     * Kafka topic for email notifications.
+     */
+    public static final String TELEGRAM_NOTIFICATION_TOPIC = "gpb_telegram_notification";
+
+    /**
      * Kafka topic for following a game event.
      */
     public static final String GAME_FOLLOW_TOPIC = "gpb_game_follow";
@@ -54,7 +59,49 @@ public class CommonConstants {
     public static final String GAME_IN_STORE_REMOVE_TOPIC = "gpb_game_in_store_remove";
 
     /**
-     * Kafka group ID for the GPB application.
+     * Kafka topic for add a game in store.
      */
-    public static final String GPB_KAFKA_GROUP_ID = "gpb";
+    public static final String GAME_IN_STORE_ADD_TOPIC = "gpb_game_in_store_add";
+
+    /**
+     * Kafka topic for link users.
+     */
+    public static final String LINK_USERS_TOPIC = "gpb_link_user";
+
+    /**
+     * Kafka topic for change basic user id.
+     */
+    public static final String CHANGE_BASIC_USER_ID_TOPIC = "gpb_change_basic_user_id";
+
+    /**
+     * Name sort param
+     */
+    public static final String NAME_SORT_PARAM = "name";
+
+    /**
+     * Price sort param
+     */
+    public static final String PRICE_SORT_PARAM = "gamesInShop.discountPrice";
+
+    /**
+     * Ascending sort direction
+     */
+    public static final String SORT_DIRECTION_ASCENDING = "ASC";
+
+    /**
+     * Descending sort direction
+     */
+    public static final String SORT_DIRECTION_DESCENDING = "DESC";
+
+    /**
+     * Pattern of sort string
+     */
+    public static final String SORT_PARAM_REGEX =
+            "^(gamesInShop.discountPrice|name)-(ASC|DESC)$";
+
+    public static final String URL_REGEX_PATTERN = "^(https?|ftp)://[a-zA-Z0-9\\-_.]+\\.[a-zA-Z]{2,}(/.*)?$";
+
+    public static final String NAME_REGEX_PATTERN = "^[\\p{L}0-9\\s&!:'()_.,-]+$";
+
+    public static final String TOKEN_REGEX_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 }

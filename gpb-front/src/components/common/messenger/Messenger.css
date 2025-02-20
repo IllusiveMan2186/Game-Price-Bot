@@ -1,0 +1,13 @@
+.messenger-button {
+    background-color: rgb(39, 47, 71);
+    width: 35px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.messenger-button-icon {
+    width: 20px;
+    height: 20px;
+}

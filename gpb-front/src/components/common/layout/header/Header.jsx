@@ -1,20 +1,23 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigation } from "@contexts/NavigationContext";
 
 import Buttons from '@components/common/button/Buttons';
-import { setAuthToken, setUserRole } from '@util/authService';
+import { useAuth } from "@contexts/AuthContext";
+import { useAuthActions } from '@hooks/user/useAuthActions';
 
 import logo from '@assets/images/logo.png';
 import './Header.css';
 
 export default function Header() {
-  const navigate = useNavigate();
+  const navigate = useNavigation();
+  const { userLogoutRequest } = useAuthActions()
+  const { logout } = useAuth();
 
-  const logout = () => {
-    setAuthToken(null);
-    setUserRole(null);
-    navigate(0)
-  };
+  const handleLogout = async () => {
+    logout(navigate);
+
+    await userLogoutRequest();
+  }
 
   const defaultPage = () => {
     navigate("/")
@@ -22,13 +25,13 @@ export default function Header() {
   };
 
   return (
-    <header className="App-header">
-      <div className="App-title" onClick={defaultPage}>
-        <img src={logo} className="App-logo" alt="logo" />
+    <header className="app-header">
+      <div className="app-title" onClick={defaultPage}>
+        <img src={logo} className="app-logo" alt="logo" />
         <h1 style={{ fontSize: 'auto' }}>GPB</h1>
       </div>
 
-      <Buttons logout={logout} />
+      <Buttons logout={handleLogout} />
     </header>
   );
 };

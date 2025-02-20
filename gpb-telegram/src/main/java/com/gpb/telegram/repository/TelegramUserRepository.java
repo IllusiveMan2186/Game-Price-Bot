@@ -12,6 +12,7 @@ public interface TelegramUserRepository extends CrudRepository<TelegramUser, Lon
 
     boolean existsByTelegramId(long telegramId);
     TelegramUser findByTelegramId(long telegramId);
+    TelegramUser findByBasicUserId(long basicUserId);
 
     @Modifying
     @Query("UPDATE TelegramUser w SET w.basicUserId = :newBasicUserId WHERE w.basicUserId = :currentBasicUserId")

@@ -1,40 +1,52 @@
-import React, { useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-import { isUserAdmin, isUserAuth } from '@util/authService';
+import { useAuth } from "@contexts/AuthContext";
 import Message from '@util/message';
 
 import { CommonGameInfo } from '@components/game/shared/info/CommonGameInfo';
-import GameStoresList from '@components/game/detail/stores/GameStoresList';
+import GameStoresList from '@components/game/detail/details/stores/list/GameStoresList';
+import AddGameInStore from '@components/game/detail/details/stores/adding/AddGameInStore';
 
-import {
-    subscribeForGameRequest,
-    unsubscribeForGameRequest,
-    removeGameRequest,
-} from '@services/gameRequests';
+import { useGameActions, } from '@hooks/game/useGameActions';
+import { useGameSubscription, } from '@hooks/game/useGameSubscription';
 
 import './GameDetails.css';
 
-const RemoveButton = ({ gameId, navigate }) => (
-    <button
-        type="button"
-        className="btn btn-danger btn-block mb-3 App-game-page-info-remove"
-        onClick={() => removeGameRequest(gameId, navigate)}
-    >
-        <Message string="app.game.info.remove" />
-    </button>
-);
-
-const SubscribeButton = ({ isSubscribed, gameId, navigate }) => {
-    const handleSubscribe = useCallback(() => {
-        if (isSubscribed) {
-            unsubscribeForGameRequest(gameId, navigate);
-        } else {
-            subscribeForGameRequest(gameId, navigate);
-        }
-    }, [isSubscribed, gameId, navigate]);
+const RemoveButton = ({ gameId }) => {
+    const { removeGameRequest } = useGameActions();
 
     return (
-        <div className="App-game-page-info-subscribe">
+        <button
+            type="button"
+            className="btn btn-danger btn-block mb-3 app-game__remove"
+            onClick={() => removeGameRequest(gameId)}
+        >
+            <Message string="app.game.info.remove" />
+        </button>
+    );
+};
+
+const SubscribeButton = ({ isSubscribed: initialSubscribed, gameId }) => {
+    const [isSubscribed, setIsSubscribed] = useState(initialSubscribed);
+    const { isUserAuth } = useAuth();
+    const { subscribeForGameRequest, unsubscribeForGameRequest } = useGameSubscription();
+
+    useEffect(() => {
+        setIsSubscribed(initialSubscribed);
+    }, [initialSubscribed]);
+
+    const handleSubscribe = useCallback(() => {
+        if (isSubscribed) {
+            unsubscribeForGameRequest(gameId);
+            setIsSubscribed(false);
+        } else {
+            subscribeForGameRequest(gameId);
+            setIsSubscribed(true);
+        }
+    }, [isSubscribed, gameId]);
+
+    return (
+        <div className="app-game__subscribe">
             <button
                 id="subscribe-button"
                 type="button"
@@ -50,27 +62,33 @@ const SubscribeButton = ({ isSubscribed, gameId, navigate }) => {
 };
 
 const GameGenres = ({ genres }) => (
-    <div className="App-game-page-info-common-genre">
+    <div className="app-game__details-genre">
         <Message string="app.game.filter.genre.title" />:
         {genres.map((genre) => (
-            <span key={genre} className="genre-subtext">
+            <span key={genre} className="app-game__genre-subtext">
                 <Message string={`app.game.genre.${genre.toLowerCase()}`} />
             </span>
         ))}
     </div>
 );
 
-const GameDetails = ({ game, gameId, navigate }) => (
-    <div className="App-game-page-info">
-        <h1 className="App-game-page-info-title">{game.name}</h1>
-        <div className="App-game-page-info-common">
-            <CommonGameInfo game={game} className="App-game-page-info-common-price" />
-            <GameGenres genres={game.genres} />
+const GameDetails = ({ game, gameId, navigate }) => {
+    const { isUserAdmin } = useAuth();
+
+    return (
+        <div className="app-game__info">
+            <h1 className="app-game__title">{game.name}</h1>
+            <div className="app-game__details">
+                <CommonGameInfo game={game} className="app-game__details-price" />
+                <GameGenres genres={game.genres} />
+            </div>
+            <SubscribeButton isSubscribed={game.userSubscribed} gameId={gameId} />
+            {isUserAdmin() && <RemoveButton gameId={gameId} navigate={navigate} />}
+            <GameStoresList stores={game.gamesInShop} navigate={navigate} />
+            {isUserAdmin() && <AddGameInStore gameId={gameId} />}
         </div>
-        <SubscribeButton isSubscribed={game.userSubscribed} gameId={gameId} navigate={navigate} />
-        {isUserAdmin() && <RemoveButton gameId={gameId} navigate={navigate} />}
-        <GameStoresList stores={game.gamesInShop} />
-    </div>
-);
+    );
+};
+
 
 export default GameDetails;

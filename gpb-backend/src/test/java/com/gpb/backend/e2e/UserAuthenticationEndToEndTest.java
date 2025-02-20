@@ -1,8 +1,8 @@
 package com.gpb.backend.e2e;
 
 import com.gpb.backend.e2e.util.EntToEndUtil;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
@@ -16,7 +16,7 @@ class UserAuthenticationEndToEndTest {
     private final String adminEmail = System.getProperty("e2e.email");
     private final String adminPassword = System.getProperty("e2e.password");
 
-    @Test
+    @RepeatedTest(EntToEndUtil.ATTEMPTS_AMOUNT)
     void testUserLogin_whenSuccess_shouldLoginInProfile() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
@@ -31,7 +31,7 @@ class UserAuthenticationEndToEndTest {
         driver.quit();
     }
 
-    @Test
+    @RepeatedTest(EntToEndUtil.ATTEMPTS_AMOUNT)
     void testUserLogin_whenWrongCredential_shouldShowError() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
@@ -47,13 +47,13 @@ class UserAuthenticationEndToEndTest {
         driver.quit();
     }
 
-    @Test
-    void testUserLogout_whenSuccess_shouldLogoutOfProfile() {
+    @RepeatedTest(EntToEndUtil.ATTEMPTS_AMOUNT)
+    void testUserLogout_whenSuccess_shouldLogoutOfProfile() throws InterruptedException {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
 
         EntToEndUtil.loginInToGpb(driver, adminEmail, adminPassword);
-        driver.findElement(By.id("profile-dropdown-button")).click();
+        EntToEndUtil.waitToBeClickable(driver, "profile-dropdown-button").click();
         driver.findElement(By.id("logout-button")).click();
 
 

@@ -1,7 +1,6 @@
 package com.gpb.email.configuration;
 
 import com.gpb.common.entity.event.EmailEvent;
-import com.gpb.common.util.CommonConstants;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,12 +13,28 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Configuration class for Kafka consumers.
+ * <p>
+ * This configuration sets up a {@link ConcurrentKafkaListenerContainerFactory} specifically for consuming
+ * {@link EmailEvent} messages from Kafka. It leverages a type-safe JSON deserializer and externalizes configuration
+ * properties for the Kafka server and consumer group.
+ * </p>
+ */
 @Configuration
 public class KafkaConsumerConfig {
 
     @Value("${KAFKA_SERVER_URL}")
     private String kafkaServer;
 
+    @Value("${spring.kafka.consumer.group-id}")
+    private String kafkaGroupId;
+
+    /**
+     * Creates a Kafka listener container factory for processing {@link EmailEvent} messages.
+     *
+     * @return a configured {@link ConcurrentKafkaListenerContainerFactory} for EmailEvent consumption
+     */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, EmailEvent> emailEventListener() {
         Map<String, Object> props = new HashMap<>();
@@ -29,7 +44,7 @@ public class KafkaConsumerConfig {
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.gpb.common.entity.event.EmailEvent");
         props.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, CommonConstants.GPB_KAFKA_GROUP_ID);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaGroupId);
 
         ConcurrentKafkaListenerContainerFactory<String, EmailEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();

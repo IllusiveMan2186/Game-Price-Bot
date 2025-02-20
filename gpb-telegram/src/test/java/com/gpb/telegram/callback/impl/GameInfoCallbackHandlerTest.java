@@ -42,7 +42,7 @@ class GameInfoCallbackHandlerTest {
         TelegramUser user = TelegramUser.builder().basicUserId(123456L).build();
         when(gameService.getById(gameId, 123456L)).thenReturn(game);
         TelegramRequest request = TelegramRequest.builder().update(update).user(user).locale(locale).user(user).build();
-        when(gameInfoMapper.gameInfoToTelegramPage(game, request)).thenReturn(partialBotApiMethodList);
+        when(gameInfoMapper.mapGameInfoToTelegramPage(game, request)).thenReturn(partialBotApiMethodList);
 
 
         TelegramResponse response = callbackHandler.apply(request);

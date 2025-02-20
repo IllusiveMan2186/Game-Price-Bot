@@ -9,6 +9,7 @@ import com.gpb.backend.exception.LoginFailedException;
 import com.gpb.backend.exception.UserDataNotChangedException;
 import com.gpb.backend.exception.UserLockedException;
 import com.gpb.backend.exception.UserNotActivatedException;
+import com.gpb.backend.exception.WrongPasswordException;
 import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.UserAuthenticationService;
 import com.gpb.backend.util.Constants;
@@ -49,24 +50,31 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     }
 
     @Override
-    public UserDto login(Credentials credentials) {
-        log.info("Login attempt for user with email.");
+    public WebUser login(Credentials credentials) {
+        log.debug("Login attempt for user with email.");
 
         WebUser user = webUserRepository.findByEmail(credentials.getEmail())
                 .orElseThrow(LoginFailedException::new);
 
         if (!user.isActivated()) {
+            log.warn("Login failed for user {}: account not activated.", user.getId());
             throw new UserNotActivatedException();
         }
 
         if (user.isAccountLocked() && !isLockTimeOver(user.getLockTime())) {
+            log.warn("Login failed for user {}: account locked.", user.getId());
             throw new UserLockedException();
         }
 
         if (user.isPasswordValid(CharBuffer.wrap(credentials.getPassword()), passwordEncoder)) {
-            user.unlockAccount();
-            webUserRepository.save(user);
-            return modelMapper.map(user, UserDto.class);
+            if (user.isAccountLocked() && isLockTimeOver(user.getLockTime())) {
+                log.warn("Unlock locked user {}.", user.getId());
+                user.unlockAccount();
+                return webUserRepository.save(user);
+            } else {
+                log.debug("User {} logged in.", user.getId());
+                return user;
+            }
         }
 
         user.incrementFailedAttempts(Constants.MAX_FAILED_ATTEMPTS);
@@ -101,26 +109,14 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     }
 
     @Override
-    public UserDto getUserByEmail(final String email) {
-        log.info("Get user by email : {}", email);
-        final WebUser user = webUserRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("app.user.error.email.not.found"));
-        return modelMapper.map(user, UserDto.class);
+    public UserDto getUserById(long userId) {
+        return modelMapper.map(getWebUserById(userId), UserDto.class);
     }
 
     @Override
-    public UserDto updateUserEmail(String newEmail, UserDto userDto) {
+    public UserDto updateUserEmail(String newEmail, WebUser user) {
         log.info("Updating email for user.");
 
-        if (newEmail.equals(userDto.getEmail())) {
-            throw new UserDataNotChangedException();
-        }
-
-        if (webUserRepository.findByEmail(newEmail).isPresent()) {
-            throw new EmailAlreadyExistException();
-        }
-
-        WebUser user = getWebUserById(userDto.getId());
         user.setEmail(newEmail);
         webUserRepository.save(user);
 
@@ -128,16 +124,20 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     }
 
     @Override
-    public UserDto updateUserPassword(char[] password, UserDto userDto) {
+    public UserDto updateUserPassword(char[] oldPassword, char[] newPassword, UserDto userDto) {
         log.info("Updating password for user.");
 
         WebUser user = getWebUserById(userDto.getId());
 
-        if (user.isPasswordValid(CharBuffer.wrap(password), passwordEncoder)) {
+        if (!user.isPasswordValid(CharBuffer.wrap(oldPassword), passwordEncoder)) {
+            throw new WrongPasswordException();
+        }
+
+        if (user.isPasswordValid(CharBuffer.wrap(newPassword), passwordEncoder)) {
             throw new UserDataNotChangedException();
         }
 
-        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(password)));
+        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(newPassword)));
         webUserRepository.save(user);
 
         return modelMapper.map(user, UserDto.class);

@@ -1,35 +1,31 @@
 package com.gpb.game.service.impl.notification;
 
-import com.gpb.common.entity.event.EmailNotificationEvent;
+import com.gpb.common.entity.event.NotificationEvent;
+import com.gpb.common.entity.game.GameInStoreDto;
 import com.gpb.common.util.CommonConstants;
-import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service(value = "EMAIL")
 @Slf4j
 public class EmailNotificationServiceImpl implements NotificationService {
 
-    private final KafkaTemplate<String, EmailNotificationEvent> kafkaTemplate;
+    private final KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
-    public EmailNotificationServiceImpl(KafkaTemplate<String, EmailNotificationEvent> kafkaTemplate) {
+    public EmailNotificationServiceImpl(KafkaTemplate<String, NotificationEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
-    public void sendGameInfoChange(BasicUser user, List<GameInShop> gameInShopList) {
-        Map<String, Object> variables = new LinkedHashMap<>();
-        variables.put("games", gameInShopList);
+    public void sendGameInfoChange(BasicUser user, List<GameInStoreDto> gameInShopList) {
         log.info("Email notification for user '{}'", user.getId());
         kafkaTemplate.send(CommonConstants.EMAIL_NOTIFICATION_TOPIC,
                 "1",
-                new EmailNotificationEvent(user.getId(), variables));
+                new NotificationEvent(user.getId(), gameInShopList));
     }
 }

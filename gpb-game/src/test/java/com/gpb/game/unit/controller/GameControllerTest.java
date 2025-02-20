@@ -9,6 +9,7 @@ import com.gpb.common.exception.SortParamException;
 import com.gpb.game.controller.GameController;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.user.BasicUser;
+import com.gpb.game.service.GameInShopService;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,8 @@ class GameControllerTest {
 
     @Mock
     private GameService gameService;
-
+    @Mock
+    private GameInShopService gameInShopService;
     @Mock
     private UserService userService;
 
@@ -67,9 +69,9 @@ class GameControllerTest {
         String name = "GameName";
         int pageSize = 10;
         int pageNum = 1;
-        String sortBy = "gamesInShop.price-ASC";
+        String sortBy = "gamesInShop.discountPrice-ASC";
         GameListPageDto mockPage = new GameListPageDto();
-        when(gameService.getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.price")))
+        when(gameService.getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.discountPrice")))
                 .thenReturn(mockPage);
 
 
@@ -77,21 +79,21 @@ class GameControllerTest {
 
 
         assertNotNull(result);
-        verify(gameService, times(1)).getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.price"));
+        verify(gameService, times(1)).getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.discountPrice"));
     }
 
     @Test
     void testGetGameByUrl_whenSuccess_shouldReturnGameInfo() {
         String url = "http://example.com/game";
         GameInfoDto mockGameInfo = new GameInfoDto();
-        when(gameService.getByUrl(url)).thenReturn(mockGameInfo);
+        when(gameInShopService.getByUrl(url)).thenReturn(mockGameInfo);
 
 
         GameInfoDto result = gameController.getGameByUrl(url);
 
 
         assertNotNull(result);
-        verify(gameService, times(1)).getByUrl(url);
+        verify(gameInShopService, times(1)).getByUrl(url);
     }
 
     @Test
@@ -102,7 +104,7 @@ class GameControllerTest {
 
         assertThrows(PriceRangeException.class, () ->
                 gameController.getGamesForGenre(Collections.emptyList(), Collections.emptyList(), 10,
-                        1, minPrice, maxPrice, "gamesInShop.price-ASC", null));
+                        1, minPrice, maxPrice, "gamesInShop.discountPrice-ASC", null));
     }
 
     @Test
@@ -113,9 +115,9 @@ class GameControllerTest {
         int pageNum = 1;
         BigDecimal minPrice = BigDecimal.valueOf(20);
         BigDecimal maxPrice = BigDecimal.valueOf(60);
-        String sortBy = "gamesInShop.price-DESC";
+        String sortBy = "gamesInShop.discountPrice-DESC";
         GameListPageDto mockPage = new GameListPageDto();
-        when(gameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, Sort.by(Sort.Direction.DESC, "gamesInShop.price")))
+        when(gameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, Sort.by(Sort.Direction.DESC, "gamesInShop.discountPrice")))
                 .thenReturn(mockPage);
 
 
@@ -123,7 +125,7 @@ class GameControllerTest {
 
 
         assertNotNull(result);
-        verify(gameService, times(1)).getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, Sort.by(Sort.Direction.DESC, "gamesInShop.price"));
+        verify(gameService, times(1)).getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, Sort.by(Sort.Direction.DESC, "gamesInShop.discountPrice"));
     }
 
     @Test
@@ -161,9 +163,9 @@ class GameControllerTest {
         String name = "GameName";
         int pageSize = 10;
         int pageNum = 1;
-        String validSortBy = "gamesInShop.price-ASC";
+        String validSortBy = "gamesInShop.discountPrice-ASC";
         GameListPageDto mockPage = new GameListPageDto();
-        when(gameService.getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.price")))
+        when(gameService.getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.discountPrice")))
                 .thenReturn(mockPage);
 
 
@@ -171,7 +173,7 @@ class GameControllerTest {
 
 
         assertNotNull(result);
-        verify(gameService, times(1)).getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.price"));
+        verify(gameService, times(1)).getByName(name, pageSize, pageNum, Sort.by(Sort.Direction.ASC, "gamesInShop.discountPrice"));
     }
 
 }

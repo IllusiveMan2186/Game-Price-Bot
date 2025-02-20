@@ -2,6 +2,7 @@ package com.gpb.telegram.service.impl;
 
 import com.gpb.common.entity.user.NotificationRequestDto;
 import com.gpb.common.entity.user.UserNotificationType;
+import com.gpb.common.service.ChangeUserBasicIdService;
 import com.gpb.common.service.RestTemplateHandlerService;
 import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.repository.TelegramUserRepository;
@@ -17,7 +18,7 @@ import java.util.Locale;
 @Component
 @Slf4j
 @AllArgsConstructor
-public class TelegramUserServiceImpl implements TelegramUserService {
+public class TelegramUserServiceImpl implements TelegramUserService, ChangeUserBasicIdService {
 
     private final TelegramUserRepository telegramUserRepository;
 
@@ -33,6 +34,12 @@ public class TelegramUserServiceImpl implements TelegramUserService {
     public TelegramUser getUserById(long telegramId) {
         log.info("Get user by telegram id '{}'", telegramId);
         return telegramUserRepository.findByTelegramId(telegramId);
+    }
+
+    @Override
+    public TelegramUser getByBasicUserId(long basicUserId) {
+        log.info("Get user by basic user id '{}'", basicUserId);
+        return telegramUserRepository.findByBasicUserId(basicUserId);
     }
 
     @Override

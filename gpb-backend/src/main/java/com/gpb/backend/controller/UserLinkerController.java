@@ -1,7 +1,6 @@
 package com.gpb.backend.controller;
 
 import com.gpb.backend.entity.dto.UserDto;
-import com.gpb.backend.service.UserManagementService;
 import com.gpb.common.entity.user.TokenRequestDto;
 import com.gpb.common.service.UserLinkerService;
 import jakarta.transaction.Transactional;
@@ -16,7 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-
+/**
+ * Controller for linking user accounts with external services such as Telegram.
+ * <p>
+ * Provides endpoints to link an external account using a token and to retrieve a token
+ * for account linking.
+ * </p>
+ */
 @RestController
 @Slf4j
 @AllArgsConstructor
@@ -24,33 +29,40 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserLinkerController {
 
     private final UserLinkerService userLinkerService;
-    private final UserManagementService userManagementService;
 
     /**
-     * Connect telegram user to current web user
+     * Connects a Telegram user account to the current web user's account.
      *
-     * @param token token that connected to telegram user
-     * @param user  current user
+     * @param token the DTO containing the token for account linking
+     * @param user  the authenticated current user
      */
     @PostMapping
     @Transactional
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void linkUser(@RequestBody final TokenRequestDto token,
-                         @AuthenticationPrincipal UserDto user) {
-        Long newBasicUserId = userLinkerService.linkAccounts(token.getToken(), user.getId());
-        userManagementService.setBasicUserId(user.getBasicUserId(), newBasicUserId);
+                         @AuthenticationPrincipal final UserDto user) {
+        log.debug("User with ID {} requested account linking", user.getId());
+        userLinkerService.linkAccounts(token.getToken(), user.getId());
+        log.debug("User with ID {} successfully linked accounts", user.getId());
     }
 
     /**
-     * Get token for connect with telegram user
+     * Retrieves a token used for connecting with an external account (e.g., Telegram).
      *
-     * @param user current user
-     * @return token of connector
+     * <p>
+     * The token is used to link the authenticated user's account with an external service.
+     * </p>
+     *
+     * @param user the authenticated current user
+     * @return the connector token as a {@link String}
      */
     @GetMapping
     @Transactional
     @ResponseStatus(HttpStatus.OK)
-    public String getTelegramUserConnectorToken(@AuthenticationPrincipal UserDto user) {
-        return userLinkerService.getAccountsLinkerToken(user.getId());
+    public String getUserConnectorToken(@AuthenticationPrincipal final UserDto user) {
+        log.debug("User with ID {} requested a connector token", user.getId());
+        String token = userLinkerService.getAccountsLinkerToken(user.getId());
+        log.debug("User with ID {} received a connector token", user.getId());
+        return token;
     }
 }

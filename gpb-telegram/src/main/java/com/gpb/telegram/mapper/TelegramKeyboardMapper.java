@@ -1,5 +1,6 @@
 package com.gpb.telegram.mapper;
 
+import com.gpb.telegram.mapper.entity.TelegramButton;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;

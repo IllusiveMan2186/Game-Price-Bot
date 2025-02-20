@@ -15,12 +15,12 @@
                         <div style="border: 1px solid rgb(0, 0, 0);display: flex;flex-direction: column;align-items: center;">
                             <div style="font-size: 1.5rem;" th:text="${game.nameInStore}"/>
                             <div>
-                        <span th:if="${game.isAvailable }">
+                        <span th:if="${game.available }">
                             <div style="color: #62f14f;font-size: 0.8rem;margin-bottom: 0;">
                                 <span th:text="#{email.data.change.game.available}"></span>
                             </div>
                         </span>
-                                <span th:unless="${game.isAvailable }">
+                                <span th:unless="${game.available }">
                             <div style="color: #ff0000;font-size: 0.8rem;margin-bottom: 0;">
                                 <span th:text="#{email.data.change.game.not.available}"></span>
                             </div>

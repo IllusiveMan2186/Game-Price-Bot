@@ -21,6 +21,9 @@ spring:
     locations: classpath:db/migration
   resources:
     add-mappings: true
+  kafka:
+    consumer:
+      group-id: gpb_telegram
 
 hibernate:
   dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -33,6 +36,10 @@ bot:
   token: {$BOT_TOKEN:}
 
 logging:
+  pattern:
+    console:
   level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql: TRACE
+    root: INFO
+    org.springframework: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql: INFO

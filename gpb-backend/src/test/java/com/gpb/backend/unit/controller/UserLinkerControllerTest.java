@@ -29,19 +29,16 @@ class UserLinkerControllerTest {
     void testLinkUser_whenSuccess_shouldInvokeServiceMethod() {
         long userId = 123L;
         long currentBasicUserId = 1L;
-        long newUserBasicId = 12L;
         String token = "telegram-token";
         UserDto user = new UserDto("username", "password", "token", "role", "ua");
         user.setId(userId);
         user.setBasicUserId(currentBasicUserId);
-        when(userLinkerService.linkAccounts(token, userId)).thenReturn(newUserBasicId);
 
 
         userController.linkUser(new TokenRequestDto(token), user);
 
 
         verify(userLinkerService).linkAccounts(token, userId);
-        verify(userManagementService).setBasicUserId(currentBasicUserId, newUserBasicId);
     }
 
     @Test
@@ -51,7 +48,7 @@ class UserLinkerControllerTest {
         when(userLinkerService.getAccountsLinkerToken(123L)).thenReturn("connector-token");
 
 
-        String token = userController.getTelegramUserConnectorToken(user);
+        String token = userController.getUserConnectorToken(user);
 
 
         assertEquals("connector-token", token);

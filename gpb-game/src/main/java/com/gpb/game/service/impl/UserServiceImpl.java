@@ -6,6 +6,7 @@ import com.gpb.common.exception.NotFoundException;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.AccountLinker;
 import com.gpb.game.entity.user.BasicUser;
+import com.gpb.game.exception.AccountAlreadyLinkedException;
 import com.gpb.game.repository.AccountLinkerRepository;
 import com.gpb.game.repository.UserRepository;
 import com.gpb.game.service.UserService;
@@ -29,7 +30,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BasicUser getUserById(long userId) {
-        return userRepository.findById(userId)
+        return userRepository
+                .findById(userId)
                 .orElseThrow(() -> new NotFoundException("Target user not found with ID: " + userId));
     }
 
@@ -46,6 +48,11 @@ public class UserServiceImpl implements UserService {
         AccountLinker connector = accountLinkerRepository.findById(token)
                 .orElseThrow(NotExistingLinkerTokenException::new);
         BasicUser targetUser = connector.getUser();
+
+        if (sourceUserId == targetUser.getId()) {
+            throw new AccountAlreadyLinkedException();
+        }
+
         BasicUser sourceUser = userRepository.findById(sourceUserId)
                 .orElseThrow(() -> new NotFoundException("Source user not found with ID: " + sourceUserId));
 
@@ -53,8 +60,9 @@ public class UserServiceImpl implements UserService {
         targetUser.getNotificationTypes().addAll(sourceUser.getNotificationTypes());
 
         BasicUser linkedUser = userRepository.save(targetUser);
-        userRepository.deleteById(sourceUser.getId());
+        accountLinkerRepository.deleteByUserId(sourceUser.getId());
         accountLinkerRepository.deleteById(token);
+        userRepository.deleteById(sourceUser.getId());
         return linkedUser;
     }
 
