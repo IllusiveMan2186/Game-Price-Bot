@@ -28,7 +28,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      */
     @ExceptionHandler(PriceRangeException.class)
     protected ResponseEntity<Object> handleBadRequest(Exception ex, WebRequest request) {
-        log.error("Bad request error: {}", ex.getMessage(), ex);
+        log.warn("Bad request error: {}", ex.getMessage(), ex);
         return handleExceptionInternal(
                 ex,
                 ex.getMessage(),
@@ -47,7 +47,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      */
     @ExceptionHandler(NotFoundException.class)
     protected ResponseEntity<Object> handleNotFound(Exception ex, WebRequest request) {
-        log.error("Resource not found: {}", ex.getMessage(), ex);
+        log.warn("Resource not found: {}", ex.getMessage(), ex);
         return handleExceptionInternal(
                 ex,
                 ex.getMessage(),
@@ -66,12 +66,31 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      */
     @ExceptionHandler(AccountAlreadyLinkedException.class)
     protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {
-        log.error("Conflict error: {}", ex.getMessage(), ex);
+        log.warn("Conflict error: {}", ex.getMessage(), ex);
         return handleExceptionInternal(
                 ex,
                 ex.getMessage(),
                 new HttpHeaders(),
                 HttpStatus.CONFLICT,
+                request
+        );
+    }
+
+    /**
+     * Handles all other exceptions by returning a 500 Internal Server Error response.
+     *
+     * @param ex      the exception that was thrown.
+     * @param request the current web request.
+     * @return a {@link ResponseEntity} containing the error message and a 500 status code.
+     */
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<Object> handleGlobalException(Exception ex, WebRequest request) {
+        log.error("Unexpected error: {}", ex.getMessage(), ex);
+        return handleExceptionInternal(
+                ex,
+                "An unexpected error occurred.",
+                new HttpHeaders(),
+                HttpStatus.INTERNAL_SERVER_ERROR,
                 request
         );
     }

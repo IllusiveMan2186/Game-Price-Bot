@@ -51,22 +51,30 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     @Override
     public WebUser login(Credentials credentials) {
-        log.info("Login attempt for user with email.");
+        log.debug("Login attempt for user with email.");
 
         WebUser user = webUserRepository.findByEmail(credentials.getEmail())
                 .orElseThrow(LoginFailedException::new);
 
         if (!user.isActivated()) {
+            log.warn("Login failed for user {}: account not activated.", user.getId());
             throw new UserNotActivatedException();
         }
 
         if (user.isAccountLocked() && !isLockTimeOver(user.getLockTime())) {
+            log.warn("Login failed for user {}: account locked.", user.getId());
             throw new UserLockedException();
         }
 
         if (user.isPasswordValid(CharBuffer.wrap(credentials.getPassword()), passwordEncoder)) {
-            user.unlockAccount();
-            return webUserRepository.save(user);
+            if (user.isAccountLocked() && isLockTimeOver(user.getLockTime())) {
+                log.warn("Unlock locked user {}.", user.getId());
+                user.unlockAccount();
+                return webUserRepository.save(user);
+            } else {
+                log.debug("User {} logged in.", user.getId());
+                return user;
+            }
         }
 
         user.incrementFailedAttempts(Constants.MAX_FAILED_ATTEMPTS);

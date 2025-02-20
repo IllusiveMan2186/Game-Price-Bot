@@ -23,6 +23,9 @@ import lombok.ToString;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * Game in specific store
+ */
 @Data
 @Entity
 @Builder

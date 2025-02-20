@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.gpb'
-version = "1.0.0"
+version = "1.1.0"
 
 java {
 	sourceCompatibility = '17'
@@ -43,7 +43,7 @@ dependencies {
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.15.2'
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.2'
 
-	implementation 'com.gpb:common:1.0.27-SNAPSHOT'
+	implementation 'com.gpb:common:1.1.0'
 
 	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
 	annotationProcessor 'org.projectlombok:lombok:1.18.30'

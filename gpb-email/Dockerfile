@@ -16,8 +16,8 @@ ENV DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD
 
 RUN gradle clean build
 
-FROM openjdk:20
-ENV ARTIFACT_NAME=gpb-email-1.0.0.jar
+FROM openjdk:17
+ENV ARTIFACT_NAME=gpb-email-1.1.0.jar
 ENV APP_HOME=/gpb/email/
 
 WORKDIR $APP_HOME

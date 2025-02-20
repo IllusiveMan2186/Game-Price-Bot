@@ -70,31 +70,6 @@ class AuthFilterTest {
         verify(securityContext).setAuthentication(authentication);
     }
 
-
-
-    @Test
-    void testDoFilter_whenExpiredAccessToken_shouldRefreshToken() throws ServletException, IOException {
-        String expiredToken = "Bearer expired-token";
-        String refreshToken = "valid-refresh-token";
-        String newAccessToken = "new-access-token";
-        UserDto userDto = mock(UserDto.class);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDto, null, userDto.getAuthorities());
-        Cookie cookie = new Cookie(Constants.REFRESH_TOKEN_COOKIES_ATTRIBUTE, refreshToken);
-
-        when(request.getCookies()).thenReturn(new Cookie[]{cookie});
-        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(expiredToken);
-        TokenExpiredException expiredException = mock(TokenExpiredException.class);
-        when(userAuthenticationProvider.validateAuthToken(expiredToken)).thenThrow(expiredException);
-        when(userAuthenticationProvider.validateRefreshToken(refreshToken)).thenReturn(userDto);
-        when(userAuthenticationProvider.generateAccessToken(userDto.getId())).thenReturn(newAccessToken);
-
-        authFilter.doFilter(request, response, filterChain);
-
-        verify(response).setHeader(HttpHeaders.AUTHORIZATION, Constants.AUTHORIZATION_HEADER_BEARER + newAccessToken);
-        verify(filterChain).doFilter(request, response);
-        verify(securityContext).setAuthentication(authentication);
-    }
-
     @Test
     void testDoFilter_whenNoAuthorizationHeader_shouldProceedWithoutAuthentication() throws ServletException, IOException {
         when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(null);

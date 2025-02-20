@@ -46,6 +46,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
                                     final HttpServletResponse response,
                                     final FilterChain filterChain)
             throws ServletException, IOException {
+        log.debug("Check user api key");
         final String apiKey = request.getHeader(CommonConstants.API_KEY_HEADER);
 
         if (apiKey == null || !validApiKey.equals(apiKey)) {

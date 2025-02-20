@@ -30,6 +30,7 @@ public class UserManagementServiceImpl implements UserManagementService, ChangeU
 
     @Override
     public WebUser getUserByBasicUserId(long basicUserId) {
+        log.info("Get user by basic user id : {}", basicUserId);
         return webUserRepository.findByBasicUserId(basicUserId)
                 .orElseThrow(() -> new NotFoundException("app.user.error.id.not.found"));
     }
@@ -54,7 +55,7 @@ public class UserManagementServiceImpl implements UserManagementService, ChangeU
 
     @Override
     public void activateUser(long userId) {
-        log.info("Activating user account.");
+        log.debug("Activating user account.");
 
         WebUser user = getWebUserById(userId);
         user.activate();
@@ -63,6 +64,7 @@ public class UserManagementServiceImpl implements UserManagementService, ChangeU
 
     @Override
     public void setBasicUserId(long currentBasicUserId, long newBasicUserId) {
+        log.info("Update basic user id from '{}' to '{}'", currentBasicUserId, newBasicUserId);
         webUserRepository.updateBasicUserIdByBasicUserId(currentBasicUserId, newBasicUserId);
     }
 }

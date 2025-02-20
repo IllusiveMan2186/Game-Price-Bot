@@ -53,6 +53,6 @@ public class EmailNotificationListener {
         }
 
         emailService.sendGameInfoChange(user, event);
-        log.info("Email notification sent to user with basicUserId: {}", event.getBasicUserId());
+        log.debug("Email notification sent to user with basicUserId: {}", event.getBasicUserId());
     }
 }

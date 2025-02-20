@@ -39,11 +39,13 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameListPageDto getByName(String name, int pageSize, int pageNum, String sort) {
+        log.info("Get game by name '{}'", name);
         return basicGameService.getByName(name, pageSize, pageNum, sort, 0);
     }
 
     @Override
     public GameInfoDto getByUrl(String url) {
+        log.info("Get game by url '{}'", url);
         String apiUrl = "/game/url?url=" + url;
 
         return restTemplateHandler.executeRequest(apiUrl, HttpMethod.GET, null, GameInfoDto.class);
@@ -60,11 +62,14 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameListPageDto getByGenre(List<Genre> genres, List<ProductType> types, int pageSize, int pageNum,
                                       BigDecimal minPrice, BigDecimal maxPrice, String sort) {
+        log.info("Retrieving games for genres: {} with exclusion types: {} and price range {} - {}; pageSize={}, " +
+                "pageNum={}, sortBy={}", genres, types, minPrice, maxPrice, pageSize, pageNum, sort);
         return basicGameService.getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort, 0);
     }
 
     @Override
     public GameListPageDto getUserGames(long userId, int pageSize, int pageNum, String sort) {
+        log.info("Get games for user '{}'", userId);
         return basicGameService.getUserGames(userId, pageSize, pageNum, sort);
     }
 
@@ -84,6 +89,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void setFollowGameOption(long gameId, long userId, boolean isFollow) {
+        log.info("Set follow option {} for user '{}' and game'{}'", isFollow, userId, gameId);
         basicGameService.setFollowGameOption(gameId, userId, isFollow);
     }
 }

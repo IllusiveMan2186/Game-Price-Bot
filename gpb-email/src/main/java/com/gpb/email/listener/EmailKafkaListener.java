@@ -61,9 +61,9 @@ public class EmailKafkaListener {
                     emailEvent.getTemplateName()
             );
 
-            log.info("Email sent successfully to: {}", emailEvent.getRecipient());
+            log.info("Email sending finished");
         } catch (Exception ex) {
-            log.error("Error processing email event for recipient: {}", emailEvent.getRecipient(), ex);
+            log.error("Error processing email event", ex);
         }
     }
 }

@@ -9,6 +9,7 @@ import com.gpb.common.exception.SortParamException;
 import com.gpb.game.controller.GameController;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.user.BasicUser;
+import com.gpb.game.service.GameInShopService;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,8 @@ class GameControllerTest {
 
     @Mock
     private GameService gameService;
-
+    @Mock
+    private GameInShopService gameInShopService;
     @Mock
     private UserService userService;
 
@@ -84,14 +86,14 @@ class GameControllerTest {
     void testGetGameByUrl_whenSuccess_shouldReturnGameInfo() {
         String url = "http://example.com/game";
         GameInfoDto mockGameInfo = new GameInfoDto();
-        when(gameService.getByUrl(url)).thenReturn(mockGameInfo);
+        when(gameInShopService.getByUrl(url)).thenReturn(mockGameInfo);
 
 
         GameInfoDto result = gameController.getGameByUrl(url);
 
 
         assertNotNull(result);
-        verify(gameService, times(1)).getByUrl(url);
+        verify(gameInShopService, times(1)).getByUrl(url);
     }
 
     @Test

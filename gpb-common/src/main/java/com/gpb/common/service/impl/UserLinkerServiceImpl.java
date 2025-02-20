@@ -21,7 +21,7 @@ public class UserLinkerServiceImpl implements UserLinkerService {
 
     @Override
     public void linkAccounts(String token, long currentUserBasicId) {
-        log.info("Link user {} by token {}", currentUserBasicId, token);
+        log.debug("Link user {}", currentUserBasicId);
         String key = UUID.randomUUID().toString();
         LinkUsersEvent linkUsersEvent = new LinkUsersEvent(token, currentUserBasicId);
         linkUsersEventKafkaTemplate.send(CommonConstants.LINK_USERS_TOPIC, key, linkUsersEvent);
@@ -29,7 +29,7 @@ public class UserLinkerServiceImpl implements UserLinkerService {
 
     @Override
     public String getAccountsLinkerToken(long basicUserId) {
-        log.info("Get account linker token for user {}", basicUserId);
+        log.debug("Get account linker token for user {}", basicUserId);
         String url = "/user/token";
         HttpHeaders headers = new HttpHeaders();
         headers.add(CommonConstants.BASIC_USER_ID_HEADER, String.valueOf(basicUserId));
