@@ -13,8 +13,8 @@ export const sortsOptions = [
 
     { value: "name-ASC", label: <Message string={'app.game.filter.sort.name'} /> },
     { value: "name-DESC", label: <Message string={'app.game.filter.sort.name.reverse'} /> },
-    { value: "gamesInShop.price-ASC", label: <Message string={'app.game.filter.sort.price'} /> },
-    { value: "gamesInShop.price-DESC", label: <Message string={'app.game.filter.sort.price.reverse'} /> }
+    { value: "gamesInShop.discountPrice-ASC", label: <Message string={'app.game.filter.sort.price'} /> },
+    { value: "gamesInShop.discountPrice-DESC", label: <Message string={'app.game.filter.sort.price.reverse'} /> }
 ];
 
 export const ganresOptions = [

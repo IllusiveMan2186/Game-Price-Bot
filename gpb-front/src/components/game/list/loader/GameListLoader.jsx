@@ -1,7 +1,7 @@
 import React from 'react';
 
-import GameList from '@components/game/list/list/GameList';
-import Pagination from '@components/game/list/pagination/Pagination';
+import GameList from '@components/game/list/loader/list/GameList';
+import Pagination from '@components/game/list/loader/pagination/Pagination';
 import Loading from '@components/game/shared/loading/Loading';
 import Message from '@util/message';
 
@@ -21,10 +21,10 @@ const GameListLoader = ({ games, elementAmount, page, mode, updateSearchParams, 
 
     return (
         <div>
-            <div class="App-game-content-list">
+            <div className="app-list">
                 <GameList games={games} />
             </div>
-            <div class="App-game-content-fotter">
+            <div className="app-game-footer">
                 <Pagination
                     elementAmount={elementAmount}
                     page={page}

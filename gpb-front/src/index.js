@@ -9,13 +9,13 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import translationEN from '@locales/en/translation.json';
 import translationRU from '@locales/ru/translation.json';
-import translationUA from '@locales/ua/translation.json';
+import translationUA from '@locales/ua/translation.json'
 
 
-const locale = window.localStorage.getItem('locale') || navigator.language;
+const locale = window.localStorage.getItem('LOCALE') || navigator.language;
 
 i18n
-    .use(initReactI18next) // passes i18n down to react-i18next
+    .use(initReactI18next)
     .init({
         resources: {
             en: {
@@ -28,16 +28,19 @@ i18n
                 translation: translationUA
             }
         },
-        lng: locale, // if you're using a language detector, do not define the lng option
+        lng: locale,
         fallbackLng: "en",
 
         interpolation: {
-            escapeValue: false // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
+            escapeValue: false
         }
     });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <App />
+    <div>
+        <script src="%PUBLIC_URL%/env.js"></script>
+        <App />
+    </div>
 );
 

@@ -26,12 +26,21 @@ services:
       - gpb-network
 
   react:
-    build: ./gpb-front
+    build:
+      context: ./gpb-front
+      args:
+        BACKEND_SERVICE_URL: ${BACKEND_SERVICE_URL}
+        TELEGRAM_BOT_URL: ${TELEGRAM_BOT_URL}
+        SUPPORT_EMAIL: ${SUPPORT_EMAIL}
     container_name: gpb_front_react
     networks:
       - gpb-network
     ports:
-      - "3000:3000"
+      - "3000:80"
+    environment:
+      BACKEND_SERVICE_URL: ${BACKEND_SERVICE_URL}
+      TELEGRAM_BOT_URL: ${TELEGRAM_BOT_URL}
+      SUPPORT_EMAIL: ${SUPPORT_EMAIL}
 
   postgres:
     image: postgres:latest
@@ -98,6 +107,8 @@ services:
       - FRONT_SERVICE_URL=${FRONT_SERVICE_URL}
       - GAME_SERVICE_URL=${GAME_SERVICE_URL}
       - API_KEY=${API_KEY}
+      - TOKEN_SECRET_KEY=${TOKEN_SECRET_KEY}
+      - REFRESH_TOKEN_SECRET_KEY=${REFRESH_TOKEN_SECRET_KEY}
     volumes:
       - common_data_images:${GAMES_IMAGE_FOLDER}
 
@@ -125,6 +136,7 @@ services:
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
       - GAME_SERVICE_URL=${GAME_SERVICE_URL}
       - API_KEY=${API_KEY}
+      - FRONT_SERVICE_URL=${FRONT_SERVICE_URL}
     volumes:
       - common_data_images:${GAMES_IMAGE_FOLDER}
 
@@ -148,6 +160,7 @@ services:
 volumes:
   common_data_images:
   postgres_data:
+
 
 networks:
   gpb-network:

@@ -1,13 +1,10 @@
 package com.gpb.backend.unit.controller;
 
-import com.gpb.backend.configuration.security.UserAuthenticationProvider;
 import com.gpb.backend.controller.UserController;
-import com.gpb.backend.entity.dto.EmailRequestDto;
 import com.gpb.backend.entity.dto.LocaleRequestDto;
 import com.gpb.backend.entity.dto.PasswordChangeDto;
 import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.GameService;
-import com.gpb.backend.service.UserActivationService;
 import com.gpb.backend.service.UserAuthenticationService;
 import com.gpb.backend.service.UserManagementService;
 import org.junit.jupiter.api.Test;
@@ -16,8 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,95 +23,56 @@ class UserControllerTest {
     private UserManagementService userManagementService;
     @Mock
     private UserAuthenticationService userAuthenticationService;
-
     @Mock
     private GameService gameService;
-
-    @Mock
-    private UserActivationService userActivationService;
-
-    @Mock
-    private UserAuthenticationProvider userAuthenticationProvider;
 
     @InjectMocks
     private UserController userController;
 
     @Test
-    void testUpdateUserEmail_whenSuccess_shouldReturnUpdatedUser() {
-        String newEmail = "newemail@example.com";
-        UserDto user = new UserDto("username", "password", "token", "role", "ua");
-        user.setId(123L);
-
-        UserDto updatedUser = new UserDto("username", "password", "token", "role", "ua");
-        updatedUser.setEmail(newEmail);
-        when(userAuthenticationService.updateUserEmail(newEmail, user)).thenReturn(updatedUser);
-        when(userAuthenticationProvider.createToken(newEmail)).thenReturn("new-token");
-
-
-        UserDto result = userController.updateUserEmail(new EmailRequestDto(newEmail), user);
-
-
-        assertNotNull(result);
-        assertEquals(newEmail, result.getEmail());
-        assertEquals("new-token", result.getToken());
-        verify(userAuthenticationService).updateUserEmail(newEmail, user);
-        verify(userAuthenticationProvider).createToken(newEmail);
-    }
-
-    @Test
     void testUpdateUserPassword_whenSuccess_shouldReturnUpdatedUser() {
-        char[] password = "newPassword123".toCharArray();
+        char[] oldPassword = "oldPassword123".toCharArray();
+        char[] newPassword = "newPassword123".toCharArray();
         PasswordChangeDto passwordChangeDto = new PasswordChangeDto();
-        passwordChangeDto.setPassword(password);
+        passwordChangeDto.setOldPassword(oldPassword);
+        passwordChangeDto.setNewPassword(newPassword);
         UserDto user = new UserDto("username", "password", "token", "role", "ua");
         user.setId(123L);
 
         UserDto updatedUser = new UserDto("username", "password", "token", "role", "ua");
-        when(userAuthenticationService.updateUserPassword(password, user)).thenReturn(updatedUser);
+        when(userAuthenticationService.updateUserPassword(oldPassword, newPassword, user)).thenReturn(updatedUser);
 
 
-        UserDto result = userController.updateUserPassword(passwordChangeDto, user);
+        userController.updateUserPassword(passwordChangeDto, user);
 
 
-        assertNotNull(result);
-        verify(userAuthenticationService).updateUserPassword(password, user);
-    }
-
-    @Test
-    void testResendUserActivationEmail_whenSuccess_shouldInvokeServiceMethod() {
-        String email = "user@example.com";
-
-
-        userController.resendUserActivationEmail(new EmailRequestDto(email));
-
-
-        verify(userActivationService).resendActivationEmail(email);
+        verify(userAuthenticationService).updateUserPassword(oldPassword, newPassword, user);
     }
 
     @Test
     void testAddGameToUserListOfGames_whenSuccess_shouldReturnUpdatedUser() {
         long gameId = 1L;
         UserDto user = new UserDto("username", "password", "token", "role", "ua");
-        user.setId(123L);
+        user.setBasicUserId(123L);
 
 
         userController.addGameToUserListOfGames(gameId, user);
 
 
-        verify(gameService).setFollowGameOption(gameId, user.getId(), true);
+        verify(gameService).setFollowGameOption(gameId, user.getBasicUserId(), true);
     }
 
     @Test
     void testRemoveGameFromUserListOfGames_whenSuccess_shouldReturnUpdatedUser() {
         long gameId = 1L;
         UserDto user = new UserDto("username", "password", "token", "role", "ua");
-        user.setId(123L);
+        user.setBasicUserId(123L);
 
 
         userController.removeGameFromUserListOfGames(gameId, user);
 
 
-        verify(gameService).setFollowGameOption(gameId, user.getId(), false);
+        verify(gameService).setFollowGameOption(gameId, user.getBasicUserId(), false);
     }
 
     @Test

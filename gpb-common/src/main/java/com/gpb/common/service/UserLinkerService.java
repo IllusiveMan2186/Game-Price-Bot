@@ -1,25 +1,27 @@
 package com.gpb.common.service;
 
 /**
- * Handle user accounts integration with other accounts
+ * Service interface for linking user accounts with external accounts.
+ * <p>
+ * Implementations of this interface provide mechanisms to integrate a user's account with another account,
+ * allowing for seamless account linking through secure token-based verification.
+ * </p>
  */
 public interface UserLinkerService {
 
     /**
-     * Link current user account with other account
+     * Links the current user's account with an external account using the provided connection token.
      *
-     * @param token              Connection token for linking
-     * @param currentUserBasicId current user basic ID
-     * @return new basic user id
+     * @param token              the connection token used to link the accounts.
+     * @param currentUserBasicId the basic identifier of the current user.
      */
-    Long linkAccounts(String token, long currentUserBasicId);
+    void linkAccounts(String token, long currentUserBasicId);
 
     /**
-     * Generate a token for linking accounts
+     * Generates a token for linking a user's account with an external account.
      *
-     * @param basicUserId Web user ID
-     * @return Account linking token
+     * @param basicUserId the identifier of the user for whom the linking token is to be generated.
+     * @return a token that can be used to link the user's account with an external account.
      */
     String getAccountsLinkerToken(long basicUserId);
 }
-

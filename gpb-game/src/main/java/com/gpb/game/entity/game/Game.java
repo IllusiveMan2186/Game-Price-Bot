@@ -21,10 +21,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import java.util.List;
 import java.util.Set;
 
+@Indexed
 @Entity
 @Data
 @Builder
@@ -36,6 +39,7 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @FullTextField
     private String name;
 
     @Enumerated(EnumType.ORDINAL)

@@ -1,5 +1,6 @@
 package com.gpb.telegram.mapper;
 
+import com.gpb.telegram.mapper.entity.TelegramButton;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;

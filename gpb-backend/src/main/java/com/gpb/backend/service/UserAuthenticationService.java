@@ -6,49 +6,50 @@ import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.entity.dto.UserDto;
 
 /**
- * Handle user authentication operations
+ * Service interface for handling user authentication operations.
  */
 public interface UserAuthenticationService {
-    /**
-     * Authenticate user using credentials
-     *
-     * @param credentials User authentication credentials
-     * @return Authenticated user DTO
-     */
-    UserDto login(Credentials credentials);
 
     /**
-     * Update the user's password
+     * Authenticates a user using the provided credentials.
      *
-     * @param password New password
-     * @param user     Current user
-     * @return Updated user DTO
+     * @param credentials the {@link Credentials} containing the user's authentication information
+     * @return an authenticated {@link WebUser} representing the user
      */
-    UserDto updateUserPassword(char[] password, UserDto user);
+    WebUser login(Credentials credentials);
 
     /**
-     * Update the user's email address
+     * Updates the password for the specified user.
      *
-     * @param newEmail New email address
-     * @param user     Current user
-     * @return Updated user DTO
+     * @param oldPassword the old password
+     * @param newPassword the new password
+     * @param user        the current authenticated {@link UserDto} whose password is to be updated
+     * @return an updated {@link UserDto} after the password change
      */
-    UserDto updateUserEmail(String newEmail, UserDto user);
+    UserDto updateUserPassword(char[] oldPassword, char[] newPassword, UserDto user);
 
     /**
-     * Register a new user
+     * Updates the email address for the specified user.
      *
-     * @param userRegistration User registration details
-     * @return Created web user
+     * @param newEmail the new email address
+     * @param user     the current authenticated {@link UserDto} whose email is to be updated
+     * @return an updated {@link UserDto} after the email change
+     */
+    UserDto updateUserEmail(String newEmail, WebUser user);
+
+    /**
+     * Registers a new user using the provided registration details.
+     *
+     * @param userRegistration the {@link UserRegistration} details for the new user
+     * @return a newly created {@link WebUser} representing the registered user
      */
     WebUser createUser(UserRegistration userRegistration);
 
     /**
-     * Get user by email
+     * Retrieves the user information for a given user ID.
      *
-     * @param email users email
-     * @return user
+     * @param userId the unique identifier of the user
+     * @return a {@link UserDto} representing the user's details
      */
-    UserDto getUserByEmail(String email);
+    UserDto getUserById(long userId);
 }
-

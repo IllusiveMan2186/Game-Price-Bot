@@ -6,31 +6,47 @@ import com.gpb.game.entity.game.GameInShop;
 import java.util.List;
 
 /**
- * CLass for handling work with game stores
+ * Service interface for handling operations related to game stores.
+ * <p>
+ * This interface provides methods to search for games across integrated game stores and to verify
+ * updates in game information for games in users' wishlists.
+ * </p>
  */
 public interface GameStoresService {
 
     /**
-     * Find game by name from all stores in system
+     * Searches for games by name across all available game stores.
      *
-     * @param name name of the game
-     * @return games
+     * @param name the name (or partial name) of the game to search for.
+     * @return a list of {@link Game} entities matching the specified name.
      */
     List<Game> findGameByName(String name);
 
     /**
-     * Find game by url from all stores in system
+     * Searches for a game by its URL across all available game stores.
      *
-     * @param url url of the game
-     * @return game
+     * @param url the URL associated with the game.
+     * @return the {@link Game} entity corresponding to the specified URL, or {@code null} if no match is found.
      */
     Game findGameByUrl(String url);
 
     /**
-     * Check games from wishlist for changing
+     * Retrieves detailed information for a game in shop based on its URL.
      *
-     * @param gameInShops games that need to be checked
-     * @return games that changed
+     * @param url the URL associated with the game in the store.
+     * @return a {@link GameInfoDto} containing the game's detailed information.
      */
-    List<GameInShop>  checkGameInStoreForChange(List<GameInShop> gameInShops);
+    GameInShop findGameInShopByUrl(String url);
+
+    /**
+     * Checks for updates in the provided list of games from the store.
+     * <p>
+     * This method compares the current game information with the latest details from the store and returns the list
+     * of games that have changed.
+     * </p>
+     *
+     * @param gameInShops a list of {@link GameInShop} entities to be checked for changes.
+     * @return a list of {@link GameInShop} entities that have experienced changes in their store information.
+     */
+    List<GameInShop> checkGameInStoreForChange(List<GameInShop> gameInShops);
 }

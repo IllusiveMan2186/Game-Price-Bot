@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface GameInShopRepository extends CrudRepository<GameInShop, Long> {
 
-    GameInShop findById(long gameInShopId);
-
     GameInShop findByUrl(String url);
 
     List<GameInShop> findAll();

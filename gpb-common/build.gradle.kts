@@ -12,7 +12,7 @@ fun getEnvOrProperty(name: String): String {
 }
 
 group = "com.gpb"
-version = "1.0.0"
+version = "1.1.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
@@ -22,6 +22,8 @@ repositories {
 dependencies {
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
+
+    implementation("jakarta.validation:jakarta.validation-api:3.1.1")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.kafka:spring-kafka")

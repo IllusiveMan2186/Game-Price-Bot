@@ -11,19 +11,23 @@ import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.repository.GameInShopRepository;
 import com.gpb.game.repository.GameRepository;
+import com.gpb.game.repository.GameRepositoryCustom;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.GameStoresService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -31,8 +35,8 @@ import java.util.List;
 public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
-    private final GameInShopRepository gameInShopRepository;
     private final GameStoresService gameStoresService;
+    private final GameRepositoryCustom gameRepositoryCustom;
     private final ModelMapper modelMapper;
 
     @Override
@@ -49,14 +53,10 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameInfoDto getDtoById(final long gameId) {
+        log.info("Get game info dto by id : {}", gameId);
         final Game game = getById(gameId);
 
         return modelMapper.map(game, GameInfoDto.class);
-    }
-
-    @Override
-    public List<GameInShop> getAllGamesInShop() {
-        return gameInShopRepository.findAll();
     }
 
     @Override
@@ -64,14 +64,16 @@ public class GameServiceImpl implements GameService {
         log.info("Get game by name : {}", name);
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
         long elementAmount;
+        List<Game> games;
 
-        List<Game> games = gameRepository.findByNameContainingIgnoreCase(name, pageRequest);
-        if (games.isEmpty()) {
+        Page<Game> gamePage = gameRepositoryCustom.searchByNameFullText(name, pageRequest);
+        if (gamePage.isEmpty()) {
             List<Game> foundedGames = gameStoresService.findGameByName(name);
             games = addGames(foundedGames);
             elementAmount = games.size();
         } else {
-            elementAmount = gameRepository.countAllByNameContainingIgnoreCase(name);
+            games = gamePage.toList();
+            elementAmount = gamePage.getTotalElements();
         }
 
         List<GameDto> gameDtos = games.stream()
@@ -83,16 +85,11 @@ public class GameServiceImpl implements GameService {
 
 
     @Override
-    public GameInfoDto getByUrl(String url) {
+    public Game getByUrl(String url) {
         log.info("Get game by url : {}", url);
 
-        final GameInShop gameInShop = gameInShopRepository.findByUrl(url);
-        if (gameInShop == null) {
-            Game game = gameStoresService.findGameByUrl(url);
-            return modelMapper.map(game, GameInfoDto.class);
-        }
-
-        return modelMapper.map(gameInShop.getGame(), GameInfoDto.class);
+        Game game = gameStoresService.findGameByUrl(url);
+        return gameRepository.save(game);
     }
 
     @Override
@@ -101,24 +98,17 @@ public class GameServiceImpl implements GameService {
         log.info("Get games by genres : '{}',types to exclude - '{}',price '{}' - '{}' with '{}' " +
                 "element on page for '{}' page ", genre, typesToExclude, minPrice, maxPrice, pageSize, pageNum);
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
-        List<Game> games;
-        long elementAmount;
+        Page<Game> games;
         List<ProductType> types = getProductTypeThatNotExcluded(typesToExclude);
-        System.out.println(pageRequest + " " + types + " " + genre);
-        if (genre == null) {
-            games = gameRepository.findAllByTypeInAndGamesInShop_DiscountPriceBetween(pageRequest, types, minPrice
-                    , maxPrice);
-            elementAmount = gameRepository.countAllByTypeInAndGamesInShop_DiscountPriceBetween(types, minPrice, maxPrice);
-        } else {
-            games = gameRepository.findByGenresInAndTypeInAndGamesInShop_DiscountPriceBetween(genre, types, pageRequest
-                    , minPrice, maxPrice);
-            elementAmount = gameRepository.countByGenresInAndTypeIn(genre, types);
-        }
+
+        games = gameRepositoryCustom.findGamesByGenreAndTypeWithSorting(genre, types, minPrice
+                , maxPrice, pageRequest);
+
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)
                 .toList();
 
-        return new GameListPageDto(elementAmount, gameDtos);
+        return new GameListPageDto(games.getTotalElements(), gameDtos);
     }
 
     @Override
@@ -126,38 +116,13 @@ public class GameServiceImpl implements GameService {
         log.info("Get games for user '{}' with '{}' element on page for '{}' page ",
                 userId, pageSize, pageNum);
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
-        BasicUser user = new BasicUser();
-        user.setId(userId);
 
-        List<Game> games = gameRepository.findByUserList(user, pageRequest);
-        long elementAmount = gameRepository.countAllByUserList(user);
+        Page<Game> games = gameRepositoryCustom.findGamesByUserWithSorting(userId, pageRequest);
 
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)
                 .toList();
-
-        return new GameListPageDto(elementAmount, gameDtos);
-    }
-
-    @Override
-    public List<GameInShop> getSubscribedGames() {
-        log.info("Get game for which subscribe users");
-        return gameInShopRepository.findSubscribedGames();
-    }
-
-    @Override
-    public void changeInfo(List<GameInShop> changedGames) {
-        log.info("Save games in store changes for {} elements", changedGames.size());
-
-        gameInShopRepository.saveAll(changedGames);
-    }
-
-    @Override
-    public List<GameInShop> getUsersChangedGames(BasicUser user, List<GameInShop> changedGames) {
-        List<Long> changedGamesIds = changedGames.stream()
-                .map(GameInShop::getId)
-                .toList();
-        return gameInShopRepository.findSubscribedGames(user.getId(), changedGamesIds);
+        return new GameListPageDto(games.getTotalElements(), gameDtos);
     }
 
     @Override
@@ -168,17 +133,25 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public void removeGameInStore(long gameInStoreId) {
-        log.info("Remove game in store by id : {}", gameInStoreId);
-
-        gameInShopRepository.deleteById(gameInStoreId);
-    }
-
-    @Override
     public Game setFollowGameOption(long gameId, boolean isFollow) {
         Game game = getById(gameId);
         game.setFollowed(isFollow);
         return gameRepository.save(game);
+    }
+
+    @Override
+    public void removeGameInShopFromGame(GameInShop gameInShop) {
+        Game game = gameInShop.getGame();
+
+        if (game.getGamesInShop().size() <= 1) {
+            log.info("Removes game due to last game in store info removed : {}", game.getId());
+            removeGame(game.getId());
+        } else {
+            log.info("Removes game due to last game in store info removed : {}", game.getId());
+            game.getGamesInShop().remove(gameInShop);
+            gameRepository.save(game);
+            log.info("Game in store by id {} successfully removed", gameInShop.getId());
+        }
     }
 
     private List<Game> addGames(List<Game> games) {
@@ -188,6 +161,7 @@ public class GameServiceImpl implements GameService {
 
         for (Game game : games) {
             if (gameRepository.findByName(game.getName()) == null) {
+                log.info("Game added '{}' with game in shop {}", game.getName(), game.getGamesInShop());
                 addedGames.add(gameRepository.save(game));
             } else {
                 log.info("Game with name '{}' already exists and will not be added.", game.getName());
@@ -198,18 +172,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private GameDto gameMap(Game game) {
-        GameDto gameDto = modelMapper.map(game, GameDto.class);
-        BigDecimal minPrice = game.getGamesInShop().stream()
-                .map(GameInShop::getDiscountPrice)
-                .max(Comparator.naturalOrder())
-                .orElse(null);
-        BigDecimal maxPrice = game.getGamesInShop().stream()
-                .map(GameInShop::getDiscountPrice)
-                .min(Comparator.naturalOrder())
-                .orElse(null);
-        gameDto.setMinPrice(minPrice);
-        gameDto.setMaxPrice(maxPrice);
-        return gameDto;
+        return modelMapper.map(game, GameDto.class);
     }
 
     private List<ProductType> getProductTypeThatNotExcluded(List<ProductType> typesToExclude) {

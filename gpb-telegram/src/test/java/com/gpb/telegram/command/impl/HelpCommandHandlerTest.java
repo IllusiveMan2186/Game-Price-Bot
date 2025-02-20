@@ -53,7 +53,7 @@ class HelpCommandHandlerTest {
         when(messageSource.getMessage("help.menu.header.message", null, locale))
                 .thenReturn("messages");
         when(messageSource.getMessage("accounts.synchronization.get.token.description", null, locale))
-                .thenReturn(" - description");
+                .thenReturn("- description");
 
         Update update = UpdateCreator.getUpdateWithoutCallback("/synchronizeToWeb mockToken", 123);
         TelegramRequest request = TelegramRequest.builder().update(update).locale(locale).build();

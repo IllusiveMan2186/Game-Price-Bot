@@ -1,7 +1,6 @@
 package com.gpb.backend.unit.service.impl;
 
 import com.gpb.backend.entity.WebUser;
-import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.impl.UserManagementServiceImpl;
 import com.gpb.common.exception.NotFoundException;
@@ -12,14 +11,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,23 +35,6 @@ class UserManagementServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void testGetUserById_whenSuccess_shouldReturnUserDto() {
-        long userId = 1L;
-        WebUser webUser = new WebUser();
-        UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
-        when(webUserRepository.findById(userId)).thenReturn(Optional.of(webUser));
-        when(modelMapper.map(webUser, UserDto.class)).thenReturn(userDto);
-
-
-        UserDto result = userService.getUserById(userId);
-
-
-        assertNotNull(result);
-        verify(webUserRepository).findById(userId);
-        verify(modelMapper).map(webUser, UserDto.class);
     }
 
     @Test
@@ -94,36 +75,11 @@ class UserManagementServiceTest {
         when(webUserRepository.findByEmail(email)).thenReturn(Optional.of(webUser));
 
 
-        WebUser result = userService.getWebUserByEmail(email);
+        Optional<WebUser> result = userService.getWebUserByEmail(email);
 
-
-        assertEquals(webUser, result);
+        assertTrue(result.isPresent());
+        assertEquals(webUser, result.get());
         verify(webUserRepository).findByEmail(email);
-    }
-
-    @Test
-    void testGetWebUserByEmail_whenUserNotFound_shouldThrowNotFoundException() {
-        String email = "email";
-
-        when(webUserRepository.findByEmail(email)).thenReturn(Optional.empty());
-
-
-        NotFoundException exception = assertThrows(
-                NotFoundException.class,
-                () -> userService.getWebUserByEmail(email)
-        );
-
-
-        assertEquals("app.user.error.email.not.found", exception.getMessage());
-    }
-
-    @Test
-    void testGetUserById_whenUserNotFound_shouldThrowNotFoundException() {
-        long userId = 1L;
-        when(webUserRepository.findById(userId)).thenReturn(Optional.empty());
-
-
-        assertThrows(NotFoundException.class, () -> userService.getUserById(userId));
     }
 
     @Test
@@ -156,18 +112,14 @@ class UserManagementServiceTest {
     }
 
     @Test
-    void testGetWebUsers_whenSuccess_shouldReturnWebUsers() {
-        List<Long> userIds = new ArrayList<>();
-        userIds.add(1L);
-        userIds.add(2L);
-        List<WebUser> userList = new ArrayList<>();
-        when(webUserRepository.findAllByIdIn(userIds)).thenReturn(userList);
+    void testSetBasicUserId_whenSuccess_shouldCallUserBasicChange() {
+        long currentBasicUserId = 123L;
+        long newBasicUserId = 456L;
 
 
-        List<WebUser> result = userService.getWebUsers(userIds);
+        userService.setBasicUserId(currentBasicUserId, newBasicUserId);
 
 
-        assertEquals(userList, result);
-        verify(webUserRepository).findAllByIdIn(userIds);
+        verify(webUserRepository, times(1)).updateBasicUserIdByBasicUserId(currentBasicUserId, newBasicUserId);
     }
 }

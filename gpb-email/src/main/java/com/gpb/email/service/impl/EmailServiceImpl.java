@@ -18,25 +18,28 @@ import org.thymeleaf.context.Context;
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
-
     private final TemplateEngine templateEngine;
 
+    @Override
     public void sendEmail(String to, String subject, Context context, String templateName) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
-
         try {
+            log.info("Try to send email");
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
             helper.setTo(to);
             helper.setSubject(subject);
+
             String htmlContent = templateEngine.process(templateName, context);
             helper.setText(htmlContent, true);
+
             mailSender.send(mimeMessage);
-            log.info("Send email for user " + to);
+            log.info("Email successfully sent");
         } catch (MessagingException e) {
-            log.error("Error during email sending : " + e.getMessage());
+            log.error("MessagingException while sending email to {}: {}", to, e.getMessage(), e);
         } catch (MailAuthenticationException e) {
-            log.error("GPB mail credential error : " + e.getMessage());
+            log.error("Mail authentication error while sending email to {}: {}", to, e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("Unexpected error while sending email to {}: {}", to, e.getMessage(), e);
         }
     }
 }
-

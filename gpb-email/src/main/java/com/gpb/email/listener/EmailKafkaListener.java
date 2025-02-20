@@ -9,6 +9,10 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 
+/**
+ * Listens for email events on the Kafka topic defined in {@link CommonConstants#EMAIL_SERVICE_TOPIC}
+ * and delegates the processing of these events to the {@link EmailService}.
+ */
 @Slf4j
 @Component
 public class EmailKafkaListener {
@@ -19,19 +23,47 @@ public class EmailKafkaListener {
         this.emailService = emailService;
     }
 
-    @KafkaListener(topics = CommonConstants.EMAIL_SERVICE_TOPIC,
-            groupId = CommonConstants.GPB_KAFKA_GROUP_ID,
-            containerFactory = "emailEventListener")
+    /**
+     * Listens to email events from Kafka, logs the event details, prepares the email context,
+     * and sends an email based on the event data.
+     *
+     * @param eventRecord the consumer record containing the email event details
+     */
+    @KafkaListener(
+            topics = CommonConstants.EMAIL_SERVICE_TOPIC,
+            groupId = "${spring.kafka.consumer.group-id}",
+            containerFactory = "emailEventListener"
+    )
     public void emailEventListen(ConsumerRecord<String, EmailEvent> eventRecord) {
+        if (eventRecord == null) {
+            log.warn("Received null ConsumerRecord, skipping processing.");
+            return;
+        }
+
         EmailEvent emailEvent = eventRecord.value();
-        log.info("Email event '{}' for recipient '{}' about '{}'", eventRecord.key(),
-                emailEvent.getRecipient(), emailEvent.getSubject());
+        if (emailEvent == null) {
+            log.warn("Received null EmailEvent for key: {}", eventRecord.key());
+            return;
+        }
 
-        Context context = new Context();
-        context.setLocale(emailEvent.getLocale());
-        context.setVariables(emailEvent.getVariables());
+        log.info("Received email event with key: {} for recipient: {} and subject: {}",
+                eventRecord.key(), emailEvent.getRecipient(), emailEvent.getSubject());
 
-        emailService.sendEmail(emailEvent.getRecipient(), emailEvent.getSubject(), context,
-                emailEvent.getTemplateName());
+        try {
+            Context context = new Context();
+            context.setLocale(emailEvent.getLocale());
+            context.setVariables(emailEvent.getVariables());
+
+            emailService.sendEmail(
+                    emailEvent.getRecipient(),
+                    emailEvent.getSubject(),
+                    context,
+                    emailEvent.getTemplateName()
+            );
+
+            log.info("Email sending finished");
+        } catch (Exception ex) {
+            log.error("Error processing email event", ex);
+        }
     }
 }

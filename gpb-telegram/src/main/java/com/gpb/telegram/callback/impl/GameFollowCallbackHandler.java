@@ -11,6 +11,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
+/**
+ * Callback handler for subscribing to game follow notifications.
+ */
 @Component("subscribe")
 @AllArgsConstructor
 @FilterChainMarker(Constants.USER_EXISTING_FILTER)
@@ -19,12 +22,27 @@ public class GameFollowCallbackHandler implements CallbackHandler {
     private final GameService gameService;
     private final MessageSource messageSource;
 
+    /**
+     * Processes the game follow callback.
+     * <p>
+     * This method extracts the game ID from the request arguments and uses the {@link GameService} to mark the game
+     * as followed for the user. A success message is then returned in a {@link TelegramResponse}.
+     * </p>
+     *
+     * @param request the {@link TelegramRequest} containing the callback details and user context
+     * @return a {@link TelegramResponse} with a localized success message
+     */
     @Override
     @Transactional
-    public TelegramResponse apply(TelegramRequest request) {
-        long gameId = request.getLongArgument(1);
+    public TelegramResponse apply(final TelegramRequest request) {
+        final long gameId = request.getLongArgument(1);
         gameService.setFollowGameOption(gameId, request.getUserBasicId(), true);
-        return new TelegramResponse(request.getChatId(), messageSource.getMessage("game.subscribe.success.message",
-                null, request.getLocale()));
+
+        final String successMessage = messageSource.getMessage(
+                "game.subscribe.success.message",
+                null,
+                request.getLocale());
+
+        return new TelegramResponse(request.getChatId(), successMessage);
     }
 }

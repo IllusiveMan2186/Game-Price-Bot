@@ -7,6 +7,7 @@ import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.AccountLinker;
 import com.gpb.game.entity.user.BasicUser;
+import com.gpb.game.exception.AccountAlreadyLinkedException;
 import com.gpb.game.repository.AccountLinkerRepository;
 import com.gpb.game.repository.UserRepository;
 import com.gpb.game.service.impl.UserServiceImpl;
@@ -39,6 +40,32 @@ class UserServiceImplTest {
     AccountLinkerRepository accountLinkerRepository;
     @InjectMocks
     UserServiceImpl userService;
+
+    @Test
+    void testGetUsersById_whenSuccess_shouldGetUser() {
+        long userId = 1L;
+        BasicUser user = new BasicUser();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        BasicUser result = userService.getUserById(userId);
+
+        assertEquals(user, result);
+    }
+
+    @Test
+    void testGetUsersById_whenNotFound_shouldThrowException() {
+        long userId = 1L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+
+        assertThrows(
+                NotFoundException.class,
+                () -> {
+                    userService.getUserById(userId);
+                }
+        );
+
+    }
 
     @Test
     void testGetUsersChangedGames_whenSuccess_shouldGetUsers() {
@@ -151,7 +178,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLinkUsers_whenSourceUserNotFound_ThrowsNotFoundException() {
+    void testLinkUsers_whenSourceUserNotFound_shouldThrowsNotFoundException() {
         String token = "token";
         long sourceUserId = 2L;
 
@@ -165,6 +192,24 @@ class UserServiceImplTest {
                 () -> userService.linkUsers(token, sourceUserId));
 
         assertEquals("Source user not found with ID: " + sourceUserId, exception.getMessage());
+        verify(userRepository, never()).save(any());
+        verify(userRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    void testLinkUsers_whenLinkAlreadyLinkedUser_shouldThrowsAccountAlreadyLinkedException() {
+        String token = "token";
+        long sourceUserId = 2L;
+
+        BasicUser targetUser = new BasicUser();
+        targetUser.setId(sourceUserId);
+        AccountLinker accountLinker = new AccountLinker(token, targetUser);
+        when(accountLinkerRepository.findById(token)).thenReturn(Optional.of(accountLinker));
+
+
+        assertThrows(AccountAlreadyLinkedException.class, () -> userService.linkUsers(token, sourceUserId));
+
+
         verify(userRepository, never()).save(any());
         verify(userRepository, never()).deleteById(anyLong());
     }

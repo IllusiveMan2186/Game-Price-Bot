@@ -9,6 +9,7 @@ import com.gpb.backend.exception.LoginFailedException;
 import com.gpb.backend.exception.UserDataNotChangedException;
 import com.gpb.backend.exception.UserLockedException;
 import com.gpb.backend.exception.UserNotActivatedException;
+import com.gpb.backend.exception.WrongPasswordException;
 import com.gpb.backend.repository.WebUserRepository;
 import com.gpb.backend.service.impl.UserAuthenticationServiceImpl;
 import com.gpb.backend.util.Constants;
@@ -69,35 +70,29 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void testGetUserByEmail_whenSuccess_shouldReturnUser() {
-        String email = "email";
+    void testGetUserById_whenSuccess_shouldReturnUserDto() {
+        long userId = 1L;
         WebUser webUser = new WebUser();
-        UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
-        when(webUserRepository.findByEmail(email)).thenReturn(Optional.of(webUser));
+        UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
+        when(webUserRepository.findById(userId)).thenReturn(Optional.of(webUser));
         when(modelMapper.map(webUser, UserDto.class)).thenReturn(userDto);
 
 
-        UserDto result = userService.getUserByEmail(email);
+        UserDto result = userService.getUserById(userId);
 
 
-        assertEquals(userDto, result);
-        verify(webUserRepository).findByEmail(email);
+        assertNotNull(result);
+        verify(webUserRepository).findById(userId);
+        verify(modelMapper).map(webUser, UserDto.class);
     }
 
     @Test
-    void testGetUserByEmail_whenUserNotFound_shouldThrowNotFoundException() {
-        String email = "email";
-
-        when(webUserRepository.findByEmail(email)).thenReturn(Optional.empty());
-
-
-        NotFoundException exception = assertThrows(
-                NotFoundException.class,
-                () -> userService.getUserByEmail(email)
-        );
+    void testGetUserById_whenUserNotFound_shouldThrowNotFoundException() {
+        long userId = 1L;
+        when(webUserRepository.findById(userId)).thenReturn(Optional.empty());
 
 
-        assertEquals("app.user.error.email.not.found", exception.getMessage());
+        assertThrows(NotFoundException.class, () -> userService.getUserById(userId));
     }
 
     @Test
@@ -151,14 +146,40 @@ class UserAuthenticationServiceImplTest {
         UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
         userDto.setId(userId);
         char[] newPassword = "newPassword".toCharArray();
+        char[] oldPassword = "oldPassword".toCharArray();
 
         when(webUserRepository.findById(userId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> userService.updateUserPassword(newPassword, userDto));
+                () -> userService.updateUserPassword(oldPassword, newPassword, userDto));
 
         assertEquals("app.user.error.id.not.found", exception.getMessage());
         verify(webUserRepository, times(1)).findById(userId);
+    }
+
+    @Test
+    void testUpdateUserPassword_whenOldPasswordWrong_shouldThrowWrongPasswordException() {
+        long userId = 1L;
+        UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
+        userDto.setId(userId);
+        char[] newPassword = "samePassword".toCharArray();
+        char[] oldPassword = "oldPassword".toCharArray();
+        WebUser webUser = new WebUser();
+        webUser.setId(userId);
+        webUser.setPassword("encodedPassword");
+
+        when(webUserRepository.findById(userDto.getId())).thenReturn(Optional.of(webUser));
+        when(passwordEncoder.matches(CharBuffer.wrap(oldPassword), webUser.getPassword())).thenReturn(false);
+
+
+        WrongPasswordException exception = assertThrows(WrongPasswordException.class,
+                () -> userService.updateUserPassword(oldPassword, newPassword, userDto));
+
+
+        assertEquals("app.user.error.wrong.password", exception.getMessage());
+        verify(webUserRepository, times(1)).findById(userId);
+        verify(passwordEncoder, times(1)).matches(CharBuffer.wrap(oldPassword), webUser.getPassword());
+        verify(passwordEncoder, times(0)).matches(CharBuffer.wrap(newPassword), webUser.getPassword());
     }
 
     @Test
@@ -167,16 +188,18 @@ class UserAuthenticationServiceImplTest {
         UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
         userDto.setId(userId);
         char[] newPassword = "samePassword".toCharArray();
+        char[] oldPassword = "oldPassword".toCharArray();
         WebUser webUser = new WebUser();
         webUser.setId(userId);
         webUser.setPassword("encodedPassword");
 
         when(webUserRepository.findById(userDto.getId())).thenReturn(Optional.of(webUser));
+        when(passwordEncoder.matches(CharBuffer.wrap(oldPassword), webUser.getPassword())).thenReturn(true);
         when(passwordEncoder.matches(CharBuffer.wrap(newPassword), webUser.getPassword())).thenReturn(true);
 
 
         UserDataNotChangedException exception = assertThrows(UserDataNotChangedException.class,
-                () -> userService.updateUserPassword(newPassword, userDto));
+                () -> userService.updateUserPassword(oldPassword, newPassword, userDto));
 
 
         assertEquals("app.user.error.did.not.changed", exception.getMessage());
@@ -189,6 +212,7 @@ class UserAuthenticationServiceImplTest {
         long userId = 1L;
         UserDto userDto = new UserDto("email", "pass", "token", "role", "ua");
         userDto.setId(userId);
+        char[] oldPassword = "oldPassword".toCharArray();
         char[] newPassword = "newPassword".toCharArray();
         WebUser webUser = new WebUser();
         webUser.setId(userId);
@@ -202,12 +226,13 @@ class UserAuthenticationServiceImplTest {
         updatedUserDto.setId(userId);
 
         when(webUserRepository.findById(userId)).thenReturn(Optional.of(webUser));
+        when(passwordEncoder.matches(CharBuffer.wrap(oldPassword), webUser.getPassword())).thenReturn(true);
         when(passwordEncoder.matches(CharBuffer.wrap(newPassword), webUser.getPassword())).thenReturn(false);
         when(passwordEncoder.encode(CharBuffer.wrap(newPassword))).thenReturn("newEncodedPassword");
         when(webUserRepository.save(webUser)).thenReturn(updatedUser);
         when(modelMapper.map(updatedUser, UserDto.class)).thenReturn(updatedUserDto);
 
-        UserDto result = userService.updateUserPassword(newPassword, userDto);
+        UserDto result = userService.updateUserPassword(oldPassword, newPassword, userDto);
 
         assertNotNull(result);
         assertEquals(userId, result.getId());
@@ -219,7 +244,7 @@ class UserAuthenticationServiceImplTest {
 
     @Test
     void testLogin_whenSuccess_shouldReturnUserDto() {
-        Credentials credentials = new Credentials("user@example.com", "password".toCharArray());
+        Credentials credentials = new Credentials("user@example.com", "password".toCharArray(), false);
 
         WebUser user = new WebUser();
         user.setActivated(true);
@@ -228,22 +253,20 @@ class UserAuthenticationServiceImplTest {
 
         when(webUserRepository.findByEmail(credentials.getEmail())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(CharBuffer.wrap(credentials.getPassword()), user.getPassword())).thenReturn(true);
-        UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
-        when(modelMapper.map(user, UserDto.class)).thenReturn(userDto);
+        when(webUserRepository.save(user)).thenReturn(user);
 
 
-        UserDto result = userService.login(credentials);
+        WebUser result = userService.login(credentials);
 
 
         assertNotNull(result);
         verify(webUserRepository).findByEmail(credentials.getEmail());
         verify(passwordEncoder).matches(CharBuffer.wrap(credentials.getPassword()), user.getPassword());
-        verify(modelMapper).map(user, UserDto.class);
     }
 
     @Test
     void testLogin_whenUserNotActivated_shouldThrowUserNotActivatedException() {
-        Credentials credentials = new Credentials("user@example.com", null);
+        Credentials credentials = new Credentials("user@example.com", null, false);
 
         WebUser user = new WebUser();
         user.setActivated(false);
@@ -255,7 +278,7 @@ class UserAuthenticationServiceImplTest {
 
     @Test
     void testLogin_whenUserWasLocked_shouldUnlockAndReturnUserDto() {
-        Credentials credentials = new Credentials("user@example.com", "password".toCharArray());
+        Credentials credentials = new Credentials("user@example.com", "password".toCharArray(), false);
 
         WebUser lockedUser = new WebUser();
         lockedUser.setActivated(true);
@@ -273,21 +296,21 @@ class UserAuthenticationServiceImplTest {
         when(passwordEncoder.matches(CharBuffer.wrap(credentials.getPassword()), lockedUser.getPassword())).thenReturn(true);
         UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
         when(modelMapper.map(lockedUser, UserDto.class)).thenReturn(userDto);
+        when(webUserRepository.save(expectedUSerAfterUnlock)).thenReturn(expectedUSerAfterUnlock);
 
 
-        UserDto result = userService.login(credentials);
+        WebUser result = userService.login(credentials);
 
 
-        assertNotNull(result);
+        assertEquals(expectedUSerAfterUnlock, result);
         verify(webUserRepository).findByEmail(credentials.getEmail());
         verify(webUserRepository).save(expectedUSerAfterUnlock);
         verify(passwordEncoder).matches(CharBuffer.wrap(credentials.getPassword()), lockedUser.getPassword());
-        verify(modelMapper).map(lockedUser, UserDto.class);
     }
 
     @Test
     void testLogin_whenWrongCredentials_shouldIncrementFailedAttempts() {
-        Credentials credentials = new Credentials("user@example.com", "password".toCharArray());
+        Credentials credentials = new Credentials("user@example.com", "password".toCharArray(), false);
 
         WebUser user = WebUser.builder()
                 .isActivated(true)
@@ -315,7 +338,7 @@ class UserAuthenticationServiceImplTest {
 
     @Test
     void testLogin_whenWrongCredentialsAndMaxFailedAttemptsReached_shouldLockUser() {
-        Credentials credentials = new Credentials("user@example.com", "password".toCharArray());
+        Credentials credentials = new Credentials("user@example.com", "password".toCharArray(), false);
 
         WebUser user = WebUser.builder()
                 .isActivated(true)
@@ -343,7 +366,7 @@ class UserAuthenticationServiceImplTest {
 
     @Test
     void testLogin_whenUserIsLocked_shouldThrowUserLockedException() {
-        Credentials credentials = new Credentials("user@example.com", null);
+        Credentials credentials = new Credentials("user@example.com", null, false);
 
         WebUser user = new WebUser();
         user.setActivated(true);
@@ -356,25 +379,10 @@ class UserAuthenticationServiceImplTest {
     }
 
     @Test
-    void testUpdateUserEmail_whenEmailAlreadyExists_shouldThrowEmailAlreadyExistException() {
+    void testUpdateUserEmail_whenSuccess_shouldReturnUpdatedUserDto() {
         String newEmail = "newemail@example.com";
-        UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
-        userDto.setId(1L);
-
-        when(webUserRepository.findByEmail(newEmail)).thenReturn(Optional.of(new WebUser()));
-
-        assertThrows(EmailAlreadyExistException.class, () -> userService.updateUserEmail(newEmail, userDto));
-    }
-
-    @Test
-    void testUpdateUserEmail_whenEmailAlreadyExist_shouldReturnUpdatedUserDto() {
-        String newEmail = "newemail@example.com";
-        UserDto userDto = new UserDto("username", "password", "token", "role", "ua");
-        userDto.setId(1L);
 
         WebUser webUser = new WebUser();
-        when(webUserRepository.findById(userDto.getId())).thenReturn(Optional.of(webUser));
-        when(webUserRepository.findByEmail(newEmail)).thenReturn(Optional.empty());
         when(webUserRepository.save(any(WebUser.class))).thenReturn(webUser);
 
         UserDto updatedUserDto = new UserDto("username", "password", "token", "role", "ua");
@@ -382,13 +390,11 @@ class UserAuthenticationServiceImplTest {
         when(modelMapper.map(webUser, UserDto.class)).thenReturn(updatedUserDto);
 
 
-        UserDto result = userService.updateUserEmail(newEmail, userDto);
+        UserDto result = userService.updateUserEmail(newEmail, webUser);
 
 
         assertNotNull(result);
         assertEquals(newEmail, result.getEmail());
-        verify(webUserRepository).findById(userDto.getId());
-        verify(webUserRepository).findByEmail(newEmail);
         verify(webUserRepository).save(any(WebUser.class));
         verify(modelMapper).map(webUser, UserDto.class);
     }

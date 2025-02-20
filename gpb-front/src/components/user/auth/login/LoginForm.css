@@ -1,0 +1,10 @@
+
+
+.Resend-link {
+    color: #4eb2ec;
+    text-decoration: underline;
+  }
+  
+  .Resend-link:hover {
+    cursor: pointer;
+  }
