@@ -3,7 +3,7 @@
  Game price bot is web application that combine information from available stores about video games and allow user to see best price.
  Also inform user via email or messenger about any changes in information about interesting game.
 
-Currently, support only gamezey store
+Currently, support gamazey and cardmag stores
 
 Currently, support only telegram messenger
 

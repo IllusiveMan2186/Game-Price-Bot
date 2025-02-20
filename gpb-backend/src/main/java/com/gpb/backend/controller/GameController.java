@@ -167,7 +167,7 @@ public class GameController {
         log.info("Retrieving games for genres: {} with exclusion types: {} and price range {} - {}; pageSize={}, pageNum={}, sortBy={}",
                 genre, type, minPrice, maxPrice, pageSize, pageNum, sortBy);
         if (maxPrice.compareTo(minPrice) < 0) {
-            log.info("Invalid price range: {} - {}", minPrice, maxPrice);
+            log.warn("Invalid price range: {} - {}", minPrice, maxPrice);
             throw new PriceRangeException();
         }
         return gameService.getByGenre(genre, type, pageSize, pageNum, minPrice, maxPrice, sortBy);
@@ -213,9 +213,9 @@ public class GameController {
             @PathVariable
             @Positive final long gameId
     ) {
-        log.info("Removing game with ID {} from database", gameId);
+        log.debug("Removing game with ID {} from database", gameId);
         gameService.removeGame(gameId);
-        log.info("Game with ID {} successfully removed", gameId);
+        log.debug("Game with ID {} successfully removed", gameId);
     }
 
     /**
@@ -231,9 +231,9 @@ public class GameController {
             @PathVariable
             @Positive final long gameInStoreId
     ) {
-        log.info("Removing game in store with ID {} from database", gameInStoreId);
+        log.debug("Removing game in store with ID {} from database", gameInStoreId);
         gameService.removeGameInStore(gameInStoreId);
-        log.info("Game in store with ID {} successfully removed", gameInStoreId);
+        log.debug("Game in store with ID {} successfully removed", gameInStoreId);
     }
 
     /**
@@ -249,7 +249,7 @@ public class GameController {
             @NotBlank
             @Pattern(regexp = CommonConstants.NAME_REGEX_PATTERN) final String gameName
     ) {
-        log.info("Retrieving image for game '{}'", gameName);
+        log.debug("Retrieving image for game '{}'", gameName);
         return resourceService.getGameImage(gameName);
     }
 }

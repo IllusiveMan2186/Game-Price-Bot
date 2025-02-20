@@ -55,6 +55,8 @@ public class EmailChangingServiceImpl implements EmailChangingService {
     }
 
     private EmailChanging getEmailChangingByToken(String confirmationToken){
+        log.debug("Get email changing by token");
+
         Optional<EmailChanging> emailChangingOpt = emailChangingRepository
                 .findByNewEmailToken(confirmationToken)
                 .or(() -> emailChangingRepository.findByOldEmailToken(confirmationToken));
@@ -74,11 +76,15 @@ public class EmailChangingServiceImpl implements EmailChangingService {
     }
 
     private String updateEmailChangingStatus(EmailChanging emailChanging) {
+        log.debug("Update email changing status for user {}", emailChanging.getUser().getId());
+
         if (emailChanging.isOldEmailConfirmed() && emailChanging.isNewEmailConfirmed()) {
+            log.debug("Both emails confirmed , email updates for user {}", emailChanging.getUser().getId());
             userActivationService.updateUserEmail(emailChanging.getNewEmail(), emailChanging.getUser());
             emailChangingRepository.deleteById(emailChanging.getId());
             return "app.email.change.success.message";
         } else {
+            log.debug("One email confirmed one more need for user {}", emailChanging.getUser().getId());
             emailChangingRepository.save(emailChanging);
             return "app.email.change.confirm.success.message";
         }

@@ -44,7 +44,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
             LoginFailedException.class, PriceRangeException.class, UserNotActivatedException.class,
             WrongPasswordException.class})
     protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
-        log.error("Bad request exception: {}", ex.getMessage(), ex);
+        log.warn("Bad request exception: {}", ex.getMessage(), ex);
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
@@ -57,7 +57,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      */
     @ExceptionHandler(value = {NotFoundException.class, UsernameNotFoundException.class, GameImageNotFoundException.class})
     protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
-        log.error("Not found exception: {}", ex.getMessage(), ex);
+        log.warn("Not found exception: {}", ex.getMessage(), ex);
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
@@ -70,7 +70,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      */
     @ExceptionHandler(value = {UserLockedException.class})
     protected ResponseEntity<Object> handleLockedRequest(RuntimeException ex, WebRequest request) {
-        log.error("Locked exception: {}", ex.getMessage(), ex);
+        log.warn("Locked exception: {}", ex.getMessage(), ex);
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.LOCKED, request);
     }
 
@@ -83,7 +83,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      */
     @ExceptionHandler(value = {RefreshTokenException.class, SecurityException.class})
     protected ResponseEntity<Object> handleAuthorizationError(RuntimeException ex, WebRequest request) {
-        log.error("Authorization error: {}", ex.getMessage(), ex);
+        log.warn("Authorization exception: {}", ex.getMessage(), ex);
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
 
@@ -98,5 +98,24 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     protected ResponseEntity<Object> handleServerError(RuntimeException ex, WebRequest request) {
         log.error("Server error: {}", ex.getMessage(), ex);
         return handleExceptionInternal(ex, "", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    /**
+     * Handles all other exceptions by returning a 500 Internal Server Error response.
+     *
+     * @param ex      the exception that was thrown.
+     * @param request the current web request.
+     * @return a {@link ResponseEntity} containing the error message and a 500 status code.
+     */
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<Object> handleGlobalException(Exception ex, WebRequest request) {
+        log.error("Unexpected error: {}", ex.getMessage(), ex);
+        return handleExceptionInternal(
+                ex,
+                "An unexpected error occurred.",
+                new HttpHeaders(),
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                request
+        );
     }
 }

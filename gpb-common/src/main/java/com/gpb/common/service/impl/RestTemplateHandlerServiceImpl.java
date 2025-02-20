@@ -49,23 +49,29 @@ public class RestTemplateHandlerServiceImpl implements RestTemplateHandlerServic
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(CommonConstants.API_KEY_HEADER, validApiKey);
         if (headers != null) {
+            log.debug("Set headers for request");
             httpHeaders.addAll(headers);
         }
         HttpEntity<Object> entity;
         if (requestBody == null) {
+            log.debug("Create entity without body");
             entity = new HttpEntity<>(httpHeaders);
         } else {
+            log.debug("Create entity with body");
             entity = new HttpEntity<>(requestBody, httpHeaders);
         }
         try {
+            log.debug("Sending request to main service");
             ResponseEntity<T> response = restTemplate.exchange(url, httpMethod, entity, responseType);
+            log.debug("Get response for request");
             return response.getBody();
 
         } catch (HttpClientErrorException exception) {
-            log.error("For request '{}' Error: '{}' : {}", url, exception.getMessage(), exception);
             if (exception.getStatusCode().is4xxClientError()) {
+                log.warn("For request '{}' Error: '{}' : {}", url, exception.getMessage(), exception);
                 handleClientError(exception);
             }
+            log.error("For request '{}' Error: '{}' : {}", url, exception.getMessage(), exception);
             throw new RestTemplateRequestException(exception);
         }
     }

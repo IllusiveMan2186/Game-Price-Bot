@@ -39,7 +39,7 @@ public class UserActivationServiceImpl implements UserActivationService {
 
     @Override
     public void resendActivationEmail(String email) {
-        log.info("Resend the activation email to the user for user: {}", email);
+        log.debug("Resend the activation email to the user for user");
 
         WebUser user = userService.getWebUserByEmail(email)
                 .orElseThrow(() -> new NotFoundException("app.user.error.email.not.found"));
@@ -49,10 +49,11 @@ public class UserActivationServiceImpl implements UserActivationService {
 
     @Override
     public void activateUserAccount(String token) {
-        log.info("Activate user for token : {}", token);
+        log.debug("Activate user for token");
 
         UserActivation userActivation = userActivationRepository.findByToken(token);
         if (userActivation == null) {
+            log.warn("User for activation not found ");
             throw new NotExistingUserActivationTokenException();
         }
         userService.activateUser(userActivation.getUser().getId());

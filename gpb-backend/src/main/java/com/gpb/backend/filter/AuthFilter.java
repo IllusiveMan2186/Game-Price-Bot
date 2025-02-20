@@ -1,10 +1,7 @@
 package com.gpb.backend.filter;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.gpb.backend.configuration.security.UserAuthenticationProvider;
-import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.util.Constants;
-import com.gpb.backend.util.CookieUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,13 +10,11 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor

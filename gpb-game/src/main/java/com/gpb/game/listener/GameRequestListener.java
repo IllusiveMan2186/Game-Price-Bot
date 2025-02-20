@@ -4,6 +4,7 @@ import com.gpb.common.entity.event.GameFollowEvent;
 import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.common.util.CommonConstants;
 import com.gpb.game.entity.game.Game;
+import com.gpb.game.service.GameInShopService;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.UserService;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GameRequestListener {
 
     private final GameService gameService;
+    private final GameInShopService gameInShopService;
     private final UserService userService;
 
     /**
@@ -126,7 +128,7 @@ public class GameRequestListener {
     public void listenGameInStoreRemove(final ConsumerRecord<String, Long> removeRecord) {
         log.info("Received in-store remove request with key '{}' for game ID: {}",
                 removeRecord.key(), removeRecord.value());
-        gameService.removeGameInStore(removeRecord.value());
+        gameInShopService.removeGameInStore(removeRecord.value());
     }
 
     /**
@@ -147,6 +149,6 @@ public class GameRequestListener {
     public void listenAddGameInStore(final ConsumerRecord<String, AddGameInStoreDto> addRecord) {
         log.info("Received in-store add request from url '{}' for game ID: {}",
                 addRecord.value().getUrl(), addRecord.value().getGameId());
-        gameService.addGameInStore(addRecord.value().getGameId(), addRecord.value().getUrl());
+        gameInShopService.addGameInStore(addRecord.value().getGameId(), addRecord.value().getUrl());
     }
 }

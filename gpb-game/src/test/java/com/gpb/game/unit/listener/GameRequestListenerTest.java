@@ -5,6 +5,7 @@ import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.listener.GameRequestListener;
+import com.gpb.game.service.GameInShopService;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.UserService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -23,7 +24,8 @@ class GameRequestListenerTest {
 
     @Mock
     private GameService gameService;
-
+    @Mock
+    private GameInShopService gameInShopService;
     @Mock
     private UserService userService;
 
@@ -127,7 +129,7 @@ class GameRequestListenerTest {
         gameRequestListener.listenGameInStoreRemove(record);
 
 
-        Mockito.verify(gameService).removeGameInStore(gameId);
+        Mockito.verify(gameInShopService).removeGameInStore(gameId);
     }
 
     @Test
@@ -141,6 +143,6 @@ class GameRequestListenerTest {
         gameRequestListener.listenAddGameInStore(record);
 
 
-        Mockito.verify(gameService).addGameInStore(gameId, url);
+        Mockito.verify(gameInShopService).addGameInStore(gameId, url);
     }
 }

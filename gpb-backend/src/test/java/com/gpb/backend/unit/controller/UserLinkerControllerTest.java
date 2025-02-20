@@ -48,7 +48,7 @@ class UserLinkerControllerTest {
         when(userLinkerService.getAccountsLinkerToken(123L)).thenReturn("connector-token");
 
 
-        String token = userController.getTelegramUserConnectorToken(user);
+        String token = userController.getUserConnectorToken(user);
 
 
         assertEquals("connector-token", token);

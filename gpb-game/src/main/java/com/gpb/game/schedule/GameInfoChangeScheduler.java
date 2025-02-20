@@ -2,7 +2,7 @@ package com.gpb.game.schedule;
 
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.BasicUser;
-import com.gpb.game.service.GameService;
+import com.gpb.game.service.GameInShopService;
 import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.NotificationManager;
 import com.gpb.game.service.UserService;
@@ -37,7 +37,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GameInfoChangeScheduler {
 
-    private final GameService gameService;
+    private final GameInShopService gameInShopService;
     private final GameStoresService gameStoresService;
     private final NotificationManager notificationManager;
     private final UserService userService;
@@ -60,16 +60,16 @@ public class GameInfoChangeScheduler {
     public void scheduleSubscribedGameInfoChangeEveryDay() {
         log.info("Starting daily check for game information changes for subscribed games.");
 
-        final List<GameInShop> subscribedGames = gameService.getSubscribedGames();
+        final List<GameInShop> subscribedGames = gameInShopService.getSubscribedGames();
         final List<GameInShop> changedGames = gameStoresService.checkGameInStoreForChange(subscribedGames);
 
         log.info("Amount of games that information was changed {}", changedGames.size());
 
-        gameService.changeInfo(changedGames);
+        gameInShopService.changeInfo(changedGames);
 
         final List<BasicUser> users = userService.getUsersOfChangedGameInfo(changedGames);
         for (final BasicUser user : users) {
-            final List<GameInShop> usersChangedGames = gameService.getUsersChangedGames(user, changedGames);
+            final List<GameInShop> usersChangedGames = gameInShopService.getUsersChangedGames(user, changedGames);
             notificationManager.sendGameInfoChange(user, usersChangedGames);
         }
 
@@ -92,10 +92,10 @@ public class GameInfoChangeScheduler {
     public void scheduleGameInfoChangeEveryWeak() {
         log.info("Starting weekly check for game information changes for all games in the shop.");
 
-        final List<GameInShop> games = gameService.getAllGamesInShop();
+        final List<GameInShop> games = gameInShopService.getAllGamesInShop();
         final List<GameInShop> changedGames = gameStoresService.checkGameInStoreForChange(games);
 
-        gameService.changeInfo(changedGames);
+        gameInShopService.changeInfo(changedGames);
 
         log.info("Completed weekly game info change check. Updated {} games.", changedGames.size());
     }

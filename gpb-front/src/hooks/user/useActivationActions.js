@@ -2,7 +2,7 @@ import { useNavigation } from "@contexts/NavigationContext";
 import { useHttpHelper } from "@hooks/useHttpHelper";
 
 const API_ENDPOINTS = {
-    RESEND_EMAIL: `/user/resend/email`,
+    RESEND_EMAIL: `/email/resend`,
     CHANGE_EMAIL: `/user/email`,
     CHANGE_PASSWORD: '/user/password',
     CHANGE_LOCALE: `/user/locale`,

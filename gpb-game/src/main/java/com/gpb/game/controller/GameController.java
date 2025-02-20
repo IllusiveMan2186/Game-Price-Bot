@@ -9,6 +9,7 @@ import com.gpb.common.exception.PriceRangeException;
 import com.gpb.common.exception.SortParamException;
 import com.gpb.common.util.CommonConstants;
 import com.gpb.game.entity.user.BasicUser;
+import com.gpb.game.service.GameInShopService;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.UserService;
 import jakarta.validation.constraints.Min;
@@ -19,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,10 +44,13 @@ public class GameController {
     private static final java.util.regex.Pattern SORT_PARAM_PATTERN = java.util.regex.Pattern.compile(CommonConstants.SORT_PARAM_REGEX);
 
     private final GameService gameService;
+    private final GameInShopService gameInShopService;
     private final UserService userService;
 
-    public GameController(final GameService gameService, final UserService userService) {
+    public GameController(final GameService gameService,final GameInShopService gameInShopService,
+                          final UserService userService) {
         this.gameService = gameService;
+        this.gameInShopService = gameInShopService;
         this.userService = userService;
     }
 
@@ -118,7 +121,7 @@ public class GameController {
             @Pattern(regexp = CommonConstants.URL_REGEX_PATTERN) final String url
     ) {
         log.info("Fetching game by URL: {}", url);
-        return gameService.getByUrl(url);
+        return gameInShopService.getByUrl(url);
     }
 
     /**
@@ -161,7 +164,7 @@ public class GameController {
         log.info("Fetching games by genres: {} with exclusion of types: {} and price range: {} - {}. Page: {} with {} items per page sorted by {}",
                 genre, type, minPrice, maxPrice, pageNum, pageSize, sortBy);
         if (maxPrice.compareTo(minPrice) < 0) {
-            log.error("Invalid price range: minPrice {} is greater than maxPrice {}", minPrice, maxPrice);
+            log.warn("Invalid price range: minPrice {} is greater than maxPrice {}", minPrice, maxPrice);
             throw new PriceRangeException();
         }
         GameListPageDto gamePage = gameService.getByGenre(genre, type, pageSize, pageNum, minPrice, maxPrice, parseSortBy(sortBy));
@@ -210,7 +213,7 @@ public class GameController {
     private Sort parseSortBy(final String sortBy) {
         Matcher matcher = SORT_PARAM_PATTERN.matcher(sortBy);
         if (!matcher.matches()) {
-            log.error("Invalid sort parameter: {}", sortBy);
+            log.warn("Invalid sort parameter: {}", sortBy);
             throw new SortParamException();
         }
         String[] sortParams = sortBy.split("-");
