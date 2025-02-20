@@ -1,5 +1,8 @@
 package com.gpb.game.service;
 
+/**
+ * Service interface for handling image resources.
+ */
 public interface ResourceService {
 
     /**

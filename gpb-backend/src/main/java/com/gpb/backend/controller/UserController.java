@@ -63,7 +63,7 @@ public class UserController {
                 passwordChangeDto.getNewPassword(),
                 user);
 
-        log.info("User with ID {} successfully changed password", user.getId());
+        log.debug("User with ID {} successfully changed password", user.getId());
     }
 
     /**

@@ -9,14 +9,7 @@ import com.gpb.game.repository.GameRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Subquery;
+import jakarta.persistence.criteria.*;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.springframework.data.domain.Page;
@@ -30,6 +23,11 @@ import java.util.List;
 
 public class GameRepositoryImpl implements GameRepositoryCustom {
 
+    private static final String DISCOUNT_PRICE = "discountPrice";
+    private static final String GAME_IN_SHOP = "gamesInShop";
+    private static final String USER_LIST = "userList";
+
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -42,65 +40,62 @@ public class GameRepositoryImpl implements GameRepositoryCustom {
                         .matching("*" + name + "*"))
                 .fetch((int) pageable.getOffset(), pageable.getPageSize());
 
-        long totalRecords = result.total().hitCount();
-        return new PageImpl<>(result.hits(), pageable, totalRecords);
+        return new PageImpl<>(result.hits(), pageable, result.total().hitCount());
     }
 
     @Override
-    public Page<Game> findGamesByGenreAndTypeWithSorting(
-            List<Genre> genres,
-            List<ProductType> types,
-            BigDecimal minPrice,
-            BigDecimal maxPrice,
-            Pageable pageable
-    ) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    public Page<Game> findGamesByGenreAndTypeWithSorting(List<Genre> genres,
+                                                         List<ProductType> types,
+                                                         BigDecimal minPrice,
+                                                         BigDecimal maxPrice,
+                                                         Pageable pageable) {
+        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
         // Build main query
-        CriteriaQuery<Game> query = cb.createQuery(Game.class);
-        Root<Game> gameRoot = query.from(Game.class);
-        Join<Game, GameInShop> gameShopJoin = gameRoot.join("gamesInShop", JoinType.LEFT);
+        final CriteriaQuery<Game> mainQuery = cb.createQuery(Game.class);
+        final Root<Game> gameRoot = mainQuery.from(Game.class);
+        final Join<Game, GameInShop> gameShopJoin = gameRoot.join(GAME_IN_SHOP, JoinType.LEFT);
 
-        List<Predicate> predicates = new ArrayList<>();
+        final List<Predicate> predicates = new ArrayList<>();
         addFilters(predicates, cb, gameRoot, gameShopJoin, genres, types, minPrice, maxPrice);
-        query.where(cb.and(predicates.toArray(new Predicate[0])));
-        setOrder(query, cb, gameRoot, pageable);
+        mainQuery.where(cb.and(predicates.toArray(new Predicate[0])));
+        applySorting(mainQuery, cb, gameRoot, pageable);
 
         // Build count query
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        Root<Game> countRoot = countQuery.from(Game.class);
-        Join<Game, GameInShop> countShopJoin = countRoot.join("gamesInShop", JoinType.LEFT);
-        List<Predicate> countPredicates = new ArrayList<>();
+        final CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        final Root<Game> countRoot = countQuery.from(Game.class);
+        final Join<Game, GameInShop> countShopJoin = countRoot.join(GAME_IN_SHOP, JoinType.LEFT);
+        final List<Predicate> countPredicates = new ArrayList<>();
         addFilters(countPredicates, cb, countRoot, countShopJoin, genres, types, minPrice, maxPrice);
         countQuery.select(cb.countDistinct(countRoot))
                 .where(cb.and(countPredicates.toArray(new Predicate[0])));
 
-        return getPageResult(query, countQuery, pageable);
+        return getPageResult(mainQuery, countQuery, pageable);
     }
 
     @Override
     public Page<Game> findGamesByUserWithSorting(Long userId, Pageable pageable) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
         // Build main query
-        CriteriaQuery<Game> query = cb.createQuery(Game.class);
-        Root<Game> gameRoot = query.from(Game.class);
-        Join<Game, BasicUser> userJoin = gameRoot.join("userList", JoinType.INNER);
-        query.where(cb.equal(userJoin.get("id"), userId));
-        setOrder(query, cb, gameRoot, pageable);
+        final CriteriaQuery<Game> mainQuery = cb.createQuery(Game.class);
+        final Root<Game> gameRoot = mainQuery.from(Game.class);
+        final Join<Game, BasicUser> userJoin = gameRoot.join(USER_LIST, JoinType.INNER);
+        mainQuery.where(cb.equal(userJoin.get("id"), userId));
+        applySorting(mainQuery, cb, gameRoot, pageable);
 
         // Build count query
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        Root<Game> countRoot = countQuery.from(Game.class);
-        Join<Game, BasicUser> countUserJoin = countRoot.join("userList", JoinType.INNER);
+        final CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        final Root<Game> countRoot = countQuery.from(Game.class);
+        final Join<Game, BasicUser> countUserJoin = countRoot.join(USER_LIST, JoinType.INNER);
         countQuery.select(cb.countDistinct(countRoot))
                 .where(cb.equal(countUserJoin.get("id"), userId));
 
-        return getPageResult(query, countQuery, pageable);
+        return getPageResult(mainQuery, countQuery, pageable);
     }
 
     /**
-     * Helper to add filters to both main and count queries.
+     * Adds filtering predicates to the query.
      */
     private void addFilters(List<Predicate> predicates, CriteriaBuilder cb, Root<Game> gameRoot,
                             Join<Game, GameInShop> gameShopJoin, List<Genre> genres,
@@ -113,49 +108,62 @@ public class GameRepositoryImpl implements GameRepositoryCustom {
             predicates.add(gameRoot.get("type").in(types));
         }
         if (minPrice != null && maxPrice != null) {
-            predicates.add(cb.between(gameShopJoin.get("discountPrice"), minPrice, maxPrice));
+            predicates.add(cb.between(gameShopJoin.get(DISCOUNT_PRICE), minPrice, maxPrice));
         }
     }
 
     /**
-     * Helper to apply ordering to the query.
+     * Applies sorting to the query based on the pageable sort.
      */
-    private void setOrder(CriteriaQuery<Game> query, CriteriaBuilder cb, Root<Game> gameRoot, Pageable pageable) {
-        if (pageable.getSort().isSorted()) {
-            List<Order> orders = new ArrayList<>();
-            for (Sort.Order order : pageable.getSort()) {
-                String property = order.getProperty();
-                Order ordering;
-                if ("gamesInShop.discountPrice".equals(property)) {
-                    // Use a subquery for sorting on discountPrice
-                    Subquery<BigDecimal> subquery = query.subquery(BigDecimal.class);
-                    Root<GameInShop> shopRoot = subquery.from(GameInShop.class);
-                    subquery.select(order.isAscending()
-                            ? cb.min(shopRoot.get("discountPrice"))
-                            : cb.max(shopRoot.get("discountPrice")));
-                    subquery.where(cb.equal(shopRoot.get("game"), gameRoot));
-                    ordering = order.isAscending() ? cb.asc(subquery) : cb.desc(subquery);
-                } else {
-                    ordering = order.isAscending()
-                            ? cb.asc(gameRoot.get(property))
-                            : cb.desc(gameRoot.get(property));
-                }
-                orders.add(ordering);
-            }
-            query.orderBy(orders);
+    private void applySorting(CriteriaQuery<Game> query, CriteriaBuilder cb, Root<Game> gameRoot, Pageable pageable) {
+        if (!pageable.getSort().isSorted()) {
+            return;
         }
+        List<Order> orders = new ArrayList<>();
+        for (Sort.Order sortOrder : pageable.getSort()) {
+            orders.add(createOrderForProperty(query, cb, gameRoot, sortOrder));
+        }
+        query.orderBy(orders);
     }
 
+    private Order createOrderForProperty(CriteriaQuery<Game> query, CriteriaBuilder cb, Root<Game> gameRoot,
+                                         Sort.Order sortOrder) {
+        final String property = sortOrder.getProperty();
+        if ("gamesInShop.discountPrice".equals(property)) {
+            return createDiscountPriceOrder(query, cb, gameRoot, sortOrder);
+        }
+        return sortOrder.isAscending()
+                ? cb.asc(gameRoot.get(property))
+                : cb.desc(gameRoot.get(property));
+    }
+
+    private Order createDiscountPriceOrder(CriteriaQuery<Game> query, CriteriaBuilder cb, Root<Game> gameRoot,
+                                           Sort.Order sortOrder) {
+        Subquery<BigDecimal> subquery = query.subquery(BigDecimal.class);
+        Root<GameInShop> shopRoot = subquery.from(GameInShop.class);
+        // Assume DISCOUNT_PRICE is a constant defined as "discountPrice"
+        Expression<BigDecimal> discountPriceExpr = shopRoot.get(DISCOUNT_PRICE);
+        Expression<BigDecimal> aggregated = sortOrder.isAscending()
+                ? cb.min(discountPriceExpr)
+                : cb.max(discountPriceExpr);
+        subquery.select(aggregated);
+        subquery.where(cb.equal(shopRoot.get("game"), gameRoot));
+        return sortOrder.isAscending()
+                ? cb.asc(subquery)
+                : cb.desc(subquery);
+    }
+
+
     /**
-     * Helper method to execute both the main and count queries and return a paged result.
+     * Executes the main and count queries and returns a paginated result.
      */
-    private Page<Game> getPageResult(CriteriaQuery<Game> query, CriteriaQuery<Long> countQuery, Pageable pageable) {
-        TypedQuery<Game> typedQuery = entityManager.createQuery(query);
+    private Page<Game> getPageResult(CriteriaQuery<Game> mainQuery, CriteriaQuery<Long> countQuery, Pageable pageable) {
+        final TypedQuery<Game> typedQuery = entityManager.createQuery(mainQuery);
         typedQuery.setFirstResult((int) pageable.getOffset());
         typedQuery.setMaxResults(pageable.getPageSize());
-        List<Game> resultList = typedQuery.getResultList();
+        final List<Game> games = typedQuery.getResultList();
 
-        Long totalRecords = entityManager.createQuery(countQuery).getSingleResult();
-        return new PageImpl<>(resultList, pageable, totalRecords);
+        final Long totalRecords = entityManager.createQuery(countQuery).getSingleResult();
+        return new PageImpl<>(games, pageable, totalRecords);
     }
 }

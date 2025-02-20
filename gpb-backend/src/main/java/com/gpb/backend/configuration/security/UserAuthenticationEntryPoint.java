@@ -42,7 +42,7 @@ public class UserAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-        log.error("Unauthorized access attempt: {}", authException.getMessage());
+        log.warn("Unauthorized access attempt: {}", authException.getMessage());
 
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("status", HttpStatus.UNAUTHORIZED.value());

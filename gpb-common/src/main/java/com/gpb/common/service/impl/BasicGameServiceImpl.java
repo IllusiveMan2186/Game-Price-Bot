@@ -30,7 +30,7 @@ public class BasicGameServiceImpl implements BasicGameService {
 
     @Override
     public GameInfoDto getById(long gameId, long basicUserId) {
-        log.info("Get game by id '{}' and '{}'", gameId, basicUserId);
+        log.debug("Get game by id '{}' and '{}'", gameId, basicUserId);
         String url = "/game/" + gameId;
         HttpHeaders headers = getBasicUserIdHeader(basicUserId);
         return templateHandlerService.executeRequest(url, HttpMethod.GET, headers, GameInfoDto.class);
@@ -38,6 +38,9 @@ public class BasicGameServiceImpl implements BasicGameService {
 
     @Override
     public GameListPageDto getByName(String name, int pageSize, int pageNum, String sort, long basicUserId) {
+        log.debug("Making request to get games by name '{}' ; pageSize={}, " +
+                "pageNum={}, sortBy={}", name, pageSize, pageNum, sort);
+
         String url = "/game/name/" + name + "?pageSize=" + pageSize + "&pageNum=" + pageNum
                 + "&sortBy=" + sort;
 
@@ -49,6 +52,9 @@ public class BasicGameServiceImpl implements BasicGameService {
     @Override
     public GameListPageDto getByGenre(List<Genre> genres, List<ProductType> types, int pageSize, int pageNum,
                                       BigDecimal minPrice, BigDecimal maxPrice, String sort, long basicUserId) {
+        log.debug("Making request to get games for genres: {} with exclusion types: {} and price range {} - {}; pageSize={}, " +
+                "pageNum={}, sortBy={}", genres, types, minPrice, maxPrice, pageSize, pageNum, sort);
+
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance()
                 .path("/game/genre")
                 .queryParam("pageSize", pageSize)
@@ -77,6 +83,8 @@ public class BasicGameServiceImpl implements BasicGameService {
 
     @Override
     public GameListPageDto getUserGames(long basicUserId, int pageSize, int pageNum, String sort) {
+        log.debug("Making request to get user '{}' games  ; pageSize={}, " +
+                "pageNum={}, sortBy={}", basicUserId, pageSize, pageNum, sort);
         String url = "/game/user/games?pageSize=" + pageSize + "&pageNum=" + pageNum
                 + "&sortBy=" + sort;
 
@@ -87,12 +95,13 @@ public class BasicGameServiceImpl implements BasicGameService {
 
     @Override
     public void setFollowGameOption(long gameId, long basicUserId, boolean isFollow) {
+        log.debug("Making set follow option request");
         String key = UUID.randomUUID().toString();
         if (isFollow) {
-            log.info("Send game follow request for game {} for user {}", gameId, basicUserId);
+            log.debug("Send game follow request for game {} for user {}", gameId, basicUserId);
             gameFollowEventKafkaTemplate.send(CommonConstants.GAME_FOLLOW_TOPIC, key, new GameFollowEvent(basicUserId, gameId));
         } else {
-            log.info("Send game unfollow request for game {} for user {}", gameId, basicUserId);
+            log.debug("Send game unfollow request for game {} for user {}", gameId, basicUserId);
             gameFollowEventKafkaTemplate.send(CommonConstants.GAME_UNFOLLOW_TOPIC, key, new GameFollowEvent(basicUserId, gameId));
         }
     }

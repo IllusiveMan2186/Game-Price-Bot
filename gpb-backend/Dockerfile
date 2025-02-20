@@ -16,8 +16,8 @@ ENV DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD
 RUN gradle clean build
 
 # Stage 2: Create the final image
-FROM openjdk:20
-ENV ARTIFACT_NAME=gpb-backend-1.0.0.war
+FROM openjdk:17
+ENV ARTIFACT_NAME=gpb-backend-1.1.0.war
 ENV APP_HOME=/gpb/backend/
 
 WORKDIR $APP_HOME

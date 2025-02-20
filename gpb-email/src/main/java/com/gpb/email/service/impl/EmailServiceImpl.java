@@ -24,6 +24,7 @@ public class EmailServiceImpl implements EmailService {
     public void sendEmail(String to, String subject, Context context, String templateName) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
+            log.info("Try to send email");
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
             helper.setTo(to);
             helper.setSubject(subject);
@@ -32,7 +33,7 @@ public class EmailServiceImpl implements EmailService {
             helper.setText(htmlContent, true);
 
             mailSender.send(mimeMessage);
-            log.info("Email successfully sent to {}", to);
+            log.info("Email successfully sent");
         } catch (MessagingException e) {
             log.error("MessagingException while sending email to {}: {}", to, e.getMessage(), e);
         } catch (MailAuthenticationException e) {

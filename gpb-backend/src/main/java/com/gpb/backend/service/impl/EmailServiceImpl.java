@@ -69,6 +69,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void sendEmailChangeWithToken(String email, String token, Locale locale) {
+        log.debug("Send emails for email change");
         Map<String, Object> variables = new LinkedHashMap<>();
         String subject = messageSource.getMessage("email.subject.email.change", null, locale);
 
@@ -78,7 +79,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void sendEmail(String to, String subject, Map<String, Object> variables, Locale locale, String templateName) {
-        log.info("Email event for recipient '{}' about '{}'", to, subject);
+        log.debug("Email event for recipient '{}' about '{}'", to, subject);
         String key = UUID.randomUUID().toString();
         kafkaTemplate.send(CommonConstants.EMAIL_SERVICE_TOPIC, key, new EmailEvent(to, subject, variables, locale, templateName));
     }

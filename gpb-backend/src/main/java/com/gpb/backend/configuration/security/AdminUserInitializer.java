@@ -15,7 +15,6 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.util.Locale;
 
@@ -71,7 +70,7 @@ public class AdminUserInitializer implements ApplicationListener<ContextRefreshe
             backoff = @Backoff(delay = 2000) // Retry every 2 seconds, up to 5 times
     )
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        log.info("Check default admin user");
+        log.debug("Check default admin user");
         if (userRepository.findByEmail(adminEmail).isEmpty()) {
             final Long basicUserId = restTemplateHandler.executeRequestWithBody(
                     "/user",

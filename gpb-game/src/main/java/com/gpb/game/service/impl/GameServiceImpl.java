@@ -35,7 +35,6 @@ import java.util.Optional;
 public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
-    private final GameInShopRepository gameInShopRepository;
     private final GameStoresService gameStoresService;
     private final GameRepositoryCustom gameRepositoryCustom;
     private final ModelMapper modelMapper;
@@ -54,14 +53,10 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameInfoDto getDtoById(final long gameId) {
+        log.info("Get game info dto by id : {}", gameId);
         final Game game = getById(gameId);
 
         return modelMapper.map(game, GameInfoDto.class);
-    }
-
-    @Override
-    public List<GameInShop> getAllGamesInShop() {
-        return gameInShopRepository.findAll();
     }
 
     @Override
@@ -90,27 +85,11 @@ public class GameServiceImpl implements GameService {
 
 
     @Override
-    public GameInfoDto getByUrl(String url) {
+    public Game getByUrl(String url) {
         log.info("Get game by url : {}", url);
 
-        final GameInShop gameInShop = gameInShopRepository.findByUrl(url);
-        if (gameInShop == null) {
-            Game game = gameStoresService.findGameByUrl(url);
-            return modelMapper.map(gameRepository.save(game), GameInfoDto.class);
-        }
-
-        return modelMapper.map(gameInShop.getGame(), GameInfoDto.class);
-    }
-
-    @Override
-    public GameInfoDto addGameInStore(long gameId, String url) {
-        log.info("Get game in store by url {} and adding to game {}", url, gameId);
-
-        final Game game = getById(gameId);
-        final GameInShop gameInShop = gameStoresService.findGameInShopByUrl(url);
-        gameInShop.setGame(game);
-        gameInShopRepository.save(gameInShop);
-        return modelMapper.map(getById(gameId), GameInfoDto.class);
+        Game game = gameStoresService.findGameByUrl(url);
+        return gameRepository.save(game);
     }
 
     @Override
@@ -147,27 +126,6 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<GameInShop> getSubscribedGames() {
-        log.info("Get game for which subscribe users");
-        return gameInShopRepository.findSubscribedGames();
-    }
-
-    @Override
-    public void changeInfo(List<GameInShop> changedGames) {
-        log.info("Save games in store changes for {} elements", changedGames.size());
-
-        gameInShopRepository.saveAll(changedGames);
-    }
-
-    @Override
-    public List<GameInShop> getUsersChangedGames(BasicUser user, List<GameInShop> changedGames) {
-        List<Long> changedGamesIds = changedGames.stream()
-                .map(GameInShop::getId)
-                .toList();
-        return gameInShopRepository.findSubscribedGames(user.getId(), changedGamesIds);
-    }
-
-    @Override
     public void removeGame(long gameId) {
         log.info("Remove game by id : {}", gameId);
 
@@ -175,34 +133,25 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeGameInStore(long gameInStoreId) {
-        log.info("Remove game in store by id : {}", gameInStoreId);
-        Optional<GameInShop> optionalGameInShop = gameInShopRepository.findById(gameInStoreId);
-        if (optionalGameInShop.isEmpty()) {
-            log.error("Game with id '{}' not found.", gameInStoreId);
-            return;
-        }
-        GameInShop gameInShop = optionalGameInShop.get();
-
-        Game game = gameInShop.getGame();
-
-        if (game.getGamesInShop().size() <= 1) {
-            log.info("Removes game due to last game in store info removed : {}", game.getId());
-            gameRepository.deleteById(game.getId());
-        } else {
-            game.getGamesInShop().remove(gameInShop);
-            gameRepository.save(game);
-            gameInShopRepository.deleteById(gameInShop.getId());
-            log.info("Game in store by id {} successfully removed", gameInStoreId);
-        }
-    }
-
-    @Override
     public Game setFollowGameOption(long gameId, boolean isFollow) {
         Game game = getById(gameId);
         game.setFollowed(isFollow);
         return gameRepository.save(game);
+    }
+
+    @Override
+    public void removeGameInShopFromGame(GameInShop gameInShop) {
+        Game game = gameInShop.getGame();
+
+        if (game.getGamesInShop().size() <= 1) {
+            log.info("Removes game due to last game in store info removed : {}", game.getId());
+            removeGame(game.getId());
+        } else {
+            log.info("Removes game due to last game in store info removed : {}", game.getId());
+            game.getGamesInShop().remove(gameInShop);
+            gameRepository.save(game);
+            log.info("Game in store by id {} successfully removed", gameInShop.getId());
+        }
     }
 
     private List<Game> addGames(List<Game> games) {

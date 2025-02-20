@@ -6,13 +6,14 @@ import com.gpb.backend.service.ResourceService;
 import com.gpb.backend.util.Constants;
 import com.gpb.common.util.CommonConstants;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-@Log4j2
+@Slf4j
 @Service
 public class ResourceServiceImpl implements ResourceService {
 
@@ -23,24 +24,29 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     public byte[] getGameImage(final String gameName) {
+        log.debug("Get game image by name '{}'", gameName);
         String gameImageFullPath = resourceConfiguration.getImageFolder() + "/" + sanitizeFilename(gameName)
                 + CommonConstants.JPG_IMG_FILE_EXTENSION;
         try {
+            log.debug("Trying get game image by path '{}'", gameImageFullPath);
             InputStream in = new FileInputStream(gameImageFullPath);
 
             return IOUtils.toByteArray(in);
         } catch (Exception e) {
+            log.error("Not found game image by path '{}'", gameImageFullPath);
             return getDefaultGameImage();
         }
     }
 
     private byte[] getDefaultGameImage() {
+        log.debug("Get game default image");
         String gameImageFullPath = resourceConfiguration.getImageFolder() + "/defaultImage" + Constants.PNG_IMG_FILE_EXTENSION;
         try {
+            log.debug("Trying get game default image '{}'", gameImageFullPath);
             InputStream in = new FileInputStream(gameImageFullPath);
             return IOUtils.toByteArray(in);
         } catch (Exception e) {
-            log.error(String.format("Not found image by path '{}'. Full message :'{}'", gameImageFullPath, e.getMessage()));
+            log.error("Not found image by path '{}'. Full message :'{}'", gameImageFullPath, e.getMessage());
             throw new GameImageNotFoundException(e);
         }
     }

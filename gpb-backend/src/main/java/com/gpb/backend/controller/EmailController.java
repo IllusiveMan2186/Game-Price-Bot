@@ -43,13 +43,12 @@ public class EmailController {
      *
      * @param emailRequestDto the DTO containing the new email information
      * @param user            the authenticated user's details
-     * @return the updated {@link UserDto} after the email change
      */
     @PutMapping
     @Transactional
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateUserEmail(@RequestBody final EmailRequestDto emailRequestDto, @AuthenticationPrincipal UserDto user) {
-        log.debug("User with ID {} requested email change", user.getId());
+        log.info("User with ID {} requested email change", user.getId());
 
         String newEmail = emailRequestDto.getEmail();
         if (newEmail.equals(user.getEmail())) {
@@ -83,7 +82,12 @@ public class EmailController {
         log.debug("Activation email resent successfully");
     }
 
-
+    /**
+     * Handles email confirmation request.
+     *
+     * @param tokenRequestDto the request containing the confirmation token
+     * @return the response message indicating the confirmation status
+     */
     @PostMapping(value = "/change/confirm")
     @Transactional
     @ResponseStatus(HttpStatus.OK)

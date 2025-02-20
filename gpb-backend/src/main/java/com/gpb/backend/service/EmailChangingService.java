@@ -18,7 +18,7 @@ public interface EmailChangingService {
     EmailChanging createEmailChanging(String newEmail, WebUser user);
 
     /**
-     * Confirms the email change request using the provided token.
+     * Confirms the email change request using the provided token from new and old email.
      *
      * @param confirmationToken The token to verify the email change.
      * @return A message indicating the success or confirmation process.

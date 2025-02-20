@@ -45,7 +45,6 @@ import static org.mockito.Mockito.when;
 class GameServiceImplTest {
 
     GameRepository gameRepository = mock(GameRepository.class);
-    GameInShopRepository gameInShopRepository = mock(GameInShopRepository.class);
 
     GameStoresService gameStoresService = mock(GameStoresService.class);
 
@@ -53,7 +52,7 @@ class GameServiceImplTest {
 
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
-    GameService gameService = new GameServiceImpl(gameRepository, gameInShopRepository, gameStoresService,
+    GameService gameService = new GameServiceImpl(gameRepository, gameStoresService,
             gameRepositoryCustom, modelMapper);
 
     private final GameInShop gameInShop = GameInShop.builder()
@@ -74,26 +73,6 @@ class GameServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> gameService.getById(gameId), "app.game.error.id.not.found");
         verify(gameRepository, times(1)).findById(gameId);
-    }
-
-    @Test
-    void testGetAllGamesInShop_whenNotExist_ShouldThrowException() {
-        when(gameInShopRepository.findAll()).thenReturn(List.of(gameInShop));
-
-        List<GameInShop> result = gameService.getAllGamesInShop();
-
-        assertEquals(1, result.size());
-        assertEquals(gameInShop, result.get(0));
-    }
-
-    @Test
-    void testGetSubscribedGames_whenSuccess_thenShouldGetGames() {
-        List<GameInShop> games = new ArrayList<>();
-        when(gameInShopRepository.findSubscribedGames()).thenReturn(games);
-
-        List<GameInShop> result = gameService.getSubscribedGames();
-
-        assertEquals(games, result);
     }
 
     @Test
@@ -166,54 +145,6 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testGetGameByUrl_whenGameWithUrlAlreadyRegistered_shouldReturnRegisteredGame() {
-        String url = "url";
-        GameInShop gameInShop = GameInShop.builder().game(game).build();
-        when(gameInShopRepository.findByUrl(url)).thenReturn(gameInShop);
-        GameInfoDto gameInfoDto = modelMapper.map(game, GameInfoDto.class);
-
-        GameInfoDto result = gameService.getByUrl(url);
-
-        assertEquals(gameInfoDto, result);
-    }
-
-    @Test
-    void testGetGameByUrl_whenNotRegistered_shouldReturnGame() {
-        String url = "url";
-        String name = "name";
-        long gameId = 1L;
-        Game gameWithAddedShop = Game.builder().gamesInShop(new HashSet<>()).build();
-
-        when(gameInShopRepository.findByUrl(url)).thenReturn(null);
-        when(gameStoresService.findGameByUrl(url)).thenReturn(game);
-        game.setName(name);
-        when(gameRepository.findById(gameId)).thenReturn(game);
-        when(gameRepository.save(game)).thenReturn(gameWithAddedShop);
-        GameInfoDto gameInfoDto = modelMapper.map(gameWithAddedShop, GameInfoDto.class);
-
-        GameInfoDto result = gameService.getByUrl(url);
-
-        assertEquals(gameInfoDto, result);
-    }
-
-    @Test
-    void testAddGameInStore_whenSuccess_shouldReturnGameWithNewGameInStore() {
-        String url = "url";
-        long gameId = 1L;
-        Game gameAfterAdding = Game.builder().gamesInShop(Set.of(gameInShop)).build();
-        when(gameRepository.findById(gameId)).thenReturn(game, gameAfterAdding);
-        when(gameStoresService.findGameInShopByUrl(url)).thenReturn(gameInShop);
-        GameInfoDto gameInfoDto = modelMapper.map(gameAfterAdding, GameInfoDto.class);
-
-        GameInfoDto result = gameService.addGameInStore(gameId, url);
-
-        assertEquals(gameInfoDto, result);
-        gameInShop.setGame(game);
-        verify(gameInShopRepository).save(gameInShop);
-    }
-
-
-    @Test
     void testFindByGenre_whenSuccess_shouldReturnGameList() {
         Page page = mock(Page.class);
         List<Genre> genre = Collections.singletonList(Genre.STRATEGIES);
@@ -258,29 +189,6 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testChangeInfo_whenSuccess_thenSaveChanges() {
-        List<GameInShop> changedGames = new ArrayList<>();
-
-        gameService.changeInfo(changedGames);
-
-        verify(gameInShopRepository).saveAll(changedGames);
-    }
-
-    @Test
-    void testGetUsersChangedGames_whenSuccess_thenShouldGetGames() {
-        List<GameInShop> changedGames = new ArrayList<>();
-        GameInShop gameInShop1 = GameInShop.builder().id(0).build();
-        GameInShop gameInShop2 = GameInShop.builder().id(1).build();
-        BasicUser user = new BasicUser();
-        user.setId(1);
-        when(gameInShopRepository.findSubscribedGames(user.getId(), List.of(0L, 1L))).thenReturn(changedGames);
-
-        List<GameInShop> result = gameService.getUsersChangedGames(user, List.of(gameInShop1, gameInShop2));
-
-        assertEquals(changedGames, result);
-    }
-
-    @Test
     void testRemoveGame_whenSuccess_shouldRemoveGame() {
         long gameId = 1L;
 
@@ -289,40 +197,16 @@ class GameServiceImplTest {
         verify(gameRepository).deleteById(gameId);
     }
 
-    //@Test
-    void testRemoveGameInStore_whenSuccess_shouldRemoveGameInStore() {
-        long gameInStoreId = 1L;
-        //when(gameInShopRepository.findById(gameInStoreId)).thenReturn(Optional.of());
-
-        gameService.removeGameInStore(gameInStoreId);
-
-        verify(gameInShopRepository).deleteById(gameInStoreId);
-    }
-
-    @Test
-    void testRemoveGameInStore_whenGameNotFound_shouldNotCallDelete() {
-        long gameInStoreId = 200L;
-        when(gameInShopRepository.findById(gameInStoreId)).thenReturn(Optional.empty());
-
-        gameService.removeGameInStore(gameInStoreId);
-
-        verify(gameInShopRepository, never()).deleteById(anyLong());
-        verify(gameRepository, never()).deleteById(anyLong());
-    }
-
     @Test
     void testRemoveGameInStore_whenLastGameInShop_shouldRemovesGame() {
         gameInShop.setGame(game);
         game.setGamesInShop(new HashSet<>(Set.of(gameInShop)));
-        when(gameInShopRepository.findById(gameInShop.getId())).thenReturn(Optional.of(gameInShop));
-        when(gameRepository.findById(game.getId())).thenReturn(game);
 
 
-        gameService.removeGameInStore(gameInShop.getId());
+        gameService.removeGameInShopFromGame(gameInShop);
 
 
         verify(gameRepository, times(1)).deleteById(game.getId());
-        verify(gameInShopRepository, never()).deleteById(gameInShop.getId());
     }
 
     @Test
@@ -334,14 +218,11 @@ class GameServiceImplTest {
         gameInShop.setGame(game);
         game.setGamesInShop(new HashSet<>(Set.of(gameInShop, anotherGameInShop)));
 
-        when(gameInShopRepository.findById(gameInShop.getId())).thenReturn(Optional.of(gameInShop));
 
-
-        gameService.removeGameInStore(gameInShop.getId());
+        gameService.removeGameInShopFromGame(gameInShop);
 
 
         verify(gameRepository, times(1)).save(game);
-        verify(gameInShopRepository, times(1)).deleteById(gameInShop.getId());
         verify(gameRepository, never()).deleteById(game.getId());
     }
 
