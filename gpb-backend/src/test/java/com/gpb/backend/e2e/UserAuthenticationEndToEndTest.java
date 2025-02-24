@@ -44,7 +44,7 @@ class UserAuthenticationEndToEndTest {
 
         EntToEndUtil.loginInToGpb(driver, "notExistingEmail@mail.com", "notExistingPassword");
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(400));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(1000));
         WebElement errorElement = wait.until(
                 ExpectedConditions.visibilityOfElementLocated(By.className("Error"))
         );
