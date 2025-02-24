@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 
 echo "window._env_ = {" > /usr/share/nginx/html/env.js
 echo "  BACKEND_SERVICE_URL: \"${BACKEND_SERVICE_URL}\"," >> /usr/share/nginx/html/env.js
