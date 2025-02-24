@@ -44,7 +44,7 @@ public class EntToEndUtil {
                 !driver.findElement(By.id("profile-dropdown-button")).getText().equals("Profile")) {
 
             try {
-                Thread.sleep(1000);
+                Thread.sleep(400);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
