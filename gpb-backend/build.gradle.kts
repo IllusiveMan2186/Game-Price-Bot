@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.gpb"
-version = "1.1.0"
+version = "1.1.1"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 fun getEnvOrProperty(name: String): String {
@@ -70,9 +70,9 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
 }
 
-tasks.withType<Test> {
+tasks.named<Test>("test") {
     useJUnitPlatform {
-        excludeTags("e2e") // Exclude tests with the @Tag("e2e") annotation
+        excludeTags("e2e")
     }
 }
 
@@ -84,14 +84,13 @@ tasks.register<Test>("e2eTest") {
 
     doFirst {
         val username = System.getenv("E2E_EMAIL")
-                ?: throw IllegalStateException("Property 'E2E_EMAIL' is required")
+            ?: throw IllegalStateException("Property 'E2E_EMAIL' is required")
         val password = System.getenv("E2E_PASSWORD")
-                ?: throw IllegalStateException("Property 'E2E_PASSWORD' is required")
-
+            ?: throw IllegalStateException("Property 'E2E_PASSWORD' is required")
         systemProperty("e2e.email", username)
         systemProperty("e2e.password", password)
     }
     useJUnitPlatform {
-        includeTags("e2e") // Only include tests tagged with @Tag("e2e")
+        includeTags("e2e")
     }
 }
