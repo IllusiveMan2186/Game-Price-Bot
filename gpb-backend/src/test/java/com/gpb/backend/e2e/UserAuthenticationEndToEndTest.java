@@ -5,6 +5,11 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Tag;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -35,14 +40,16 @@ class UserAuthenticationEndToEndTest {
     void testUserLogin_whenWrongCredential_shouldShowError() {
         WebDriver driver = EntToEndUtil.getGpbWebDriver();
 
-
         assertEquals(0, driver.findElements(By.id("profile-dropdown-button")).size());
 
         EntToEndUtil.loginInToGpb(driver, "notExistingEmail@mail.com", "notExistingPassword");
 
-        String errorMessage = driver.findElement(By.id("pills-login"))
-                .findElement(By.className("Error")).getText();
-        assertFalse(errorMessage.isEmpty());
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(1000));
+        WebElement errorElement = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.className("Error"))
+        );
+
+        assertFalse(errorElement.getText().isEmpty());
 
         driver.quit();
     }

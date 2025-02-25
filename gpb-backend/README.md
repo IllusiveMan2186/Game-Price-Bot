@@ -71,3 +71,20 @@ Add Environment variables for running project locally
 * TOKEN_SECRET_KEY: Secret key for authentication token generation.
 
 * REFRESH_TOKEN_SECRET_KEY: Secret key for refresh token generation.
+
+
+### End to end tests
+* Run if gradle folder with wrapper directory still not created :
+
+  ```
+  gardle init
+  ```
+
+* For running end to end tests used command with credential you was used for backend start (ADMIN_EMAIL,ADMIN_PASSWORD) :
+  ```
+  set E2E_EMAIL=ADMIN_EMAIL
+  set E2E_PASSWORD=ADMIN_PASSWORD
+  
+  gradlew e2eTest
+
+  ```
