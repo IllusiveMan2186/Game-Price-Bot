@@ -45,31 +45,39 @@ and we will take appropriate action.
 docker-compose up
 ```
 
-### Environments in ".env" file (with defaults values for docker) :
+### To run GPB in Minikube after installing, create a ".env" file and use the following command in root of project:
+
+```console
+minikube start --driver=docker
+sh deploy.sh
+```
+
+### Environments in ".env" file (with defaults values for docker and minikube) :
 
 PostgreSQL Configuration:
 * POSTGRES_DB: The name of the database to be created in PostgreSQL.
   * Default: postgres
   * Set your custom database name here.
 
-* POSTGRES_DB_USERNAME: The username to connect to the PostgreSQL database.
+* POSTGRES_USER: The username to connect to the PostgreSQL database.
   * Default: postgres
   * Set your desired username here.
 
-* POSTGRES_DB_PASSWORD: The password for the PostgreSQL user.
+* POSTGRES_PASSWORD: The password for the PostgreSQL user.
   * Set a strong password for your PostgreSQL user here.
 
-* POSTGRES_DB_URL: The JDBC URL to connect to the PostgreSQL database.
+* POSTGRES_URL: The JDBC URL to connect to the PostgreSQL database.
   * Default: jdbc:postgresql://postgres:5432/postgres
   * You typically do not need to change this unless you are running PostgreSQL on a different host or port.
 
 Kafka Configuration:
 * KAFKA_SERVER_URL: The URL of the Kafka server for your backend to communicate with.
-  * Default: kafka:9093
+  * Default: kafka:9093 for docker compose , kafka:9092 for minicube
   * Set the correct Kafka server URL if it is different from the default.
 
 * KAFKA_ADVERTISED_LISTENERS: Kafka advertised listeners for internal and external communication.
-  * Default: INSIDE://kafka:9093,OUTSIDE://localhost:9092
+  * Default: INSIDE://kafka:9093,OUTSIDE://localhost:9092 for docker compose ,INSIDE://kafka-service:9093,OUTSIDE://localhost:9092 for minicube
+
   * Typically, leave this as is unless you have special networking requirements.
 
 * KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: Security protocol map for Kafka listeners.
@@ -85,7 +93,7 @@ Kafka Configuration:
   * Leave as is unless you are changing listener configurations.
 
 * KAFKA_ZOOKEEPER_CONNECT: The Zookeeper server to connect to for Kafka coordination.
-  * Default: zookeeper:2181
+  * Default: zookeeper:2181 for docker compose , zookeeper-service for minicube
   * Change this if you have a different Zookeeper URL or port.
 
 Other Configuration:
@@ -99,7 +107,7 @@ Other Configuration:
   * Adjust this if your frontend service is running on a different host or port.
 
 * GAME_SERVICE_URL: The URL for the game service.
-  * Default: http://game:8081
+  * Default: http://game:8081 for docker compose , http://game-service:8081 for minicube
   * Modify this URL if your game service runs on a different address or port.
 
 * API_KEY: The API key used for service authorization between each other.

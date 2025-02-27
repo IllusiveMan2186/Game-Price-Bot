@@ -47,8 +47,8 @@ services:
     container_name: postgres-db
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_DB_USERNAME}
-      POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
     networks:
@@ -71,14 +71,14 @@ services:
     networks:
       - gpb-network
     environment:
-      - IMAGE_FOLDER=${GAMES_IMAGE_FOLDER}
+      - IMAGE_FOLDER=${IMAGE_FOLDER}
       - KAFKA_SERVER_URL=${KAFKA_SERVER_URL}
       - POSTGRES_DB_URL=${POSTGRES_DB_URL}
       - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
       - API_KEY=${API_KEY}
     volumes:
-      - common_data_images:${GAMES_IMAGE_FOLDER}
+      - common_data_images:${IMAGE_FOLDER}
 
   backend:
     container_name: gpb_backend
@@ -99,7 +99,7 @@ services:
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - IMAGE_FOLDER=${GAMES_IMAGE_FOLDER}
+      - IMAGE_FOLDER=${IMAGE_FOLDER}
       - KAFKA_SERVER_URL=${KAFKA_SERVER_URL}
       - POSTGRES_DB_URL=${POSTGRES_DB_URL}
       - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
@@ -110,7 +110,7 @@ services:
       - TOKEN_SECRET_KEY=${TOKEN_SECRET_KEY}
       - REFRESH_TOKEN_SECRET_KEY=${REFRESH_TOKEN_SECRET_KEY}
     volumes:
-      - common_data_images:${GAMES_IMAGE_FOLDER}
+      - common_data_images:${IMAGE_FOLDER}
 
   telegram:
     container_name: gpb_telegram
@@ -129,7 +129,7 @@ services:
         DEPENDENCY_REPO_PASSWORD: ${DEPENDENCY_REPO_PASSWORD}
     environment:
       - BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - IMAGE_FOLDER=${GAMES_IMAGE_FOLDER}
+      - IMAGE_FOLDER=${IMAGE_FOLDER}
       - KAFKA_SERVER_URL=${KAFKA_SERVER_URL}
       - POSTGRES_DB_URL=${POSTGRES_DB_URL}
       - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
@@ -138,7 +138,7 @@ services:
       - API_KEY=${API_KEY}
       - FRONT_SERVICE_URL=${FRONT_SERVICE_URL}
     volumes:
-      - common_data_images:${GAMES_IMAGE_FOLDER}
+      - common_data_images:${IMAGE_FOLDER}
 
   email:
     container_name: gpb_email

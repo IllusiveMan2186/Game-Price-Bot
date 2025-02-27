@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-service
+spec:
+  replicas: 2  # Allow scaling
+  selector:
+    matchLabels:
+      app: game-service
+  template:
+    metadata:
+      labels:
+        app: game-service
+    spec:
+      containers:
+        - name: game-service
+          image: game-price-bot-game:latest
+          imagePullPolicy: Never 
+          ports:
+            - containerPort: 8081
+          env:
+            - name: IMAGE_FOLDER
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: IMAGE_FOLDER
+            - name: KAFKA_SERVER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: KAFKA_SERVER_URL
+            - name: POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: POSTGRES_URL
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: POSTGRES_PASSWORD
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: API_KEY
+          volumeMounts:
+            - name: game-images
+              mountPath: "/app/images"
+      volumes:
+        - name: game-images
+          persistentVolumeClaim:
+            claimName: game-images-pvc
