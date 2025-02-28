@@ -92,12 +92,26 @@ kubectl apply -f k8s/frontend/service.yaml
 kubectl apply -f k8s/frontend/ingress.yaml
 echo "✅ Frontend deployed!"
 
-# Step 13: Restart All Failed Pods
+# Step 13: Expose Backend and Frontend as NodePort
+echo "🌐 Ensuring Backend and Frontend are exposed as NodePort..."
+kubectl patch svc backend-service -p '{"spec": {"type": "NodePort"}}'
+kubectl patch svc frontend-service -p '{"spec": {"type": "NodePort"}}'
+
+# Step 14: Get Ports
+echo "🔍 Fetching Minikube IP and Service Ports..."
+MINIKUBE_IP=$(minikube ip)
+BACKEND_PORT=$(kubectl get svc backend-service -o jsonpath='{.spec.ports[0].nodePort}')
+FRONTEND_PORT=$(kubectl get svc frontend-service -o jsonpath='{.spec.ports[0].nodePort}')
+
+echo "✅ Backend is available at: http://$MINIKUBE_IP:$BACKEND_PORT"
+echo "✅ Frontend is available at: http://$MINIKUBE_IP:$FRONTEND_PORT"
+
+# Step 15: Restart All Failed Pods
 echo "🔄 Restarting any failed pods..."
 kubectl delete pod --all
 echo "✅ Pods restarted!"
 
-# Step 14: Verify Deployment Status
+# Step 16: Verify Deployment Status
 echo "🔍 Checking Deployment Status..."
 kubectl get pods
 kubectl get services

@@ -5,9 +5,9 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: backend
+    app: backend-service
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 8080
-      nodePort: 30002  # Choose a port between 30000-32767
+      nodePort: 30002
