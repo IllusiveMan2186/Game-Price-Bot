@@ -28,7 +28,7 @@ RUN mvn clean package
 
 # Stage 2: Create the final image
 FROM openjdk:17
-ENV ARTIFACT_NAME=gpb-telegram-1.1.0.jar
+ENV ARTIFACT_NAME=gpb-telegram-1.1.1.jar
 ENV APP_HOME=/gpb/telegram/
 
 WORKDIR $APP_HOME
