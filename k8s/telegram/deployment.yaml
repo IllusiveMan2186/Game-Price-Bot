@@ -71,7 +71,7 @@ spec:
                   key: FRONT_SERVICE_URL
           volumeMounts:
             - name: image-storage
-              mountPath: "/app/images"
+              mountPath: "/image_folder"
       volumes:
         - name: image-storage
           persistentVolumeClaim:

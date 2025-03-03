@@ -56,8 +56,8 @@ Enable WSL 2 integration in Docker settings.
 Run PowerShell as Administrator and execute:
 
 ```console
-   wsl --install
-   ```
+wsl --install
+```
 
 Restart your PC and install Ubuntu from the Microsoft Store.
 
@@ -73,8 +73,8 @@ Enable WSL 2 integration in Docker settings.
 Install it via Chocolatey (in PowerShell as Administrator):
 
 ```console
-   choco install minikube
-   ```
+choco install minikube
+```
 
 Or download it from: https://minikube.sigs.k8s.io/docs/start/
 
@@ -84,8 +84,8 @@ Or download it from: https://minikube.sigs.k8s.io/docs/start/
 Install via Chocolatey:
 
 ```console
-   choco install kubernetes-cli
-   ```
+choco install kubernetes-cli
+```
 
 Or download from: https://kubernetes.io/docs/tasks/tools/install-kubectl/
 
@@ -102,14 +102,12 @@ minikube start --driver=docker
 sh deploy.sh
 ```
 
-After script run under section 'Fetching Minikube IP and Service Ports' you could see links to services 
-
-But if this links not work then run in different terminals :  
+After script run then run in different terminals :  
 ```console
 kubectl port-forward svc/backend-service 8080:8080
 ```
 ```console
-kubectl port-forward svc/frontend-service 3000:3000
+kubectl port-forward svc/frontend-service 3000:80
 ```
 
 Then you could access services on http://localhost:8080 and http://localhost:3000
@@ -158,7 +156,7 @@ Kafka Configuration:
     * Leave as is unless you are changing listener configurations.
 
 * KAFKA_ZOOKEEPER_CONNECT: The Zookeeper server to connect to for Kafka coordination.
-    * Default: zookeeper:2181 for docker compose , zookeeper-service for minicube
+    * Default: zookeeper:2181
     * Change this if you have a different Zookeeper URL or port.
 
 Other Configuration:

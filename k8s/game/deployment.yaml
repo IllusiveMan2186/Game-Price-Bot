@@ -51,7 +51,7 @@ spec:
                   key: API_KEY
           volumeMounts:
             - name: game-images
-              mountPath: "/app/images"
+              mountPath: "/image_folder"
       volumes:
         - name: game-images
           persistentVolumeClaim:
