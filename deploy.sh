@@ -96,7 +96,26 @@ echo "🔄 Restarting any failed pods..."
 kubectl delete pod --all
 echo "✅ Pods restarted!"
 
-# Step 14: Verify Deployment Status
+# Step 14: Enable Ingress in Minikube and Deploy Ingress
+echo "🌐 Checking if Minikube Ingress is enabled..."
+if ! minikube addons list | grep -q "ingress.*enabled"; then
+  echo "🔄 Enabling Minikube Ingress..."
+  minikube addons enable ingress
+  echo "✅ Minikube Ingress enabled!"
+else
+  echo "✅ Minikube Ingress is already enabled."
+fi
+
+echo "🌐 Deploying Ingress..."
+kubectl apply -f k8s/ingress.yaml
+echo "✅ Ingress deployed!"
+
+# Step 15: Get Ports
+echo "🔍 Get Ports..."
+echo "✅ Backend is available at: http://game.price.bot/api"
+echo "✅ Frontend is available at: http://game.price.bot"
+
+# Step 16: Verify Deployment Status
 echo "🔍 Checking Deployment Status..."
 kubectl get pods
 kubectl get services

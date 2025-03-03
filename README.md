@@ -102,7 +102,9 @@ minikube start --driver=docker
 sh deploy.sh
 ```
 
-After script run then run in different terminals :  
+After script run under section 'Fetching Minikube IP and Service Ports' you could see links to services
+
+But if this links not work then run in different terminals : 
 ```console
 kubectl port-forward svc/backend-service 8080:8080
 ```
