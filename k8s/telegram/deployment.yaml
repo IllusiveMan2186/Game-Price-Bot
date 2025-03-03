@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-bot
+spec:
+  replicas: 1  # Only one instance since long polling does not support load balancing
+  selector:
+    matchLabels:
+      app: telegram-bot
+  template:
+    metadata:
+      labels:
+        app: telegram-bot
+    spec:
+      containers:
+        - name: telegram-bot
+          image: game-price-bot-telegram:latest
+          imagePullPolicy: Never 
+          ports:
+            - containerPort: 8082
+          env:
+            - name: BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: TELEGRAM_BOT_TOKEN
+            - name: IMAGE_FOLDER
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: IMAGE_FOLDER
+            - name: KAFKA_SERVER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: KAFKA_SERVER_URL
+            - name: POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: POSTGRES_URL
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: POSTGRES_PASSWORD
+            - name: GAME_SERVICE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: GAME_SERVICE_URL
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: API_KEY
+            - name: FRONT_SERVICE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: FRONT_SERVICE_URL
+            - name: FRONT_SERVICE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: FRONT_SERVICE_URL
+          volumeMounts:
+            - name: image-storage
+              mountPath: "/image_folder"
+      volumes:
+        - name: image-storage
+          persistentVolumeClaim:
+            claimName: game-images-pvc

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-service
+spec:
+  replicas: 2  # Allow scaling for parallel email processing
+  selector:
+    matchLabels:
+      app: email-service
+  template:
+    metadata:
+      labels:
+        app: email-service
+    spec:
+      containers:
+        - name: email-service
+          image: game-price-bot-email:latest
+          imagePullPolicy: Never 
+          env:
+            - name: KAFKA_SERVER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: KAFKA_SERVER_URL
+            - name: MAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: MAIL_USERNAME
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: MAIL_PASSWORD
