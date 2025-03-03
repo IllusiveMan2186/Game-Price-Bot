@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-service
+spec:
+  replicas: 2  # Allow scaling
+  selector:
+    matchLabels:
+      app: frontend-service
+  template:
+    metadata:
+      labels:
+        app: frontend-service
+    spec:
+      containers:
+        - name: frontend-service
+          image: game-price-bot-react:latest
+          imagePullPolicy: Never 
+          ports:
+            - containerPort: 80
+          env:
+            - name: BACKEND_SERVICE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: BACKEND_SERVICE_URL
+            - name: TELEGRAM_BOT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: TELEGRAM_BOT_URL
+            - name: SUPPORT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: game-price-bot-secret
+                  key: SUPPORT_EMAIL

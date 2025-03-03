@@ -17,7 +17,7 @@ RUN gradle clean build
 
 # Stage 2: Create the final image
 FROM openjdk:17
-ENV ARTIFACT_NAME=gpb-game-1.1.0.jar
+ENV ARTIFACT_NAME=gpb-game-1.1.1.jar
 ENV APP_HOME=/gpb/game/
 
 WORKDIR $APP_HOME
