@@ -9,6 +9,7 @@ echo "🚀 Starting Kubernetes Deployment..."
 echo "🔑 Loading environment variables from .env..."
 export $(grep -v '^#' .env | xargs)
 echo "✅ Environment variables loaded!"
+docker context use default
 
 # Step 2: Function to Check & Build Image if Missing
 build_if_missing() {
