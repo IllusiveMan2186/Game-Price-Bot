@@ -102,21 +102,49 @@ echo "🌐 Checking if Minikube Ingress is enabled..."
 if ! minikube addons list | grep -q "ingress.*enabled"; then
   echo "🔄 Enabling Minikube Ingress..."
   minikube addons enable ingress
+  minikube addons enable ingress-dns
   echo "✅ Minikube Ingress enabled!"
 else
   echo "✅ Minikube Ingress is already enabled."
 fi
 
-echo "🌐 Deploying Ingress..."
-kubectl apply -f k8s/ingress.yaml
-echo "✅ Ingress deployed!"
+# Step 15: Ensure Ingress Controller is Running
+echo "⏳ Waiting for Ingress controller to be ready..."
+until kubectl get pods -n ingress-nginx | grep -E "ingress-nginx-controller.*Running"; do
+  echo "⏳ Waiting for ingress-nginx-controller to start..."
+  sleep 5
+done
+echo "✅ Ingress controller is running!"
 
-# Step 15: Get Ports
+# Step 16: Retry Applying Ingress if It Fails
+echo "🌐 Deploying Ingress..."
+MAX_RETRIES=5
+RETRY_COUNT=0
+
+kubectl apply -f k8s/static-assets-ingress.yaml
+
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+  if kubectl apply -f k8s/ingress.yaml; then
+    echo "✅ Ingress deployed!"
+    break
+  else
+    echo "⚠️ Ingress deployment failed. Retrying in 10 seconds... ($((RETRY_COUNT+1))/$MAX_RETRIES)"
+    sleep 10
+    ((RETRY_COUNT++))
+  fi
+done
+
+if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+  echo "❌ Failed to deploy Ingress after multiple attempts."
+  exit 1
+fi
+
+# Step 17: Get Ports
 echo "🔍 Get Ports..."
-echo "✅ Backend is available at: http://game.price.bot/api"
+echo "✅ Backend is available at: http://api.game.price.bot"
 echo "✅ Frontend is available at: http://game.price.bot"
 
-# Step 16: Verify Deployment Status
+# Step 18: Verify Deployment Status
 echo "🔍 Checking Deployment Status..."
 kubectl get pods
 kubectl get services

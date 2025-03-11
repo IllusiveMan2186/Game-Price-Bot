@@ -31,12 +31,14 @@ public class StorePageParser {
     public Document getPage(final String url) {
         try {
             log.info("Get page from url {}", url);
-            return Jsoup.connect(url).get();
+            return Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.5481.77 Safari/537.36")
+                    .get();
         } catch (MalformedURLException e) {
-            log.error("Page with url '{}' not found", url);
+            log.error("Page with url '{}' not found. MalformedURLException:{}", url, e);
             throw new NotFoundException("app.game.error.url.not.found");
         } catch (IOException e) {
-            log.error("Page with url '{}' not found", url);
+            log.error("Page with url '{}' not found. IOException:{}", url, e);
             throw new NotFoundException("app.game.error.url.not.found");
         }
     }
