@@ -95,14 +95,39 @@ Or download from: https://kubernetes.io/docs/tasks/tools/install-kubectl/
 docker-compose up
 ```
 
-### To run GPB in Minikube after installing, create a ".env" file and use the following command in root of project:
+### To run GPB in Minikube after installing in terminal run:
 
 ```console
 minikube start --driver=docker
+```
+
+#### Add to host file the following IP addresses:
+
+```console
+127.0.0.1    game.price.bot
+127.0.0.1    api.game.price.bot
+```
+
+#### Create a ".env" file and use the following command in root of project:
+
+
+```console
 sh deploy.sh
 ```
 
-After script run then run in different terminals :  
+#### Open minikube tunnel by the following command:
+
+```console
+minikube tunnel
+```
+
+After running the script and opening the tunnel, keep the terminal open to maintain the tunnel connection.
+You can access the services via the following links:
+
+Frontend: http://game.price.bot
+Backend: http://api.game.price.bot
+
+#### 🚨 But if this links not work then run in different terminals : 
 ```console
 kubectl port-forward svc/backend-service 8080:8080
 ```
@@ -134,30 +159,8 @@ PostgreSQL Configuration:
 Kafka Configuration:
 
 * KAFKA_SERVER_URL: The URL of the Kafka server for your backend to communicate with.
-    * Default: kafka:9093 for docker compose , kafka:9092 for minicube
+    * Default: kafka:9093 for docker compose , kafka:9092 for minikube
     * Set the correct Kafka server URL if it is different from the default.
-
-* KAFKA_ADVERTISED_LISTENERS: Kafka advertised listeners for internal and external communication.
-    * Default: INSIDE://kafka:9093,OUTSIDE://localhost:9092 for docker compose ,INSIDE://kafka-service:9093,OUTSIDE:
-      //localhost:9092 for minicube
-
-    * Typically, leave this as is unless you have special networking requirements.
-
-* KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: Security protocol map for Kafka listeners.
-    * Default: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-    * Leave this as is unless you are using secure connections.
-
-* KAFKA_LISTENERS: The actual listeners for Kafka.
-    * Default: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
-    * Do not modify unless you have a custom network configuration.
-
-* KAFKA_INTER_BROKER_LISTENER_NAME: Defines the listener name for inter-broker communication.
-    * Default: INSIDE
-    * Leave as is unless you are changing listener configurations.
-
-* KAFKA_ZOOKEEPER_CONNECT: The Zookeeper server to connect to for Kafka coordination.
-    * Default: zookeeper:2181
-    * Change this if you have a different Zookeeper URL or port.
 
 Other Configuration:
 
@@ -166,12 +169,23 @@ Other Configuration:
     * Set your desired folder path here.
 
 * FRONT_SERVICE_URL: The URL for the frontend service.
-    * Default: http://localhost:3000
+    * Default: http://localhost:3000 for docker compose , http://game.price.bot for minikube
     * Adjust this if your frontend service is running on a different host or port.
 
+* BACKEND_SERVICE_URL: The URL for the backend service.
+    * Default: http://localhost:8080 for docker compose , http://api.game.price.bot for minikube
+    * Adjust this if your backend service is running on a different host or port.
+
 * GAME_SERVICE_URL: The URL for the game service.
-    * Default: http://game:8081 for docker compose , http://game-service:8081 for minicube
+    * Default: http://game:8081 for docker compose , http://game-service:8081 for minikube
     * Modify this URL if your game service runs on a different address or port.
+
+* SUPPORT_EMAIL: The email address for support contact.
+    * Set a valid email address for support contact here.
+
+* TELEGRAM_BOT_URL: The URL for the Telegram bot.
+  * Default: https://t.me/GamaPriceTelegramBot
+  * Modify this URL if your Telegram bot runs on a different address or port.
 
 * API_KEY: The API key used for service authorization between each other.
     * Default:

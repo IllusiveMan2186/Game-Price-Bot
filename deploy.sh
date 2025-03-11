@@ -9,6 +9,7 @@ echo "🚀 Starting Kubernetes Deployment..."
 echo "🔑 Loading environment variables from .env..."
 export $(grep -v '^#' .env | xargs)
 echo "✅ Environment variables loaded!"
+docker context use default
 
 # Step 2: Function to Check & Build Image if Missing
 build_if_missing() {
@@ -96,7 +97,54 @@ echo "🔄 Restarting any failed pods..."
 kubectl delete pod --all
 echo "✅ Pods restarted!"
 
-# Step 14: Verify Deployment Status
+# Step 14: Enable Ingress in Minikube and Deploy Ingress
+echo "🌐 Checking if Minikube Ingress is enabled..."
+if ! minikube addons list | grep -q "ingress.*enabled"; then
+  echo "🔄 Enabling Minikube Ingress..."
+  minikube addons enable ingress
+  minikube addons enable ingress-dns
+  echo "✅ Minikube Ingress enabled!"
+else
+  echo "✅ Minikube Ingress is already enabled."
+fi
+
+# Step 15: Ensure Ingress Controller is Running
+echo "⏳ Waiting for Ingress controller to be ready..."
+until kubectl get pods -n ingress-nginx | grep -E "ingress-nginx-controller.*Running"; do
+  echo "⏳ Waiting for ingress-nginx-controller to start..."
+  sleep 5
+done
+echo "✅ Ingress controller is running!"
+
+# Step 16: Retry Applying Ingress if It Fails
+echo "🌐 Deploying Ingress..."
+MAX_RETRIES=5
+RETRY_COUNT=0
+
+kubectl apply -f k8s/static-assets-ingress.yaml
+
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+  if kubectl apply -f k8s/ingress.yaml; then
+    echo "✅ Ingress deployed!"
+    break
+  else
+    echo "⚠️ Ingress deployment failed. Retrying in 10 seconds... ($((RETRY_COUNT+1))/$MAX_RETRIES)"
+    sleep 10
+    ((RETRY_COUNT++))
+  fi
+done
+
+if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+  echo "❌ Failed to deploy Ingress after multiple attempts."
+  exit 1
+fi
+
+# Step 17: Get Ports
+echo "🔍 Get Ports..."
+echo "✅ Backend is available at: http://api.game.price.bot"
+echo "✅ Frontend is available at: http://game.price.bot"
+
+# Step 18: Verify Deployment Status
 echo "🔍 Checking Deployment Status..."
 kubectl get pods
 kubectl get services
