@@ -118,26 +118,9 @@ echo "✅ Ingress controller is running!"
 
 # Step 16: Retry Applying Ingress if It Fails
 echo "🌐 Deploying Ingress..."
-MAX_RETRIES=5
-RETRY_COUNT=0
+kubectl rollout status deployment/ingress-nginx-controller -n ingress-nginx
 
-kubectl apply -f k8s/static-assets-ingress.yaml
-
-while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-  if kubectl apply -f k8s/ingress.yaml; then
-    echo "✅ Ingress deployed!"
-    break
-  else
-    echo "⚠️ Ingress deployment failed. Retrying in 10 seconds... ($((RETRY_COUNT+1))/$MAX_RETRIES)"
-    sleep 10
-    ((RETRY_COUNT++))
-  fi
-done
-
-if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
-  echo "❌ Failed to deploy Ingress after multiple attempts."
-  exit 1
-fi
+kubectl apply -f k8s/ingress.yaml;
 
 # Step 17: Get Ports
 echo "🔍 Get Ports..."
