@@ -1,104 +1,98 @@
 #!/bin/bash
- 
+
 set -e  # Exit on error
 set -o pipefail  # Catch pipeline errors
 
 echo "🚀 Starting Kubernetes Deployment..."
 
 # Step 1: Load .env File
-echo "🔑 Loading environment variables from .env..."
-export $(grep -v '^#' .env | xargs)
-echo "✅ Environment variables loaded!"
-docker context use default
+if [ -f .env ]; then
+  echo "🔑 Loading environment variables from .env..."
+  export $(grep -v '^#' .env | xargs)
+  echo "✅ Environment variables loaded!"
+else
+  echo "❌ .env file not found! Exiting..."
+  exit 1
+fi
 
-# Step 2: Function to Check & Build Image if Missing
+# Step 2: Switch Docker Context
+if docker context ls | grep -q "minikube"; then
+  docker context use minikube
+  echo "✅ Using Minikube Docker context!"
+else
+  docker context use default
+  echo "⚠️ Minikube context not found, using default."
+fi
+
+# Step 3: Function to Check & Build Image if Missing
 build_if_missing() {
   IMAGE_NAME=$1
   BUILD_PATH=$2
   BUILD_ARGS=$3
 
-  if [[ "$(docker images -q $IMAGE_NAME:latest 2> /dev/null)" == "" ]]; then
+  if [[ -z $(docker images -q -f "reference=$IMAGE_NAME:latest") ]]; then
     echo "🛠️ Image $IMAGE_NAME not found. Building..."
-    docker build -t $IMAGE_NAME:latest $BUILD_ARGS $BUILD_PATH
+    docker build --no-cache -t $IMAGE_NAME:latest $BUILD_ARGS $BUILD_PATH
     echo "✅ Image $IMAGE_NAME built!"
   else
     echo "✅ Image $IMAGE_NAME already exists. Skipping build."
   fi
 }
 
-# Step 3: Check & Build Images If Needed
+# Step 4: Check & Build Images If Needed
 build_if_missing game-price-bot-game ./gpb-game "--build-arg DEPENDENCY_REPO_URL=$DEPENDENCY_REPO_URL --build-arg DEPENDENCY_REPO_USERNAME=$DEPENDENCY_REPO_USERNAME --build-arg DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD"
 build_if_missing game-price-bot-backend ./gpb-backend "--build-arg DEPENDENCY_REPO_URL=$DEPENDENCY_REPO_URL --build-arg DEPENDENCY_REPO_USERNAME=$DEPENDENCY_REPO_USERNAME --build-arg DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD"
 build_if_missing game-price-bot-email ./gpb-email "--build-arg DEPENDENCY_REPO_URL=$DEPENDENCY_REPO_URL --build-arg DEPENDENCY_REPO_USERNAME=$DEPENDENCY_REPO_USERNAME --build-arg DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD"
 build_if_missing game-price-bot-telegram ./gpb-telegram "--build-arg DEPENDENCY_REPO_URL=$DEPENDENCY_REPO_URL --build-arg DEPENDENCY_REPO_USERNAME=$DEPENDENCY_REPO_USERNAME --build-arg DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD"
 build_if_missing game-price-bot-react ./gpb-front "--build-arg BACKEND_SERVICE_URL=$BACKEND_SERVICE_URL --build-arg TELEGRAM_BOT_URL=$TELEGRAM_BOT_URL --build-arg SUPPORT_EMAIL=$SUPPORT_EMAIL"
 
-# Step 4: Load Images into Minikube Cache
-echo "📤 Loading images into Minikube cache..."
-minikube image load game-price-bot-backend:latest
-minikube image load game-price-bot-game:latest
-minikube image load game-price-bot-email:latest
-minikube image load game-price-bot-telegram:latest
-minikube image load game-price-bot-react:latest
-echo "✅ Images loaded into Minikube cache!"
+# Step 5: Load Images into Minikube Cache
+if minikube status > /dev/null 2>&1; then
+  echo "📤 Loading images into Minikube cache..."
+  for image in game-price-bot-backend game-price-bot-game game-price-bot-email game-price-bot-telegram game-price-bot-react; do
+    minikube image load $image:latest
+  done
+  echo "✅ Images loaded into Minikube cache!"
+else
+  echo "❌ Minikube is not running! Skipping image load..."
+fi
 
-# Step 5: Load Secrets into Kubernetes
-echo "🔑 Creating Kubernetes Secrets from .env file..."
+# Step 6: Load Secrets into Kubernetes
 kubectl delete secret game-price-bot-secret --ignore-not-found
 kubectl create secret generic game-price-bot-secret --from-env-file=.env
+
 echo "✅ Secrets created!"
 
-# Step 6: Deploy PostgreSQL
-echo "📦 Deploying PostgreSQL..."
+# Step 7: Deploy Kubernetes Services
 kubectl apply -f k8s/postgres/postgres.yaml
-echo "✅ PostgreSQL deployed!"
+kubectl apply -f k8s/kafka/
+kubectl apply -f k8s/game/
+kubectl apply -f k8s/backend/
+kubectl apply -f k8s/telegram/
+kubectl apply -f k8s/email/
+kubectl apply -f k8s/frontend/
 
-# Step 7: Deploy Kafka & Zookeeper
-echo "📦 Deploying Kafka & Zookeeper..."
-kubectl apply -f k8s/kafka/storage.yaml
-kubectl apply -f k8s/kafka/zookeeper.yaml
-kubectl apply -f k8s/kafka/kafka.yaml
-kubectl apply -f k8s/kafka/service.yaml
-echo "✅ Kafka & Zookeeper deployed!"
+echo "✅ All services deployed!"
 
-# Step 8: Deploy Game Service
-echo "📦 Deploying Game Service..."
-kubectl apply -f k8s/game/storage.yaml
-kubectl apply -f k8s/game/deployment.yaml
-kubectl apply -f k8s/game/service.yaml
-echo "✅ Game Service deployed!"
+# Step 8: Restart Deployments Without Removing Pods
+declare -A DEPLOYMENT_NAMES=(
+    ["game"]="game-service"
+    ["backend"]="backend-service"
+    ["telegram"]="telegram-bot"
+    ["email"]="email-service"
+    ["frontend"]="frontend-service"
+)
 
-# Step 9: Deploy Backend Service
-echo "📦 Deploying Backend Service..."
-kubectl apply -f k8s/backend/deployment.yaml
-kubectl apply -f k8s/backend/service.yaml
-echo "✅ Backend deployed!"
+for dep in "${!DEPLOYMENT_NAMES[@]}"; do
+  deployment_name="${DEPLOYMENT_NAMES[$dep]}"
+  
+  echo "🔄 Restarting $deployment_name..."
+  kubectl rollout restart deployment/$deployment_name
+  kubectl rollout status deployment/$deployment_name
+done
 
-# Step 10: Deploy Telegram Bot
-echo "📦 Deploying Telegram Bot..."
-kubectl apply -f k8s/telegram/deployment.yaml
-kubectl apply -f k8s/telegram/service.yaml
-echo "✅ Telegram Bot deployed!"
 
-# Step 11: Deploy Email Service
-echo "📦 Deploying Email Service..."
-kubectl apply -f k8s/email/deployment.yaml
-kubectl apply -f k8s/email/service.yaml
-echo "✅ Email Service deployed!"
-
-# Step 12: Deploy Frontend Service
-echo "📦 Deploying Frontend Service..."
-kubectl apply -f k8s/frontend/deployment.yaml
-kubectl apply -f k8s/frontend/service.yaml
-echo "✅ Frontend deployed!"
-
-# Step 13: Restart All Failed Pods
-echo "🔄 Restarting any failed pods..."
-kubectl delete pod --all
-echo "✅ Pods restarted!"
-
-# Step 14: Enable Ingress in Minikube and Deploy Ingress
-echo "🌐 Checking if Minikube Ingress is enabled..."
+# Step 9: Enable Minikube Ingress
 if ! minikube addons list | grep -q "ingress.*enabled"; then
   echo "🔄 Enabling Minikube Ingress..."
   minikube addons enable ingress
@@ -108,27 +102,20 @@ else
   echo "✅ Minikube Ingress is already enabled."
 fi
 
-# Step 15: Ensure Ingress Controller is Running
-echo "⏳ Waiting for Ingress controller to be ready..."
+# Step 10: Ensure Ingress Controller is Running
+kubectl get pods -n ingress-nginx
 until kubectl get pods -n ingress-nginx | grep -E "ingress-nginx-controller.*Running"; do
   echo "⏳ Waiting for ingress-nginx-controller to start..."
   sleep 5
 done
+
 echo "✅ Ingress controller is running!"
 
-# Step 16: Retry Applying Ingress if It Fails
-echo "🌐 Deploying Ingress..."
+# Step 11: Deploy Ingress
 kubectl rollout status deployment/ingress-nginx-controller -n ingress-nginx
+kubectl apply -f k8s/ingress.yaml
 
-kubectl apply -f k8s/ingress.yaml;
-
-# Step 17: Get Ports
-echo "🔍 Get Ports..."
-echo "✅ Backend is available at: http://api.game.price.bot"
-echo "✅ Frontend is available at: http://game.price.bot"
-
-# Step 18: Verify Deployment Status
-echo "🔍 Checking Deployment Status..."
+# Step 12: Get Deployment Status
 kubectl get pods
 kubectl get services
 kubectl get deployments
