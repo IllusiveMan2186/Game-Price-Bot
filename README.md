@@ -112,7 +112,7 @@ minikube start --driver=docker
 
 
 ```console
-sh deploy.sh
+sh full-deploy.sh
 ```
 
 #### Open minikube tunnel by the following command:
