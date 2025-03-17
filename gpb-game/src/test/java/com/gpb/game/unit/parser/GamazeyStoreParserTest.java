@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -111,7 +112,7 @@ class GamazeyStoreParserTest {
     @Test
     void shouldReturnListOfUrls_whenSearchResultsParsedSuccessfully_shouldReturnUrlList() {
         Document searchPage = mock(Document.class);
-        when(storePageParser.getPage(anyString())).thenReturn(searchPage);
+        when(storePageParser.getPage(anyString())).thenReturn(Optional.of(searchPage));
 
         Element element1 = mock(Element.class);
         Element element2 = mock(Element.class);

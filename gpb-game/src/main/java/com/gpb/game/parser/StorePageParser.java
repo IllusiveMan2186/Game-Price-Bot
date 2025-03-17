@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Optional;
 
 /**
  * Parser for retrieving and parsing HTML content from store pages.
@@ -28,18 +29,18 @@ public class StorePageParser {
      * @return a {@link Document} object representing the parsed HTML content of the page.
      * @throws NotFoundException if an I/O error occurs while fetching the page (e.g., if the URL is invalid or the page is inaccessible).
      */
-    public Document getPage(final String url) {
+    public Optional<Document> getPage(final String url) {
         try {
             log.info("Get page from url {}", url);
-            return Jsoup.connect(url)
+            return Optional.of(Jsoup.connect(url)
                     .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.5481.77 Safari/537.36")
-                    .get();
+                    .get());
         } catch (MalformedURLException e) {
             log.error("Page with url '{}' not found. MalformedURLException:{}", url, e);
-            throw new NotFoundException("app.game.error.url.not.found");
+            return Optional.empty();
         } catch (IOException e) {
             log.error("Page with url '{}' not found. IOException:{}", url, e);
-            throw new NotFoundException("app.game.error.url.not.found");
+            return Optional.empty();
         }
     }
 }
