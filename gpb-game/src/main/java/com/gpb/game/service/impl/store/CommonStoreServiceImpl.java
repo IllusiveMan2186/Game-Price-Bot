@@ -14,7 +14,9 @@ import org.jsoup.nodes.Document;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
@@ -25,41 +27,42 @@ public class CommonStoreServiceImpl implements StoreService {
 
 
     @Override
-    public Game findUncreatedGameByUrl(String url) {
+    public Optional<Game> findUncreatedGameByUrl(String url) {
         log.info("Searching uncreated game with url: '{}'", url);
 
-        Document page = pageFetcher.getPage(url);
-        GameInShop gameInShop = storeParser.parseGameInShopFromPage(page);
+        return pageFetcher.getPage(url)
+                .flatMap(page -> {
+                    GameInShop gameInShop = storeParser.parseGameInShopFromPage(page);
+                    if (gameInShop == null) {
+                        return Optional.empty();
+                    }
 
-        if (gameInShop == null) {
-            throw new NotFoundException("app.game.error.url.not.found");
-        }
+                    storeParser.saveImage(page);
+                    gameInShop.setUrl(url);
 
-        storeParser.saveImage(page);
-        gameInShop.setUrl(url);
+                    Game game = Game.builder()
+                            .name(gameInShop.getNameInStore())
+                            .gamesInShop(new HashSet<>(Set.of(gameInShop)))
+                            .genres(storeParser.getGenres(page))
+                            .type(storeParser.getProductType(page))
+                            .build();
 
-        Game game = Game.builder()
-                .name(gameInShop.getNameInStore())
-                .gamesInShop(new HashSet<>(Set.of(gameInShop)))
-                .genres(storeParser.getGenres(page))
-                .type(storeParser.getProductType(page))
-                .build();
-        gameInShop.setGame(game);
-        return game;
+                    gameInShop.setGame(game);
+                    return Optional.of(game);
+                });
     }
 
     @Override
-    public GameInShop findByUrl(String url) {
+    public Optional<GameInShop> findByUrl(String url) {
         log.info("Searching game with url: '{}'", url);
-        Document page = pageFetcher.getPage(url);
-        GameInShop game = storeParser.parseGameInShopFromPage(page);
+        return pageFetcher.getPage(url).flatMap(page -> {
+            GameInShop game = storeParser.parseGameInShopFromPage(page);
 
-        if (game == null) {
-            throw new NotFoundException("app.game.error.url.not.found");
-        }
+            if (game == null) return Optional.empty();
 
-        game.setUrl(url);
-        return game;
+            game.setUrl(url);
+            return Optional.of(game);
+        });
     }
 
     @Override
@@ -73,42 +76,51 @@ public class CommonStoreServiceImpl implements StoreService {
         return gameUrls.stream()
                 .takeWhile(url -> System.currentTimeMillis() - startTime <= Constants.SEARCH_REQUEST_WAITING_TIME)
                 .map(this::findUncreatedGameByUrl)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .toList();
     }
 
     @Override
-    public GameInShop findByName(String name) {
+    public Optional<GameInShop> findByName(String name) {
         log.info("Searching registered game with name: '{}'", name);
 
-        String url = storeParser
-                .parseSearchResults(name, pageFetcher)
-                .stream()
+        return storeParser.parseSearchResults(name, pageFetcher).stream()
                 .findFirst()
-                .orElse(null);
-
-        if (url == null) {
-            return null;
-        }
-
-        Document page = pageFetcher.getPage(url);
-        GameInShop game = storeParser.parseGameInShopFromPage(page);
-        game.setUrl(url);
-
-        return game;
+                .flatMap(url -> {
+                    log.info("Found game URL: {}", url);
+                    return pageFetcher.getPage(url)
+                            .flatMap(page -> {
+                                GameInShop game = storeParser.parseGameInShopFromPage(page);
+                                game.setUrl(url);
+                                return Optional.of(game);
+                            });
+                });
     }
-
 
     @Override
     public List<GameInShop> checkGameInStoreForChange(List<GameInShop> gameInShops) {
         log.info("Checking {} games from wishlist for changes in store", gameInShops.size());
 
         return gameInShops.stream()
-                .map(game -> {
-                    GameInShop gameOnPage = storeParser.parseGameInShopFromPage(pageFetcher.getPage(game.getUrl()));
-                    return hasGameInfoChanged(game, gameOnPage) ? setChangedFields(game, gameOnPage) : null;
-                })
+                .map(this::processGameChange)
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    private GameInShop processGameChange(GameInShop game) {
+        Optional<Document> pageOpt = pageFetcher.getPage(game.getUrl());
+
+        if (pageOpt.isEmpty()) {
+            log.warn("Failed to fetch page for game: {}", game.getUrl());
+            return null;
+        }
+
+        GameInShop gameOnPage = storeParser.parseGameInShopFromPage(pageOpt.get());
+
+        return hasGameInfoChanged(game, gameOnPage)
+                ? setChangedFields(game, gameOnPage)
+                : null;
     }
 
     private boolean hasGameInfoChanged(GameInShop gameInShop, GameInShop gameOnPage) {
