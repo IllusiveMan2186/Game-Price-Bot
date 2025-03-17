@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Component("gamazeyParser")
@@ -58,8 +59,9 @@ public class GamazeyStoreParser extends AbstractStoreParser implements StorePars
 
     @Override
     public List<String> parseSearchResults(String name, StorePageParser pageFetcher) {
-        Document page = pageFetcher.getPage(GamazeyConstants.GAMEZEY_SEARCH_URL + name);
-        return page.getElementsByClass(GamazeyConstants.GAME_IN_LIST)
+        Optional<Document> page = pageFetcher.getPage(GamazeyConstants.GAMEZEY_SEARCH_URL + name);
+        if (page.isEmpty()) return Collections.emptyList();
+        return page.get().getElementsByClass(GamazeyConstants.GAME_IN_LIST)
                 .stream()
                 .map(element -> element.child(0).attr(Constants.ATTRIBUTE_HREF))
                 .toList();
