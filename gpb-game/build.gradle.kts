@@ -1,5 +1,6 @@
 plugins {
     java
+    id("jacoco")
     id("org.springframework.boot") version "3.1.2"
     id("io.spring.dependency-management") version "1.1.0"
 }
@@ -73,4 +74,32 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = "CLASS"
+
+            excludes = listOf(
+                    "**.configuration.*",
+                    "**.entity.*",
+                    "**.exception.*",
+                    "**.util.*",
+                    "com.gpb.game.controller.RestResponseEntityExceptionHandler",
+                    "com.gpb.game.parser.StorePageParser",
+                    "com.gpb.game.GpbStoresApplication"
+            )
+
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                minimum = "0.80".toBigDecimal()
+            }
+        }
+    }
 }

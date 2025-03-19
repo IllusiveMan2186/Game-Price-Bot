@@ -1,6 +1,7 @@
 plugins {
     java
     war
+    id("jacoco")
     id("org.springframework.boot") version "3.0.4"
     id("io.spring.dependency-management") version "1.1.0"
 }
@@ -92,5 +93,34 @@ tasks.register<Test>("e2eTest") {
     }
     useJUnitPlatform {
         includeTags("e2e")
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = "CLASS"
+
+            excludes = listOf(
+                    "**.configuration.*",
+                    "**.entity.*",
+                    "**.exception.*",
+                    "**.util.*",
+                    "com.gpb.backend.controller.RestResponseEntityExceptionHandler",
+                    "com.gpb.backend.service.impl.ResourceServiceImpl",
+                    "com.gpb.backend.ServletInitializer",
+                    "com.gpb.backend.GpbWebApplication"
+            )
+
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                minimum = "0.70".toBigDecimal()
+            }
+        }
     }
 }

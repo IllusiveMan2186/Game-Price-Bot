@@ -130,6 +130,60 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.11</version>
+				<executions>
+					<!-- Prepares JaCoCo for execution -->
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<!-- Runs report after tests -->
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<!-- Enforce coverage rules -->
+					<execution>
+						<id>check</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>CLASS</element>
+									<limits>
+										<limit>
+											<counter>INSTRUCTION</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.70</minimum>
+										</limit>
+									</limits>
+									<excludes>
+										<exclude>**.bot.*</exclude>
+										<exclude>**.configuration.*</exclude>
+										<exclude>**.entity.*</exclude>
+										<exclude>**.exception.*</exclude>
+										<exclude>**.util.*</exclude>
+										<exclude>com.gpb.telegram.filter.FilterChain</exclude>
+										<exclude>com.gpb.telegram.filter.TelegramFilter</exclude>
+										<exclude>com/gpb/backend/ServletInitializer</exclude>
+										<exclude>com.gpb.telegram.GpbTelegramApplication</exclude>
+									</excludes>
+								</rule>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
