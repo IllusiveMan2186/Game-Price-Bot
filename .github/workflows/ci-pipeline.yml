@@ -102,7 +102,7 @@ jobs:
           DEPENDENCY_REPO_URL: ${{ secrets.DEPENDENCY_REPO_URL }}
         run: |
           cd gpb-telegram
-          mvn test jacoco:check 
+          mvn clean verify
 
   # Frontend Service (No Docker, Direct npm Build)
   build-gpb-front:
