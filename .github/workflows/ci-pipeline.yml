@@ -29,11 +29,15 @@ jobs:
 
       - name: Build ${{ matrix.service }} (with Dependency Repo)
         run: |
+          echo "Checking secret lengths:"
+          echo "DEPENDENCY_REPO_URL length: ${#${{ secrets.DEPENDENCY_REPO_URL }}}"
+          echo "DEPENDENCY_REPO_USERNAME length: ${#${{ secrets.DEPENDENCY_REPO_USERNAME }}}"
+          echo "DEPENDENCY_REPO_PASSWORD length: ${#${{ secrets.DEPENDENCY_REPO_PASSWORD }}}"
           cd ${{ matrix.service }}
-          gradle clean build -x test \
-            -PDEPENDENCY_REPO_URL=${{ secrets.DEPENDENCY_REPO_URL }} \
-            -PDEPENDENCY_REPO_USERNAME=${{ secrets.DEPENDENCY_REPO_USERNAME }} \
-            -PDEPENDENCY_REPO_PASSWORD=${{ secrets.DEPENDENCY_REPO_PASSWORD }}
+          export DEPENDENCY_REPO_URL=${{ secrets.DEPENDENCY_REPO_URL }}
+          export DEPENDENCY_REPO_USERNAME=${{ secrets.DEPENDENCY_REPO_USERNAME }}
+          export DEPENDENCY_REPO_PASSWORD=${{ secrets.DEPENDENCY_REPO_PASSWORD }}
+          gradle clean build -x test
 
       - name: Run Unit Tests & Enforce Coverage (No Report)
         run: |
@@ -55,17 +59,17 @@ jobs:
           java-version: '17'
 
       - name: Set up Maven
-        uses: s4u/setup-maven-action@v1
+        uses: apache/maven-action@v3
         with:
-          maven-version: 3.8.6
+          maven-version: 3.9.6
 
       - name: Build gpb-telegram (with Dependency Repo)
         run: |
           cd gpb-telegram
-          mvn clean package -DskipTests \
-            -Drepo.url=${{ secrets.DEPENDENCY_REPO_URL }} \
-            -Drepo.username=${{ secrets.DEPENDENCY_REPO_USERNAME }} \
-            -Drepo.password=${{ secrets.DEPENDENCY_REPO_PASSWORD }}
+          export DEPENDENCY_REPO_URL=${{ secrets.DEPENDENCY_REPO_URL }}
+          export DEPENDENCY_REPO_USERNAME=${{ secrets.DEPENDENCY_REPO_USERNAME }}
+          export DEPENDENCY_REPO_PASSWORD=${{ secrets.DEPENDENCY_REPO_PASSWORD }}
+          mvn clean package -DskipTests
 
       - name: Run Unit Tests & Enforce Coverage (No Report)
         run: |
