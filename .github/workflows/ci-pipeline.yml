@@ -73,22 +73,22 @@ jobs:
           mvn test jacoco:check
 
 # 🚀 Frontend Service (No Docker, Direct npm Build)
-build-gpb-front:
-  runs-on: ubuntu-latest
-  needs: [build-and-test-gradle, build-and-test-maven]
+  build-gpb-front:
+    runs-on: ubuntu-latest
+    needs: [build-and-test-gradle, build-and-test-maven]
 
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Install Dependencies & Build React
-      run: |
-        cd gpb-front
-        npm install
-        npm run build
-
+      - name: Install Dependencies & Build React
+        run: |
+          cd gpb-front
+          npm install
+          npm run build
+  

@@ -23,7 +23,7 @@ import java.util.Locale;
 @FilterChainMarker(Constants.USER_EXISTING_FILTER)
 public class GetWebUrlCommandHandler implements CommandHandler {
 
-    private ResourceConfiguration resourceConfiguration;
+    private final ResourceConfiguration resourceConfiguration;
     private final MessageSource messageSource;
     private final UserLinkerService userLinkerService;
 
