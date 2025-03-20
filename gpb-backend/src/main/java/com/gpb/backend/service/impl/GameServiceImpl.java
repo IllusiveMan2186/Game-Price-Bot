@@ -22,7 +22,6 @@ import java.util.UUID;
 
 
 @Slf4j
-@Data
 @Service
 @AllArgsConstructor
 public class GameServiceImpl implements GameService {

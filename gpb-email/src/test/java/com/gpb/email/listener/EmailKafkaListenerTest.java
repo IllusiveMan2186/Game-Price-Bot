@@ -37,7 +37,7 @@ class EmailKafkaListenerTest {
         emailEvent.setRecipient(recipient);
         emailEvent.setSubject(subject);
         emailEvent.setTemplateName(templateName);
-        emailEvent.setLocale(Locale.ENGLISH); // Assume locale is null for simplicity
+        emailEvent.setLocale(Locale.ENGLISH);
         emailEvent.setVariables(Map.of("key1", "value1"));
 
         ConsumerRecord<String, EmailEvent> consumerRecord = new ConsumerRecord<>(
@@ -66,7 +66,7 @@ class EmailKafkaListenerTest {
         emailEvent.setSubject(subject);
         emailEvent.setTemplateName(templateName);
         emailEvent.setLocale(Locale.ENGLISH);
-        emailEvent.setVariables(null); // Simulating null variables
+        emailEvent.setVariables(null);
 
         ConsumerRecord<String, EmailEvent> consumerRecord = new ConsumerRecord<>(
                 CommonConstants.EMAIL_SERVICE_TOPIC, 0, 0L, "eventKey", emailEvent
@@ -86,6 +86,66 @@ class EmailKafkaListenerTest {
 
     @Test
     void testEmailEventListen_whenSuccess_shouldLogEmailEventDetails() {
+        String recipient = "test@example.com";
+        String subject = "Test Subject";
+        String templateName = "testTemplate";
+        String eventKey = "eventKey";
+        EmailEvent emailEvent = new EmailEvent();
+        emailEvent.setRecipient(recipient);
+        emailEvent.setSubject(subject);
+        emailEvent.setTemplateName(templateName);
+        emailEvent.setLocale(Locale.ENGLISH);
+        emailEvent.setVariables(Map.of("key1", "value1"));
+
+        ConsumerRecord<String, EmailEvent> consumerRecord = new ConsumerRecord<>(
+                CommonConstants.EMAIL_SERVICE_TOPIC, 0, 0L, eventKey, emailEvent
+        );
+
+
+        emailKafkaListener.emailEventListen(consumerRecord);
+
+
+        verify(emailService, times(1)).sendEmail(
+                eq(recipient),
+                eq(subject),
+                any(Context.class),
+                eq(templateName)
+        );
+    }
+
+    @Test
+    void testEmailEventListen_whenRecordIsNull_shouldNotSendEmail() {
+        emailKafkaListener.emailEventListen(null);
+
+
+        verify(emailService, times(0)).sendEmail(
+                any(),
+                any(),
+                any(),
+                any()
+        );
+    }
+
+    @Test
+    void testEmailEventListen_whenRecordValueIsNull_shouldNotSendEmail() {
+        ConsumerRecord<String, EmailEvent> consumerRecord = new ConsumerRecord<>(
+                CommonConstants.EMAIL_SERVICE_TOPIC, 0, 0L, null, null
+        );
+
+
+        emailKafkaListener.emailEventListen(consumerRecord);
+
+
+        verify(emailService, times(0)).sendEmail(
+                any(),
+                any(),
+                any(),
+                any()
+        );
+    }
+
+    @Test
+    void testEmailEventListen_whenThrowException_shouldLogException() {
         String recipient = "test@example.com";
         String subject = "Test Subject";
         String templateName = "testTemplate";
