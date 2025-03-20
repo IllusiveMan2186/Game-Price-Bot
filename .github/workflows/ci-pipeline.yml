@@ -29,10 +29,10 @@ jobs:
 
       - name: Build ${{ matrix.service }} (with Dependency Repo)
         run: |
-          echo "Checking secret lengths:"
-          echo "DEPENDENCY_REPO_URL length: ${#${{ secrets.DEPENDENCY_REPO_URL }}}"
-          echo "DEPENDENCY_REPO_USERNAME length: ${#${{ secrets.DEPENDENCY_REPO_USERNAME }}}"
-          echo "DEPENDENCY_REPO_PASSWORD length: ${#${{ secrets.DEPENDENCY_REPO_PASSWORD }}}"
+          echo "Checking if secrets are set..."
+          if [[ -z "${{ secrets.DEPENDENCY_REPO_URL }}" ]]; then echo "❌ DEPENDENCY_REPO_URL is EMPTY!"; else echo "✅ DEPENDENCY_REPO_URL is SET"; fi
+          if [[ -z "${{ secrets.DEPENDENCY_REPO_USERNAME }}" ]]; then echo "❌ DEPENDENCY_REPO_USERNAME is EMPTY!"; else echo "✅ DEPENDENCY_REPO_USERNAME is SET"; fi
+          if [[ -z "${{ secrets.DEPENDENCY_REPO_PASSWORD }}" ]]; then echo "❌ DEPENDENCY_REPO_PASSWORD is EMPTY!"; else echo "✅ DEPENDENCY_REPO_PASSWORD is SET"; fi
           cd ${{ matrix.service }}
           export DEPENDENCY_REPO_URL=${{ secrets.DEPENDENCY_REPO_URL }}
           export DEPENDENCY_REPO_USERNAME=${{ secrets.DEPENDENCY_REPO_USERNAME }}
@@ -52,16 +52,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up JDK 17
+      - name: Set up JDK 17 with Maven
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-
-      - name: Set up Maven
-        uses: apache/maven-action@v3
-        with:
-          maven-version: 3.9.6
+          cache: maven  # ✅ Enables caching for Maven dependencies
 
       - name: Build gpb-telegram (with Dependency Repo)
         run: |
