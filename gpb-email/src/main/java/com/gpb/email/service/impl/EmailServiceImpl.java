@@ -38,8 +38,6 @@ public class EmailServiceImpl implements EmailService {
             log.error("MessagingException while sending email to {}: {}", to, e.getMessage(), e);
         } catch (MailAuthenticationException e) {
             log.error("Mail authentication error while sending email to {}: {}", to, e.getMessage(), e);
-        } catch (Exception e) {
-            log.error("Unexpected error while sending email to {}: {}", to, e.getMessage(), e);
         }
     }
 }

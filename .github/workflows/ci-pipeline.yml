@@ -1,0 +1,125 @@
+name: Build, Test & Check Coverage
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test-common-service:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Run Unit Tests & Enforce Coverage
+        env:
+          DEPENDENCY_REPO_URL: ${{ secrets.DEPENDENCY_REPO_URL }}
+          DEPENDENCY_REPO_USERNAME: ${{ secrets.DEPENDENCY_REPO_USERNAME }}
+          DEPENDENCY_REPO_PASSWORD: ${{ secrets.DEPENDENCY_REPO_PASSWORD }}
+        run: |
+          cd gpb-common
+          gradle test jacocoTestCoverageVerification
+
+  # Build & Test Gradle-Based Services (gpb-backend, gpb-email, gpb-game)
+  build-and-test-gradle-services:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [gpb-backend, gpb-email, gpb-game]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Build ${{ matrix.service }} (with Dependency Repo)
+        env:
+          DEPENDENCY_REPO_URL: ${{ secrets.DEPENDENCY_REPO_URL }}
+          DEPENDENCY_REPO_USERNAME: ${{ secrets.DEPENDENCY_REPO_USERNAME }}
+          DEPENDENCY_REPO_PASSWORD: ${{ secrets.DEPENDENCY_REPO_PASSWORD }}
+        run: |
+          cd ${{ matrix.service }}
+          gradle clean build -x test
+
+      - name: Run Unit Tests & Enforce Coverage
+        env:
+          DEPENDENCY_REPO_URL: ${{ secrets.DEPENDENCY_REPO_URL }}
+          DEPENDENCY_REPO_USERNAME: ${{ secrets.DEPENDENCY_REPO_USERNAME }}
+          DEPENDENCY_REPO_PASSWORD: ${{ secrets.DEPENDENCY_REPO_PASSWORD }}
+        run: |
+          cd ${{ matrix.service }}
+          env | grep DEPENDENCY 
+          gradle test jacocoTestCoverageVerification
+
+  # Build & Test Maven-Based Service (gpb-telegram)
+  build-and-test-telegram-maven:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17 with Maven
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: maven
+
+      - name: Inject Maven Settings
+        run: |
+          echo "${{ secrets.MAVEN_SETTINGS_BASE64 }}" | base64 --decode > ~/.m2/settings.xml
+
+      - name: Build gpb-telegram (with Dependency Repo)
+        env:
+          DEPENDENCY_REPO_URL: ${{ secrets.DEPENDENCY_REPO_URL }}
+        run: |
+          cd gpb-telegram
+          mvn clean package -DskipTests 
+
+      - name: Run Unit Tests & Enforce Coverage
+        env:
+          DEPENDENCY_REPO_URL: ${{ secrets.DEPENDENCY_REPO_URL }}
+        run: |
+          cd gpb-telegram
+          mvn clean verify
+
+  # Frontend Service (No Docker, Direct npm Build)
+  build-gpb-front:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies & Build React
+        run: |
+          cd gpb-front
+          npm install
+          CI=false npm run build
+  
