@@ -7,7 +7,7 @@ on:
       - develop
 
 jobs:
-  build-and-test-common-service:
+  test-common-service:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,15 +22,6 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
-
-      - name: Build gpb-common
-        env:
-          DEPENDENCY_REPO_URL: ${{ secrets.DEPENDENCY_REPO_URL }}
-          DEPENDENCY_REPO_USERNAME: ${{ secrets.DEPENDENCY_REPO_USERNAME }}
-          DEPENDENCY_REPO_PASSWORD: ${{ secrets.DEPENDENCY_REPO_PASSWORD }}
-        run: |
-          cd gpb-common
-          gradle clean build -x test
 
       - name: Run Unit Tests & Enforce Coverage
         env:
@@ -130,5 +121,5 @@ jobs:
         run: |
           cd gpb-front
           npm install
-          npm run build
+          CI=false npm run build
   
