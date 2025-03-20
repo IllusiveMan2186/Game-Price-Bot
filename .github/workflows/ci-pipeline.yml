@@ -24,11 +24,19 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Build gpb-common
+        env:
+          DEPENDENCY_REPO_URL: ${{ secrets.DEPENDENCY_REPO_URL }}
+          DEPENDENCY_REPO_USERNAME: ${{ secrets.DEPENDENCY_REPO_USERNAME }}
+          DEPENDENCY_REPO_PASSWORD: ${{ secrets.DEPENDENCY_REPO_PASSWORD }}
         run: |
           cd gpb-common
           gradle clean build -x test
 
       - name: Run Unit Tests & Enforce Coverage
+        env:
+          DEPENDENCY_REPO_URL: ${{ secrets.DEPENDENCY_REPO_URL }}
+          DEPENDENCY_REPO_USERNAME: ${{ secrets.DEPENDENCY_REPO_USERNAME }}
+          DEPENDENCY_REPO_PASSWORD: ${{ secrets.DEPENDENCY_REPO_PASSWORD }}
         run: |
           cd gpb-common
           gradle test jacocoTestCoverageVerification
@@ -85,23 +93,25 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: maven  # ✅ Enables caching for Maven dependencies
+          cache: maven
+
+      - name: Inject Maven Settings
+        run: |
+          echo "${{ secrets.MAVEN_SETTINGS_XML }}" > ~/.m2/settings.xml
 
       - name: Build gpb-telegram (with Dependency Repo)
+        env:
+          DEPENDENCY_REPO_URL: ${{ secrets.DEPENDENCY_REPO_URL }}
         run: |
           cd gpb-telegram
-          mvn clean package -DskipTests \
-            -Drepo.url=${{ secrets.DEPENDENCY_REPO_URL }} \
-            -Drepo.username=${{ secrets.DEPENDENCY_REPO_USERNAME }} \
-            -Drepo.password=${{ secrets.DEPENDENCY_REPO_PASSWORD }}
+          mvn clean package -DskipTests 
 
       - name: Run Unit Tests & Enforce Coverage
+        env:
+          DEPENDENCY_REPO_URL: ${{ secrets.DEPENDENCY_REPO_URL }}
         run: |
           cd gpb-telegram
-          mvn test jacoco:check \
-            -Drepo.url=${{ secrets.DEPENDENCY_REPO_URL }} \
-            -Drepo.username=${{ secrets.DEPENDENCY_REPO_USERNAME }} \
-            -Drepo.password=${{ secrets.DEPENDENCY_REPO_PASSWORD }}
+          mvn test jacoco:check 
 
   # Frontend Service (No Docker, Direct npm Build)
   build-gpb-front:
