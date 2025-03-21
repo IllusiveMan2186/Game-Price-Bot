@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useGameActions, } from '@hooks/game/useGameActions';
 import { useNavigation } from "@contexts/NavigationContext";
 import Select from 'react-select';
@@ -7,28 +6,9 @@ import { NotificationManager } from 'react-notifications';
 
 import * as constants from '@util/constants';
 import Message from '@util/message';
+import Search from '@components/game/list/header/search/Search';
 
 import './GameListPageHeader.css';
-
-const Search = ({ handleSearchChange, handleSearch }) => {
-    const { t } = useTranslation();
-
-    const placeholder = t('app.game.filter.search.title');
-
-    return (
-        <div className="app-header__search">
-            <input
-                id="game-search-input-field"
-                type="search"
-                placeholder={placeholder}
-                onChange={handleSearchChange}
-            />
-            <button id="game-search-button" onClick={handleSearch}>
-                <Message string={'app.game.filter.search.button'} />
-            </button>
-        </div>
-    );
-};
 
 const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, mode, reloadPage, pageSize }) => {
     const navigate = useNavigation();
@@ -98,6 +78,7 @@ const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, mode,
             <div className='app-list-header-sort'>
                 <div className="app-header__sort">
                     <Select
+                        aria-label="Page Size"
                         defaultValue={findArrayElementByValue(constants.pageSizesOptions, pageSize)}
                         options={constants.pageSizesOptions}
                         onChange={handlePageSizeChange}
@@ -108,6 +89,7 @@ const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, mode,
                 </div>
                 <div className="app-header__sort">
                     <Select
+                        aria-label="Sort By"
                         classNamePrefix=""
                         defaultValue={findArrayElementByValue(constants.sortsOptions, sortBy)}
                         options={constants.sortsOptions}
