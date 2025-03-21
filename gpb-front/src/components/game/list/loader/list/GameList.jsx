@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useNavigation } from "@contexts/NavigationContext";
-import GameImage from '@components/game/shared/GameImage';
+import GameImage from '@components/game/shared/image/GameImage';
 import { CommonGameInfo } from '@components/game/shared/info/CommonGameInfo';
 
 import './GameList.css';

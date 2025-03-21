@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Localization from '@components/common/Localization';
+import Localization from '@components/common/localization/Localization';
 import Messenger from '@components/common/messenger/Messenger';
 import Message from '@util/message';
 

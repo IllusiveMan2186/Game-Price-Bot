@@ -7,8 +7,8 @@ export default function Pagination({ elementAmount, pageSize, page, reloadPage, 
     const currentPage = +page;
 
     // Determine the range of page numbers to show
-    const startPage = Math.max(1, currentPage - 3);
-    const endPage = Math.min(totalPages, currentPage + 3);
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
 
     const renderPageButton = (pageNumber) => (
         <button
@@ -43,8 +43,8 @@ export default function Pagination({ elementAmount, pageSize, page, reloadPage, 
             {/* Next Page & Last Page */}
             {currentPage < totalPages && (
                 <>
-                    <button onClick={() => onPageClick(currentPage + 1)}>&gt;</button>
-                    <button onClick={() => onPageClick(totalPages)}>&gt;|</button>
+                    <button disabled={currentPage === totalPages} onClick={() => onPageClick(currentPage + 1)}>&gt;</button>
+                    <button disabled={currentPage === totalPages} onClick={() => onPageClick(totalPages)}>&gt;|</button>
                 </>
             )}
         </div>
