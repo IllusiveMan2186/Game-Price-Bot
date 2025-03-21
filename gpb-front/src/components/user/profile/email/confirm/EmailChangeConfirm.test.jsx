@@ -15,7 +15,7 @@ jest.mock('@hooks/user/useEmailActions', () => ({
 }));
 
 describe('EmailChangeConfirm', () => {
-  test('calls emailConfirmRequest with the token from search params', () => {
+  it('should calls emailConfirmRequest with the token from search params', () => {
     const token = 'abc-token';
     // Mock useSearchParams to return an object with a get() method.
     useSearchParams.mockReturnValue([{ get: (key) => (key === 'token' ? token : null) }]);

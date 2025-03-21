@@ -48,7 +48,7 @@ describe('SetLink', () => {
     jest.clearAllMocks();
   });
 
-  test('calls accountLinkRequest and navigates when user is authenticated', async () => {
+  it('should calls accountLinkRequest and navigates when user is authenticated', async () => {
     // Simulate URL parameter "token" with value 'my-token'
     useParamsMock.mockReturnValue({ token: 'my-token' });
     // Simulate that the user is authenticated.
@@ -66,7 +66,7 @@ describe('SetLink', () => {
     });
   });
 
-  test('calls setLinkToken and navigates when user is not authenticated', async () => {
+  it('should calls setLinkToken and navigates when user is not authenticated', async () => {
     // Simulate URL parameter "token" with value 'my-token'
     useParamsMock.mockReturnValue({ token: 'my-token' });
     // Simulate that the user is not authenticated.

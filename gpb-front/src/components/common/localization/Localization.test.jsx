@@ -6,7 +6,6 @@ import { useUserActions } from '@hooks/user/useUserActions';
 import { changeLanguage } from 'i18next';
 import { getLocale, setLocale } from '@util/userDataUtils';
 
-// Mock dependencies
 jest.mock('@contexts/AuthContext', () => ({
   useAuth: jest.fn(),
 }));

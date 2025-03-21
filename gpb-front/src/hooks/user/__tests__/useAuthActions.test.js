@@ -4,9 +4,7 @@ import { useNavigation } from '@contexts/NavigationContext';
 import { useAuth } from '@contexts/AuthContext';
 import { useHttpHelper } from '@hooks/useHttpHelper';
 import { logoutRequest } from '@services/httpService';
-import { changeLanguage } from 'i18next';
-import { setLocale, getLocale } from '@util/userDataUtils';
-import { NotificationManager } from 'react-notifications';
+import { getLocale } from '@util/userDataUtils';
 
 jest.mock('@contexts/NavigationContext', () => ({ useNavigation: jest.fn() }));
 jest.mock('@contexts/AuthContext', () => ({ useAuth: jest.fn() }));
@@ -35,7 +33,7 @@ describe('useAuthActions', () => {
     jest.clearAllMocks();
   });
 
-  test('loginRequest calls handleRequest with correct parameters', () => {
+  it('should loginRequest calls handleRequest with correct parameters', () => {
     const { result } = renderHook(() => useAuthActions());
 
     act(() => {
@@ -51,7 +49,7 @@ describe('useAuthActions', () => {
     );
   });
 
-  test('registerRequest calls handleRequest and triggers NotificationManager success', () => {
+  it('should registerRequest calls handleRequest and triggers NotificationManager success', () => {
     const { result } = renderHook(() => useAuthActions());
 
     act(() => {
@@ -67,7 +65,7 @@ describe('useAuthActions', () => {
     );
   });
 
-  test('userLogoutRequest calls logoutRequest', () => {
+  it('should userLogoutRequest calls logoutRequest', () => {
     const { result } = renderHook(() => useAuthActions());
 
     act(() => {

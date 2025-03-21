@@ -1,10 +1,7 @@
-// httpService.test.js
-import config from '@root/config';
 jest.mock('@root/config', () => ({
     BACKEND_SERVICE_URL: 'http://localhost/api',
 }));
 
-// Ensure axios is mocked before we import the module under test.
 jest.mock('axios');
 
 describe('httpService module', () => {
@@ -17,27 +14,19 @@ describe('httpService module', () => {
     let mockApiClient;
 
     beforeEach(() => {
-        // Reset modules so our module under test is re-imported fresh.
         jest.resetModules();
-        // Isolate modules so our axios mock configuration is applied.
         jest.isolateModules(() => {
-            // Create a fake axios instance (a callable function).
             mockApiClient = jest.fn();
-            // Add properties our module expects.
             mockApiClient.interceptors = {
                 response: { use: jest.fn() },
             };
-            // Add a .post method for POST requests.
             mockApiClient.post = jest.fn();
 
-            // Configure axios.create to return our fake instance.
             const axios = require('axios');
             axios.create.mockReturnValue(mockApiClient);
 
-            // Now re-import the module under test.
-            apiModule = require('./httpService'); // Adjust path if needed.
-            apiClient = apiModule.default; // Our default export (the axios instance).
-            // Force our default export to include the fake post method.
+            apiModule = require('./httpService');
+            apiClient = apiModule.default;
             apiClient.post = mockApiClient.post;
             refreshToken = apiModule.refreshToken;
             logoutRequest = apiModule.logoutRequest;
@@ -50,20 +39,16 @@ describe('httpService module', () => {
         jest.clearAllMocks();
     });
 
-    test('apiClient has correct default configuration', () => {
+    it('should apiClient has correct default configuration', () => {
         jest.resetModules();
         jest.isolateModules(() => {
             const axios = require('axios');
-            // Create a fake axios instance.
             const fakeApiClient = {
                 interceptors: { response: { use: jest.fn() } },
                 post: jest.fn(),
             };
-            // Ensure that when httpService calls axios.create, it returns our fake instance.
             axios.create.mockReturnValue(fakeApiClient);
-            // Import the module under test.
             require('./httpService');
-            // Assert that axios.create was called with the correct config.
             expect(axios.create).toHaveBeenCalledWith({
                 baseURL: 'http://localhost/api',
                 withCredentials: true,
@@ -74,7 +59,7 @@ describe('httpService module', () => {
 
 
     describe('request function', () => {
-        test('sets Authorization header when accessToken is provided', async () => {
+        it('should sets Authorization header when accessToken is provided', async () => {
             mockApiClient.mockResolvedValue({ data: 'ok' });
             const response = await request('GET', '/test', { key: 'value' }, 'my-token', null);
             expect(mockApiClient).toHaveBeenCalledWith(expect.objectContaining({
@@ -86,7 +71,7 @@ describe('httpService module', () => {
             expect(response.data).toBe('ok');
         });
 
-        test('sets LinkToken header when accessToken is not provided', async () => {
+        it('should sets LinkToken header when accessToken is not provided', async () => {
             mockApiClient.mockResolvedValue({ data: 'ok' });
             const response = await request('POST', '/test', { key: 'value' }, null, 'my-link-token');
             expect(mockApiClient).toHaveBeenCalledWith(expect.objectContaining({
@@ -100,8 +85,7 @@ describe('httpService module', () => {
     });
 
     describe('refreshToken function', () => {
-        test('returns new token on success', async () => {
-            // Simulate a successful POST returning a new token.
+        it('should returns new token on success', async () => {
             mockApiClient.post.mockResolvedValue({ data: 'new-token' });
             const setAccessTokenMock = jest.fn();
             const logoutMock = jest.fn();
@@ -112,10 +96,8 @@ describe('httpService module', () => {
             expect(setAccessTokenMock).toHaveBeenCalledWith('new-token');
         });
 
-        test('calls logoutRequest and returns null on 401 error', async () => {
+        it('should calls logoutRequest and returns null on 401 error', async () => {
             const error = { response: { status: 401 } };
-            // For the first POST (refresh-token), reject with a 401 error.
-            // For the subsequent POST (logout), resolve successfully.
             mockApiClient.post
                 .mockRejectedValueOnce(error)
                 .mockResolvedValueOnce({ data: {} });
@@ -127,12 +109,11 @@ describe('httpService module', () => {
             const result = await refreshToken(setAccessTokenMock, logoutMock, navigateMock);
 
             expect(result).toBeNull();
-            // Check that the logout callback was called with navigateMock.
             expect(logoutMock).toHaveBeenCalledWith(navigateMock);
         });
 
 
-        test('returns null on error with non-401 status', async () => {
+        it('should returns null on error with non-401 status', async () => {
             const error = { response: { status: 500 } };
             mockApiClient.post.mockRejectedValue(error);
             const setAccessTokenMock = jest.fn();
@@ -146,7 +127,7 @@ describe('httpService module', () => {
     });
 
     describe('logoutRequest function', () => {
-        test('calls logout callback on successful logout', async () => {
+        it('should calls logout callback on successful logout', async () => {
             mockApiClient.post.mockResolvedValue({ data: {} });
             const logoutMock = jest.fn();
             const navigateMock = jest.fn();
@@ -155,7 +136,7 @@ describe('httpService module', () => {
             expect(logoutMock).toHaveBeenCalledWith(navigateMock);
         });
 
-        test('handles error during logout', async () => {
+        it('should handles error during logout', async () => {
             const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
             mockApiClient.post.mockRejectedValue(new Error('logout error'));
             const logoutCallback = jest.fn();
@@ -168,21 +149,17 @@ describe('httpService module', () => {
     });
 
     describe('setupInterceptors function', () => {
-        test('installs a response interceptor', () => {
+        it('should installs a response interceptor', () => {
             setupInterceptors(() => { }, () => { }, () => { });
             expect(mockApiClient.interceptors.response.use).toHaveBeenCalled();
         });
 
-        test('retries request after refreshing token on 401 error', async () => {
+        it('should retries request after refreshing token on 401 error', async () => {
             setupInterceptors(() => { }, () => { }, () => { });
-            // Create a fake original request.
             const originalRequest = { url: '/test', headers: {}, _retry: false };
             const error = { config: originalRequest, response: { status: 401 } };
-            // Spy on refreshToken to simulate a successful refresh.
             const refreshTokenSpy = jest.spyOn(apiModule, 'refreshToken').mockResolvedValue('new-token');
-            // Simulate a successful retry by having our fake instance resolve.
             mockApiClient.mockResolvedValue({ data: 'ok', config: originalRequest });
-            // Manually simulate the interceptor logic.
             originalRequest._retry = true;
             const newToken = await refreshTokenSpy();
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
@@ -194,14 +171,12 @@ describe('httpService module', () => {
     });
 
     describe('request logging', () => {
-        test('logs the method and url', async () => {
+        it('should logs the method and url', async () => {
             const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation(() => { });
             mockApiClient.mockResolvedValue({ data: {} });
-            try {
-                await request('PUT', '/logging-test', { test: 1 }, null, null);
-            } catch (e) {
-                // Ignore errors.
-            }
+
+            await request('PUT', '/logging-test', { test: 1 }, null, null);
+
             expect(consoleInfoSpy).toHaveBeenCalledWith('PUT /logging-test');
             consoleInfoSpy.mockRestore();
         });

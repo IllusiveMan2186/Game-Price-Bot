@@ -16,7 +16,7 @@ describe('useActivationActions', () => {
         useHttpHelper.mockReturnValue({ handleRequest: handleRequestMock });
     });
 
-    test('activateUserAccountRequest calls handleRequest correctly and navigates on success', () => {
+    it('should activateUserAccountRequest calls handleRequest correctly and navigates on success', () => {
         const { result } = renderHook(() => useActivationActions());
 
         const token = 'activation-token';
@@ -24,18 +24,17 @@ describe('useActivationActions', () => {
 
         expect(handleRequestMock).toHaveBeenCalledWith(
             'POST',
-            undefined, // API_ENDPOINTS.ACTIVATE_USER is not defined; ensure it is defined in the original file
+            undefined,
             { token },
             expect.any(Function),
             expect.any(Function)
         );
 
-        // Simulate successful response callback
         handleRequestMock.mock.calls[0][3]();
         expect(navigateMock).toHaveBeenCalledWith('/login');
     });
 
-    test('resendActivationEmailRequest calls handleRequest correctly and navigates on success', () => {
+    it('should resendActivationEmailRequest calls handleRequest correctly and navigates on success', () => {
         const { result } = renderHook(() => useActivationActions());
 
         const email = 'user@example.com';
@@ -49,7 +48,6 @@ describe('useActivationActions', () => {
             expect.any(Function)
         );
 
-        // Simulate successful response callback
         handleRequestMock.mock.calls[0][3]();
         expect(navigateMock).toHaveBeenCalledWith('/login');
     });

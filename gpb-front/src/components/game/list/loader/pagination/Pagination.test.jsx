@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Pagination from './Pagination'; // Adjust the import path as necessary
+import Pagination from './Pagination';
 
 describe('Pagination Component', () => {
     const mockReloadPage = jest.fn();
@@ -22,7 +22,6 @@ describe('Pagination Component', () => {
             />
         );
 
-        // Expecting 10 page buttons for 100 elements with page size of 10
         const pageButtons = screen.getAllByRole('button', { name: /^\d+$/ });
         expect(pageButtons).toHaveLength(3);
     });

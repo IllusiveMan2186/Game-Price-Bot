@@ -24,10 +24,8 @@ describe('GameListPageHeader Component', () => {
     const mockGetGameByUrlRequest = jest.fn();
 
     beforeEach(() => {
-        // Reset mocks before each test
         jest.clearAllMocks();
 
-        // Mock implementations
         useNavigation.mockReturnValue(mockNavigate);
         gameActions.useGameActions.mockReturnValue({
             getGameByUrlRequest: mockGetGameByUrlRequest,
@@ -96,16 +94,12 @@ describe('GameListPageHeader Component', () => {
             />
         );
 
-        // Find input of sort
         const sortInput = screen.getByLabelText('Sort By');
         await userEvent.click(sortInput);
 
-        // Find option
         const option = await screen.findByText('app.game.filter.sort.name.reverse');
         await userEvent.click(option);
 
-
-        // 5. Check calls
         expect(mockUpdateSearchParams).toHaveBeenCalledWith('sortBy', 'name-DESC', 'name-ASC');
         expect(mockReloadPage).toHaveBeenCalled();
     });

@@ -1,9 +1,6 @@
-// useGameActions.test.js
 import { renderHook, act } from '@testing-library/react-hooks';
-import { useGameActions } from '../useGameActions'; // Adjust the path as needed
+import { useGameActions } from '../useGameActions';
 
-// --- Mock the Navigation Context ---
-// We define a factory that returns a new jest function, and export it as _mockNavigate.
 jest.mock('@contexts/NavigationContext', () => {
     const mockNavigate = jest.fn();
     return {
@@ -13,8 +10,6 @@ jest.mock('@contexts/NavigationContext', () => {
     };
 });
 
-// --- Mock the HTTP Helper ---
-// We define a factory that creates an internal mock for handleRequest and export it.
 jest.mock('@hooks/useHttpHelper', () => {
     const handleRequestMock = jest.fn();
     return {
@@ -24,7 +19,6 @@ jest.mock('@hooks/useHttpHelper', () => {
     };
 });
 
-// Now import our internal mocks from the mocked modules.
 import { _mockNavigate as navigateMock } from '@contexts/NavigationContext';
 import { _handleRequestMock as handleRequestMock } from '@hooks/useHttpHelper';
 
@@ -33,7 +27,7 @@ describe('useGameActions', () => {
         jest.clearAllMocks();
     });
 
-    test('getGamesRequest calls handleRequest with correct parameters', () => {
+    it('should getGamesRequest calls handleRequest with correct parameters', () => {
         const setElementAmount = jest.fn();
         const setGames = jest.fn();
         const searchParameters = '/user/games?foo=bar';
@@ -44,8 +38,6 @@ describe('useGameActions', () => {
             result.current.getGamesRequest(searchParameters, setElementAmount, setGames);
         });
 
-        // Verify that handleRequest was called with method "GET", the given URL, no data,
-        // and a success callback.
         expect(handleRequestMock).toHaveBeenCalledWith(
             'GET',
             searchParameters,
@@ -53,7 +45,6 @@ describe('useGameActions', () => {
             expect.any(Function)
         );
 
-        // Simulate the success callback with a response.
         const onSuccessCallback = handleRequestMock.mock.calls[0][3];
         const responseData = { elementAmount: 10, games: [{ id: 1 }, { id: 2 }] };
         onSuccessCallback({ data: responseData });
@@ -62,7 +53,7 @@ describe('useGameActions', () => {
         expect(setGames).toHaveBeenCalledWith([{ id: 1 }, { id: 2 }]);
     });
 
-    test('getGameRequest calls handleRequest with correct parameters and handles error', () => {
+    it('should getGameRequest calls handleRequest with correct parameters and handles error', () => {
         const setGame = jest.fn();
         const onError = jest.fn();
         const gameId = '123';
@@ -81,18 +72,16 @@ describe('useGameActions', () => {
             expect.any(Function)
         );
 
-        // Simulate success callback.
         const onSuccessCallback = handleRequestMock.mock.calls[0][3];
         onSuccessCallback({ data: { id: '123', name: 'Test Game' } });
         expect(setGame).toHaveBeenCalledWith({ id: '123', name: 'Test Game' });
 
-        // Simulate error callback.
         const onErrorCallback = handleRequestMock.mock.calls[0][4];
         onErrorCallback('error message');
         expect(onError).toHaveBeenCalledWith('error message');
     });
 
-    test('getGameByUrlRequest calls handleRequest and navigates on success', () => {
+    it('should getGameByUrlRequest calls handleRequest and navigates on success', () => {
         const url = 'game-url';
 
         const { result } = renderHook(() => useGameActions());
@@ -108,13 +97,12 @@ describe('useGameActions', () => {
             expect.any(Function)
         );
 
-        // Simulate success callback returning an object with id.
         const onSuccessCallback = handleRequestMock.mock.calls[0][3];
         onSuccessCallback({ data: { id: '456' } });
         expect(navigateMock).toHaveBeenCalledWith(`/game/456`);
     });
 
-    test('removeGameRequest calls handleRequest and navigates after timeout', () => {
+    it('should removeGameRequest calls handleRequest and navigates after timeout', () => {
         jest.useFakeTimers();
         const gameId = '789';
 
@@ -131,7 +119,6 @@ describe('useGameActions', () => {
             expect.any(Function)
         );
 
-        // Simulate the success callback that schedules navigation after 100ms.
         const onSuccessCallback = handleRequestMock.mock.calls[0][3];
         onSuccessCallback();
 

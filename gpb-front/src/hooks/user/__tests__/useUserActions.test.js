@@ -2,7 +2,6 @@ import { renderHook } from '@testing-library/react';
 import { useUserActions } from '../useUserActions';
 import { useHttpHelper } from '@hooks/useHttpHelper';
 import { useNavigation } from '@contexts/NavigationContext';
-import { NotificationManager } from 'react-notifications';
 
 jest.mock('@hooks/useHttpHelper');
 jest.mock('@contexts/NavigationContext');
@@ -19,7 +18,7 @@ describe('useUserActions', () => {
     useNavigation.mockReturnValue(navigateMock);
   });
 
-  test('emailChangeRequest calls handleRequest with correct arguments', () => {
+  it('should emailChangeRequest calls handleRequest with correct arguments', () => {
     const { result } = renderHook(() => useUserActions());
     const setErrorMock = jest.fn();
 
@@ -34,7 +33,7 @@ describe('useUserActions', () => {
     );
   });
 
-  test('passwordChangeRequest calls handleRequest with correct arguments', () => {
+  it('should passwordChangeRequest calls handleRequest with correct arguments', () => {
     const { result } = renderHook(() => useUserActions());
     const setErrorMock = jest.fn();
     const logoutMock = jest.fn();
@@ -50,7 +49,7 @@ describe('useUserActions', () => {
     );
   });
 
-  test('localeChangeRequest calls handleRequest with correct arguments', () => {
+  it('should localeChangeRequest calls handleRequest with correct arguments', () => {
     const { result } = renderHook(() => useUserActions());
 
     result.current.localeChangeRequest('en');
@@ -64,7 +63,7 @@ describe('useUserActions', () => {
     );
   });
 
-  test('checkAuthRequest resolves to true on status 200', async () => {
+  it('should checkAuthRequest resolves to true on status 200', async () => {
     const { result } = renderHook(() => useUserActions());
 
     handleRequestMock.mockImplementation((_, __, ___, success) => {
@@ -74,7 +73,7 @@ describe('useUserActions', () => {
     await expect(result.current.checkAuthRequest()).resolves.toBe(true);
   });
 
-  test('checkAuthRequest resolves to false on non-200 status', async () => {
+  it('should checkAuthRequest resolves to false on non-200 status', async () => {
     const { result } = renderHook(() => useUserActions());
 
     handleRequestMock.mockImplementation((_, __, ___, success) => {
@@ -85,7 +84,7 @@ describe('useUserActions', () => {
     expect(window.localStorage.getItem('IS_AUTHENTICATED')).toBeNull();
   });
 
-  test('checkAuthRequest resolves to false on error', async () => {
+  it('should checkAuthRequest resolves to false on error', async () => {
     const { result } = renderHook(() => useUserActions());
 
     handleRequestMock.mockImplementation((_, __, ___, ____, error) => {

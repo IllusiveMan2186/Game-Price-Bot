@@ -1,11 +1,9 @@
-// RefreshProvider.test.js
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { RefreshProvider } from '../RefreshContext';
 
-// Set up mocks for dependencies.
 jest.mock('@contexts/NavigationContext', () => ({
-  useNavigation: () => jest.fn(), // we'll override in tests if needed
+  useNavigation: () => jest.fn(),
 }));
 
 jest.mock('@contexts/AuthContext', () => ({
@@ -23,19 +21,16 @@ jest.mock('@services/httpService', () => ({
   refreshToken: jest.fn(),
 }));
 
-// Import our mocks so we can inspect them.
 import { setupInterceptors, refreshToken } from '@services/httpService';
 
 describe('RefreshProvider', () => {
-  // We'll use a custom navigate function for tests.
   const fakeNavigate = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test('calls setupInterceptors on mount', async () => {
-    // Configure useNavigation and useAuth for an authenticated user.
+  it('should calls setupInterceptors on mount', async () => {
     jest.spyOn(require('@contexts/NavigationContext'), 'useNavigation').mockReturnValue(fakeNavigate);
     jest.spyOn(require('@contexts/AuthContext'), 'useAuth').mockReturnValue({
       isUserAuth: () => true,
@@ -53,15 +48,13 @@ describe('RefreshProvider', () => {
 
     await waitFor(() => {
       expect(setupInterceptors).toHaveBeenCalledTimes(1);
-      // When authenticated, refreshToken should NOT be called.
       expect(refreshToken).not.toHaveBeenCalled();
     });
   });
 
-  test('calls refreshToken when user is not authenticated', async () => {
+  it('should calls refreshToken when user is not authenticated', async () => {
     const setAccessTokenMock = jest.fn();
     const logoutMock = jest.fn();
-    // Override useAuth to simulate a non-authenticated user.
     jest.spyOn(require('@contexts/AuthContext'), 'useAuth').mockReturnValue({
       isUserAuth: () => false,
       setAccessToken: setAccessTokenMock,
@@ -78,14 +71,12 @@ describe('RefreshProvider', () => {
     );
 
     await waitFor(() => {
-      // setupInterceptors is always called.
       expect(setupInterceptors).toHaveBeenCalledWith(setAccessTokenMock, logoutMock, fakeNavigate);
-      // When not authenticated, refreshToken should be called with setAccessToken.
       expect(refreshToken).toHaveBeenCalledWith(setAccessTokenMock);
     });
   });
 
-  test('renders children', () => {
+  it('should renders children', () => {
     jest.spyOn(require('@contexts/NavigationContext'), 'useNavigation').mockReturnValue(fakeNavigate);
     jest.spyOn(require('@contexts/AuthContext'), 'useAuth').mockReturnValue({
       isUserAuth: () => true,

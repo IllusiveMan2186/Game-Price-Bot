@@ -25,13 +25,13 @@ describe('GetLinkTokenPage', () => {
     });
   });
 
-  test('calls getLinkTokenRequest when token is empty', () => {
+  it('should calls getLinkTokenRequest when token is empty', () => {
     render(<GetLinkTokenPage />);
     // Expect getLinkTokenRequest to be called since token is initially empty.
     expect(getLinkTokenRequestMock).toHaveBeenCalled();
   });
 
-  test('displays token in button and copies it to clipboard when clicked', async () => {
+  it('should displays token in button and copies it to clipboard when clicked', async () => {
     // Simulate getLinkTokenRequest setting the token.
     getLinkTokenRequestMock.mockImplementation((setToken) => {
       setToken('my-token');

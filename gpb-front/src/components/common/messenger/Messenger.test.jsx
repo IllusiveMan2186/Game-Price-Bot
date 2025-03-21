@@ -32,7 +32,7 @@ describe('Messenger Component', () => {
         });
 
         useAuth.mockReturnValue({
-            isUserAuth: true // or false depending on the test
+            isUserAuth: true
         });
     });
 

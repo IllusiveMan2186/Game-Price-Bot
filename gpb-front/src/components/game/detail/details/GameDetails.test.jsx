@@ -21,7 +21,7 @@ describe('GameDetails Component', () => {
     jest.clearAllMocks();
   });
 
-  test('renders game details correctly for admin users', () => {
+  it('should renders game details correctly for admin users', () => {
     useAuth.mockReturnValue({
       isUserAdmin: () => true,
       isUserAuth: () => true,
@@ -31,7 +31,7 @@ describe('GameDetails Component', () => {
     expect(screen.getByText('Sample Game')).toBeInTheDocument();
   });
 
-  test('renders game details correctly for non-admin users', () => {
+ it('should renders game details correctly for non-admin users', () => {
     useAuth.mockReturnValue({
       isUserAdmin: () => false,
       isUserAuth: () => false,

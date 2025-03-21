@@ -3,7 +3,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AddGameInStore from './AddGameInStore';
 import { useTranslation } from 'react-i18next';
 import { useGameStoreActions } from '@hooks/game/useGameStoreActions';
-import Message from '@util/message';
 
 jest.mock('react-i18next', () => ({
   useTranslation: jest.fn(),

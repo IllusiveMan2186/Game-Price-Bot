@@ -59,7 +59,7 @@ describe('PasswordChange', () => {
         jest.clearAllMocks();
     });
 
-    test('renders the form with title and input fields', () => {
+    it('should renders the form with title and input fields', () => {
         render(<PasswordChange />);
 
         // Check that the title is rendered.
@@ -74,7 +74,7 @@ describe('PasswordChange', () => {
         expect(screen.getByRole('button', { name: /app.registr.form.reg.buttom/i })).toBeInTheDocument();
     });
 
-    test('shows validation errors when inputs are invalid', async () => {
+    it('should shows validation errors when inputs are invalid', async () => {
         render(<PasswordChange />);
 
         // Get input elements by their labels (labels render the Message content).
@@ -103,7 +103,7 @@ describe('PasswordChange', () => {
         expect(submitButton).toBeDisabled();
     });
 
-    test('submits valid data and calls passwordChangeRequest, then executes logout flow', async () => {
+    it('should submits valid data and calls passwordChangeRequest, then executes logout flow', async () => {
         // --- Override Yup's validation to always resolve ---
         const originalYupObject = Yup.object;
         // Override Yup.object() so that:
@@ -174,7 +174,7 @@ describe('PasswordChange', () => {
         }
     });
 
-    test('displays error message when submission fails validation', async () => {
+    it('should displays error message when submission fails validation', async () => {
         // In this test, provide valid old and new passwords but mismatching confirmation.
         render(<PasswordChange />);
 

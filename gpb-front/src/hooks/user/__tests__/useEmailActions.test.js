@@ -31,7 +31,7 @@ describe('useEmailActions', () => {
         useHttpHelper.mockReturnValue({ handleRequest: handleRequestMock });
     });
 
-    test('emailChangeRequest calls handleRequest with correct parameters', () => {
+    it('should emailChangeRequest calls handleRequest with correct parameters', () => {
         const { result } = renderHook(() => useEmailActions());
 
         const setErrorMessage = jest.fn();
@@ -55,7 +55,7 @@ describe('useEmailActions', () => {
         expect(navigateMock).toHaveBeenCalledWith("/");
     });
 
-    test('emailConfirmRequest calls handleRequest and handles success', () => {
+    it('should emailConfirmRequest calls handleRequest and handles success', () => {
         const { result } = renderHook(() => useEmailActions());
 
         act(() => {
@@ -78,7 +78,7 @@ describe('useEmailActions', () => {
         expect(navigateMock).toHaveBeenCalledWith("/");
     });
 
-    test('emailConfirmRequest handles error correctly', () => {
+    it('should emailConfirmRequest handles error correctly', () => {
         const { result } = renderHook(() => useEmailActions());
 
         act(() => {

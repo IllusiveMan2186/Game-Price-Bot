@@ -9,7 +9,6 @@ jest.mock('@contexts/NavigationContext', () => ({
     useNavigation: jest.fn(),
 }));
 
-// Import mocked modules after mocking
 import { useHttpHelper } from '@hooks/useHttpHelper';
 import { useNavigation } from '@contexts/NavigationContext';
 
@@ -24,7 +23,7 @@ describe('useGameStoreActions', () => {
         useNavigation.mockReturnValue(navigateMock);
     });
 
-    test('removeGameInStoreRequest calls handleRequest with correct params', () => {
+    it('should removeGameInStoreRequest calls handleRequest with correct params', () => {
         const onSuccessMock = jest.fn();
         const gameInStoreId = 123;
 
@@ -41,12 +40,11 @@ describe('useGameStoreActions', () => {
             expect.any(Function)
         );
 
-        // Simulate success callback
         handleRequestMock.mock.calls[0][3]();
         expect(onSuccessMock).toHaveBeenCalled();
     });
 
-    test('addGameInStoreByUrlRequest calls handleRequest with correct params', () => {
+    it('should addGameInStoreByUrlRequest calls handleRequest with correct params', () => {
         const gameId = 456;
         const url = 'http://example.com/game';
 

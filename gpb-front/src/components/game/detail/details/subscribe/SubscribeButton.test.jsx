@@ -51,20 +51,20 @@ describe('SubscribeButton Component', () => {
         render(<SubscribeButton isSubscribed={isSubscribed} gameId="1" />);
     };
 
-    it('renders subscribe button enabled for authenticated users', () => {
+    it('should renders subscribe button enabled for authenticated users', () => {
         renderComponent(true, false);
         const button = screen.getByRole('button', { name: /subscribe/i });
         expect(button).toBeEnabled();
     });
 
-    it('renders subscribe button disabled for unauthenticated users with prompt', () => {
+    it('should renders subscribe button disabled for unauthenticated users with prompt', () => {
         renderComponent(false, false);
         const button = screen.getByRole('button', { name: /subscribe/i });
         expect(button).toBeDisabled();
         expect(screen.getByText(/need.auth/i)).toBeInTheDocument();
     });
 
-    it('displays "Unsubscribe" when user is already subscribed', () => {
+    it('should displays "Unsubscribe" when user is already subscribed', () => {
         renderComponent(true, true);
         const button = screen.getByRole('button', { name: /unsubscribe/i });
         expect(button).toBeInTheDocument();
@@ -87,14 +87,11 @@ describe('SubscribeButton Component', () => {
     it('toggles button text upon subscription action', () => {
         const { rerender } = render(<SubscribeButton isSubscribed={false} gameId="1" />);
 
-        // should initially render Subscribe button
         let button = screen.getByRole('button', { name: /subscribe/i });
         expect(button).toBeInTheDocument();
 
-        // simulate user click (subscribe)
         fireEvent.click(button);
 
-        // rerender with updated prop to simulate state change
         rerender(<SubscribeButton isSubscribed={true} gameId="1" />);
 
         button = screen.getByRole('button', { name: /unsubscribe/i });

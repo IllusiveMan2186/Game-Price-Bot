@@ -3,7 +3,6 @@ import { useAuth } from "@contexts/AuthContext";
 import { useNavigation } from "@contexts/NavigationContext";
 import Buttons from "./Buttons";
 
-// Mock dependencies
 jest.mock("@contexts/AuthContext", () => ({
     useAuth: jest.fn(),
 }));
@@ -19,7 +18,7 @@ jest.mock("@util/message", () => ({
     }
 }));
 
-describe("Buttons Component", () => {
+describe('Buttons Component', () => {
     let navigateMock;
     let isUserAuthMock;
     let logoutMock;
@@ -33,28 +32,28 @@ describe("Buttons Component", () => {
         useAuth.mockReturnValue({ isUserAuth: isUserAuthMock });
     });
 
-    test("renders loading state when authentication is unknown", () => {
+    it('should renders loading state when authentication is unknown', () => {
         isUserAuthMock.mockReturnValue(null);
         render(<Buttons logout={logoutMock} />);
 
         expect(screen.getByText("Loading...")).toBeInTheDocument();
     });
 
-    test("renders login button when user is not authenticated", () => {
+    it('should renders login button when user is not authenticated', () => {
         isUserAuthMock.mockReturnValue(false);
         render(<Buttons logout={logoutMock} />);
 
         expect(screen.getByText("app.login")).toBeInTheDocument();
     });
 
-    test("renders dropdown when user is authenticated", () => {
+    it('should renders dropdown when user is authenticated', () => {
         isUserAuthMock.mockReturnValue(true);
         render(<Buttons logout={logoutMock} />);
 
         expect(screen.getByText("app.profile")).toBeInTheDocument();
     });
 
-    test("calls navigate('/login') when login button is clicked", () => {
+    it('should calls navigate(/login) when login button is clicked', () => {
         isUserAuthMock.mockReturnValue(false);
         render(<Buttons logout={logoutMock} />);
 
@@ -62,7 +61,7 @@ describe("Buttons Component", () => {
         expect(navigateMock).toHaveBeenCalledWith("/login");
     });
 
-    test("calls logout function when logout button is clicked", () => {
+    it('should calls logout function when logout button is clicked', () => {
         isUserAuthMock.mockReturnValue(true);
         render(<Buttons logout={logoutMock} />);
 

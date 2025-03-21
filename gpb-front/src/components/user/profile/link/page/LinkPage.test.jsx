@@ -35,7 +35,7 @@ describe('LinkPage', () => {
     });
   });
 
-  test('renders initial state with title, token input and disabled submit button', () => {
+  it('should renders initial state with title, token input and disabled submit button', () => {
     render(<LinkPage />);
 
     // Check that the page title is rendered.
@@ -54,7 +54,7 @@ describe('LinkPage', () => {
     expect(submitButton).toBeDisabled();
   });
 
-  test('shows validation error for an empty token', async () => {
+  it('should shows validation error for an empty token', async () => {
     render(<LinkPage />);
     const tokenInput = screen.getByLabelText('app.user.link.enter.description');
 
@@ -67,7 +67,7 @@ describe('LinkPage', () => {
     });
   });
 
-  test('enables submit button when a valid token is provided', async () => {
+  it('should enables submit button when a valid token is provided', async () => {
     render(<LinkPage />);
     const tokenInput = screen.getByLabelText('app.user.link.enter.description');
     const submitButton = screen.getByRole('button', { name: /app.user.link.form.button/i });
@@ -82,7 +82,7 @@ describe('LinkPage', () => {
     });
   });
 
-  test('submits the form and calls accountLinkRequest with correct arguments', async () => {
+  it('should submits the form and calls accountLinkRequest with correct arguments', async () => {
     render(<LinkPage />);
     const tokenInput = screen.getByLabelText('app.user.link.enter.description');
     const submitButton = screen.getByRole('button', { name: /app.user.link.form.button/i });
@@ -108,7 +108,7 @@ describe('LinkPage', () => {
     });
   });
 
-  test('displays error message when accountLinkRequest sets an error', async () => {
+  it('should displays error message when accountLinkRequest sets an error', async () => {
     // Simulate accountLinkRequest calling the error setter.
     accountLinkRequestMock.mockImplementation((token, setErrorMessage, navigate) => {
       setErrorMessage('app.some.link.error');

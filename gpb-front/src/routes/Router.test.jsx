@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Router from './Router';
 
-// Mock routed components with unique test ids.
 jest.mock('@components/common/layout/header/Header', () => () => <div data-testid="header">Header</div>);
 jest.mock('@components/user/activation/ActivationPage', () => () => <div data-testid="activation-page">ActivationPage</div>);
 jest.mock('@components/user/auth/AuthViewSwitcher', () => () => <div data-testid="auth-view-switcher">AuthViewSwitcher</div>);
@@ -20,23 +19,21 @@ jest.mock('@components/common/error/ErrorPage', () => () => <div data-testid="er
 jest.mock('@components/user/profile/email/confirm/EmailChangeConfirm', () => () => <div data-testid="email-change-confirm">EmailChangeConfirm</div>);
 
 describe('Router', () => {
-  test('renders Header and GameListPage with mode "list" for "/" route', () => {
+  it('should renders Header and GameListPage with mode "list" for "/" route', () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <Router />
       </MemoryRouter>
     );
 
-    // Header is always rendered.
     expect(screen.getByTestId('header')).toBeInTheDocument();
 
-    // Home route ("/") should render GameListPage with mode "list".
     const gameList = screen.getByTestId('game-list-page');
     expect(gameList).toBeInTheDocument();
     expect(gameList).toHaveTextContent('list');
   });
 
-  test('renders GameListPage with mode "list" for "/games/:url?" route', () => {
+  it('should renders GameListPage with mode "list" for "/games/:url?" route', () => {
     render(
       <MemoryRouter initialEntries={['/games/extra']}>
         <Router />
@@ -47,7 +44,7 @@ describe('Router', () => {
     expect(gameList).toHaveTextContent('list');
   });
 
-  test('renders GameListPage with mode "search" for "/search/:searchName/:url?" route', () => {
+  it('should renders GameListPage with mode "search" for "/search/:searchName/:url?" route', () => {
     render(
       <MemoryRouter initialEntries={['/search/test/extra']}>
         <Router />
@@ -58,7 +55,7 @@ describe('Router', () => {
     expect(gameList).toHaveTextContent('search');
   });
 
-  test('renders GameListPage with mode "usersGames" for "/user/games/:url?" route', () => {
+  it('should renders GameListPage with mode "usersGames" for "/user/games/:url?" route', () => {
     render(
       <MemoryRouter initialEntries={['/user/games/extra']}>
         <Router />
@@ -69,7 +66,7 @@ describe('Router', () => {
     expect(gameList).toHaveTextContent('usersGames');
   });
 
-  test('renders GameDetailPage for "/game/:gameId" route', () => {
+  it('should renders GameDetailPage for "/game/:gameId" route', () => {
     render(
       <MemoryRouter initialEntries={['/game/123']}>
         <Router />
@@ -78,7 +75,7 @@ describe('Router', () => {
     expect(screen.getByTestId('game-detail-page')).toBeInTheDocument();
   });
 
-  test('renders AuthViewSwitcher for "/login" route', () => {
+  it('should renders AuthViewSwitcher for "/login" route', () => {
     render(
       <MemoryRouter initialEntries={['/login']}>
         <Router />
@@ -87,7 +84,7 @@ describe('Router', () => {
     expect(screen.getByTestId('auth-view-switcher')).toBeInTheDocument();
   });
 
-  test('renders EmailChange for "/change/email" route', () => {
+  it('should renders EmailChange for "/change/email" route', () => {
     render(
       <MemoryRouter initialEntries={['/change/email']}>
         <Router />
@@ -96,7 +93,7 @@ describe('Router', () => {
     expect(screen.getByTestId('email-change')).toBeInTheDocument();
   });
 
-  test('renders PasswordChange for "/change/password" route', () => {
+  it('should renders PasswordChange for "/change/password" route', () => {
     render(
       <MemoryRouter initialEntries={['/change/password']}>
         <Router />
@@ -105,7 +102,7 @@ describe('Router', () => {
     expect(screen.getByTestId('password-change')).toBeInTheDocument();
   });
 
-  test('renders ActivationPage for "/activation" route', () => {
+  it('should renders ActivationPage for "/activation" route', () => {
     render(
       <MemoryRouter initialEntries={['/activation']}>
         <Router />
@@ -114,7 +111,7 @@ describe('Router', () => {
     expect(screen.getByTestId('activation-page')).toBeInTheDocument();
   });
 
-  test('renders LinkPage for "/link" route', () => {
+  it('should renders LinkPage for "/link" route', () => {
     render(
       <MemoryRouter initialEntries={['/link']}>
         <Router />
@@ -123,7 +120,7 @@ describe('Router', () => {
     expect(screen.getByTestId('link-page')).toBeInTheDocument();
   });
 
-  test('renders GetLinkTokenPage for "/link/token" route', () => {
+  it('should renders GetLinkTokenPage for "/link/token" route', () => {
     render(
       <MemoryRouter initialEntries={['/link/token']}>
         <Router />
@@ -132,7 +129,7 @@ describe('Router', () => {
     expect(screen.getByTestId('get-link-token-page')).toBeInTheDocument();
   });
 
-  test('renders SetLink for "/token/:token" route', () => {
+  it('should renders SetLink for "/token/:token" route', () => {
     render(
       <MemoryRouter initialEntries={['/token/abc']}>
         <Router />
@@ -141,7 +138,7 @@ describe('Router', () => {
     expect(screen.getByTestId('set-link')).toBeInTheDocument();
   });
 
-  test('renders EmailChangeConfirm for "/email/change/confirm" route', () => {
+  it('should renders EmailChangeConfirm for "/email/change/confirm" route', () => {
     render(
       <MemoryRouter initialEntries={['/email/change/confirm']}>
         <Router />
@@ -150,7 +147,7 @@ describe('Router', () => {
     expect(screen.getByTestId('email-change-confirm')).toBeInTheDocument();
   });
 
-  test('renders ErrorPage for "/error" route', () => {
+  it('should renders ErrorPage for "/error" route', () => {
     render(
       <MemoryRouter initialEntries={['/error']}>
         <Router />

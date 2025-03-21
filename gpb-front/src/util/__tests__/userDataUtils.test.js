@@ -5,7 +5,7 @@ const LOCALE_KEY = 'LOCALE';
 describe('Locale utilities', () => {
     beforeEach(() => {
         localStorage.clear();
-        jest.spyOn(console, 'info').mockImplementation(() => {});
+        jest.spyOn(console, 'info').mockImplementation(() => { });
     });
 
     afterEach(() => {
@@ -24,13 +24,13 @@ describe('Locale utilities', () => {
     });
 
     describe('setLocale', () => {
-        it('sets the locale in localStorage', () => {
+        it('should sets the locale in localStorage', () => {
             setLocale('fr');
             expect(localStorage.getItem(LOCALE_KEY)).toBe('fr');
             expect(console.info).toHaveBeenCalledWith('Locale set to: fr');
         });
 
-        it('removes the locale if called with falsy value', () => {
+        it('should removes the locale if called with falsy value', () => {
             localStorage.setItem(LOCALE_KEY, 'en');
             setLocale(null);
             expect(localStorage.getItem(LOCALE_KEY)).toBeNull();

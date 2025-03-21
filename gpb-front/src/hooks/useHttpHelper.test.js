@@ -1,9 +1,6 @@
-// useHttpHelper.test.js
 import { renderHook, act } from '@testing-library/react-hooks';
 import { useHttpHelper } from './useHttpHelper';
 
-// Mock dependencies before importing the hook.
-// For AuthContext, we simply return fixed tokens.
 jest.mock('@contexts/AuthContext', () => ({
     useAuth: () => ({
         getAccessToken: () => 'access-token',
@@ -11,22 +8,19 @@ jest.mock('@contexts/AuthContext', () => ({
     }),
 }));
 
-// For NavigationContext, define a mock inside the factory and export it.
 jest.mock('@contexts/NavigationContext', () => {
     const mockNavigate = jest.fn();
     return {
         useNavigation: () => mockNavigate,
         __esModule: true,
-        _mockNavigate: mockNavigate, // Exported for test assertions.
+        _mockNavigate: mockNavigate,
     };
 });
 
-// For the HTTP service, mock the request function.
 jest.mock('@services/httpService', () => ({
     request: jest.fn(),
 }));
 
-// Import the request mock and the exported navigation mock.
 import { request } from '@services/httpService';
 import { _mockNavigate as navigateMock } from '@contexts/NavigationContext';
 
@@ -35,7 +29,7 @@ describe('useHttpHelper', () => {
         jest.clearAllMocks();
     });
 
-    test('handleRequest calls onSuccess when request succeeds', async () => {
+    it('should handleRequest calls onSuccess when request succeeds', async () => {
         const response = { data: 'success' };
         request.mockResolvedValue(response);
         const onSuccess = jest.fn();
@@ -47,14 +41,13 @@ describe('useHttpHelper', () => {
             await result.current.handleRequest('GET', '/test', { foo: 'bar' }, onSuccess, onError);
         });
 
-        // Verify that request() is called with the tokens returned by our mocks.
         expect(request).toHaveBeenCalledWith('GET', '/test', { foo: 'bar' }, 'access-token', 'link-token');
         expect(onSuccess).toHaveBeenCalledWith(response);
         expect(onError).not.toHaveBeenCalled();
         expect(navigateMock).not.toHaveBeenCalled();
     });
 
-    test('handleRequest calls onError when request fails with a client error', async () => {
+    it('should handleRequest calls onError when request fails with a client error', async () => {
         const error = { response: { status: 400, data: 'client error' } };
         request.mockRejectedValue(error);
         const onSuccess = jest.fn();
@@ -70,7 +63,7 @@ describe('useHttpHelper', () => {
         expect(navigateMock).not.toHaveBeenCalled();
     });
 
-    test('handleRequest navigates to /error when request fails with a server error', async () => {
+    it('should handleRequest navigates to /error when request fails with a server error', async () => {
         const error = { response: { status: 500, data: 'server error' } };
         request.mockRejectedValue(error);
         const onSuccess = jest.fn();

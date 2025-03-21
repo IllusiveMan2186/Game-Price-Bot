@@ -4,10 +4,7 @@ import GameDetailPage from './GameDetailPage';
 import { useParams } from 'react-router-dom';
 import { useNavigation } from '@contexts/NavigationContext';
 import { useGameActions } from '@hooks/game/useGameActions';
-import Message from '@util/message';
-import Loading from '@components/game/shared/loading/Loading';
 
-// Mock the necessary hooks
 jest.mock('react-router-dom', () => ({
     useParams: jest.fn(),
 }));

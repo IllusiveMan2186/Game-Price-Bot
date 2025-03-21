@@ -1,4 +1,3 @@
-// useLinkActions.test.js
 import { renderHook, act } from '@testing-library/react';
 import { useLinkActions } from '../useLinkActions';
 import { useNavigation } from '@contexts/NavigationContext';
@@ -30,7 +29,7 @@ describe('useLinkActions', () => {
         useHttpHelper.mockReturnValue({ handleRequest: handleRequestMock });
     });
 
-    test('accountLinkRequest should handle success', () => {
+    it('should accountLinkRequest should handle success', () => {
         const { result } = renderHook(() => useLinkActions());
 
         act(() => {
@@ -44,7 +43,6 @@ describe('useLinkActions', () => {
             expect.any(Function)
         );
 
-        // simulate successful callback
         const successCallback = handleRequestMock.mock.calls[0][3];
         successCallback();
 
@@ -52,7 +50,7 @@ describe('useLinkActions', () => {
         expect(navigateMock).toHaveBeenCalledWith("/");
     });
 
-    test('getLinkTokenRequest handles success response', () => {
+    it('should getLinkTokenRequest handles success response', () => {
         const setTokenMock = jest.fn();
         const { result } = renderHook(() => useLinkActions());
 
@@ -74,7 +72,7 @@ describe('useLinkActions', () => {
         expect(setTokenMock).toHaveBeenCalledWith('link-token');
     });
 
-    test('getLinkTokenForMessengerRequest should open URL on success', () => {
+    it('should getLinkTokenForMessengerRequest should open URL on success', () => {
         window.open = jest.fn();
         const { result } = renderHook(() => useLinkActions());
 
