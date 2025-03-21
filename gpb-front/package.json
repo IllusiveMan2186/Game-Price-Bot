@@ -6,8 +6,6 @@
     "@babel/core": "^7.16.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "^5.5.0",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.5.1",
     "babel-jest": "^27.4.2",
@@ -35,7 +33,6 @@
     "html-webpack-plugin": "^5.5.0",
     "i18next": "^23.5.1",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^27.4.3",
     "jest-resolve": "^27.4.2",
     "jest-watch-typeahead": "^1.0.0",
     "mini-css-extract-plugin": "^2.4.5",
@@ -95,10 +92,25 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "react-select-event": "^5.5.1",
     "sass": "^1.69.5",
     "typescript": "^4.9.5"
   },
   "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
+      }
+    },
     "roots": [
       "<rootDir>/src"
     ],
@@ -109,7 +121,9 @@
     "setupFiles": [
       "react-app-polyfill/jsdom"
     ],
-    "setupFilesAfterEnv": [],
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-dom"
+    ],
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
       "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
@@ -127,6 +141,16 @@
     "modulePaths": [],
     "moduleNameMapper": {
       "^react-native$": "react-native-web",
+      "^@root/(.*)$": "<rootDir>/src/$1",
+      "^@assets/(.*)$": "<rootDir>/src/assets/$1",
+      "^@components/(.*)$": "<rootDir>/src/components/$1",
+      "^@locales/(.*)$": "<rootDir>/src/locales/$1",
+      "^@routes/(.*)$": "<rootDir>/src/routes/$1",
+      "^@services/(.*)$": "<rootDir>/src/services/$1",
+      "^@styles/(.*)$": "<rootDir>/src/styles/$1",
+      "^@util/(.*)$": "<rootDir>/src/util/$1",
+      "^@contexts/(.*)$": "<rootDir>/src/contexts/$1",
+      "^@hooks/(.*)$": "<rootDir>/src/hooks/$1",
       "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
     },
     "moduleFileExtensions": [

@@ -122,4 +122,9 @@ jobs:
           cd gpb-front
           npm install
           CI=false npm run build
+
+      - name: Run Unit Tests & Enforce Coverage
+        run: |
+          cd gpb-front
+          npm test -- --coverage
   
