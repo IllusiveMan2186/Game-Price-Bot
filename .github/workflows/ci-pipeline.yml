@@ -120,7 +120,7 @@ jobs:
       - name: Install Dependencies & Build React
         run: |
           cd gpb-front
-          npm install
+          npm install --legacy-peer-deps
           CI=false npm run build
 
       - name: Run Unit Tests & Enforce Coverage
