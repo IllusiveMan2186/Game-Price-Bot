@@ -15,7 +15,7 @@ Frontend web part of GPB application.
 ### **1️⃣ Install Dependencies**
 First, install the required dependencies:
 ```sh
-npm install 
+npm install --legacy-peer-deps
 ```
 
 ### **2️⃣ Setup Environment Variables**

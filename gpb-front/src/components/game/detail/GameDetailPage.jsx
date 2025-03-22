@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useNavigation } from "@contexts/NavigationContext";
 import { useGameActions } from '@hooks/game/useGameActions';
 import Message from '@util/message';
-import GameImage from '@components/game/shared/GameImage';
+import GameImage from '@components/game/shared/image/GameImage';
 import GameDetails from '@components/game/detail/details/GameDetails';
 import Loading from '@components/game/shared/loading/Loading';
 

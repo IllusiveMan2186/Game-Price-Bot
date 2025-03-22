@@ -16,11 +16,11 @@ services:
     depends_on:
       - zookeeper
     environment:
-      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS}
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP}
-      KAFKA_LISTENERS: ${KAFKA_LISTENERS}
-      KAFKA_INTER_BROKER_LISTENER_NAME: ${KAFKA_INTER_BROKER_LISTENER_NAME}
-      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
+      KAFKA_ADVERTISED_LISTENERS: "INSIDE://kafka:9093,OUTSIDE://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT"
+      KAFKA_LISTENERS: "INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INSIDE"
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_CREATE_TOPICS: "gpb_email_event:1:1,gpb_game_name_search_request:1:1,gpb_game_url_search_request:1:1,gpb_game_follow:1:1,gpb_game_unfollow:1:1"
     networks:
       - gpb-network
@@ -28,10 +28,6 @@ services:
   react:
     build:
       context: ./gpb-front
-      args:
-        BACKEND_SERVICE_URL: ${BACKEND_SERVICE_URL}
-        TELEGRAM_BOT_URL: ${TELEGRAM_BOT_URL}
-        SUPPORT_EMAIL: ${SUPPORT_EMAIL}
     container_name: gpb_front_react
     networks:
       - gpb-network
@@ -47,8 +43,8 @@ services:
     container_name: postgres-db
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_DB_USERNAME}
-      POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
     networks:
@@ -71,14 +67,14 @@ services:
     networks:
       - gpb-network
     environment:
-      - IMAGE_FOLDER=${GAMES_IMAGE_FOLDER}
+      - IMAGE_FOLDER=${IMAGE_FOLDER}
       - KAFKA_SERVER_URL=${KAFKA_SERVER_URL}
-      - POSTGRES_DB_URL=${POSTGRES_DB_URL}
-      - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
-      - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
+      - POSTGRES_URL=${POSTGRES_URL}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - API_KEY=${API_KEY}
     volumes:
-      - common_data_images:${GAMES_IMAGE_FOLDER}
+      - common_data_images:${IMAGE_FOLDER}
 
   backend:
     container_name: gpb_backend
@@ -99,18 +95,18 @@ services:
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - IMAGE_FOLDER=${GAMES_IMAGE_FOLDER}
+      - IMAGE_FOLDER=${IMAGE_FOLDER}
       - KAFKA_SERVER_URL=${KAFKA_SERVER_URL}
-      - POSTGRES_DB_URL=${POSTGRES_DB_URL}
-      - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
-      - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
+      - POSTGRES_URL=${POSTGRES_URL}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - FRONT_SERVICE_URL=${FRONT_SERVICE_URL}
       - GAME_SERVICE_URL=${GAME_SERVICE_URL}
       - API_KEY=${API_KEY}
       - TOKEN_SECRET_KEY=${TOKEN_SECRET_KEY}
       - REFRESH_TOKEN_SECRET_KEY=${REFRESH_TOKEN_SECRET_KEY}
     volumes:
-      - common_data_images:${GAMES_IMAGE_FOLDER}
+      - common_data_images:${IMAGE_FOLDER}
 
   telegram:
     container_name: gpb_telegram
@@ -129,16 +125,16 @@ services:
         DEPENDENCY_REPO_PASSWORD: ${DEPENDENCY_REPO_PASSWORD}
     environment:
       - BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - IMAGE_FOLDER=${GAMES_IMAGE_FOLDER}
+      - IMAGE_FOLDER=${IMAGE_FOLDER}
       - KAFKA_SERVER_URL=${KAFKA_SERVER_URL}
-      - POSTGRES_DB_URL=${POSTGRES_DB_URL}
-      - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
-      - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
+      - POSTGRES_URL=${POSTGRES_URL}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - GAME_SERVICE_URL=${GAME_SERVICE_URL}
       - API_KEY=${API_KEY}
       - FRONT_SERVICE_URL=${FRONT_SERVICE_URL}
     volumes:
-      - common_data_images:${GAMES_IMAGE_FOLDER}
+      - common_data_images:${IMAGE_FOLDER}
 
   email:
     container_name: gpb_email

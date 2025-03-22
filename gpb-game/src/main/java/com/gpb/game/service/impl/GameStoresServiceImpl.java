@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -56,7 +57,13 @@ public class GameStoresServiceImpl implements GameStoresService {
     @Override
     public Game findGameByUrl(String link) {
         StoreService storeService = getStoreFromHostUrl(link);
-        Game game = storeService.findUncreatedGameByUrl(link);
+        Optional<Game> gameOptional = storeService.findUncreatedGameByUrl(link);
+
+        if(gameOptional.isEmpty()){
+            throw new NotFoundException("app.game.error.url.not.found");
+        }
+
+        Game game = gameOptional.get();
         setGameFromAllStores(game, storeService);
         return game;
 
@@ -65,7 +72,12 @@ public class GameStoresServiceImpl implements GameStoresService {
     @Override
     public GameInShop findGameInShopByUrl(String url) {
         StoreService storeService = getStoreFromHostUrl(url);
-        return storeService.findByUrl(url);
+        Optional<GameInShop> gameInShop = storeService.findByUrl(url);
+
+        if(gameInShop.isEmpty()){
+            throw new NotFoundException("app.game.error.url.not.found");
+        }
+        return gameInShop.get();
     }
 
     private StoreService getStoreFromHostUrl(String link) {
@@ -128,7 +140,8 @@ public class GameStoresServiceImpl implements GameStoresService {
 
         List<GameInShop> gameInShopList = services.stream()
                 .map(storeService1 -> storeService1.findByName(game.getName()))
-                .filter(Objects::nonNull)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .toList();
 
         game.getGamesInShop().addAll(gameInShopList);
