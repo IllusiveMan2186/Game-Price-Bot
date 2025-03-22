@@ -14,4 +14,7 @@ public class ResourceConfiguration {
 
     @Value("${IMAGE_FOLDER}")
     private String imageFolder;
+
+    @Value("${FRONT_SERVICE_URL}")
+    private String frontendServiceUrl;
 }

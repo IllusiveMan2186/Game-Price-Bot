@@ -47,15 +47,15 @@ Add Environment variables for running project locally
     * Set the correct Kafka server URL if it is different from the default.
 
 
-* POSTGRES_DB_URL: The JDBC URL to connect to the PostgreSQL database.
+* POSTGRES_URL: The JDBC URL to connect to the PostgreSQL database.
     * You typically do not need to change this unless you are running PostgreSQL on a different host or port.
 
 
-* POSTGRES_DB_USERNAME: The username to connect to the PostgreSQL database.
+* POSTGRES_USER: The username to connect to the PostgreSQL database.
     * Set your desired username here.
 
 
-* POSTGRES_DB_PASSWORD: The password for the PostgreSQL user.
+* POSTGRES_PASSWORD: The password for the PostgreSQL user.
     * Set a strong password for your PostgreSQL user here.
 
 

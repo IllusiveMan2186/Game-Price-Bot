@@ -6,13 +6,13 @@ import ActivationPage from '@components/user/activation/ActivationPage';
 import AuthViewSwitcher from '@components/user/auth/AuthViewSwitcher';
 import GameListPage from '@components/game/list/GameListPage';
 import GameDetailPage from '@components/game/detail/GameDetailPage';
-import PasswordChange from '@components/user/profile/PasswordChange';
-import EmailChange from '@components/user/profile/EmailChange';
-import SetLink from '@components/user/profile/SetLink';
-import LinkPage from '@components/user/profile/LinkPage';
-import GetLinkTokenPage from '@components/user/profile/GetLinkTokenPage';
-import ErrorPage from '@components/common/ErrorPage';
-import EmailChangeConfirm from '@components/user/profile/EmailChangeConfirm';
+import PasswordChange from '@components/user/profile/password/PasswordChange';
+import EmailChange from '@components/user/profile/email/EmailChange';
+import SetLink from '@components/user/profile/link/set/SetLink';
+import LinkPage from '@components/user/profile/link/page/LinkPage';
+import GetLinkTokenPage from '@components/user/profile/link/get/GetLinkTokenPage';
+import ErrorPage from '@components/common/error/ErrorPage';
+import EmailChangeConfirm from '@components/user/profile/email/confirm/EmailChangeConfirm';
 
 export default function Router() {
 

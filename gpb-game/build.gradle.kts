@@ -1,11 +1,12 @@
 plugins {
     java
+    id("jacoco")
     id("org.springframework.boot") version "3.1.2"
     id("io.spring.dependency-management") version "1.1.0"
 }
 
 group = "com.gpb"
-version = "1.1.1"
+version = "1.2.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 fun getEnvOrProperty(name: String): String {
@@ -34,7 +35,7 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.gpb:common:1.1.0")
+    implementation("com.gpb:common:1.2.0")
 
     implementation("commons-io:commons-io:2.11.0")
     implementation("com.auth0:java-jwt:4.3.0")
@@ -73,4 +74,32 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = "CLASS"
+
+            excludes = listOf(
+                    "**.configuration.*",
+                    "**.entity.*",
+                    "**.exception.*",
+                    "**.util.*",
+                    "com.gpb.game.controller.RestResponseEntityExceptionHandler",
+                    "com.gpb.game.parser.StorePageParser",
+                    "com.gpb.game.GpbStoresApplication"
+            )
+
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                minimum = "0.80".toBigDecimal()
+            }
+        }
+    }
 }

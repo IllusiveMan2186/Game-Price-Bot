@@ -17,7 +17,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,6 +33,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CommonStoreServiceImplTest {
 
+    private static final String TEST_URL = "https://example.com/game";
+    private static final String TEST_NAME = "Test Game";
+
     @Mock
     private StorePageParser pageFetcher;
 
@@ -42,9 +47,6 @@ public class CommonStoreServiceImplTest {
 
     @InjectMocks
     private CommonStoreServiceImpl storeService;
-
-    private final String TEST_URL = "https://example.com/game";
-    private final String TEST_NAME = "Test Game";
 
     private GameInShop gameInShop;
     private Game game;
@@ -66,51 +68,65 @@ public class CommonStoreServiceImplTest {
     }
 
     @Test
-    void findUncreatedGameByUrl_Success() {
-        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+    void testFindUncreatedGameByUrl_whenGameFound_shouldReturnGame() {
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(Optional.of(document));
         when(storeParser.parseGameInShopFromPage(document)).thenReturn(gameInShop);
         when(storeParser.getGenres(document)).thenReturn(List.of(Genre.ACTION, Genre.ADVENTURES));
         when(storeParser.getProductType(document)).thenReturn(ProductType.GAME);
 
-        Game result = storeService.findUncreatedGameByUrl(TEST_URL);
 
+        Optional<Game> result = storeService.findUncreatedGameByUrl(TEST_URL);
+
+
+        assertTrue(result.isPresent());
         assertNotNull(result);
-        assertEquals(TEST_NAME, result.getName());
-        assertEquals(1, result.getGamesInShop().size());
+        assertEquals(TEST_NAME, result.get().getName());
+        assertEquals(1, result.get().getGamesInShop().size());
         verify(storeParser).saveImage(document);
     }
 
     @Test
-    void findUncreatedGameByUrl_NotFound() {
-        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+    void testFindUncreatedGameByUrl_whenGameNotFound_shouldOptionalEmpty() {
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(Optional.of(document));
         when(storeParser.parseGameInShopFromPage(document)).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> storeService.findUncreatedGameByUrl(TEST_URL));
+
+        Optional<Game> result = storeService.findUncreatedGameByUrl(TEST_URL);
+
+
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void findByUrl_Success() {
-        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+    void testFindByUrl_whenGameFound_shouldReturnGameInShop() {
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(Optional.of(document));
         when(storeParser.parseGameInShopFromPage(document)).thenReturn(gameInShop);
 
-        GameInShop result = storeService.findByUrl(TEST_URL);
 
+        Optional<GameInShop> result = storeService.findByUrl(TEST_URL);
+
+
+        assertTrue(result.isPresent());
         assertNotNull(result);
-        assertEquals(TEST_URL, result.getUrl());
+        assertEquals(TEST_URL, result.get().getUrl());
     }
 
     @Test
-    void findByUrl_NotFound() {
-        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+    void testFindByUrl_whenGameNotFound_shouldReturnOptionalEmpty() {
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(Optional.of(document));
         when(storeParser.parseGameInShopFromPage(document)).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> storeService.findByUrl(TEST_URL));
+
+        Optional<GameInShop> result = storeService.findByUrl(TEST_URL);
+
+
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void findUncreatedGameByName_Success() {
+    void testFindUncreatedGameByName_whenGameFound_shouldReturnGame() {
         when(storeParser.parseSearchResults(TEST_NAME, pageFetcher)).thenReturn(List.of(TEST_URL));
-        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(Optional.of(document));
         when(storeParser.parseGameInShopFromPage(document)).thenReturn(gameInShop);
         when(storeParser.getGenres(document)).thenReturn(List.of(Genre.ARCADE));
         when(storeParser.getProductType(document)).thenReturn(ProductType.GAME);
@@ -123,20 +139,34 @@ public class CommonStoreServiceImplTest {
     }
 
     @Test
-    void findByName_Success() {
+    void testFindByName_whenGameFound_shouldReturnGameInShop() {
         when(storeParser.parseSearchResults(TEST_NAME, pageFetcher)).thenReturn(List.of(TEST_URL));
-        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(Optional.of(document));
         when(storeParser.parseGameInShopFromPage(document)).thenReturn(gameInShop);
 
-        GameInShop result = storeService.findByName(TEST_NAME);
 
+        Optional<GameInShop> result = storeService.findByName(TEST_NAME);
+
+
+        assertTrue(result.isPresent());
         assertNotNull(result);
-        assertEquals(TEST_URL, result.getUrl());
+        assertEquals(TEST_URL, result.get().getUrl());
     }
 
     @Test
-    void checkGameInStoreForChange_NoChanges() {
-        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+    void testFindByName_whenPageNotFound_shouldReturnOptionalEmpty() {
+        when(storeParser.parseSearchResults(TEST_NAME, pageFetcher)).thenReturn(Collections.emptyList());
+
+
+        Optional<GameInShop> result = storeService.findByName(TEST_NAME);
+
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testCheckGameInStoreForChange_whenNoChanges_shouldReturnEmptyList() {
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(Optional.of(document));
         when(storeParser.parseGameInShopFromPage(document)).thenReturn(gameInShop);
 
         List<GameInShop> results = storeService.checkGameInStoreForChange(List.of(gameInShop));
@@ -145,7 +175,7 @@ public class CommonStoreServiceImplTest {
     }
 
     @Test
-    void checkGameInStoreForChange_WithChanges() {
+    void testCheckGameInStoreForChange_whenWithChanges_shouldReturnUpdatedGame() {
         GameInShop updatedGame = GameInShop.builder()
                 .nameInStore(TEST_NAME)
                 .price(BigDecimal.valueOf(12))
@@ -154,7 +184,7 @@ public class CommonStoreServiceImplTest {
                 .url(TEST_URL)
                 .build();
 
-        when(pageFetcher.getPage(TEST_URL)).thenReturn(document);
+        when(pageFetcher.getPage(TEST_URL)).thenReturn(Optional.of(document));
         when(storeParser.parseGameInShopFromPage(document)).thenReturn(updatedGame);
 
         List<GameInShop> results = storeService.checkGameInStoreForChange(List.of(gameInShop));

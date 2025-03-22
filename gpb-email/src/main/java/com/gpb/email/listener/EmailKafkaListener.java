@@ -49,21 +49,17 @@ public class EmailKafkaListener {
         log.info("Received email event with key: {} for recipient: {} and subject: {}",
                 eventRecord.key(), emailEvent.getRecipient(), emailEvent.getSubject());
 
-        try {
-            Context context = new Context();
-            context.setLocale(emailEvent.getLocale());
-            context.setVariables(emailEvent.getVariables());
+        Context context = new Context();
+        context.setLocale(emailEvent.getLocale());
+        context.setVariables(emailEvent.getVariables());
 
-            emailService.sendEmail(
-                    emailEvent.getRecipient(),
-                    emailEvent.getSubject(),
-                    context,
-                    emailEvent.getTemplateName()
-            );
+        emailService.sendEmail(
+                emailEvent.getRecipient(),
+                emailEvent.getSubject(),
+                context,
+                emailEvent.getTemplateName()
+        );
 
-            log.info("Email sending finished");
-        } catch (Exception ex) {
-            log.error("Error processing email event", ex);
-        }
+        log.info("Email sending finished");
     }
 }

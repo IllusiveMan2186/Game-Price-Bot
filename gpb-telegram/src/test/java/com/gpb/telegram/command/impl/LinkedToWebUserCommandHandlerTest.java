@@ -1,5 +1,6 @@
 package com.gpb.telegram.command.impl;
 
+import com.gpb.common.exception.RestTemplateRequestException;
 import com.gpb.common.service.UserLinkerService;
 import com.gpb.telegram.entity.TelegramRequest;
 import com.gpb.telegram.entity.TelegramResponse;
@@ -18,6 +19,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,6 +56,31 @@ class LinkedToWebUserCommandHandlerTest {
         String token = "mockToken";
         TelegramUser user = TelegramUser.builder().basicUserId(123456L).build();
         TelegramRequest request = TelegramRequest.builder().update(update).user(user).locale(locale).build();
+
+
+        TelegramResponse response = controller.apply(request);
+
+
+        SendMessage sendMessage = (SendMessage) response.getMessages().get(0);
+        verify(userLinkerService).linkAccounts(token, currentUserId);
+        assertEquals("123", sendMessage.getChatId());
+        assertEquals("messages", sendMessage.getText());
+    }
+
+    @Test
+    void testApply_whenRestTemplateRequestException_shouldReturnErrorMessage() {
+        Locale locale = new Locale("");
+        long currentUserId = 123456;
+        Update update = UpdateCreator.getUpdateWithoutCallback("/synchronizeToWeb mockToken", 123);
+
+        String token = "mockToken";
+        TelegramUser user = TelegramUser.builder().basicUserId(123456L).build();
+        TelegramRequest request = TelegramRequest.builder().update(update).user(user).locale(locale).build();
+        doThrow(new RestTemplateRequestException())
+                .when(userLinkerService)
+                .linkAccounts(token, currentUserId);
+        when(messageSource.getMessage("accounts.linked.already", null, locale))
+                .thenReturn("messages");
 
 
         TelegramResponse response = controller.apply(request);

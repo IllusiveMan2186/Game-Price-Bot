@@ -1,12 +1,17 @@
 package com.gpb.telegram.command.impl;
 
 import com.gpb.common.service.UserLinkerService;
+import com.gpb.telegram.configuration.ResourceConfiguration;
 import com.gpb.telegram.entity.TelegramRequest;
 import com.gpb.telegram.entity.TelegramResponse;
 import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.util.Constants;
 import com.gpb.telegram.util.UpdateCreator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -17,11 +22,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class GetWebUrlCommandHandlerTest {
 
+    @Mock
+    ResourceConfiguration resourceConfiguration;
+    @Mock
     MessageSource messageSource = mock(MessageSource.class);
+    @Mock
     UserLinkerService userLinkerService = mock(UserLinkerService.class);
-    GetWebUrlCommandHandler controller = new GetWebUrlCommandHandler(messageSource, userLinkerService);
+
+    @InjectMocks
+    GetWebUrlCommandHandler controller;
 
     @Test
     void testGetDescription_whenSuccess_shouldReturnDescription() {
@@ -49,8 +61,7 @@ class GetWebUrlCommandHandlerTest {
                 .build();
         when(userLinkerService.getAccountsLinkerToken(basicUserId)).thenReturn(token);
 
-
-        controller.setFrontendServiceUrl(url);
+        when(resourceConfiguration.getFrontendServiceUrl()).thenReturn(url);
 
 
         TelegramResponse response = controller.apply(request);

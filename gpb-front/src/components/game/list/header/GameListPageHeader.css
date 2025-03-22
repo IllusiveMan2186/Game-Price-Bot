@@ -11,43 +11,6 @@
     display: flex;
 }
 
-.app-header__search {
-    background-color: #000000;
-    float: left;
-    border: 1px solid rgb(39, 47, 71);
-    border-radius: 10px;
-    margin: 3px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.app-header__search input {
-    color: white;
-    background-color: #000000;
-    border: 1px solid #000;
-    padding: 2px 12px;
-    border-radius: 2px;
-    margin: 3px;
-    height: 38px;
-    flex-grow: 2;
-    border: none;
-}
-
-
-.app-header__search input,
-select:focus {
-    outline: none;
-}
-
-.app-header__search button {
-    border: none;
-    background: rgb(0, 0, 0);
-    color: rgb(255, 255, 255);
-    margin-right: 10px;
-}
-
-
 .app-header__select {
     margin-top: 10px;
     height: 30px;

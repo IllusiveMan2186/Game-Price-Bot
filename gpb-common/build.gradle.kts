@@ -1,5 +1,6 @@
 plugins {
     java
+    id("jacoco")
     id("org.springframework.boot") version "3.0.4"
     id("io.spring.dependency-management") version "1.1.0"
     id("maven-publish")
@@ -12,7 +13,7 @@ fun getEnvOrProperty(name: String): String {
 }
 
 group = "com.gpb"
-version = "1.1.0"
+version = "1.2.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
@@ -75,4 +76,28 @@ publishing {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = "CLASS"
+
+            excludes = listOf(
+                    "**.entity.*",
+                    "**.exception.*",
+                    "**.util.*",
+            )
+
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                minimum = "0.90".toBigDecimal()
+            }
+        }
+    }
 }

@@ -18,8 +18,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Component("cardmagParser")
@@ -58,8 +60,9 @@ public class CardmagStoreParser extends AbstractStoreParser implements StorePars
 
     @Override
     public List<String> parseSearchResults(String name, StorePageParser pageFetcher) {
-        Document page = pageFetcher.getPage(CardmagConstants.CARDMAQ_SEARCH_URL + name);
-        return page.getElementsByClass(CardmagConstants.GAME_IN_LIST)
+        Optional<Document> page = pageFetcher.getPage(CardmagConstants.CARDMAQ_SEARCH_URL + name);
+        if (page.isEmpty()) return Collections.emptyList();
+        return page.get().getElementsByClass(CardmagConstants.GAME_IN_LIST)
                 .stream()
                 .map(element -> CardmagConstants.CARDMAQ_HOST_URL.concat(element.attr(Constants.ATTRIBUTE_HREF)))
                 .toList();

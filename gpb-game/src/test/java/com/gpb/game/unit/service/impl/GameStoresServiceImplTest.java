@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,7 +49,7 @@ class GameStoresServiceImplTest {
 
         when(storeService2.findUncreatedGameByName(name)).thenReturn(List.of(game));
         when(storeService1.findUncreatedGameByName(name)).thenReturn(new ArrayList<>());
-        when(storeService1.findByName(name)).thenReturn(gameInShop1);
+        when(storeService1.findByName(name)).thenReturn(Optional.of(gameInShop1));
         Set<GameInShop> copyOfList = new HashSet<>(Collections.singletonList(gameInShop2));
         copyOfList.add(gameInShop1);
         game.setGamesInShop(copyOfList);
@@ -82,8 +83,8 @@ class GameStoresServiceImplTest {
         final GameInShop gameInShop2 = new GameInShop();
         game.setGamesInShop(Collections.singleton(gameInShop2));
         String url = "https://gamazey.com.ua/games/steam/sid-meiers-civilization-vi";
-        when(storeService2.findUncreatedGameByUrl(url)).thenReturn(game);
-        when(storeService1.findByUrl(url)).thenReturn(gameInShop1);
+        when(storeService2.findUncreatedGameByUrl(url)).thenReturn(Optional.of(game));
+        when(storeService1.findByUrl(url)).thenReturn(Optional.of(gameInShop1));
         Set<GameInShop> copyOfList = new HashSet<>(Collections.singletonList(gameInShop2));
         copyOfList.add(gameInShop1);
         game.setGamesInShop(copyOfList);
@@ -115,7 +116,7 @@ class GameStoresServiceImplTest {
     void testFindGameInShopByUrl_whenSuccess_ShouldReturnNewGameInShop() {
         final GameInShop gameInShop = new GameInShop();
         String url = "https://gamazey.com.ua/games/steam/sid-meiers-civilization-vi";
-        when(storeService2.findByUrl(url)).thenReturn(gameInShop);
+        when(storeService2.findByUrl(url)).thenReturn(Optional.of(gameInShop));
 
 
         GameInShop result = gameStoresService.findGameInShopByUrl(url);
