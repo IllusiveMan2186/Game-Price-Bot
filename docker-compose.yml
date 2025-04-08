@@ -26,6 +26,7 @@ services:
       - gpb-network
 
   react:
+    image: ghcr.io/illusiveman2186/game-price-bot-react:latest
     build:
       context: ./gpb-front
     container_name: gpb_front_react
@@ -53,6 +54,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   game:
+    image: ghcr.io/illusiveman2186/game-price-bot-game:latest
     container_name: gpb_game
     ports:
       - "8081:8081"
@@ -77,6 +79,7 @@ services:
       - common_data_images:${IMAGE_FOLDER}
 
   backend:
+    image: ghcr.io/illusiveman2186/game-price-bot-backend:latest
     container_name: gpb_backend
     ports:
       - "8080:8080"
@@ -109,6 +112,7 @@ services:
       - common_data_images:${IMAGE_FOLDER}
 
   telegram:
+    image: ghcr.io/illusiveman2186/game-price-bot-telegram:latest
     container_name: gpb_telegram
     ports:
       - "8082:8082"
@@ -137,6 +141,7 @@ services:
       - common_data_images:${IMAGE_FOLDER}
 
   email:
+    image: ghcr.io/illusiveman2186/game-price-bot-email:latest
     container_name: gpb_email
     depends_on:
       - kafka
