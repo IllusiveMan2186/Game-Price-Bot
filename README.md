@@ -92,7 +92,12 @@ Or download from: https://kubernetes.io/docs/tasks/tools/install-kubectl/
 ### To run GPB in Docker after installing, create a ".env" file and use the following command in root of project:
 
 ```console
-docker-compose up
+docker-compose up -d
+```
+
+or if you want to build images: 
+```console
+docker-compose up -d --build
 ```
 
 ### To run GPB in Minikube after installing in terminal run:
