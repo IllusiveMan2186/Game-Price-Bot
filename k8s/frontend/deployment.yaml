@@ -14,10 +14,10 @@ spec:
     spec:
       containers:
         - name: frontend-service
-          image: game-price-bot-react:latest
-          imagePullPolicy: Never 
+          image: ghcr.io/illusiveman2186/game-price-bot-react:latest
+          imagePullPolicy: IfNotPresent 
           ports:
-            - containerPort: 80
+            - containerPort: 3000
           env:
             - name: BACKEND_SERVICE_URL
               valueFrom:

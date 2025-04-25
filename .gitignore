@@ -1,3 +1,8 @@
 .env
 .idea
 test-artifact.iml
+
+.p12
+.pem
+.key
+.jks

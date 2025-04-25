@@ -28,13 +28,13 @@ RUN mvn clean package
 
 # Stage 2: Create the final image
 FROM openjdk:17
-ENV ARTIFACT_NAME=gpb-telegram-1.2.0.jar
+ENV ARTIFACT_NAME=gpb-telegram.jar
 ENV APP_HOME=/gpb/telegram/
 
 WORKDIR $APP_HOME
 
 # Copy the built JAR file from the temporary build image
-COPY --from=TEMP_BUILD_IMAGE $APP_HOME/target/$ARTIFACT_NAME .
+COPY --from=TEMP_BUILD_IMAGE /$APP_HOME/target/*.jar $ARTIFACT_NAME
 
 # Define the command to run on container start
 CMD java -jar $ARTIFACT_NAME

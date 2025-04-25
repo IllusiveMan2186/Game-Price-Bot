@@ -30,9 +30,9 @@ build_if_missing() {
   BUILD_PATH=$2
   BUILD_ARGS=$3
 
-  if [[ -z $(docker images -q -f "reference=$IMAGE_NAME:latest") ]]; then
-    echo "🛠️ Image $IMAGE_NAME not found. Building..."
-    docker build --no-cache -t $IMAGE_NAME:latest $BUILD_ARGS $BUILD_PATH
+  if [[ -z $(docker images -q -f "reference=ghcr.io/illusiveman2186/$IMAGE_NAME:latest") ]]; then
+    echo "🛠 Image $IMAGE_NAME not found. Building..."
+    docker build --no-cache -t ghcr.io/illusiveman2186/$IMAGE_NAME:latest $BUILD_ARGS $BUILD_PATH
     echo "✅ Image $IMAGE_NAME built!"
   else
     echo "✅ Image $IMAGE_NAME already exists. Skipping build."
@@ -50,7 +50,8 @@ build_if_missing game-price-bot-react ./gpb-front "--build-arg BACKEND_SERVICE_U
 if minikube status > /dev/null 2>&1; then
   echo "📤 Loading images into Minikube cache..."
   for image in game-price-bot-backend game-price-bot-game game-price-bot-email game-price-bot-telegram game-price-bot-react; do
-    minikube image load $image:latest
+    echo "Load image:$image into Minikube cache"
+    minikube image load ghcr.io/illusiveman2186/$image:latest
   done
   echo "✅ Images loaded into Minikube cache!"
 else
@@ -91,7 +92,6 @@ for dep in "${!DEPLOYMENT_NAMES[@]}"; do
   kubectl rollout status deployment/$deployment_name
 done
 
-
 # Step 9: Enable Minikube Ingress
 if ! minikube addons list | grep -q "ingress.*enabled"; then
   echo "🔄 Enabling Minikube Ingress..."
@@ -102,23 +102,44 @@ else
   echo "✅ Minikube Ingress is already enabled."
 fi
 
-# Step 10: Ensure Ingress Controller is Running
-kubectl get pods -n ingress-nginx
-until kubectl get pods -n ingress-nginx | grep -E "ingress-nginx-controller.*Running"; do
-  echo "⏳ Waiting for ingress-nginx-controller to start..."
+# Step 10: Wait for Ingress Controller to Be Ready
+echo "⏳ Waiting for ingress-nginx-controller to become ready..."
+until kubectl get pods -n ingress-nginx | grep -E "ingress-nginx-controller.*1/1.*Running"; do
   sleep 5
 done
-
+kubectl rollout status deployment/ingress-nginx-controller -n ingress-nginx
 echo "✅ Ingress controller is running!"
 
-# Step 11: Deploy Ingress
-kubectl rollout status deployment/ingress-nginx-controller -n ingress-nginx
+# Step 11: Deploy Cert-Manager + ClusterIssuer
+echo "📦 Deploying cert-manager..."
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
+
+echo "⏳ Waiting for cert-manager-webhook deployment to complete..."
+kubectl rollout status deployment cert-manager-webhook -n cert-manager
+
+echo "⏳ Verifying cert-manager webhook TLS availability..."
+until kubectl get validatingwebhookconfiguration cert-manager-webhook -o jsonpath='{.webhooks[0].clientConfig.caBundle}' | grep -q '[A-Za-z0-9+/=]\{100,\}'; do
+  echo "🔁 Waiting for cert-manager webhook CA to be ready..."
+  sleep 2
+done
+echo "✅ cert-manager webhook TLS ready."
+
+echo "📦 Applying ClusterIssuer..."
+kubectl apply -f k8s/clusterissuer.yaml
+
+echo "📦 Applying Certificate..."
+kubectl apply -f k8s/certificate.yaml
+
+# Step 12: Deploy Ingress Resource
+echo "🌐 Applying Ingress definition..."
 kubectl apply -f k8s/ingress.yaml
 
-# Step 12: Get Deployment Status
+# Step 13: Show Deployment Status
+echo "📊 Current cluster state:"
 kubectl get pods
 kubectl get services
 kubectl get deployments
 kubectl get ingress
 
-echo "🚀 All services are running! 🎉"
+echo "🚀 All services are running with HTTPS on game.price.bot! 🎉"
+

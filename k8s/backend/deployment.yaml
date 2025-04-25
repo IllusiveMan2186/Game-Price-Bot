@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: backend-service
-          image: game-price-bot-backend:latest
-          imagePullPolicy: Never 
+          image: ghcr.io/illusiveman2186/game-price-bot-backend:latest
+          imagePullPolicy: IfNotPresent 
           ports:
             - containerPort: 8080
           env:

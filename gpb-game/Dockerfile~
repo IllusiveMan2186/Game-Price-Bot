@@ -17,13 +17,13 @@ RUN gradle clean build
 
 # Stage 2: Create the final image
 FROM openjdk:17
-ENV ARTIFACT_NAME=gpb-game.jar
+ENV ARTIFACT_NAME=gpb-game-1.2.0.jar
 ENV APP_HOME=/gpb/game/
 
 WORKDIR $APP_HOME
 
 # Copy the built WAR file from the temporary build image
-COPY --from=TEMP_BUILD_IMAGE /$APP_HOME/build/libs/*.jar $ARTIFACT_NAME
+COPY --from=TEMP_BUILD_IMAGE $APP_HOME/build/libs/$ARTIFACT_NAME .
 
 # Define the command to run on container start
 CMD java -jar $ARTIFACT_NAME

@@ -42,7 +42,7 @@ export default function Router() {
                     <Route path="/change/email" element={<EmailChange />} />
                     <Route path="/change/password" element={<PasswordChange />} />
 
-                    <Route path="/activation?" element={<ActivationPage />} />
+                    <Route path="/activation" element={<ActivationPage />} />
 
                     <Route path="/link" element={<LinkPage />} />
                     <Route path="/link/token" element={<GetLinkTokenPage />} />

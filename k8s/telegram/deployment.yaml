@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: telegram-bot
-          image: game-price-bot-telegram:latest
-          imagePullPolicy: Never 
+          image: ghcr.io/illusiveman2186/game-price-bot-telegram:latest
+          imagePullPolicy: IfNotPresent 
           ports:
             - containerPort: 8082
           env:

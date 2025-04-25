@@ -10,6 +10,8 @@ gradle/
 !**/src/test/**/build/
 Game/**
 
+.p12
+
 ### STS ###
 .apt_generated
 .classpath
