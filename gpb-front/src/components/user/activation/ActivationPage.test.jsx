@@ -6,12 +6,8 @@ jest.mock('react-router-dom', () => ({
   useSearchParams: jest.fn(),
 }));
 
-jest.mock('@contexts/NavigationContext', () => ({
-  useNavigation: jest.fn(),
-}));
-
-jest.mock('@hooks/user/useLinkActions', () => ({
-  useLinkActions: jest.fn(),
+jest.mock('@hooks/user/useActivationActions', () => ({
+  useActivationActions: jest.fn(),
 }));
 
 describe('ActivationPage', () => {
@@ -27,17 +23,14 @@ describe('ActivationPage', () => {
       },
     ]);
 
-    const { useNavigation } = require('@contexts/NavigationContext');
-    useNavigation.mockReturnValue(mockNavigate);
-
-    const { useLinkActions } = require('@hooks/user/useLinkActions');
-    useLinkActions.mockReturnValue({
+    const { useActivationActions } = require('@hooks/user/useActivationActions');
+    useActivationActions.mockReturnValue({
       activateUserAccountRequest: mockActivateUserAccountRequest,
     });
 
     render(<ActivationPage />);
 
-    expect(mockActivateUserAccountRequest).toHaveBeenCalledWith(token, mockNavigate);
+    expect(mockActivateUserAccountRequest).toHaveBeenCalledWith(token);
     expect(screen.getByText('Activating your account...')).toBeInTheDocument();
   });
 });
