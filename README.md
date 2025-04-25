@@ -177,7 +177,7 @@ Other Configuration:
     * Adjust this if your frontend service is running on a different host or port.
 
 * BACKEND_SERVICE_URL: The URL for the backend service.
-    * Default: http://localhost:8080 for docker compose , http://game.price.bot/api for minikube
+    * Default: http://localhost:8080/api for docker compose , http://game.price.bot/api for minikube
     * Adjust this if your backend service is running on a different host or port.
 
 * GAME_SERVICE_URL: The URL for the game service.

@@ -30,9 +30,9 @@ build_if_missing() {
   BUILD_PATH=$2
   BUILD_ARGS=$3
 
-  if [[ -z $(docker images -q -f "reference=$IMAGE_NAME:latest") ]]; then
+  if [[ -z $(docker images -q -f "reference=ghcr.io/illusiveman2186/$IMAGE_NAME:latest") ]]; then
     echo "🛠️ Image $IMAGE_NAME not found. Building..."
-    docker build --no-cache -t $IMAGE_NAME:latest $BUILD_ARGS $BUILD_PATH
+    docker build --no-cache -t ghcr.io/illusiveman2186/$IMAGE_NAME:latest $BUILD_ARGS $BUILD_PATH
     echo "✅ Image $IMAGE_NAME built!"
   else
     echo "✅ Image $IMAGE_NAME already exists. Skipping build."
