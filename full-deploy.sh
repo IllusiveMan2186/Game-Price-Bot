@@ -51,7 +51,7 @@ if minikube status > /dev/null 2>&1; then
   echo "📤 Loading images into Minikube cache..."
   for image in game-price-bot-backend game-price-bot-game game-price-bot-email game-price-bot-telegram game-price-bot-react; do
     echo "Load image:$image into Minikube cache"
-    minikube image load $image:latest
+    minikube image load ghcr.io/illusiveman2186/$image:latest
   done
   echo "✅ Images loaded into Minikube cache!"
 else
