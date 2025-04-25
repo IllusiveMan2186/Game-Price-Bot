@@ -31,7 +31,7 @@ build_if_missing() {
   BUILD_ARGS=$3
 
   if [[ -z $(docker images -q -f "reference=ghcr.io/illusiveman2186/$IMAGE_NAME:latest") ]]; then
-    echo "🛠️ Image $IMAGE_NAME not found. Building..."
+    echo "🛠 Image $IMAGE_NAME not found. Building..."
     docker build --no-cache -t ghcr.io/illusiveman2186/$IMAGE_NAME:latest $BUILD_ARGS $BUILD_PATH
     echo "✅ Image $IMAGE_NAME built!"
   else
@@ -50,7 +50,8 @@ build_if_missing game-price-bot-react ./gpb-front "--build-arg BACKEND_SERVICE_U
 if minikube status > /dev/null 2>&1; then
   echo "📤 Loading images into Minikube cache..."
   for image in game-price-bot-backend game-price-bot-game game-price-bot-email game-price-bot-telegram game-price-bot-react; do
-    minikube image load ghcr.io/illusiveman2186/$image:latest
+    echo "Load image:$image into Minikube cache"
+    minikube image load $image:latest
   done
   echo "✅ Images loaded into Minikube cache!"
 else

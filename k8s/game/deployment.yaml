@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: game-service
-          image: game-price-bot-game:latest
+          image: ghcr.io/illusiveman2186/game-price-bot-game:latest
           imagePullPolicy: IfNotPresent 
           ports:
             - containerPort: 8081
