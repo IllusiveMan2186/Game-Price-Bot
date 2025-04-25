@@ -109,7 +109,7 @@ minikube start --driver=docker
 #### Add to host file the following IP addresses:
 
 ```console
-127.0.0.1    game.price.bot
+127.0.0.1 game.price.bot
 ```
 
 #### Create a ".env" file and use the following command in root of project:
