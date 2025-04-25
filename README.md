@@ -110,7 +110,6 @@ minikube start --driver=docker
 
 ```console
 127.0.0.1    game.price.bot
-127.0.0.1    api.game.price.bot
 ```
 
 #### Create a ".env" file and use the following command in root of project:
@@ -130,14 +129,14 @@ After running the script and opening the tunnel, keep the terminal open to maint
 You can access the services via the following links:
 
 Frontend: http://game.price.bot
-Backend: http://api.game.price.bot
+Backend: http://game.price.bot/api
 
 #### 🚨 But if this links not work then run in different terminals : 
 ```console
 kubectl port-forward svc/backend-service 8080:8080
 ```
 ```console
-kubectl port-forward svc/frontend-service 3000:80
+kubectl port-forward svc/frontend-service 3000:3000
 ```
 
 Then you could access services on http://localhost:8080 and http://localhost:3000
@@ -178,7 +177,7 @@ Other Configuration:
     * Adjust this if your frontend service is running on a different host or port.
 
 * BACKEND_SERVICE_URL: The URL for the backend service.
-    * Default: http://localhost:8080 for docker compose , http://api.game.price.bot for minikube
+    * Default: http://localhost:8080 for docker compose , http://game.price.bot/api for minikube
     * Adjust this if your backend service is running on a different host or port.
 
 * GAME_SERVICE_URL: The URL for the game service.

@@ -7,6 +7,9 @@ gradle/
 !**/src/test/**/build/
 logs/
 
+.p12
+.jks
+
 ### STS ###
 .apt_generated
 .classpath

@@ -1,5 +1,6 @@
 package com.gpb.backend.e2e;
 
+import com.gpb.backend.BasicEndToEndTest;
 import com.gpb.backend.e2e.util.EntToEndUtil;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -11,15 +12,13 @@ import static com.gpb.backend.e2e.util.EntToEndUtil.gameSearch;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("e2e")
-class GameSearchEndToEndTest {
+class GameSearchEndToEndTest extends BasicEndToEndTest {
 
     private static final String GAME_NAME = "Minecraft";
-    private final String adminEmail = System.getProperty("e2e.email");
-    private final String adminPassword = System.getProperty("e2e.password");
 
     @Test
     void testGameSearch_whenSuccess_shouldFindNeededGame() {
-        WebDriver driver = EntToEndUtil.getGpbWebDriver();
+        WebDriver driver = getGpbWebDriver();
 
 
         gameSearch(driver, GAME_NAME);
@@ -34,7 +33,7 @@ class GameSearchEndToEndTest {
 
     @Test
     void testGameInfoContent_whenSuccess_shouldVerifyGameInfo() {
-        WebDriver driver = EntToEndUtil.getGpbWebDriver();
+        WebDriver driver = getGpbWebDriver();
 
         if (driver.findElements(By.className("app-list__game")).isEmpty()) {
             EntToEndUtil.gameSearch(driver, GAME_NAME);
@@ -65,7 +64,7 @@ class GameSearchEndToEndTest {
 
     @Test
     void testGameStoreLink_whenClickOnGameInStore_shouldRedirectToStore() {
-        WebDriver driver = EntToEndUtil.getGpbWebDriver();
+        WebDriver driver = getGpbWebDriver();
 
         if (driver.findElements(By.className("app-list__game")).isEmpty()) {
             EntToEndUtil.gameSearch(driver, GAME_NAME);

@@ -14,16 +14,16 @@ import java.time.Duration;
 
 public class EntToEndUtil {
 
-    public static final String GPB_URL = "http://localhost:3000/";
     public static final long WAIT_TIME = 30;
     public static final int ATTEMPTS_AMOUNT = 10;
 
-    public static WebDriver getGpbWebDriver() {
+    public static WebDriver getGpbWebDriver(String gpbUrl) {
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
+        options.setAcceptInsecureCerts(true);
         WebDriver driver = new ChromeDriver(options);
-        driver.get(GPB_URL);
+        driver.get(gpbUrl);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(1));
         return driver;

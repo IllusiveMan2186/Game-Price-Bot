@@ -33,7 +33,7 @@ services:
     networks:
       - gpb-network
     ports:
-      - "3000:80"
+      - "3000:3000"
     environment:
       BACKEND_SERVICE_URL: ${BACKEND_SERVICE_URL}
       TELEGRAM_BOT_URL: ${TELEGRAM_BOT_URL}

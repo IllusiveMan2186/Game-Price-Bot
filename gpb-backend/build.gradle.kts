@@ -88,8 +88,11 @@ tasks.register<Test>("e2eTest") {
             ?: throw IllegalStateException("Property 'E2E_EMAIL' is required")
         val password = System.getenv("E2E_PASSWORD")
             ?: throw IllegalStateException("Property 'E2E_PASSWORD' is required")
+        val url = System.getenv("E2E_URL")
+                ?: throw IllegalStateException("Property 'E2E_URL' is required")
         systemProperty("e2e.email", username)
         systemProperty("e2e.password", password)
+        systemProperty("e2e.url", url)
     }
     useJUnitPlatform {
         includeTags("e2e")

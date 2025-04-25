@@ -1,15 +1,17 @@
-
 import { useSearchParams } from 'react-router-dom';
-import { useNavigation } from "@contexts/NavigationContext";
-import { useLinkActions } from '@hooks/user/useLinkActions';
+import { useActivationActions } from '@hooks/user/useActivationActions';
+import { useEffect } from 'react';
 
 const ActivationPage = () => {
-    const navigate = useNavigation();
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
-    const { activateUserAccountRequest } = useLinkActions();
+    const { activateUserAccountRequest } = useActivationActions();
 
-    activateUserAccountRequest(token, navigate);
+    useEffect(() => {
+        if (token) {
+            activateUserAccountRequest(token);
+        }
+    }, [token, activateUserAccountRequest]);
 
     return (
         <div>
