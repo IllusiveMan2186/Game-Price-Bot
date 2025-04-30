@@ -47,7 +47,7 @@ jobs:
       - name: Publish gpb-common to Maven repo
         working-directory: ./gpb-common
         run: |
-          gradle publish \
+          ./gradlew wrapper \
             -PDEPENDENCY_REPO_URL=${{ secrets.DEPENDENCY_REPO_URL }} \
             -PDEPENDENCY_REPO_USERNAME=${{ secrets.DEPENDENCY_REPO_USERNAME }} \
             -PDEPENDENCY_REPO_PASSWORD=${{ secrets.DEPENDENCY_REPO_PASSWORD }}
