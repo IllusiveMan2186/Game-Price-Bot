@@ -1,6 +1,10 @@
 .env
+.secrets
 .idea
 test-artifact.iml
+
+letsencrypt/
+secrets/
 
 .p12
 .pem
