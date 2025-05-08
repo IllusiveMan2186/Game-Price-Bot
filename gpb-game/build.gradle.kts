@@ -91,6 +91,7 @@ tasks.jacocoTestCoverageVerification {
                     "**.exception.*",
                     "**.util.*",
                     "com.gpb.game.controller.RestResponseEntityExceptionHandler",
+                    "com.gpb.game.service.impl.ResourceServiceImpl",
                     "com.gpb.game.parser.StorePageParser",
                     "com.gpb.game.GpbStoresApplication"
             )

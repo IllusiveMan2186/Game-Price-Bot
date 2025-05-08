@@ -122,7 +122,6 @@ tasks.jacocoTestCoverageVerification {
                     "**.exception.*",
                     "**.util.*",
                     "com.gpb.backend.controller.RestResponseEntityExceptionHandler",
-                    "com.gpb.backend.service.impl.ResourceServiceImpl",
                     "com.gpb.backend.ServletInitializer",
                     "com.gpb.backend.GpbWebApplication"
             )
