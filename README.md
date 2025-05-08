@@ -109,7 +109,8 @@ minikube start --driver=docker
 #### Add to host file the following IP addresses:
 
 ```console
-127.0.0.1 game.price.bot
+<minikube_ip> game.price.bot
+<minikube_ip> grafana.gpb
 ```
 
 #### Create a ".env" file and use the following command in root of project:
@@ -128,18 +129,11 @@ minikube tunnel
 After running the script and opening the tunnel, keep the terminal open to maintain the tunnel connection.
 You can access the services via the following links:
 
-Frontend: http://game.price.bot
-Backend: http://game.price.bot/api
+Frontend: https://game.price.bot
+Backend: https://game.price.bot/api
+Grafana: https://grafana.gpb 
 
-#### 🚨 But if this links not work then run in different terminals : 
-```console
-kubectl port-forward svc/backend-service 8080:8080
-```
-```console
-kubectl port-forward svc/frontend-service 3000:3000
-```
-
-Then you could access services on http://localhost:8080 and http://localhost:3000
+Login for grafana: admin , password from ".env"
 
 ### Environments in ".env" file (with defaults values for docker and minikube) :
 
@@ -235,6 +229,9 @@ Dependency Configuration:
 * DEPENDENCY_REPO_PASSWORD: The URL for the game service.
     * Default: Your github personal access tokens
     * Set password to account for reading dependency repository
+
+* GRAFANA_ADMIN_PASSWORD: The password for the Grafana admin user.
+    * Set your password for Grafana admin user
 
 You also could stop some docker parts and run part on yours development environment
 

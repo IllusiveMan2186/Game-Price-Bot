@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.gpb"
-version = "1.2.0"
+version = "1.2.1"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 fun getEnvOrProperty(name: String): String {
@@ -35,7 +35,7 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.gpb:common:1.2.0")
+    implementation("com.gpb:common:1.2.1")
 
     implementation("commons-io:commons-io:2.11.0")
     implementation("com.auth0:java-jwt:4.3.0")
@@ -91,6 +91,7 @@ tasks.jacocoTestCoverageVerification {
                     "**.exception.*",
                     "**.util.*",
                     "com.gpb.game.controller.RestResponseEntityExceptionHandler",
+                    "com.gpb.game.service.impl.ResourceServiceImpl",
                     "com.gpb.game.parser.StorePageParser",
                     "com.gpb.game.GpbStoresApplication"
             )

@@ -24,4 +24,12 @@ public interface ResourceService {
      * @param h        The height of the cropping region.
      */
     void saveCroppedImage(String imageUrl, String gameName, int x, int y, int w, int h);
+
+    /**
+     * Retrieves the game image associated with the specified game name.
+     *
+     * @param gameName the name of the game for which to retrieve the image
+     * @return a byte array containing the image data; if no image is found, a default image will be returned
+     */
+    byte[] getGameImage(final String gameName);
 }

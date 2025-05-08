@@ -23,7 +23,7 @@ Backend web part of GPB application
     * If you decide publish common service yourself then credential to this repository
 * Run
   ```
-  gradle clean build
+  gradle clean bootJar
   ```
 * Run service
 

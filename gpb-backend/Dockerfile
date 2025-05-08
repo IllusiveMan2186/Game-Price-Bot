@@ -1,26 +1,32 @@
-# ──────────────────────────────────────────────
-# Stage 1: Build the app (e.g., Gradle, npm, etc.)
-# ──────────────────────────────────────────────
+# ───────────────── Stage 1: Build the app ─────────────────
 FROM gradle:8.0.2 AS build
-WORKDIR /app
-COPY . .
+ENV APP_HOME=/gpb/backend/
+WORKDIR $APP_HOME
+
+# Build args for private repo
 ARG DEPENDENCY_REPO_URL
 ARG DEPENDENCY_REPO_USERNAME
 ARG DEPENDENCY_REPO_PASSWORD
-ENV DEPENDENCY_REPO_URL=$DEPENDENCY_REPO_URL
-ENV DEPENDENCY_REPO_USERNAME=$DEPENDENCY_REPO_USERNAME
-ENV DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD
-RUN gradle clean build
+ENV DEPENDENCY_REPO_URL=${DEPENDENCY_REPO_URL} \
+    DEPENDENCY_REPO_USERNAME=${DEPENDENCY_REPO_USERNAME} \
+    DEPENDENCY_REPO_PASSWORD=${DEPENDENCY_REPO_PASSWORD}
 
-# ──────────────────────────────────────────────
-# Stage 2: Final runtime
-# ──────────────────────────────────────────────
-FROM openjdk:17-jdk-alpine
-ENV APP_HOME=/app
+# Cache dependencies and build
+COPY settings.gradle.kts build.gradle.kts gradle/ ./
+RUN gradle --no-daemon dependencies
+COPY . .
+RUN gradle --no-daemon clean bootJar
+
+
+# ───────────────── Stage 2: Final runtime ─────────────────
+FROM eclipse-temurin:17-jre-jammy
+LABEL org.opencontainers.image.source="https://github.com/IllusiveMan2186/Game-Price-Bot/tree/main/gpb-backend"
+ENV APP_HOME=/gpb/backend/
 WORKDIR $APP_HOME
 
-# Copy the built artifact from build stage
-COPY --from=build /$APP_HOME/build/libs/*.war app.war
+COPY --from=build $APP_HOME/build/libs/*.jar app.jar
 
-# Run the app
-CMD ["java", "-jar", "app.war"]
+# Run as non-root user
+USER 1000:1000
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

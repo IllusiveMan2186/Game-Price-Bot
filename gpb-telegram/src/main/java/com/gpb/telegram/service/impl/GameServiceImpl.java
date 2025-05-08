@@ -57,4 +57,9 @@ public class GameServiceImpl implements GameService {
         String sort = String.format("%s-%s", CommonConstants.PRICE_SORT_PARAM, CommonConstants.SORT_DIRECTION_ASCENDING);
         return basicGameService.getUserGames(basicUserId, Constants.GAMES_AMOUNT_IN_LIST, pageNum, sort);
     }
+
+    @Override
+    public byte[] getGameImage(String gameName) {
+        return basicGameService.getGameImage(gameName);
+    }
 }

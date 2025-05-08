@@ -11,8 +11,10 @@ import com.gpb.common.util.CommonConstants;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.service.GameInShopService;
 import com.gpb.game.service.GameService;
+import com.gpb.game.service.ResourceService;
 import com.gpb.game.service.UserService;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.extern.log4j.Log4j2;
 import org.checkerframework.checker.index.qual.Positive;
@@ -46,12 +48,14 @@ public class GameController {
     private final GameService gameService;
     private final GameInShopService gameInShopService;
     private final UserService userService;
+    private final ResourceService resourceService;
 
-    public GameController(final GameService gameService,final GameInShopService gameInShopService,
-                          final UserService userService) {
+    public GameController(GameService gameService, GameInShopService gameInShopService,
+                          UserService userService, ResourceService resourceService) {
         this.gameService = gameService;
         this.gameInShopService = gameInShopService;
         this.userService = userService;
+        this.resourceService = resourceService;
     }
 
     /**
@@ -198,6 +202,23 @@ public class GameController {
         log.info("Fetching games for user {}. Page: {} with {} items per page sorted by {}",
                 userId, pageNum, pageSize, sortBy);
         return gameService.getUserGames(userId, pageSize, pageNum, parseSortBy(sortBy));
+    }
+
+    /**
+     * Retrieves the image of a game by its name.
+     *
+     * @param gameName the name of the game
+     * @return a byte array representing the game image
+     */
+    @GetMapping(value = "/image/{gameName}")
+    @ResponseStatus(HttpStatus.OK)
+    public byte[] getGameImage(
+            @PathVariable
+            @NotBlank
+            @Pattern(regexp = CommonConstants.NAME_REGEX_PATTERN) final String gameName
+    ) {
+        log.debug("Retrieving image for game '{}'", gameName);
+        return resourceService.getGameImage(gameName);
     }
 
     /**

@@ -106,6 +106,14 @@ public class BasicGameServiceImpl implements BasicGameService {
         }
     }
 
+    @Override
+    public byte[] getGameImage(String gameName) {
+        log.debug("Making request to get  image for game  '{}' ", gameName);
+        String url = "/game/image/" + gameName;
+
+        return templateHandlerService.executeRequest(url, HttpMethod.GET, null, byte[].class);
+    }
+
     private HttpHeaders getBasicUserIdHeader(long basicUserId) {
         if (basicUserId > 0) {
             HttpHeaders headers = new HttpHeaders();
