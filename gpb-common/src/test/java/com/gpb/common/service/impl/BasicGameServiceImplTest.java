@@ -20,7 +20,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
@@ -233,6 +235,32 @@ class BasicGameServiceImplTest {
                         eq(HttpMethod.GET),
                         eq(getBasicUserIdHeader(basicUserId)),
                         eq(GameListPageDto.class));
+    }
+
+    @Test
+    void testGetGameImage_whenSuccess_shouldCallGameImageRequest() {
+        String gameName = "testGame";
+        byte[] expectedBytes = new byte[]{1, 2, 3};
+        String expectedUrl = "/game/image/" + gameName;
+
+        when(restTemplateHandler.executeRequest(
+                expectedUrl,
+                HttpMethod.GET,
+                null,
+                byte[].class
+        )).thenReturn(expectedBytes);
+
+
+        byte[] result = gameService.getGameImage(gameName);
+
+
+        assertArrayEquals(expectedBytes, result, "The returned byte array should match the expected bytes");
+        verify(restTemplateHandler).executeRequest(
+                expectedUrl,
+                HttpMethod.GET,
+                null,
+                byte[].class
+        );
     }
 
     private HttpHeaders getBasicUserIdHeader(long basicUserId) {

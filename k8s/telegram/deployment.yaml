@@ -69,10 +69,3 @@ spec:
                 secretKeyRef:
                   name: game-price-bot-secret
                   key: FRONT_SERVICE_URL
-          volumeMounts:
-            - name: image-storage
-              mountPath: "/image_folder"
-      volumes:
-        - name: image-storage
-          persistentVolumeClaim:
-            claimName: game-images-pvc

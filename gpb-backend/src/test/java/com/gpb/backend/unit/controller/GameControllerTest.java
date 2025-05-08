@@ -3,7 +3,6 @@ package com.gpb.backend.unit.controller;
 import com.gpb.backend.controller.GameController;
 import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.GameService;
-import com.gpb.backend.service.ResourceService;
 import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.common.entity.game.GameInfoDto;
 import com.gpb.common.entity.game.GameListPageDto;
@@ -30,8 +29,6 @@ class GameControllerTest {
 
     @Mock
     private GameService gameService;
-    @Mock
-    private ResourceService resourceService;
 
     @InjectMocks
     private GameController gameController;
@@ -154,14 +151,14 @@ class GameControllerTest {
     void testGetGameImage_whenSuccess_shouldReturnImageBytes() {
         String gameName = "Test Game";
         byte[] imageBytes = new byte[]{1, 2, 3};
-        when(resourceService.getGameImage(gameName)).thenReturn(imageBytes);
+        when(gameService.getGameImage(gameName)).thenReturn(imageBytes);
 
 
         byte[] result = gameController.getGameImage(gameName);
 
 
         assertArrayEquals(imageBytes, result);
-        verify(resourceService).getGameImage(gameName);
+        verify(gameService).getGameImage(gameName);
     }
 
     @Test

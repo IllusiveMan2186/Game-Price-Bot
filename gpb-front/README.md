@@ -24,7 +24,7 @@ The frontend reads environment variables from `public/env.js`. Create the file i
 📂 **`public/env.js`**
 ```js
 window._env_ = {
-  BACKEND_SERVICE_URL: "http://localhost:8080",
+  BACKEND_SERVICE_URL: "http://localhost:8080/api",
   TELEGRAM_BOT_URL: "https://api.telegram.org/bot...",
   SUPPORT_EMAIL: "support@example.com"
 };

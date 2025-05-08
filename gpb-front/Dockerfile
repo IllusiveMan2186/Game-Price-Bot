@@ -1,25 +1,44 @@
-FROM node:18.18 AS builder
-WORKDIR /app
+# ───────────────── Stage 1: Build the app ─────────────────
+FROM node:18.18 AS build
+
+ENV APP_HOME=/app
+WORKDIR $APP_HOME
+
+# Install dependencies (cache this layer unless package files change)
 COPY package.json package-lock.json ./
-RUN npm install --legacy-peer-deps
+RUN npm ci --legacy-peer-deps
+
+# Copy source code and build assets
 COPY . .
 RUN npm run build
 
-# Final stage
-FROM node:18.18
-WORKDIR /app
 
-# Копируем build и node_modules из builder
-COPY --from=builder /app/build ./build
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
+# ───────────────── Stage 2: Final runtime ─────────────────
+FROM node:18.18-alpine
 
-COPY server.js ./
+# Metadata label pointing to the source code in the monorepo
+LABEL org.opencontainers.image.source="https://github.com/IllusiveMan2186/Game-Price-Bot/tree/main/gpb-react"
 
-# Copy entrypoint script for env variables
+ENV APP_HOME=/app
+WORKDIR $APP_HOME
+
+# Copy build output and production dependencies from builder stage
+COPY --from=build $APP_HOME/build ./build
+COPY --from=build $APP_HOME/node_modules ./node_modules
+COPY --from=build $APP_HOME/package.json ./package.json
+
+# Copy server script and entrypoint for environment variables
+COPY server.js ./server.js
 COPY env.sh /docker-entrypoint.d/env.sh
 RUN chmod +x /docker-entrypoint.d/env.sh
 
+# Run as non-root user
+RUN chown -R node:node $APP_HOME/build
+USER node
+
+# Expose application port
 EXPOSE 3000
+
+# Entrypoint and default command
 ENTRYPOINT ["/docker-entrypoint.d/env.sh"]
 CMD ["node", "server.js"]

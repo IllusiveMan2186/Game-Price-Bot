@@ -72,4 +72,12 @@ public interface BasicGameService {
      * @param isFollow    {@code true} to mark the game as followed (to receive updates), or {@code false} to unfollow.
      */
     void setFollowGameOption(long gameId, long basicUserId, boolean isFollow);
+
+    /**
+     * Retrieves the game image associated with the specified game name.
+     *
+     * @param gameName the name of the game for which to retrieve the image
+     * @return a byte array containing the image data; if no image is found, a default image will be returned
+     */
+    byte[] getGameImage(final String gameName);
 }

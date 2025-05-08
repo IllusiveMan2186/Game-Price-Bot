@@ -1,0 +1,21 @@
+grafana:
+  enabled: true
+
+  admin:
+    existingSecret: game-price-bot-secret
+    userKey: admin-user
+    passwordKey: GRAFANA_ADMIN_PASSWORD
+
+  # Two-factor auth (TOTP) in grafana.ini
+  grafana.ini:
+    auth.totp:
+      enabled: true
+      issuer: "GamePriceBot"
+
+promtail:
+  enabled: true
+
+loki:
+  enabled: true
+  image:
+    tag: "2.9.3"

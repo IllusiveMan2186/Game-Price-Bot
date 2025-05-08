@@ -91,4 +91,9 @@ public class GameServiceImpl implements GameService {
         log.info("Set follow option {} for user '{}' and game'{}'", isFollow, userId, gameId);
         basicGameService.setFollowGameOption(gameId, userId, isFollow);
     }
+
+    @Override
+    public byte[] getGameImage(String gameName) {
+        return basicGameService.getGameImage(gameName);
+    }
 }

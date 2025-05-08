@@ -64,4 +64,12 @@ public interface GameService {
      * @return a {@link GameListPageDto} containing a page of the user's games along with paging details
      */
     GameListPageDto getUserGames(long basicUserId, int pageNum);
+
+    /**
+     * Retrieves the game image associated with the specified game name.
+     *
+     * @param gameName the name of the game for which to retrieve the image
+     * @return a byte array containing the image data; if no image is found, a default image will be returned
+     */
+    byte[] getGameImage(final String gameName);
 }

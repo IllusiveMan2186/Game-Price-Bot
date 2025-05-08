@@ -25,6 +25,26 @@ services:
     networks:
       - gpb-network
 
+  loki:
+    image: grafana/loki:2.9.2
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.9.2
+    volumes:
+      - ./docker-config/promtail-config.yaml:/etc/promtail/promtail.yaml
+      - ./logs:/var/log/app
+    command: -config.file=/etc/promtail/promtail.yaml
+
+  grafana:
+    image: grafana/grafana:10.2.3
+    ports:
+      - "3001:3000" 
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+
   react:
     image: ghcr.io/illusiveman2186/game-price-bot-react:latest
     build:
@@ -76,7 +96,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - API_KEY=${API_KEY}
     volumes:
-      - common_data_images:${IMAGE_FOLDER}
+      - data_images:${IMAGE_FOLDER}
+      - ./logs/game:/gpb/game/logs
 
   backend:
     image: ghcr.io/illusiveman2186/game-price-bot-backend:latest
@@ -109,7 +130,7 @@ services:
       - TOKEN_SECRET_KEY=${TOKEN_SECRET_KEY}
       - REFRESH_TOKEN_SECRET_KEY=${REFRESH_TOKEN_SECRET_KEY}
     volumes:
-      - common_data_images:${IMAGE_FOLDER}
+      - ./logs/backend:/gpb/backend/logs
 
   telegram:
     image: ghcr.io/illusiveman2186/game-price-bot-telegram:latest
@@ -138,7 +159,7 @@ services:
       - API_KEY=${API_KEY}
       - FRONT_SERVICE_URL=${FRONT_SERVICE_URL}
     volumes:
-      - common_data_images:${IMAGE_FOLDER}
+      - ./logs/telegram:/gpb/telegram/logs
 
   email:
     image: ghcr.io/illusiveman2186/game-price-bot-email:latest
@@ -157,9 +178,11 @@ services:
       - KAFKA_SERVER_URL=${KAFKA_SERVER_URL}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - MAIL_USERNAME=${MAIL_USERNAME}
+    volumes:
+      - ./logs/email:/gpb/email/logs
 
 volumes:
-  common_data_images:
+  data_images:
   postgres_data:
 
 

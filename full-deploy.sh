@@ -5,7 +5,18 @@ set -o pipefail  # Catch pipeline errors
 
 echo "🚀 Starting Kubernetes Deployment..."
 
-# Step 1: Load .env File
+ # Step 1: ensure namespaces exist
+ if ! kubectl get namespace monitoring >/dev/null 2>&1; then
+   echo "📁 Namespace 'monitoring' not found—creating it now…"
+   kubectl create namespace monitoring
+ fi
+
+if ! kubectl get namespace game-price-bot >/dev/null 2>&1; then
+  echo "📁 Namespace 'game-price-bot' not found—creating it now…"
+  kubectl create namespace game-price-bot
+fi
+
+# Step 2: Load .env File
 if [ -f .env ]; then
   echo "🔑 Loading environment variables from .env..."
   export $(grep -v '^#' .env | xargs)
@@ -15,7 +26,7 @@ else
   exit 1
 fi
 
-# Step 2: Switch Docker Context
+# Step 3: Switch Docker Context
 if docker context ls | grep -q "minikube"; then
   docker context use minikube
   echo "✅ Using Minikube Docker context!"
@@ -24,7 +35,7 @@ else
   echo "⚠️ Minikube context not found, using default."
 fi
 
-# Step 3: Function to Check & Build Image if Missing
+# Step 4: Check & Build Images If Needed
 build_if_missing() {
   IMAGE_NAME=$1
   BUILD_PATH=$2
@@ -39,7 +50,6 @@ build_if_missing() {
   fi
 }
 
-# Step 4: Check & Build Images If Needed
 build_if_missing game-price-bot-game ./gpb-game "--build-arg DEPENDENCY_REPO_URL=$DEPENDENCY_REPO_URL --build-arg DEPENDENCY_REPO_USERNAME=$DEPENDENCY_REPO_USERNAME --build-arg DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD"
 build_if_missing game-price-bot-backend ./gpb-backend "--build-arg DEPENDENCY_REPO_URL=$DEPENDENCY_REPO_URL --build-arg DEPENDENCY_REPO_USERNAME=$DEPENDENCY_REPO_USERNAME --build-arg DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD"
 build_if_missing game-price-bot-email ./gpb-email "--build-arg DEPENDENCY_REPO_URL=$DEPENDENCY_REPO_URL --build-arg DEPENDENCY_REPO_USERNAME=$DEPENDENCY_REPO_USERNAME --build-arg DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD"
@@ -59,23 +69,53 @@ else
 fi
 
 # Step 6: Load Secrets into Kubernetes
-kubectl delete secret game-price-bot-secret --ignore-not-found
-kubectl create secret generic game-price-bot-secret --from-env-file=.env
+echo "🛠 Create secrets!"
+
+kubectl delete secret game-price-bot-secret -n game-price-bot --ignore-not-found
+kubectl delete secret game-price-bot-secret -n monitoring    --ignore-not-found
+
+kubectl create secret generic game-price-bot-secret \
+  -n game-price-bot \
+  --from-env-file=.env
+kubectl create secret generic game-price-bot-secret \
+  -n monitoring \
+  --from-literal=admin-user=admin \
+  --from-literal=GRAFANA_ADMIN_PASSWORD="$GRAFANA_ADMIN_PASSWORD"
 
 echo "✅ Secrets created!"
 
-# Step 7: Deploy Kubernetes Services
-kubectl apply -f k8s/postgres/postgres.yaml
-kubectl apply -f k8s/kafka/
-kubectl apply -f k8s/game/
-kubectl apply -f k8s/backend/
-kubectl apply -f k8s/telegram/
-kubectl apply -f k8s/email/
-kubectl apply -f k8s/frontend/
+# Step 7: Add Helm Repositories (once)
+echo "📦 Adding Helm repositories..."
+
+helm repo add grafana https://grafana.github.io/helm-charts || true
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx || true
+helm repo update
+
+echo "✅ Helm repositories are ready!"
+
+# Step 8: Create Promtail ConfigMap
+echo "🛠 Installing Promtail via Helm..."
+
+helm upgrade --install loki-stack grafana/loki-stack \
+  --namespace monitoring \
+  -f  k8s/observability/values.yaml
+
+echo "✅ Promtail is ready!"
+
+# Step 9: Deploy Kubernetes Services
+echo "🛠 Deploying services ..."
+
+kubectl apply -n game-price-bot -f k8s/postgres/postgres.yaml
+kubectl apply -n game-price-bot -f k8s/kafka/
+kubectl apply -n game-price-bot -f k8s/game/
+kubectl apply -n game-price-bot -f k8s/backend/
+kubectl apply -n game-price-bot -f k8s/telegram/
+kubectl apply -n game-price-bot -f k8s/email/
+kubectl apply -n game-price-bot -f k8s/frontend/
 
 echo "✅ All services deployed!"
 
-# Step 8: Restart Deployments Without Removing Pods
+# Step 10: Restart Deployments Without Removing Pods
 declare -A DEPLOYMENT_NAMES=(
     ["game"]="game-service"
     ["backend"]="backend-service"
@@ -88,29 +128,32 @@ for dep in "${!DEPLOYMENT_NAMES[@]}"; do
   deployment_name="${DEPLOYMENT_NAMES[$dep]}"
   
   echo "🔄 Restarting $deployment_name..."
-  kubectl rollout restart deployment/$deployment_name
-  kubectl rollout status deployment/$deployment_name
+  kubectl rollout restart deployment/$deployment_name -n game-price-bot
+  kubectl rollout status deployment/$deployment_name -n game-price-bot
 done
 
-# Step 9: Enable Minikube Ingress
-if ! minikube addons list | grep -q "ingress.*enabled"; then
-  echo "🔄 Enabling Minikube Ingress..."
-  minikube addons enable ingress
-  minikube addons enable ingress-dns
-  echo "✅ Minikube Ingress enabled!"
-else
-  echo "✅ Minikube Ingress is already enabled."
-fi
+# Step 11: Enable Ingress via Helm
+echo "🔄 Installing ingress-nginx via Helm..."
 
-# Step 10: Wait for Ingress Controller to Be Ready
-echo "⏳ Waiting for ingress-nginx-controller to become ready..."
-until kubectl get pods -n ingress-nginx | grep -E "ingress-nginx-controller.*1/1.*Running"; do
-  sleep 5
-done
-kubectl rollout status deployment/ingress-nginx-controller -n ingress-nginx
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx --create-namespace
+
+echo "✅ ingress-nginx installed!"
+
+
+# Step 12: Wait for Ingress Controller to Be Ready
+echo "⏳ Waiting for ingress-nginx-controller deployment to become available..."
+
+kubectl wait --namespace ingress-nginx \
+  --for=condition=Available deployment/ingress-nginx-controller \
+  --timeout=180s || {
+    echo "❌ Timed out waiting for ingress controller to be ready."
+    exit 1
+}
+
 echo "✅ Ingress controller is running!"
 
-# Step 11: Deploy Cert-Manager + ClusterIssuer
+# Step 13: Deploy Cert-Manager + ClusterIssuer
 echo "📦 Deploying cert-manager..."
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
 
@@ -125,21 +168,23 @@ done
 echo "✅ cert-manager webhook TLS ready."
 
 echo "📦 Applying ClusterIssuer..."
-kubectl apply -f k8s/clusterissuer.yaml
+kubectl apply -f k8s/ingress/clusterissuer.yaml
 
 echo "📦 Applying Certificate..."
-kubectl apply -f k8s/certificate.yaml
+kubectl apply -f k8s/ingress/certificate.yaml
 
-# Step 12: Deploy Ingress Resource
+# Step 14: Deploy Ingress Resource
 echo "🌐 Applying Ingress definition..."
-kubectl apply -f k8s/ingress.yaml
+kubectl apply -f k8s/ingress/ingress.yaml
+kubectl apply -f k8s/ingress/grafana-ingress.yaml
 
-# Step 13: Show Deployment Status
+# Step 15: Show Deployment Status
 echo "📊 Current cluster state:"
-kubectl get pods
-kubectl get services
-kubectl get deployments
-kubectl get ingress
+kubectl get pods -n game-price-bot
+kubectl get services -n game-price-bot
+kubectl get deployments -n game-price-bot
+kubectl get ingress -n game-price-bot
+kubectl get ingress -n monitoring
 
 echo "🚀 All services are running with HTTPS on game.price.bot! 🎉"
 

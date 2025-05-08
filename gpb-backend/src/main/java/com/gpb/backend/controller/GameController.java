@@ -2,7 +2,6 @@ package com.gpb.backend.controller;
 
 import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.service.GameService;
-import com.gpb.backend.service.ResourceService;
 import com.gpb.common.entity.game.AddGameInStoreDto;
 import com.gpb.common.entity.game.GameInfoDto;
 import com.gpb.common.entity.game.GameListPageDto;
@@ -41,11 +40,9 @@ import java.util.List;
 public class GameController {
 
     private final GameService gameService;
-    private final ResourceService resourceService;
 
-    public GameController(final GameService gameService, final ResourceService resourceService) {
+    public GameController(final GameService gameService) {
         this.gameService = gameService;
-        this.resourceService = resourceService;
     }
 
     /**
@@ -250,6 +247,6 @@ public class GameController {
             @Pattern(regexp = CommonConstants.NAME_REGEX_PATTERN) final String gameName
     ) {
         log.debug("Retrieving image for game '{}'", gameName);
-        return resourceService.getGameImage(gameName);
+        return gameService.getGameImage(gameName);
     }
 }
