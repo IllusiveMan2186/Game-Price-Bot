@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: game-price-bot-tls
-  namespace: default
+  namespace: game-price-bot
 spec:
   secretName: game-price-bot-tls
   dnsNames:

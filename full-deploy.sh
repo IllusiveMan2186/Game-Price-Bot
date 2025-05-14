@@ -26,6 +26,8 @@ else
   exit 1
 fi
 
+kubectl config use-context minikube
+
 # Step 3: Switch Docker Context
 if docker context ls | grep -q "minikube"; then
   docker context use minikube
@@ -84,7 +86,7 @@ kubectl create secret generic game-price-bot-secret \
 
 echo "✅ Secrets created!"
 
-# Step 7: Add Helm Repositories (once)
+# Step 7: Add Helm Repository
 echo "📦 Adding Helm repositories..."
 
 helm repo add grafana https://grafana.github.io/helm-charts || true
@@ -133,25 +135,27 @@ for dep in "${!DEPLOYMENT_NAMES[@]}"; do
 done
 
 # Step 11: Enable Ingress via Helm
-echo "🔄 Installing ingress-nginx via Helm..."
-
+echo "🔄 Installing ingress-nginx via Helm with NodePort + no webhooks…"
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
-  --namespace ingress-nginx --create-namespace
+  --namespace ingress-nginx --create-namespace \
+  --set controller.service.type=LoadBalancer \
+  --set controller.admissionWebhooks.enabled=false \
+  --timeout 10m || echo "⚠️ Helm timed out, will wait manually..."
 
-echo "✅ ingress-nginx installed!"
+echo "✅ Ingress-nginx installed via Helm !"
 
-
-# Step 12: Wait for Ingress Controller to Be Ready
-echo "⏳ Waiting for ingress-nginx-controller deployment to become available..."
+# Step 12: Waiting for ingress-nginx-controller pod
+echo "⏳ Waiting for ingress-nginx-controller pod to be ready (via kubectl wait)..."
 
 kubectl wait --namespace ingress-nginx \
-  --for=condition=Available deployment/ingress-nginx-controller \
-  --timeout=180s || {
-    echo "❌ Timed out waiting for ingress controller to be ready."
+  --for=condition=Ready pod \
+  -l app.kubernetes.io/component=controller \
+  --timeout=900s || {
+    echo "❌ ingress-nginx-controller pod did not become ready in time. Exiting..."
     exit 1
-}
+  }
 
-echo "✅ Ingress controller is running!"
+echo "✅ ingress-nginx-controller pod is ready!"
 
 # Step 13: Deploy Cert-Manager + ClusterIssuer
 echo "📦 Deploying cert-manager..."

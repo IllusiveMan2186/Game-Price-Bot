@@ -1,13 +1,6 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import { useHttpHelper } from './useHttpHelper';
 
-jest.mock('@contexts/AuthContext', () => ({
-    useAuth: () => ({
-        getAccessToken: () => 'access-token',
-        getLinkToken: () => 'link-token',
-    }),
-}));
-
 jest.mock('@contexts/NavigationContext', () => {
     const mockNavigate = jest.fn();
     return {
@@ -41,7 +34,7 @@ describe('useHttpHelper', () => {
             await result.current.handleRequest('GET', '/test', { foo: 'bar' }, onSuccess, onError);
         });
 
-        expect(request).toHaveBeenCalledWith('GET', '/test', { foo: 'bar' }, 'access-token', 'link-token');
+        expect(request).toHaveBeenCalledWith('GET', '/test', { foo: 'bar' });
         expect(onSuccess).toHaveBeenCalledWith(response);
         expect(onError).not.toHaveBeenCalled();
         expect(navigateMock).not.toHaveBeenCalled();

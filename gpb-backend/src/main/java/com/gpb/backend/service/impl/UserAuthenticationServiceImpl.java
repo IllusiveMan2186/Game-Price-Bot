@@ -110,6 +110,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     @Override
     public UserDto getUserById(long userId) {
+        log.debug("Get user by id - {}", userId);
         return modelMapper.map(getWebUserById(userId), UserDto.class);
     }
 

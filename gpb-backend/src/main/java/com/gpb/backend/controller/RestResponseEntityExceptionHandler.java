@@ -1,5 +1,6 @@
 package com.gpb.backend.controller;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.gpb.backend.exception.EmailAlreadyExistException;
 import com.gpb.backend.exception.GameImageNotFoundException;
 import com.gpb.backend.exception.LoginFailedException;
@@ -81,7 +82,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      * @param request the current web request
      * @return a ResponseEntity with status INTERNAL_SERVER_ERROR and the exception message
      */
-    @ExceptionHandler(value = {RefreshTokenException.class, SecurityException.class})
+    @ExceptionHandler(value = {RefreshTokenException.class, SecurityException.class, TokenExpiredException.class})
     protected ResponseEntity<Object> handleAuthorizationError(RuntimeException ex, WebRequest request) {
         log.warn("Authorization exception: {}", ex.getMessage(), ex);
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);

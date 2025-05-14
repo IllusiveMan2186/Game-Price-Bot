@@ -2,7 +2,7 @@ package com.gpb.backend.unit.service.impl;
 
 import com.gpb.backend.entity.EmailChanging;
 import com.gpb.backend.entity.WebUser;
-import com.gpb.backend.exception.TokenExpireException;
+import com.gpb.backend.exception.GpbTokenExpireException;
 import com.gpb.backend.repository.EmailChangingRepository;
 import com.gpb.backend.service.UserAuthenticationService;
 import com.gpb.backend.service.impl.EmailChangingServiceImpl;
@@ -118,8 +118,8 @@ class EmailChangingServiceImplTest {
         emailChanging.setExpirationTime(LocalDateTime.now().minusMinutes(1));
 
 
-        TokenExpireException exception = assertThrows(
-                TokenExpireException.class,
+        GpbTokenExpireException exception = assertThrows(
+                GpbTokenExpireException.class,
                 () -> emailChangingService.confirmEmailChangingToken(emailChanging.getOldEmailToken()));
 
 

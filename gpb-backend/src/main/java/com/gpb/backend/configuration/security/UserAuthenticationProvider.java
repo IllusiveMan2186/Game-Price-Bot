@@ -9,6 +9,7 @@ import com.gpb.backend.entity.RefreshToken;
 import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.exception.RefreshTokenException;
+import com.gpb.backend.exception.GpbTokenExpireException;
 import com.gpb.backend.service.RefreshTokenService;
 import com.gpb.backend.service.UserAuthenticationService;
 import com.gpb.backend.util.Constants;
@@ -57,6 +58,7 @@ public class UserAuthenticationProvider {
      * Generates an Access Token for a given user ID.
      */
     public String generateAccessToken(Long userId) {
+        log.trace("Created access token for user {}", userId);
         return generateToken(userId, secretKey, Constants.TOKEN_EXPIRATION);
     }
 
@@ -66,10 +68,11 @@ public class UserAuthenticationProvider {
     public String generateRefreshToken(WebUser user) {
         String refreshToken = generateToken(user.getId(), refreshSecretKey, Constants.REFRESH_TOKEN_EXPIRATION);
 
-        log.debug("Created refresh token for user {}", user.getId());
+        log.trace("Created refresh token for user {}", user.getId());
 
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime expiresAt = createdAt.plusSeconds(Constants.REFRESH_TOKEN_EXPIRATION / 1000);
+        log.trace("Refresh token generated for user {}, expires at {}", user.getId(), expiresAt);
 
         RefreshToken tokenEntity = RefreshToken.builder()
                 .token(refreshToken)
@@ -86,15 +89,17 @@ public class UserAuthenticationProvider {
      */
     public Authentication validateAuthToken(String token) {
         try {
+            log.trace("Validating access token...");
             token = token.replaceFirst(Constants.AUTHORIZATION_HEADER_BEARER, "").trim();
             DecodedJWT decoded = verifyToken(token, secretKey);
             long userId = Long.parseLong(decoded.getSubject());
+            log.trace("Validated access token for user {}", userId);
 
             UserDto user = userService.getUserById(userId);
             return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         } catch (TokenExpiredException e) {
-            log.warn("Access token expired");
-            throw e;
+            log.warn("Access token expired: {}", e.getMessage());
+            throw new GpbTokenExpireException();
         } catch (RuntimeException e) {
             log.error("Invalid access token: {}", e.getMessage());
             throw new SecurityException("Invalid access token", e);
@@ -106,14 +111,15 @@ public class UserAuthenticationProvider {
      */
     public UserDto validateRefreshToken(String refreshTokenValue) {
         try {
+            log.trace("Validating refresh token...");
             verifyToken(refreshTokenValue, refreshSecretKey);
             RefreshToken refreshToken = refreshTokenService.getByToken(refreshTokenValue)
                     .orElseThrow(RefreshTokenException::new);
 
             return mapper.map(refreshToken.getUser(), UserDto.class);
         } catch (TokenExpiredException e) {
-            log.warn("Refresh token expired");
-            throw e;
+            log.warn("Refresh token expired: {}", e.getMessage());
+            throw new GpbTokenExpireException();
         } catch (RuntimeException e) {
             log.error("Invalid refresh token: {}", e.getMessage());
             throw new SecurityException("Invalid refresh token", e);
@@ -128,17 +134,21 @@ public class UserAuthenticationProvider {
         Date expiration = new Date(now.getTime() + expirationMillis);
 
         Algorithm algorithm = Algorithm.HMAC256(key);
-        return JWT.create()
+        String token = JWT.create()
                 .withSubject(String.valueOf(userId))
                 .withIssuedAt(now)
                 .withExpiresAt(expiration)
                 .sign(algorithm);
+
+        log.trace("Access token generated for user {}", userId);
+        return token;
     }
 
     /**
      * Verifies and decodes a JWT token using the provided key.
      */
     private DecodedJWT verifyToken(String token, String key) {
+        log.trace("Verifying access token...");
         Algorithm algorithm = Algorithm.HMAC256(key);
         JWTVerifier verifier = JWT.require(algorithm).build();
         return verifier.verify(token);

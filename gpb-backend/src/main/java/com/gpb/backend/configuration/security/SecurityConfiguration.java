@@ -50,7 +50,6 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/login", "/registration", "/activate").permitAll()
                         .requestMatchers(HttpMethod.POST, "/refresh-token","/logout-user").permitAll()
                         .requestMatchers(HttpMethod.POST, "/linker/set").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/logout-user").permitAll()
                         .requestMatchers(HttpMethod.GET, "/email/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/game/**").permitAll()
                         .anyRequest().authenticated())

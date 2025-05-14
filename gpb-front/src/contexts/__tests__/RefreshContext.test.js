@@ -1,45 +1,36 @@
-import React from 'react';
-import { render, waitFor } from '@testing-library/react';
-import { RefreshProvider } from '../RefreshContext';
-
-jest.mock('@contexts/NavigationContext', () => ({
-  useNavigation: () => jest.fn(),
-}));
+const mockSetAccessToken = jest.fn();
+const mockGetAccessToken = jest.fn(() => 'mock-access');
+const mockGetLinkToken = jest.fn(() => 'mock-link');
+const mockLogout = jest.fn();
+const mockNavigate = jest.fn();
+const mockRegisterAuthHandlers = jest.fn();
 
 jest.mock('@contexts/AuthContext', () => ({
   useAuth: () => ({
-    getAccessToken: () => 'dummy-access-token',
-    getLinkToken: () => 'dummy-link-token',
-    isUserAuth: () => true,
-    setAccessToken: jest.fn(),
-    logout: jest.fn(),
+    setAccessToken: mockSetAccessToken,
+    getAccessToken: mockGetAccessToken,
+    getLinkToken: mockGetLinkToken,
+    logout: mockLogout,
   }),
 }));
 
-jest.mock('@services/httpService', () => ({
-  setupInterceptors: jest.fn(),
-  refreshToken: jest.fn(),
+jest.mock('@contexts/NavigationContext', () => ({
+  useNavigation: () => mockNavigate,
 }));
 
-import { setupInterceptors, refreshToken } from '@services/httpService';
+jest.mock('@services/httpService', () => ({
+  registerAuthHandlers: (...args) => mockRegisterAuthHandlers(...args),
+}));
+
+import { render, waitFor } from '@testing-library/react';
+import { RefreshProvider } from '../RefreshContext';
 
 describe('RefreshProvider', () => {
-  const fakeNavigate = jest.fn();
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should calls setupInterceptors on mount', async () => {
-    jest.spyOn(require('@contexts/NavigationContext'), 'useNavigation').mockReturnValue(fakeNavigate);
-    jest.spyOn(require('@contexts/AuthContext'), 'useAuth').mockReturnValue({
-      isUserAuth: () => true,
-      setAccessToken: jest.fn(),
-      logout: jest.fn(),
-      getAccessToken: () => 'dummy-access-token',
-      getLinkToken: () => 'dummy-link-token',
-    });
-
+  it('should call registerAuthHandlers on mount', async () => {
     render(
       <RefreshProvider>
         <div>child content</div>
@@ -47,45 +38,17 @@ describe('RefreshProvider', () => {
     );
 
     await waitFor(() => {
-      expect(setupInterceptors).toHaveBeenCalledTimes(1);
-      expect(refreshToken).not.toHaveBeenCalled();
+      expect(mockRegisterAuthHandlers).toHaveBeenCalledWith({
+        getAccessToken: mockGetAccessToken,
+        setAccessToken: mockSetAccessToken,
+        getLinkToken: mockGetLinkToken,
+        logout: mockLogout,
+        navigate: mockNavigate,
+      });
     });
   });
 
-  it('should calls refreshToken when user is not authenticated', async () => {
-    const setAccessTokenMock = jest.fn();
-    const logoutMock = jest.fn();
-    jest.spyOn(require('@contexts/AuthContext'), 'useAuth').mockReturnValue({
-      isUserAuth: () => false,
-      setAccessToken: setAccessTokenMock,
-      logout: logoutMock,
-      getAccessToken: () => null,
-      getLinkToken: () => 'dummy-link-token',
-    });
-    jest.spyOn(require('@contexts/NavigationContext'), 'useNavigation').mockReturnValue(fakeNavigate);
-
-    render(
-      <RefreshProvider>
-        <div>child content</div>
-      </RefreshProvider>
-    );
-
-    await waitFor(() => {
-      expect(setupInterceptors).toHaveBeenCalledWith(setAccessTokenMock, logoutMock, fakeNavigate);
-      expect(refreshToken).toHaveBeenCalledWith(setAccessTokenMock);
-    });
-  });
-
-  it('should renders children', () => {
-    jest.spyOn(require('@contexts/NavigationContext'), 'useNavigation').mockReturnValue(fakeNavigate);
-    jest.spyOn(require('@contexts/AuthContext'), 'useAuth').mockReturnValue({
-      isUserAuth: () => true,
-      setAccessToken: jest.fn(),
-      logout: jest.fn(),
-      getAccessToken: () => 'dummy-access-token',
-      getLinkToken: () => 'dummy-link-token',
-    });
-
+  it('should render children', () => {
     const { getByText } = render(
       <RefreshProvider>
         <div>child content</div>
