@@ -45,6 +45,20 @@ http://localhost:3000/env.js
 ```
 If it loads correctly, your environment variables are set up properly.
 
+### **5️⃣ Run tests**
+Use the following command to run tests with coverage:
+```sh
+npm test -- --coverage
+```
+For specific tests, use 
+```sh
+npm test -- --testPathPattern=src/components/yourTestFile.test.js`
+```
+or :
+```sh
+npx jest src/components/yourTestFile.test.js
+```
+
 ---
 
 

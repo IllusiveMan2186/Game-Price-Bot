@@ -110,7 +110,7 @@ public class AuthenticationController {
         UserActivation activation = userActivationService.createUserActivation(webUser);
         emailService.sendEmailVerification(activation);
         linkAccounts(linkToken, webUser.getBasicUserId());
-        log.info("User successfully registered");
+        log.debug("User successfully registered");
     }
 
     /**
@@ -124,7 +124,7 @@ public class AuthenticationController {
     public void userActivation(@RequestBody final TokenRequestDto tokenRequestDto) {
         log.info("Processing user activation request");
         userActivationService.activateUserAccount(tokenRequestDto.getToken());
-        log.info("User successfully activated");
+        log.debug("User successfully activated");
     }
 
     /**
@@ -137,8 +137,8 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.OK)
     public String refreshToken(HttpServletRequest request, HttpServletResponse response) {
         log.info("Refresh user authentication token");
-        String token = CookieUtil.getRefreshToken(request).orElseThrow(RefreshTokenException::new);
 
+        String token = CookieUtil.getRefreshToken(request).orElseThrow(RefreshTokenException::new);
         RefreshToken refreshToken = refreshTokenService.getByToken(token).orElseThrow(RefreshTokenException::new);
 
         String newRefreshToken = userAuthenticationProvider.generateRefreshToken(refreshToken.getUser());
@@ -158,7 +158,7 @@ public class AuthenticationController {
         log.info("Processing user logout request");
         SecurityContextHolder.clearContext();
         response.addCookie(invalidateAuthCookie());
-        log.info("User successfully logged out");
+        log.debug("User successfully logged out");
     }
 
     /**
@@ -168,7 +168,7 @@ public class AuthenticationController {
      * @param currentUserBasicId the ID of the current user
      */
     private void linkAccounts(final String linkToken, final long currentUserBasicId) {
-        log.info("Link token {} for user {}", linkToken, currentUserBasicId);
+        log.info("Link token for user {}", currentUserBasicId);
         if (linkToken != null) {
             userLinkerService.linkAccounts(linkToken, currentUserBasicId);
         }

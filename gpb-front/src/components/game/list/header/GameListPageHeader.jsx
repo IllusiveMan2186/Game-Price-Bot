@@ -15,10 +15,9 @@ const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, mode,
     const sortBy = searchParams.get('sortBy') || 'name-ASC';
     const [name, setName] = React.useState(nameValue);
     const { getGameByUrlRequest } = useGameActions();
-    console.info(pageSize)
+
     if (!pageSize) {
         pageSize = 25;
-        console.info(pageSize)
     }
 
     const handleSortByChange = useCallback((selectedOption) => {
@@ -63,7 +62,6 @@ const GameListPageHeader = ({ searchParams, updateSearchParams, nameValue, mode,
 
     const findArrayElementByValue = (array, value) => {
         const el = array.find((element) => element.value === value);
-        console.info(el)
         return el;
     };
 

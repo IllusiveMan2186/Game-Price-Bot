@@ -2,7 +2,7 @@ package com.gpb.backend.service.impl;
 
 import com.gpb.backend.entity.EmailChanging;
 import com.gpb.backend.entity.WebUser;
-import com.gpb.backend.exception.TokenExpireException;
+import com.gpb.backend.exception.GpbTokenExpireException;
 import com.gpb.backend.repository.EmailChangingRepository;
 import com.gpb.backend.service.EmailChangingService;
 import com.gpb.backend.service.UserAuthenticationService;
@@ -54,7 +54,7 @@ public class EmailChangingServiceImpl implements EmailChangingService {
         return updateEmailChangingStatus(emailChanging);
     }
 
-    private EmailChanging getEmailChangingByToken(String confirmationToken){
+    private EmailChanging getEmailChangingByToken(String confirmationToken) {
         log.debug("Get email changing by token");
 
         Optional<EmailChanging> emailChangingOpt = emailChangingRepository
@@ -70,7 +70,7 @@ public class EmailChangingServiceImpl implements EmailChangingService {
         if (emailChanging.getExpirationTime().isBefore(LocalDateTime.now())) {
             log.warn("Token expired for email change request {}", emailChanging.getId());
             emailChangingRepository.deleteById(emailChanging.getId());
-            throw new TokenExpireException();
+            throw new GpbTokenExpireException();
         }
         return emailChanging;
     }

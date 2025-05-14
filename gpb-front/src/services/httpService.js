@@ -1,166 +1,212 @@
+/* httpService.js
+ *
+ * Axios HTTP service with:
+ * - Access token injection
+ * - Proactive token refresh based on JWT expiration
+ * - Reactive refresh on 401 responses
+ * - Request queuing to avoid duplicate refreshes
+ */
+
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import config from "@root/config";
 
-// Create a custom axios instance with default settings.
+// Axios instance for authorized API requests
 const apiClient = axios.create({
   baseURL: config.BACKEND_SERVICE_URL,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  headers: { "Content-Type": "application/json" },
 });
 
-// Variables to manage token refresh state.
-let isRefreshing = false;
-let refreshSubscribers = [];
+// Separate client for unauthenticated routes (e.g., refresh/logout)
+const noAuthClient = axios.create({
+  baseURL: config.BACKEND_SERVICE_URL,
+  withCredentials: true,
+  headers: { "Content-Type": "application/json" },
+});
+
+// External handlers registered from AuthContext
+let getAccessTokenHandler = () => null;
+let setAccessTokenHandler = () => { };
+let getLinkTokenHandler = () => null;
+let logoutHandler = () => { };
+let navigateHandler = () => { };
+
+// Called once to register handlers from the app
+export function registerAuthHandlers({ getAccessToken, setAccessToken, getLinkToken, logout, navigate }) {
+  getAccessTokenHandler = getAccessToken;
+  setAccessTokenHandler = setAccessToken;
+  getLinkTokenHandler = getLinkToken;
+  logoutHandler = logout;
+  navigateHandler = navigate;
+}
+
+// Queued requests waiting for a fresh token
+let subscribers = [];
 
 /**
- * Subscribes a callback to be notified when the token is refreshed.
- * @param {Function} cb - The callback function.
+ * Subscribes a request to be resumed after token is refreshed.
+ * Only used in proactive refresh logic.
  */
-const subscribeTokenRefresh = (cb) => {
-  refreshSubscribers.push(cb);
-};
+function subscribe(cb) {
+  // Useful for debugging refresh queuing
+  console.info("📝 Subscribed request during token refresh");
+  subscribers.push(cb);
+}
 
 /**
- * Notifies all subscribers with the new token.
- * @param {string|null} newToken - The refreshed access token.
+ * Notifies all queued requests with the new token result.
  */
-const onTokenRefreshed = (newToken) => {
-  refreshSubscribers.forEach((cb) => cb(newToken));
-  refreshSubscribers = [];
-};
+function notifySubscribers(token) {
+  console.info("📣 Notifying all subscribers");
+  subscribers.forEach(cb => cb(token));
+  subscribers = [];
+}
 
 /**
- * Attempts to refresh the access token.
- * @param {Function} setAccessToken - Function to update the access token.
- * @param {Function} logout - Function to log out the user.
- * @returns {Promise<string|null>} The new access token or null if refresh failed.
+ * Attempts to refresh access token via backend.
  */
-export const refreshToken = async (setAccessToken, logout, navigate) => {
+export async function refreshTokenRequest() {
+  console.info("🔄 Performing token refresh…");
   try {
-    const response = await apiClient.post("/refresh-token");
-    const newAccessToken = response.data;
-    setAccessToken(newAccessToken);
-    onTokenRefreshed(newAccessToken);
-    return newAccessToken;
-  } catch (error) {
-    console.error("Failed to refresh token:", error);
+    const { data: newToken } = await noAuthClient.post("/refresh-token");
 
-    if (error.response && error.response.status === 401) {
-      console.info("Refresh token failed with 401, logging out...");
-      await logoutRequest(logout, navigate);
-    } else {
-      // Notify all subscribers that the token refresh failed.
-      onTokenRefreshed(null);
+    if (!newToken || typeof newToken !== "string") {
+      throw new Error("Invalid token");
     }
-    return null;
+
+    setAccessTokenHandler(newToken);
+    apiClient.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+
+    console.info("✅ Token successfully refreshed");
+    return true;
+  } catch (error) {
+    console.error("❌ Refresh token failed:", error);
+
+    // If refresh was unauthorized, log the user out
+    if (error.response?.status === 401) {
+      await logoutRequest();
+      navigateHandler();
+    }
+
+    return false;
   }
-};
+}
 
 /**
- * Logs out the user by calling the logout endpoint.
- * @param {Function} logout - Function to perform logout.
+ * Sends logout request and triggers app logout behavior.
  */
-export const logoutRequest = async (logout, navigate) => {
+export async function logoutRequest() {
   try {
-    await apiClient.post("/logout-user");
-    if (logout) {
-      logout(navigate);
-    }
-  } catch (error) {
-    console.error("Failed to logout:", error);
+    await noAuthClient.post("/logout-user");
+  } catch (e) {
+    console.error("Logout error:", e);
   }
-};
+
+  logoutHandler();
+  navigateHandler();
+}
 
 /**
- * Sets up an Axios response interceptor to handle token refreshing.
- * @param {Function} setAccessToken - Function to update the access token.
- * @param {Function} logout - Function to log out the user.
+ * Logs all outgoing requests for debugging purposes.
+ * You can remove this or wrap in a dev-only check if needed.
  */
-export const setupInterceptors = (setAccessToken, logout, navigate) => {
-  apiClient.interceptors.response.use(
-    (response) => response, // Return successful responses as-is.
-    async (error) => {
-      const originalRequest = error.config;
+apiClient.interceptors.request.use(
+  config => {
+    console.log("➡️ Outgoing request:", config.method?.toUpperCase(), config.baseURL + config.url);
+    return config;
+  },
+  err => Promise.reject(err)
+);
 
-      // Handle network errors where error.response might be undefined.
-      if (!error.response) {
-        console.error("Network or CORS error occurred", error);
-        return Promise.reject(error);
-      }
+/**
+ * Injects Authorization or LinkToken headers.
+ */
+apiClient.interceptors.request.use(cfg => {
+  const token = getAccessTokenHandler();
+  if (token) {
+    cfg.headers.Authorization = `Bearer ${token}`;
+  } else if (getLinkTokenHandler()) {
+    cfg.headers.LinkToken = getLinkTokenHandler();
+  }
 
-      // If the refresh-token endpoint fails with 401, force logout.
-      if (
-        originalRequest &&
-        originalRequest.url === "/refresh-token" &&
-        error.response.status === 401
-      ) {
-        await logoutRequest(logout);
-        return Promise.reject(error);
-      }
+  return cfg;
+});
 
-      // If a 401 error is encountered and we haven't retried this request yet.
-      if (error.response.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true;
+/**
+ * Proactively refresh token before it's about to expire (< 60s).
+ * This avoids the user ever seeing a 401 due to expiry.
+ */
+apiClient.interceptors.request.use(
+  async config => {
+    const token = getAccessTokenHandler();
+    if (!token) return config;
 
-        if (!isRefreshing) {
-          isRefreshing = true;
-          const newToken = await refreshToken(setAccessToken, logout, navigate);
-          isRefreshing = false;
+    try {
+      const { exp } = jwtDecode(token);
+      const now = Date.now() / 1000;
 
-          if (newToken) {
-            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
-            return apiClient(originalRequest);
-          }
-          // If token refresh failed, reject the request.
-          return Promise.reject(error);
-        }
+      if (exp - now < 60) {
+        console.info("⏳ Token is about to expire, refreshing…");
 
-        // If another request is already refreshing, queue this request.
-        return new Promise((resolve, reject) => {
-          subscribeTokenRefresh((token) => {
-            if (token) {
-              originalRequest.headers["Authorization"] = `Bearer ${token}`;
-              resolve(apiClient(originalRequest));
-            } else {
-              reject(error);
+        // Queue request while refreshing
+        const requestPromise = new Promise(resolve => {
+          subscribe(isTokenRefreshed => {
+            if (isTokenRefreshed) {
+              console.info("✅ Resuming request after refresh");
+              resolve(config);
             }
           });
         });
+
+        // Trigger refresh
+        refreshTokenRequest()
+          .then(success => notifySubscribers(success))
+          .catch(() => notifySubscribers(null));
+
+        return requestPromise;
       }
 
-      return Promise.reject(error);
+      return config;
+    } catch (err) {
+      console.warn("⚠️ Could not decode token for proactive check");
+      return config;
     }
-  );
-};
+  },
+  err => Promise.reject(err)
+);
 
 /**
- * Sends an HTTP request using the custom Axios instance.
- * @param {string} method - HTTP method (e.g., GET, POST).
- * @param {string} url - Endpoint URL.
- * @param {object} data - Request payload.
- * @param {string|null} accessToken - Access token for authorization.
- * @param {string|null} linkToken - Alternative token for authorization.
- * @returns {Promise} The Axios request promise.
+ * Handles 401 errors by attempting a reactive token refresh.
+ * If refresh succeeds, the original request is retried.
  */
-export const request = (method, url, data, accessToken, linkToken) => {
-  const headers = {};
+apiClient.interceptors.response.use(
+  res => res,
+  async error => {
+    const originalRequest = error.config;
 
-  if (accessToken) {
-    headers["Authorization"] = `Bearer ${accessToken}`;
-  } else if (linkToken) {
-    headers["LinkToken"] = linkToken;
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+
+      const newToken = await refreshTokenRequest();
+      if (newToken) {
+        console.info("🔁 Retrying request after token refresh");
+        return apiClient(originalRequest);
+      }
+    }
+
+    return Promise.reject(error);
   }
+);
 
-  console.info(`${method} ${url}`);
-
-  return apiClient({
-    method,
-    url,
-    data,
-    headers,
-  });
-};
+/**
+ * Generic request helper used by the app.
+ */
+export function request(method, url, data = null) {
+  return apiClient({ method, url, data });
+}
 
 export default apiClient;
