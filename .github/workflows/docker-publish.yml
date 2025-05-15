@@ -1,9 +1,10 @@
-name: Build & Push Docker Images on Develop
+name: Build & Push Docker Images
 
 on:
   push:
     branches:
       - develop
+      - main
 
 jobs:
   build-and-push-docker-images:
@@ -28,13 +29,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN_SECRET }}
 
-      ### gpb-common
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
+      ### gpb-common 
       - name: Convert gradlew line endings to Unix (LF)
         working-directory: ./gpb-common
         run: |
@@ -52,12 +53,23 @@ jobs:
             -PDEPENDENCY_REPO_USERNAME=${{ secrets.DEPENDENCY_REPO_USERNAME }} \
             -PDEPENDENCY_REPO_PASSWORD=${{ secrets.DEPENDENCY_REPO_PASSWORD }}
 
-      ### gpb-front
+      - name: Define tagging strategy
+        run: |
+          if [ "${{ github.ref_name }}" = "develop" ]; then
+            TAG_SUFFIX="-SNAPSHOT"
+            TAG_MUTABLE="develop"
+          else
+            TAG_SUFFIX=""
+            TAG_MUTABLE="latest"
+          fi
+          echo "TAG_SUFFIX=$TAG_SUFFIX" >> $GITHUB_ENV
+          echo "TAG_MUTABLE=$TAG_MUTABLE" >> $GITHUB_ENV
+
+      ### gpb-front 
       - name: Get version for gpb-front
-        id: front-version
         run: |
           VERSION=$(jq -r '.version' gpb-front/package.json)
-          echo "FRONT_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "FRONT_VERSION=${VERSION}${TAG_SUFFIX}" >> $GITHUB_ENV
 
       - name: Build and Push gpb-front (React)
         uses: docker/build-push-action@v5
@@ -66,13 +78,13 @@ jobs:
           push: true
           tags: |
             ghcr.io/illusiveman2186/game-price-bot-react:${{ env.FRONT_VERSION }}
+            ghcr.io/illusiveman2186/game-price-bot-react:${{ env.TAG_MUTABLE }}
 
       ### gpb-game 
       - name: Get version for gpb-game
-        id: game-version
         run: |
-          VERSION=$(grep "^version\s*=" gpb-game/build.gradle.kts | head -n 1 | cut -d '"' -f2)
-          echo "GAME_VERSION=$VERSION" >> $GITHUB_ENV
+          VERSION=$(grep "^version\s*=" gpb-game/build.gradle.kts | cut -d '"' -f2)
+          echo "GAME_VERSION=${VERSION}${TAG_SUFFIX}" >> $GITHUB_ENV
 
       - name: Build and Push gpb-game
         uses: docker/build-push-action@v5
@@ -81,6 +93,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/illusiveman2186/game-price-bot-game:${{ env.GAME_VERSION }}
+            ghcr.io/illusiveman2186/game-price-bot-game:${{ env.TAG_MUTABLE }}
           build-args: |
             DEPENDENCY_REPO_URL=${{ secrets.DEPENDENCY_REPO_URL }}
             DEPENDENCY_REPO_USERNAME=${{ secrets.DEPENDENCY_REPO_USERNAME }}
@@ -88,10 +101,9 @@ jobs:
 
       ### gpb-backend 
       - name: Get version for gpb-backend
-        id: backend-version
         run: |
-          VERSION=$(grep "^version\s*=" gpb-backend/build.gradle.kts | head -n 1 | cut -d '"' -f2)
-          echo "BACKEND_VERSION=$VERSION" >> $GITHUB_ENV
+          VERSION=$(grep "^version\s*=" gpb-backend/build.gradle.kts | cut -d '"' -f2)
+          echo "BACKEND_VERSION=${VERSION}${TAG_SUFFIX}" >> $GITHUB_ENV
 
       - name: Build and Push gpb-backend
         uses: docker/build-push-action@v5
@@ -100,6 +112,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/illusiveman2186/game-price-bot-backend:${{ env.BACKEND_VERSION }}
+            ghcr.io/illusiveman2186/game-price-bot-backend:${{ env.TAG_MUTABLE }}
           build-args: |
             DEPENDENCY_REPO_URL=${{ secrets.DEPENDENCY_REPO_URL }}
             DEPENDENCY_REPO_USERNAME=${{ secrets.DEPENDENCY_REPO_USERNAME }}
@@ -107,10 +120,9 @@ jobs:
 
       ### gpb-telegram 
       - name: Get version for gpb-telegram
-        id: telegram-version
         run: |
           VERSION=$(xmllint --xpath "string(//*[local-name()='project']/*[local-name()='version'])" gpb-telegram/pom.xml)
-          echo "TELEGRAM_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "TELEGRAM_VERSION=${VERSION}${TAG_SUFFIX}" >> $GITHUB_ENV
 
       - name: Build and Push gpb-telegram
         uses: docker/build-push-action@v5
@@ -119,6 +131,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/illusiveman2186/game-price-bot-telegram:${{ env.TELEGRAM_VERSION }}
+            ghcr.io/illusiveman2186/game-price-bot-telegram:${{ env.TAG_MUTABLE }}
           build-args: |
             DEPENDENCY_REPO_URL=${{ secrets.DEPENDENCY_REPO_URL }}
             DEPENDENCY_REPO_USERNAME=${{ secrets.DEPENDENCY_REPO_USERNAME }}
@@ -126,12 +139,9 @@ jobs:
 
       ### gpb-email 
       - name: Get version for gpb-email
-        id: email-version
         run: |
           VERSION=$(grep -E '^version *= *["'"'"']([^"'"'"']+)["'"'"']' gpb-email/build.gradle | sed -E 's/^version *= *["'"'"']([^"'"'"']+)["'"'"']/\1/')
-          echo "EMAIL_VERSION=$VERSION" >> $GITHUB_ENV
-          echo "Parsed EMAIL_VERSION=$VERSION"
-
+          echo "EMAIL_VERSION=${VERSION}${TAG_SUFFIX}" >> $GITHUB_ENV
 
       - name: Build and Push gpb-email
         uses: docker/build-push-action@v5
@@ -140,6 +150,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/illusiveman2186/game-price-bot-email:${{ env.EMAIL_VERSION }}
+            ghcr.io/illusiveman2186/game-price-bot-email:${{ env.TAG_MUTABLE }}
           build-args: |
             DEPENDENCY_REPO_URL=${{ secrets.DEPENDENCY_REPO_URL }}
             DEPENDENCY_REPO_USERNAME=${{ secrets.DEPENDENCY_REPO_USERNAME }}
