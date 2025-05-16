@@ -1,12 +1,48 @@
+<p align="center">
+  <img src="./assets/logo.png" alt="Logo" width="80"/>
+</p>
+
 # Game Price Bot
 
-Game price bot is web application that combine information from available stores about video games and allow user to see
-best price.
-Also inform user via email or messenger about any changes in information about interesting game.
+Game Price Bot is a web application that aggregates information from multiple online stores to help users find the best video game prices.  
+Users can also subscribe to price changes via email or messenger.
 
-Currently, support gamazey and cardmag stores
+💡 This project is fully runnable locally using Docker or Minikube.  
+No paid cloud infrastructure is required.
 
-Currently, support only telegram messenger
+📌 This project is part of my learning portfolio.  
+I built it to deepen my knowledge in full-stack development, distributed systems, and infrastructure automation.
+
+---
+
+## Screenshots
+
+### 🖥️ Main UI
+<img src="./assets/screenshot_1.png" alt="Main UI" width="600">
+<p align="left"><i>Main UI: browse and filter games</i></p>
+
+### 🎮 Game Details
+<img src="./assets/screenshot_2.png" alt="Game Details UI" width="600"/>
+<p align="left"><i>Game Details: View prices from multiple stores and manage subscriptions</i></p>
+
+### 🤖 Telegram Bot
+<img src="./assets/screenshot_3.png" alt="Telegram Bot UI" width="250"/>
+<p align="left"><i>Telegram Bot: Search, track, and subscribe to games via chat commands</i></p>
+
+## ✨ Features
+- 🔍 Search for games with filters (genre, price, etc.)
+- 📉 Track price changes and discounts
+- 📬 Notifications via Telegram or Email
+- 📊 Grafana dashboard for metrics
+- 🐳 Docker & Kubernetes support
+
+
+Currently supports the following stores:
+- 🛒 [Gamazey](https://gamazey.com.ua)
+- 🛒 [Cardmag](https://cardmag.com.ua)
+
+Currently supported messenger:
+-  Telegram
 
 🚨 Disclaimer 🚨
 
@@ -19,7 +55,10 @@ This project is created for educational and technology exploration purposes only
 If you are the owner of any listed store and have concerns about data usage, please contact us,
 and we will take appropriate action.
 
-# You can run the app using Docker or launch it directly in your development environment.
+## 🧪 App could be run in Docker, Kubernetes  or launch it directly in your development environment.
+
+<details>
+  <summary>💻 Development environment </summary>
 
 ## Setup for development environment:
 
@@ -38,7 +77,10 @@ and we will take appropriate action.
 * Start kafka
 * Start all needed services
 
-# Docker Setup:
+</details>
+
+<details>
+  <summary>🐳 Docker setup </summary>
 
 ## To work with GPB in Docker you need:
 
@@ -47,6 +89,24 @@ and we will take appropriate action.
 
 Download and install Docker Desktop: https://www.docker.com/products/docker-desktop/
 Enable WSL 2 integration in Docker settings.
+
+## To run GPB in Docker after installing, create a ".env" file and use the following command in root of project:
+
+```console
+docker-compose up -d
+```
+
+or if you want to build images:
+```console
+docker-compose up -d --build
+```
+
+
+</details>
+
+<details>
+  <summary>☸️ Kubernetes  setup</summary>
+
 
 ## To work with GPB in Kubernetes you need:
 
@@ -100,18 +160,7 @@ choco install kubernetes-helm
 
 Or download from: https://helm.sh/docs/intro/install/
 
-### To run GPB in Docker after installing, create a ".env" file and use the following command in root of project:
-
-```console
-docker-compose up -d
-```
-
-or if you want to build images: 
-```console
-docker-compose up -d --build
-```
-
-### To run GPB in Minikube after installing in terminal run:
+## To run GPB in Minikube after installing in terminal run:
 
 ```console
 minikube start --driver=docker
@@ -147,6 +196,12 @@ Grafana: https://grafana.gpb
 Login for grafana: admin , password from ".env"
 
 * WARNING: If ingress-nginx or other pods stay in ContainerCreating or Pending state for too long, it's likely due to insufficient resources in Docker + WSL2. In that case make sure to increase memory and CPU limits via '.wslconfig'. 
+
+</details>
+
+
+<details>
+  <summary>⚙️ Environment Variables (.env)</summary>
 
 ### Environments in ".env" file (with defaults values for docker and minikube) :
 
@@ -247,6 +302,8 @@ Dependency Configuration:
     * Set your password for Grafana admin user
 
 You also could stop some docker parts and run part on yours development environment
+
+</details>
 
 -------------------------------------
 
