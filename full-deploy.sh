@@ -138,6 +138,7 @@ done
 echo "🔄 Installing ingress-nginx via Helm with NodePort + no webhooks…"
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
   --namespace ingress-nginx --create-namespace \
+  --version 4.7.1 \
   --set controller.service.type=LoadBalancer \
   --set controller.admissionWebhooks.enabled=false \
   --timeout 10m || echo "⚠️ Helm timed out, will wait manually..."
@@ -150,7 +151,7 @@ echo "⏳ Waiting for ingress-nginx-controller pod to be ready (via kubectl wait
 kubectl wait --namespace ingress-nginx \
   --for=condition=Ready pod \
   -l app.kubernetes.io/component=controller \
-  --timeout=900s || {
+  --timeout=1200s || {
     echo "❌ ingress-nginx-controller pod did not become ready in time. Exiting..."
     exit 1
   }
