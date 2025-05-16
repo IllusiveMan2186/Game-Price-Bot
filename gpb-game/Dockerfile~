@@ -1,31 +1,43 @@
-# Stage 1: Build the application
-FROM gradle:8.0.2 AS TEMP_BUILD_IMAGE
+# ───────────────── Stage 1: Build the app ─────────────────
+FROM gradle:8.0.2 AS build
 ENV APP_HOME=/gpb/game/
 WORKDIR $APP_HOME
-COPY build.gradle.kts settings.gradle.kts $APP_HOME
 
-COPY . .
-
+# Build args for private dependency repo
 ARG DEPENDENCY_REPO_URL
 ARG DEPENDENCY_REPO_USERNAME
 ARG DEPENDENCY_REPO_PASSWORD
-ENV DEPENDENCY_REPO_URL=$DEPENDENCY_REPO_URL
-ENV DEPENDENCY_REPO_USERNAME=$DEPENDENCY_REPO_USERNAME
-ENV DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD
+ENV DEPENDENCY_REPO_URL=${DEPENDENCY_REPO_URL} \
+    DEPENDENCY_REPO_USERNAME=${DEPENDENCY_REPO_USERNAME} \
+    DEPENDENCY_REPO_PASSWORD=${DEPENDENCY_REPO_PASSWORD}
 
-RUN gradle clean build
+# Cache Kotlin-DSL build scripts and download dependencies
+COPY build.gradle.kts settings.gradle.kts gradle/ ./
+RUN gradle --no-daemon dependencies
 
-# Stage 2: Create the final image
-FROM openjdk:17
-ENV ARTIFACT_NAME=gpb-game-1.2.0.jar
+# Copy source & compile
+COPY . .
+RUN gradle --no-daemon clean build
+
+
+# ───────────────── Stage 2: Final runtime ─────────────────
+FROM eclipse-temurin:17-jre-jammy
+LABEL org.opencontainers.image.source="https://github.com/IllusiveMan2186/Game-Price-Bot/tree/main/gpb-game"
 ENV APP_HOME=/gpb/game/
-
 WORKDIR $APP_HOME
 
-# Copy the built WAR file from the temporary build image
-COPY --from=TEMP_BUILD_IMAGE $APP_HOME/build/libs/$ARTIFACT_NAME .
+# Copy built JAR from build stage
+COPY --from=build $APP_HOME/build/libs/*.jar gpb-game.jar
 
-# Define the command to run on container start
-CMD java -jar $ARTIFACT_NAME
+# Copy default image resource into container
+COPY src/main/resources/defaultImage.png /image_folder/defaultImage.png
 
-COPY /src/main/resources/defaultImage.png /image_folder/defaultImage.png
+# Ensure the Lucene index directory exists and is writable by non-root
+RUN mkdir -p ${APP_HOME}/Game \
+    && chown -R 1000:1000 ${APP_HOME}
+
+# Drop privileges to non-root user
+USER 1000:1000
+
+# Launch the application
+ENTRYPOINT ["java", "-jar", "./gpb-game.jar"]
