@@ -25,7 +25,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +46,7 @@ class AuthFilterTest {
     @Mock
     private FilterChain filterChain;
     @Mock
-    private SecurityContext securityContext ;
+    private SecurityContext securityContext;
 
 
     @InjectMocks
@@ -53,6 +55,7 @@ class AuthFilterTest {
     @BeforeEach
     void setUp() {
         SecurityContextHolder.setContext(securityContext);
+        when(request.getRequestURI()).thenReturn("/");
     }
 
     @Test
@@ -63,7 +66,9 @@ class AuthFilterTest {
         when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(validToken);
         when(userAuthenticationProvider.validateAuthToken(validToken)).thenReturn(authentication);
 
+
         authFilter.doFilter(request, response, filterChain);
+
 
         verify(userAuthenticationProvider).validateAuthToken(validToken);
         verify(filterChain).doFilter(request, response);
@@ -71,23 +76,39 @@ class AuthFilterTest {
     }
 
     @Test
-    void testDoFilter_whenNoAuthorizationHeader_shouldProceedWithoutAuthentication() throws ServletException, IOException {
-        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(null);
+    void testDoFilter_whenSkippablePath_shouldProceedWithoutAuthentication() throws ServletException, IOException {
+        when(request.getRequestURI()).thenReturn("/logout-user");
+
 
         authFilter.doFilter(request, response, filterChain);
+
 
         verify(filterChain).doFilter(request, response);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Test
-    void testDoFilter_whenInvalidAuthorizationHeader_shouldProceedWithoutAuthentication() throws ServletException, IOException {
-        String invalidToken = "Invalid token";
-        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(invalidToken);
+    void testDoFilter_whenNoAuthorizationHeader_shouldProceedWithoutAuthentication() throws ServletException, IOException {
+        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(null);
+
 
         authFilter.doFilter(request, response, filterChain);
 
+
         verify(filterChain).doFilter(request, response);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @Test
+    void testDoFilter_whenInvalidAuthorizationHeader_shouldThrowSecurityException() throws ServletException, IOException {
+        String invalidToken = "Invalid token";
+        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(invalidToken);
+
+
+        assertThrows(SecurityException.class, () -> authFilter.doFilter(request, response, filterChain));
+
+
+        verify(filterChain, never()).doFilter(request, response);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
@@ -96,12 +117,14 @@ class AuthFilterTest {
         String invalidToken = "Bearer invalid-token";
 
         when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(invalidToken);
-        when(userAuthenticationProvider.validateAuthToken(invalidToken)).thenThrow(new RuntimeException("Invalid token"));
+        when(userAuthenticationProvider.validateAuthToken(invalidToken)).thenThrow(new SecurityException("Invalid token"));
 
-        authFilter.doFilter(request, response, filterChain);
+
+        assertThrows(SecurityException.class, () -> authFilter.doFilter(request, response, filterChain));
+
 
         verify(userAuthenticationProvider).validateAuthToken(invalidToken);
-        verify(filterChain).doFilter(request, response);
+        verify(filterChain, never()).doFilter(request, response);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 }

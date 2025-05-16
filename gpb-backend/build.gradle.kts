@@ -1,13 +1,13 @@
 plugins {
     java
-    war
+    kotlin("jvm") version "1.8.10"
     id("jacoco")
     id("org.springframework.boot") version "3.0.4"
     id("io.spring.dependency-management") version "1.1.0"
 }
 
 group = "com.gpb"
-version = "1.2.0"
+version = "1.3.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 fun getEnvOrProperty(name: String): String {
@@ -32,7 +32,7 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.gpb:common:1.2.0")
+    implementation("com.gpb:common:1.3.0")
 
     implementation("commons-io:commons-io:2.11.0")
     implementation("com.auth0:java-jwt:4.3.0")
@@ -56,7 +56,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     implementation("org.springframework.boot:spring-boot-starter-aop")
 
 
@@ -69,6 +68,15 @@ dependencies {
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+}
+
+tasks {
+    jar {
+        enabled = false
+    }
+    bootJar {
+        archiveFileName.set("app.jar")
+    }
 }
 
 tasks.named<Test>("test") {
@@ -88,8 +96,11 @@ tasks.register<Test>("e2eTest") {
             ?: throw IllegalStateException("Property 'E2E_EMAIL' is required")
         val password = System.getenv("E2E_PASSWORD")
             ?: throw IllegalStateException("Property 'E2E_PASSWORD' is required")
+        val url = System.getenv("E2E_URL")
+                ?: throw IllegalStateException("Property 'E2E_URL' is required")
         systemProperty("e2e.email", username)
         systemProperty("e2e.password", password)
+        systemProperty("e2e.url", url)
     }
     useJUnitPlatform {
         includeTags("e2e")
@@ -111,7 +122,6 @@ tasks.jacocoTestCoverageVerification {
                     "**.exception.*",
                     "**.util.*",
                     "com.gpb.backend.controller.RestResponseEntityExceptionHandler",
-                    "com.gpb.backend.service.impl.ResourceServiceImpl",
                     "com.gpb.backend.ServletInitializer",
                     "com.gpb.backend.GpbWebApplication"
             )

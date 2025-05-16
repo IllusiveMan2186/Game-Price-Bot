@@ -1,29 +1,32 @@
-# Stage 1: Build the application
-FROM gradle:8.0.2 AS TEMP_BUILD_IMAGE
+# ───────────────── Stage 1: Build the app ─────────────────
+FROM gradle:8.0.2 AS build
 ENV APP_HOME=/gpb/backend/
 WORKDIR $APP_HOME
-COPY build.gradle.kts settings.gradle.kts $APP_HOME
 
-COPY . .
-
+# Build args for private repo
 ARG DEPENDENCY_REPO_URL
 ARG DEPENDENCY_REPO_USERNAME
 ARG DEPENDENCY_REPO_PASSWORD
-ENV DEPENDENCY_REPO_URL=$DEPENDENCY_REPO_URL
-ENV DEPENDENCY_REPO_USERNAME=$DEPENDENCY_REPO_USERNAME
-ENV DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD
+ENV DEPENDENCY_REPO_URL=${DEPENDENCY_REPO_URL} \
+    DEPENDENCY_REPO_USERNAME=${DEPENDENCY_REPO_USERNAME} \
+    DEPENDENCY_REPO_PASSWORD=${DEPENDENCY_REPO_PASSWORD}
 
-RUN gradle clean build
+# Cache dependencies and build
+COPY settings.gradle.kts build.gradle.kts gradle/ ./
+RUN gradle --no-daemon dependencies
+COPY . .
+RUN gradle --no-daemon clean bootJar
 
-# Stage 2: Create the final image
-FROM openjdk:17
-ENV ARTIFACT_NAME=gpb-backend-1.2.0.war
+
+# ───────────────── Stage 2: Final runtime ─────────────────
+FROM eclipse-temurin:17-jre-jammy
+LABEL org.opencontainers.image.source="https://github.com/IllusiveMan2186/Game-Price-Bot/tree/main/gpb-backend"
 ENV APP_HOME=/gpb/backend/
-
 WORKDIR $APP_HOME
 
-# Copy the built WAR file from the temporary build image
-COPY --from=TEMP_BUILD_IMAGE $APP_HOME/build/libs/$ARTIFACT_NAME .
+COPY --from=build $APP_HOME/build/libs/*.jar app.jar
 
-# Define the command to run on container start
-CMD java -jar $ARTIFACT_NAME
+# Run as non-root user
+USER 1000:1000
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

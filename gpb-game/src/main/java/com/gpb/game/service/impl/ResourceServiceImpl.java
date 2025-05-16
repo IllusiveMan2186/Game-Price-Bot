@@ -2,14 +2,19 @@ package com.gpb.game.service.impl;
 
 import com.gpb.common.util.CommonConstants;
 import com.gpb.game.configuration.ResourceConfiguration;
+import com.gpb.game.exception.GameImageNotFoundException;
 import com.gpb.game.service.ResourceService;
+import com.gpb.game.util.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -48,6 +53,21 @@ public class ResourceServiceImpl implements ResourceService {
             saveImage(croppedImage, outputPath);
         } catch (Exception e) {
             log.error("Failed to process image '{}'. Exception: {}", imageUrl, e.getMessage(), e);
+        }
+    }
+
+    public byte[] getGameImage(final String gameName) {
+        log.debug("Get game image by name '{}'", gameName);
+        String gameImageFullPath = resourceConfiguration.getImageFolder() + "/" + sanitizeFilename(gameName)
+                + CommonConstants.JPG_IMG_FILE_EXTENSION;
+        try {
+            log.debug("Trying get game image by path '{}'", gameImageFullPath);
+            InputStream in = new FileInputStream(gameImageFullPath);
+
+            return IOUtils.toByteArray(in);
+        } catch (Exception e) {
+            log.error("Not found game image by path '{}'", gameImageFullPath);
+            return getDefaultGameImage();
         }
     }
 
@@ -92,4 +112,23 @@ public class ResourceServiceImpl implements ResourceService {
     private String getFilePath(String gameName) {
         return resourceConfiguration.getImageFolder() + "/" + gameName + CommonConstants.JPG_IMG_FILE_EXTENSION;
     }
+
+    private byte[] getDefaultGameImage() {
+        log.debug("Get game default image");
+        String gameImageFullPath = resourceConfiguration.getImageFolder() + "/defaultImage" +
+                Constants.PNG_IMG_FILE_EXTENSION;
+        try {
+            log.debug("Trying get game default image '{}'", gameImageFullPath);
+            InputStream in = new FileInputStream(gameImageFullPath);
+            return IOUtils.toByteArray(in);
+        } catch (Exception e) {
+            log.error("Not found image by path '{}'. Full message :'{}'", gameImageFullPath, e.getMessage());
+            throw new GameImageNotFoundException(e);
+        }
+    }
+
+    private String sanitizeFilename(String filename) {
+        return filename.replaceAll("[:/]", "_");
+    }
+
 }

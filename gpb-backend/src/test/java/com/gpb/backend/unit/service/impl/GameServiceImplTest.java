@@ -18,6 +18,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
@@ -173,5 +174,19 @@ class GameServiceImplTest {
         assertEquals(mockResponse, result);
         verify(basicGameService)
                 .getByGenre(genres, types, pageSize, pageNum, minPrice, maxPrice, sort, 0);
+    }
+
+    @Test
+    void testGetImage_whenSuccess_shouldCallBasicServiceAndReturnGameImage() {
+        String gameName = "TestGame";
+        byte[] expectedImage = new byte[]{1, 2, 3};
+        when(basicGameService.getGameImage(gameName)).thenReturn(expectedImage);
+
+
+        byte[] actualImage = gameService.getGameImage(gameName);
+
+
+        assertArrayEquals(expectedImage, actualImage);
+        verify(basicGameService).getGameImage(gameName);
     }
 }

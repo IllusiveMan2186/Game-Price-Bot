@@ -23,7 +23,7 @@ Backend web part of GPB application
     * If you decide publish common service yourself then credential to this repository
 * Run
   ```
-  gradle clean build
+  gradle clean bootJar
   ```
 * Run service
 
@@ -80,10 +80,12 @@ Add Environment variables for running project locally
   gardle init
   ```
 
-* For running end to end tests used command with credential you was used for backend start (ADMIN_EMAIL,ADMIN_PASSWORD) :
+* For running end to end tests used command with credential you 
+was used for backend start (ADMIN_EMAIL,ADMIN_PASSWORD) and url to frontend :
   ```
   set E2E_EMAIL=ADMIN_EMAIL
   set E2E_PASSWORD=ADMIN_PASSWORD
+  set E2E_URL=URL_TO_FRONT_SERVICE
   
   gradlew e2eTest
 

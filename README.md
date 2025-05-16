@@ -89,10 +89,26 @@ choco install kubernetes-cli
 
 Or download from: https://kubernetes.io/docs/tasks/tools/install-kubectl/
 
+5. Install helm
+   Helm is the package manager for Kubernetes, used to manage and install applications.
+
+Install via Chocolatey:
+
+```console
+choco install kubernetes-helm
+```
+
+Or download from: https://helm.sh/docs/intro/install/
+
 ### To run GPB in Docker after installing, create a ".env" file and use the following command in root of project:
 
 ```console
-docker-compose up
+docker-compose up -d
+```
+
+or if you want to build images: 
+```console
+docker-compose up -d --build
 ```
 
 ### To run GPB in Minikube after installing in terminal run:
@@ -104,8 +120,8 @@ minikube start --driver=docker
 #### Add to host file the following IP addresses:
 
 ```console
-127.0.0.1    game.price.bot
-127.0.0.1    api.game.price.bot
+127.0.0.1 game.price.bot
+127.0.0.1 grafana.gpb
 ```
 
 #### Create a ".env" file and use the following command in root of project:
@@ -124,18 +140,13 @@ minikube tunnel
 After running the script and opening the tunnel, keep the terminal open to maintain the tunnel connection.
 You can access the services via the following links:
 
-Frontend: http://game.price.bot
-Backend: http://api.game.price.bot
+Frontend: https://game.price.bot
+Backend: https://game.price.bot/api
+Grafana: https://grafana.gpb 
 
-#### 🚨 But if this links not work then run in different terminals : 
-```console
-kubectl port-forward svc/backend-service 8080:8080
-```
-```console
-kubectl port-forward svc/frontend-service 3000:80
-```
+Login for grafana: admin , password from ".env"
 
-Then you could access services on http://localhost:8080 and http://localhost:3000
+* WARNING: If ingress-nginx or other pods stay in ContainerCreating or Pending state for too long, it's likely due to insufficient resources in Docker + WSL2. In that case make sure to increase memory and CPU limits via '.wslconfig'. 
 
 ### Environments in ".env" file (with defaults values for docker and minikube) :
 
@@ -173,7 +184,7 @@ Other Configuration:
     * Adjust this if your frontend service is running on a different host or port.
 
 * BACKEND_SERVICE_URL: The URL for the backend service.
-    * Default: http://localhost:8080 for docker compose , http://api.game.price.bot for minikube
+    * Default: http://localhost:8080/api for docker compose , http://game.price.bot/api for minikube
     * Adjust this if your backend service is running on a different host or port.
 
 * GAME_SERVICE_URL: The URL for the game service.
@@ -231,6 +242,9 @@ Dependency Configuration:
 * DEPENDENCY_REPO_PASSWORD: The URL for the game service.
     * Default: Your github personal access tokens
     * Set password to account for reading dependency repository
+
+* GRAFANA_ADMIN_PASSWORD: The password for the Grafana admin user.
+    * Set your password for Grafana admin user
 
 You also could stop some docker parts and run part on yours development environment
 

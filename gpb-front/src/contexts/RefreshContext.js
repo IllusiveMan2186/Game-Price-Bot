@@ -1,20 +1,21 @@
 import { createContext, useEffect } from "react";
-import { useNavigation } from "@contexts/NavigationContext";
 import { useAuth } from "@contexts/AuthContext";
-import { setupInterceptors, refreshToken } from "@services/httpService";
+import { useNavigation } from "@contexts/NavigationContext";
+import { registerAuthHandlers } from "@services/httpService";
 
-const RefreshContext = createContext(null);
+export const RefreshContext = createContext(null);
 
 export const RefreshProvider = ({ children }) => {
+    const {
+        setAccessToken,
+        getAccessToken,
+        getLinkToken,
+        logout,
+    } = useAuth();
     const navigate = useNavigation();
-    const { isUserAuth, setAccessToken, logout } = useAuth();
 
-    // Refresh token when the app loads
     useEffect(() => {
-        setupInterceptors(setAccessToken, logout, navigate);
-        if (!isUserAuth()) {
-            refreshToken(setAccessToken)
-        }
+        registerAuthHandlers({ getAccessToken, setAccessToken, getLinkToken, logout, navigate });
     }, []);
 
     return (

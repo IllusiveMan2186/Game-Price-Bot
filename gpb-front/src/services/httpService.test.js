@@ -2,183 +2,420 @@ jest.mock('@root/config', () => ({
     BACKEND_SERVICE_URL: 'http://localhost/api',
 }));
 
-jest.mock('axios');
+jest.mock('axios', () => ({
+    create: jest.fn(),
+}));
 
-describe('httpService module', () => {
-    let apiModule;
-    let apiClient;
-    let refreshToken;
-    let logoutRequest;
-    let setupInterceptors;
-    let request;
-    let mockApiClient;
+describe('httpService', () => {
+    let apiClientMock;
+    let noAuthClientMock;
+    let request, refreshTokenRequest, logoutRequest, registerAuthHandlers;
 
     beforeEach(() => {
         jest.resetModules();
+        jest.clearAllMocks();
+
+        const axios = require('axios');
+
+        let requestInterceptors = [];
+
+        // Simulate axios instance with request interceptors
+        apiClientMock = Object.assign(jest.fn(async config => {
+            config.headers = config.headers || {};
+            for (const interceptor of requestInterceptors) {
+                config = await interceptor(config);
+            }
+            return { data: 'ok', config };
+        }), {
+            interceptors: {
+                request: {
+                    use: fn => requestInterceptors.push(fn),
+                },
+                response: {
+                    use: jest.fn(),
+                },
+            },
+            post: jest.fn(),
+            defaults: { headers: { common: {} } },
+        });
+
+        noAuthClientMock = {
+            post: jest.fn(),
+        };
+
+        axios.create
+            .mockImplementationOnce(() => apiClientMock)
+            .mockImplementationOnce(() => noAuthClientMock);
+
         jest.isolateModules(() => {
-            mockApiClient = jest.fn();
-            mockApiClient.interceptors = {
-                response: { use: jest.fn() },
-            };
-            mockApiClient.post = jest.fn();
-
-            const axios = require('axios');
-            axios.create.mockReturnValue(mockApiClient);
-
-            apiModule = require('./httpService');
-            apiClient = apiModule.default;
-            apiClient.post = mockApiClient.post;
-            refreshToken = apiModule.refreshToken;
-            logoutRequest = apiModule.logoutRequest;
-            setupInterceptors = apiModule.setupInterceptors;
-            request = apiModule.request;
+            const httpService = require('./httpService');
+            request = httpService.request;
+            refreshTokenRequest = httpService.refreshTokenRequest;
+            logoutRequest = httpService.logoutRequest;
+            registerAuthHandlers = httpService.registerAuthHandlers;
         });
     });
 
-    afterEach(() => {
-        jest.clearAllMocks();
+    describe('registerAuthHandlers and refreshTokenRequest', () => {
+        it('should set token and update apiClient header on success', async () => {
+            noAuthClientMock.post.mockResolvedValue({ data: 'new-token' });
+            const setAccessToken = jest.fn();
+
+            registerAuthHandlers({
+                getAccessToken: () => null,
+                setAccessToken,
+                getLinkToken: () => null,
+                logout: jest.fn(),
+                navigate: jest.fn(),
+            });
+
+            const result = await refreshTokenRequest();
+
+            expect(result).toBe(true);
+            expect(setAccessToken).toHaveBeenCalledWith('new-token');
+            expect(apiClientMock.defaults.headers.common.Authorization).toBe('Bearer new-token');
+        });
+
+        it('should call logout and navigate on 401 error', async () => {
+            noAuthClientMock.post.mockRejectedValue({ response: { status: 401 } });
+
+            const logout = jest.fn();
+            const navigate = jest.fn();
+
+            registerAuthHandlers({
+                getAccessToken: () => null,
+                setAccessToken: jest.fn(),
+                getLinkToken: () => null,
+                logout,
+                navigate,
+            });
+
+            const result = await refreshTokenRequest();
+
+            expect(result).toBe(false);
+            expect(logout).toHaveBeenCalled();
+            expect(navigate).toHaveBeenCalled();
+        });
+
+        it('should not call logout on non-401 error', async () => {
+            noAuthClientMock.post.mockRejectedValue({ response: { status: 500 } });
+
+            const logout = jest.fn();
+            const navigate = jest.fn();
+
+            registerAuthHandlers({
+                getAccessToken: () => null,
+                setAccessToken: jest.fn(),
+                getLinkToken: () => null,
+                logout,
+                navigate,
+            });
+
+            const result = await refreshTokenRequest();
+
+            expect(result).toBe(false);
+            expect(logout).not.toHaveBeenCalled();
+            expect(navigate).not.toHaveBeenCalled();
+        });
     });
 
-    it('should apiClient has correct default configuration', () => {
-        jest.resetModules();
-        jest.isolateModules(() => {
+    describe('logoutRequest', () => {
+        it('should call logout and navigate on successful logout', async () => {
+            noAuthClientMock.post.mockResolvedValue({});
+
+            const logout = jest.fn();
+            const navigate = jest.fn();
+
+            registerAuthHandlers({
+                getAccessToken: () => null,
+                setAccessToken: jest.fn(),
+                getLinkToken: () => null,
+                logout,
+                navigate,
+            });
+
+            await logoutRequest();
+
+            expect(noAuthClientMock.post).toHaveBeenCalledWith('/logout-user');
+            expect(logout).toHaveBeenCalled();
+            expect(navigate).toHaveBeenCalled();
+        });
+
+        it('should handle logout error and still call logout + navigate', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+            noAuthClientMock.post.mockRejectedValue(new Error('fail'));
+
+            const logout = jest.fn();
+            const navigate = jest.fn();
+
+            registerAuthHandlers({
+                getAccessToken: () => null,
+                setAccessToken: jest.fn(),
+                getLinkToken: () => null,
+                logout,
+                navigate,
+            });
+
+            await logoutRequest();
+
+            expect(consoleSpy).toHaveBeenCalledWith('Logout error:', expect.any(Error));
+            expect(logout).toHaveBeenCalled();
+            expect(navigate).toHaveBeenCalled();
+            consoleSpy.mockRestore();
+        });
+    });
+
+    describe('proactive token refresh interceptor', () => {
+        let jwtDecodeMock;
+        let nowInSeconds = 100000;
+
+        beforeEach(() => {
+            jest.resetModules();
+            jest.clearAllMocks();
+
+            // Mock jwt-decode before httpService is imported
+            jest.mock('jwt-decode', () => ({
+                jwtDecode: jest.fn(),
+            }));
+
+            // Prepare axios mock with interceptors and manual call-through
             const axios = require('axios');
-            const fakeApiClient = {
-                interceptors: { response: { use: jest.fn() } },
+            let requestInterceptors = [];
+
+            apiClientMock = Object.assign(jest.fn(async config => {
+                config.headers = config.headers || {};
+                for (const interceptor of requestInterceptors) {
+                    config = await interceptor(config);
+                }
+                return { data: 'ok', config };
+            }), {
+                interceptors: {
+                    request: {
+                        use: fn => requestInterceptors.push(fn),
+                    },
+                    response: {
+                        use: jest.fn(),
+                    },
+                },
+                post: jest.fn(),
+                defaults: { headers: { common: {} } },
+            });
+
+            noAuthClientMock = {
                 post: jest.fn(),
             };
-            axios.create.mockReturnValue(fakeApiClient);
-            require('./httpService');
-            expect(axios.create).toHaveBeenCalledWith({
-                baseURL: 'http://localhost/api',
-                withCredentials: true,
-                headers: { "Content-Type": "application/json" },
+
+            axios.create
+                .mockImplementationOnce(() => apiClientMock)
+                .mockImplementationOnce(() => noAuthClientMock);
+        });
+
+        it('should proactively refresh token if it expires in less than 60s (success case)', async () => {
+            const { jwtDecode } = require('jwt-decode');
+            jwtDecode.mockReturnValue({ exp: nowInSeconds + 30 });
+            jest.spyOn(Date, 'now').mockReturnValue(nowInSeconds * 1000);
+
+            jest.isolateModules(() => {
+                const httpService = require('./httpService');
+                jwtDecodeMock = jwtDecode;
+
+                // Fake successful refresh behavior
+                httpService.refreshTokenRequest = jest.fn().mockImplementation(async () => {
+                    httpService.registerAuthHandlers({
+                        getAccessToken: () => 'mocked-token',
+                        setAccessToken: jest.fn(),
+                        getLinkToken: () => null,
+                        logout: jest.fn(),
+                        navigate: jest.fn(),
+                    });
+
+                    httpService.default.defaults.headers.common.Authorization = 'Bearer mocked-token';
+                    return true;
+                });
+
+                httpService.registerAuthHandlers({
+                    getAccessToken: () => 'token123',
+                    setAccessToken: jest.fn(),
+                    getLinkToken: () => null,
+                    logout: jest.fn(),
+                    navigate: jest.fn(),
+                });
+
+                return httpService.request('GET', '/near-expire', {}).then(result => {
+                    expect(httpService.refreshTokenRequest).toHaveBeenCalled();
+                    expect(result.config.url).toBe('/near-expire');
+                });
+            });
+
+            Date.now.mockRestore();
+        });
+
+        it('should try to refresh but not retry if refresh fails', async () => {
+            const { jwtDecode } = require('jwt-decode');
+            jwtDecode.mockReturnValue({ exp: nowInSeconds + 30 });
+            jest.spyOn(Date, 'now').mockReturnValue(nowInSeconds * 1000);
+
+            jest.isolateModules(() => {
+                const httpService = require('./httpService');
+                jwtDecodeMock = jwtDecode;
+
+                // Simulate failed refresh
+                httpService.refreshTokenRequest = jest.fn().mockImplementation(async () => false);
+
+                httpService.registerAuthHandlers({
+                    getAccessToken: () => 'token456',
+                    setAccessToken: jest.fn(),
+                    getLinkToken: () => null,
+                    logout: jest.fn(),
+                    navigate: jest.fn(),
+                });
+
+                return httpService.request('GET', '/fail-refresh', {}).then(result => {
+                    expect(httpService.refreshTokenRequest).toHaveBeenCalled();
+                    expect(result.config.url).toBe('/fail-refresh');
+                });
+            });
+
+            Date.now.mockRestore();
+        });
+    });
+
+    describe('reactive token refresh interceptor', () => {
+        let responseInterceptor;
+        let retryMock;
+
+        beforeEach(() => {
+            jest.resetModules();
+            jest.clearAllMocks();
+
+            const axios = require('axios');
+
+            const requestInterceptors = [];
+            const responseInterceptors = {
+                use: jest.fn((success, error) => {
+                    responseInterceptor = error;
+                }),
+            };
+
+            apiClientMock = Object.assign(jest.fn(), {
+                interceptors: {
+                    request: {
+                        use: jest.fn(fn => requestInterceptors.push(fn)),
+                    },
+                    response: responseInterceptors,
+                },
+                defaults: { headers: { common: {} } },
+            });
+
+            noAuthClientMock = {
+                // ✅ Return valid data shape by default
+                post: jest.fn().mockResolvedValue({ data: 'mocked-token' }),
+            };
+
+            axios.create
+                .mockImplementationOnce(() => apiClientMock) // for apiClient
+                .mockImplementationOnce(() => noAuthClientMock); // for noAuthClient
+        });
+
+        it('should refresh and retry request on 401 (first time)', async () => {
+            jest.isolateModules(() => {
+                const httpService = require('./httpService');
+
+                const error = {
+                    response: { status: 401 },
+                    config: { _retry: false, url: '/secure' },
+                };
+
+                // ✅ Simulate refresh returns { data: 'mocked-token' }
+                noAuthClientMock.post.mockResolvedValueOnce({ data: 'mocked-token' });
+
+                // ✅ Simulate retry via apiClient (which is apiClientMock)
+                apiClientMock.mockResolvedValueOnce({ data: 'retried' });
+
+                return responseInterceptor(error).then(res => {
+                    expect(noAuthClientMock.post).toHaveBeenCalledWith('/refresh-token');
+                    expect(apiClientMock).toHaveBeenCalledWith({ ...error.config, _retry: true });
+                    expect(res.data).toBe('retried');
+                });
+            });
+        });
+
+
+        it('should not retry if refresh fails (401)', async () => {
+            // Override only for this test
+            noAuthClientMock.post.mockRejectedValueOnce({ response: { status: 401 } });
+
+            jest.isolateModules(() => {
+                const httpService = require('./httpService');
+
+                const error = {
+                    response: { status: 401 },
+                    config: { _retry: false, url: '/secure' },
+                };
+
+                return responseInterceptor(error)
+                    .then(() => {
+                        throw new Error('Expected to reject');
+                    })
+                    .catch(err => {
+                        expect(noAuthClientMock.post).toHaveBeenCalledWith('/refresh-token');
+                        expect(err).toBe(error);
+                    });
+            });
+        });
+
+        it('should not retry if request already retried (_retry === true)', async () => {
+            jest.isolateModules(() => {
+                const httpService = require('./httpService');
+
+                const error = {
+                    response: { status: 401 },
+                    config: { _retry: true, url: '/secure' },
+                };
+
+                return responseInterceptor(error)
+                    .then(() => {
+                        throw new Error('Expected to reject');
+                    })
+                    .catch(err => {
+                        expect(noAuthClientMock.post).not.toHaveBeenCalled();
+                        expect(err).toBe(error);
+                    });
             });
         });
     });
 
 
-    describe('request function', () => {
-        it('should sets Authorization header when accessToken is provided', async () => {
-            mockApiClient.mockResolvedValue({ data: 'ok' });
-            const response = await request('GET', '/test', { key: 'value' }, 'my-token', null);
-            expect(mockApiClient).toHaveBeenCalledWith(expect.objectContaining({
-                method: 'GET',
-                url: '/test',
-                data: { key: 'value' },
-                headers: { Authorization: 'Bearer my-token' },
-            }));
-            expect(response.data).toBe('ok');
+
+    describe('request', () => {
+        it('should send request with Authorization header when token exists', async () => {
+            registerAuthHandlers({
+                getAccessToken: () => 'token-abc',
+                setAccessToken: jest.fn(),
+                getLinkToken: () => null,
+                logout: jest.fn(),
+                navigate: jest.fn(),
+            });
+
+            const result = await request('GET', '/test', { foo: 1 });
+
+            expect(result.data).toBe('ok');
+            expect(result.config.headers.Authorization).toBe('Bearer token-abc');
         });
 
-        it('should sets LinkToken header when accessToken is not provided', async () => {
-            mockApiClient.mockResolvedValue({ data: 'ok' });
-            const response = await request('POST', '/test', { key: 'value' }, null, 'my-link-token');
-            expect(mockApiClient).toHaveBeenCalledWith(expect.objectContaining({
-                method: 'POST',
-                url: '/test',
-                data: { key: 'value' },
-                headers: { LinkToken: 'my-link-token' },
-            }));
-            expect(response.data).toBe('ok');
-        });
-    });
+        it('should send request with LinkToken header when no access token', async () => {
+            registerAuthHandlers({
+                getAccessToken: () => null,
+                setAccessToken: jest.fn(),
+                getLinkToken: () => 'link-xyz',
+                logout: jest.fn(),
+                navigate: jest.fn(),
+            });
 
-    describe('refreshToken function', () => {
-        it('should returns new token on success', async () => {
-            mockApiClient.post.mockResolvedValue({ data: 'new-token' });
-            const setAccessTokenMock = jest.fn();
-            const logoutMock = jest.fn();
-            const navigateMock = jest.fn();
+            const result = await request('POST', '/link-endpoint', { bar: 2 });
 
-            const result = await refreshToken(setAccessTokenMock, logoutMock, navigateMock);
-            expect(result).toBe('new-token');
-            expect(setAccessTokenMock).toHaveBeenCalledWith('new-token');
-        });
-
-        it('should calls logoutRequest and returns null on 401 error', async () => {
-            const error = { response: { status: 401 } };
-            mockApiClient.post
-                .mockRejectedValueOnce(error)
-                .mockResolvedValueOnce({ data: {} });
-
-            const setAccessTokenMock = jest.fn();
-            const logoutMock = jest.fn();
-            const navigateMock = jest.fn();
-
-            const result = await refreshToken(setAccessTokenMock, logoutMock, navigateMock);
-
-            expect(result).toBeNull();
-            expect(logoutMock).toHaveBeenCalledWith(navigateMock);
-        });
-
-
-        it('should returns null on error with non-401 status', async () => {
-            const error = { response: { status: 500 } };
-            mockApiClient.post.mockRejectedValue(error);
-            const setAccessTokenMock = jest.fn();
-            const logoutMock = jest.fn();
-            const navigateMock = jest.fn();
-            const logoutRequestSpy = jest.spyOn(apiModule, 'logoutRequest');
-            const result = await refreshToken(setAccessTokenMock, logoutMock, navigateMock);
-            expect(result).toBeNull();
-            expect(logoutRequestSpy).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('logoutRequest function', () => {
-        it('should calls logout callback on successful logout', async () => {
-            mockApiClient.post.mockResolvedValue({ data: {} });
-            const logoutMock = jest.fn();
-            const navigateMock = jest.fn();
-
-            await logoutRequest(logoutMock, navigateMock);
-            expect(logoutMock).toHaveBeenCalledWith(navigateMock);
-        });
-
-        it('should handles error during logout', async () => {
-            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
-            mockApiClient.post.mockRejectedValue(new Error('logout error'));
-            const logoutCallback = jest.fn();
-            const navigateMock = jest.fn();
-
-            await logoutRequest(logoutCallback, navigateMock);
-            expect(consoleSpy).toHaveBeenCalled();
-            consoleSpy.mockRestore();
-        });
-    });
-
-    describe('setupInterceptors function', () => {
-        it('should installs a response interceptor', () => {
-            setupInterceptors(() => { }, () => { }, () => { });
-            expect(mockApiClient.interceptors.response.use).toHaveBeenCalled();
-        });
-
-        it('should retries request after refreshing token on 401 error', async () => {
-            setupInterceptors(() => { }, () => { }, () => { });
-            const originalRequest = { url: '/test', headers: {}, _retry: false };
-            const error = { config: originalRequest, response: { status: 401 } };
-            const refreshTokenSpy = jest.spyOn(apiModule, 'refreshToken').mockResolvedValue('new-token');
-            mockApiClient.mockResolvedValue({ data: 'ok', config: originalRequest });
-            originalRequest._retry = true;
-            const newToken = await refreshTokenSpy();
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
-            const retryResult = await mockApiClient(originalRequest);
-            expect(retryResult.data).toBe('ok');
-            expect(originalRequest.headers.Authorization).toBe('Bearer new-token');
-            refreshTokenSpy.mockRestore();
-        });
-    });
-
-    describe('request logging', () => {
-        it('should logs the method and url', async () => {
-            const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation(() => { });
-            mockApiClient.mockResolvedValue({ data: {} });
-
-            await request('PUT', '/logging-test', { test: 1 }, null, null);
-
-            expect(consoleInfoSpy).toHaveBeenCalledWith('PUT /logging-test');
-            consoleInfoSpy.mockRestore();
+            expect(result.data).toBe('ok');
+            expect(result.config.headers.LinkToken).toBe('link-xyz');
         });
     });
 });

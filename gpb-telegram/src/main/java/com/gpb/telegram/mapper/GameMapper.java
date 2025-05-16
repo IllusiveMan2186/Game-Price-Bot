@@ -7,6 +7,7 @@ import com.gpb.telegram.configuration.ResourceConfiguration;
 import com.gpb.telegram.entity.TelegramRequest;
 import com.gpb.telegram.entity.TelegramUser;
 import com.gpb.telegram.mapper.entity.TelegramButton;
+import com.gpb.telegram.service.GameService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +34,7 @@ public class GameMapper {
     private final TelegramKeyboardMapper telegramKeyboardMapper;
     private final ResourceConfiguration resourceConfiguration;
     private final ButtonFactory buttonFactory;
+    private final GameService gameService;
 
     public SendPhoto mapGameToPhotoMessage(TelegramRequest request, GameDto game) {
         return SendPhoto.builder()
@@ -48,8 +51,11 @@ public class GameMapper {
     }
 
     private InputFile getGameImage(String gameName) {
-        String filePath = resourceConfiguration.getImageFolder() + "/" + gameName + CommonConstants.JPG_IMG_FILE_EXTENSION;
-        return new InputFile(new File(filePath));
+        byte[] data = gameService.getGameImage(gameName);
+        InputStream inputStream = new ByteArrayInputStream(data);
+        InputFile file = new InputFile();
+        file.setMedia(inputStream, gameName + CommonConstants.JPG_IMG_FILE_EXTENSION);
+        return file;
     }
 
     private String mapGameToTelegramMessage(GameDto game, Locale locale) {

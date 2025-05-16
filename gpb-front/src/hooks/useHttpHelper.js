@@ -1,14 +1,12 @@
-import { useAuth } from "@contexts/AuthContext";
 import { request } from "@services/httpService";
 import { useNavigation } from "@contexts/NavigationContext";
 
 export const useHttpHelper = () => {
-    const { getLinkToken, getAccessToken } = useAuth();
     const navigate = useNavigation();
 
     const handleRequest = async (method, url, data, onSuccess, onError) => {
         try {
-            const response = await request(method, url, data, getAccessToken(), getLinkToken());
+            const response = await request(method, url, data);
             onSuccess(response);
         } catch (error) {
             console.info(error);

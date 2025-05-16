@@ -1,5 +1,6 @@
 package com.gpb.backend.e2e;
 
+import com.gpb.backend.BasicEndToEndTest;
 import com.gpb.backend.e2e.util.EntToEndUtil;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Tag;
@@ -15,7 +16,7 @@ import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag("e2e")
-class UserGameListEndToEndTest {
+class UserGameListEndToEndTest extends BasicEndToEndTest {
 
     private static final String GAME_NAME = "Minecraft";
     private final String adminEmail = System.getProperty("e2e.email");
@@ -79,7 +80,7 @@ class UserGameListEndToEndTest {
     }
 
     private WebDriver getNameInfoPage() {
-        WebDriver driver = EntToEndUtil.getGpbWebDriver();
+        WebDriver driver = getGpbWebDriver();
 
         EntToEndUtil.loginInToGpb(driver, adminEmail, adminPassword);
 

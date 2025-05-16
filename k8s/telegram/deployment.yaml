@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: telegram-bot
-          image: game-price-bot-telegram:latest
-          imagePullPolicy: Never 
+          image: ghcr.io/illusiveman2186/game-price-bot-telegram:latest
+          imagePullPolicy: IfNotPresent 
           ports:
             - containerPort: 8082
           env:
@@ -69,10 +69,3 @@ spec:
                 secretKeyRef:
                   name: game-price-bot-secret
                   key: FRONT_SERVICE_URL
-          volumeMounts:
-            - name: image-storage
-              mountPath: "/image_folder"
-      volumes:
-        - name: image-storage
-          persistentVolumeClaim:
-            claimName: game-images-pvc

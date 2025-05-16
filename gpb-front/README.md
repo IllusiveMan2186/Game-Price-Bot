@@ -24,7 +24,7 @@ The frontend reads environment variables from `public/env.js`. Create the file i
 📂 **`public/env.js`**
 ```js
 window._env_ = {
-  BACKEND_SERVICE_URL: "http://localhost:8080",
+  BACKEND_SERVICE_URL: "http://localhost:8080/api",
   TELEGRAM_BOT_URL: "https://api.telegram.org/bot...",
   SUPPORT_EMAIL: "support@example.com"
 };
@@ -44,6 +44,20 @@ After running the app, check if environment variables are loaded correctly by op
 http://localhost:3000/env.js
 ```
 If it loads correctly, your environment variables are set up properly.
+
+### **5️⃣ Run tests**
+Use the following command to run tests with coverage:
+```sh
+npm test -- --coverage
+```
+For specific tests, use 
+```sh
+npm test -- --testPathPattern=src/components/yourTestFile.test.js`
+```
+or :
+```sh
+npx jest src/components/yourTestFile.test.js
+```
 
 ---
 

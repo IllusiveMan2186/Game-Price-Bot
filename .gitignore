@@ -1,3 +1,15 @@
 .env
+.secrets
 .idea
 test-artifact.iml
+
+letsencrypt/
+secrets/
+
+logs/
+linux-amd64/
+
+.p12
+.pem
+.key
+.jks

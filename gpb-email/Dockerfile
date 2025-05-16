@@ -1,26 +1,32 @@
-
-FROM gradle:8.0.2 AS TEMP_BUILD_IMAGE
+# Stage 1: Build the application using Gradle
+FROM gradle:8.0.2 AS builder
 ENV APP_HOME=/gpb/email/
 WORKDIR $APP_HOME
-COPY build.gradle settings.gradle $APP_HOME
 
-COPY gradle $APP_HOME/gradle
-COPY . .
-
+# Build args for private repo
 ARG DEPENDENCY_REPO_URL
 ARG DEPENDENCY_REPO_USERNAME
 ARG DEPENDENCY_REPO_PASSWORD
-ENV DEPENDENCY_REPO_URL=$DEPENDENCY_REPO_URL
-ENV DEPENDENCY_REPO_USERNAME=$DEPENDENCY_REPO_USERNAME
-ENV DEPENDENCY_REPO_PASSWORD=$DEPENDENCY_REPO_PASSWORD
+ENV DEPENDENCY_REPO_URL=${DEPENDENCY_REPO_URL} \
+    DEPENDENCY_REPO_USERNAME=${DEPENDENCY_REPO_USERNAME} \
+    DEPENDENCY_REPO_PASSWORD=${DEPENDENCY_REPO_PASSWORD}
 
-RUN gradle clean build
+# Cache dependencies and build
+COPY settings.gradle build.gradle gradle/ ./
+RUN gradle --no-daemon dependencies
+COPY . .
+RUN gradle --no-daemon clean build
 
-FROM openjdk:17
-ENV ARTIFACT_NAME=gpb-email-1.2.0.jar
+
+# Stage 2: Prepare lightweight runtime image
+FROM eclipse-temurin:17-jre-jammy
+LABEL org.opencontainers.image.source="https://github.com/IllusiveMan2186/Game-Price-Bot/tree/main/gpb-email"
 ENV APP_HOME=/gpb/email/
-
 WORKDIR $APP_HOME
-COPY --from=TEMP_BUILD_IMAGE $APP_HOME/build/libs/$ARTIFACT_NAME .
 
-ENTRYPOINT exec java -jar ${ARTIFACT_NAME}
+COPY --from=builder $APP_HOME/build/libs/*.jar app.jar
+
+# Run as non-root user
+USER 1000:1000
+
+ENTRYPOINT ["java", "-jar", "./app.jar"]
