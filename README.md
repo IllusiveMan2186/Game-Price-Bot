@@ -89,6 +89,17 @@ choco install kubernetes-cli
 
 Or download from: https://kubernetes.io/docs/tasks/tools/install-kubectl/
 
+5. Install helm
+   Helm is the package manager for Kubernetes, used to manage and install applications.
+
+Install via Chocolatey:
+
+```console
+choco install kubernetes-helm
+```
+
+Or download from: https://helm.sh/docs/intro/install/
+
 ### To run GPB in Docker after installing, create a ".env" file and use the following command in root of project:
 
 ```console
@@ -109,8 +120,8 @@ minikube start --driver=docker
 #### Add to host file the following IP addresses:
 
 ```console
-<minikube_ip> game.price.bot
-<minikube_ip> grafana.gpb
+127.0.0.1 game.price.bot
+127.0.0.1 grafana.gpb
 ```
 
 #### Create a ".env" file and use the following command in root of project:
@@ -134,6 +145,8 @@ Backend: https://game.price.bot/api
 Grafana: https://grafana.gpb 
 
 Login for grafana: admin , password from ".env"
+
+* WARNING: If ingress-nginx or other pods stay in ContainerCreating or Pending state for too long, it's likely due to insufficient resources in Docker + WSL2. In that case make sure to increase memory and CPU limits via '.wslconfig'. 
 
 ### Environments in ".env" file (with defaults values for docker and minikube) :
 

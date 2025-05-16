@@ -29,10 +29,3 @@ spec:
                 name: frontend-service
                 port:
                   number: 3000
-          - path: /core/
-            pathType: Prefix
-            backend:
-              service:
-                name: game-service
-                port:
-                  number: 8081
