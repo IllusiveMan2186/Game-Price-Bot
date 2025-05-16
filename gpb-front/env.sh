@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 
 echo "⚙️ Generating env.js with runtime environment variables"
 
