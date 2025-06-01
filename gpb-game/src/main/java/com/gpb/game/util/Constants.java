@@ -6,7 +6,7 @@ public class Constants {
     }
 
     public static final String GAME_INFO_CHANGE_DAILY = "00 00 04 * * *";//4:00:00 AM every day
-    public static final String GAME_INFO_CHANGE_WEAKLY = "00 20 04 * * 1";//4:10:00 AM every Monday
+    public static final String GAME_INFO_CHANGE_WEAKLY = "00 20 04 * * 1";//4:20:00 AM every Monday
 
     public static final String PNG_IMG_FILE_EXTENSION = ".png";
 
