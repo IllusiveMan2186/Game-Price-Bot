@@ -36,5 +36,9 @@ COPY src/main/resources/defaultImage.png /image_folder/defaultImage.png
 RUN mkdir -p ${APP_HOME}/Game \
     && chown -R 1000:1000 ${APP_HOME}
 
+# Drop privileges to non-root user
+RUN chown -R 1000:1000 /image_folder
+USER 1000:1000
+
 # Launch the application
 ENTRYPOINT ["java", "-jar", "./gpb-game.jar"]

@@ -26,4 +26,7 @@ WORKDIR $APP_HOME
 
 COPY --from=build $APP_HOME/build/libs/*.jar app.jar
 
+# Run as non-root user
+USER 1000:1000
+
 ENTRYPOINT ["java", "-jar", "app.jar"]

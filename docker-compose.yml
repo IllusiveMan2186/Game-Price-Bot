@@ -36,8 +36,9 @@ services:
     image: grafana/promtail:2.9.2
     container_name: promtail
     volumes:
-      - ./docker-config/promtail-config.yaml:/etc/promtail/promtail.yaml
-      - ./logs:/var/log/app
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./docker-config/promtail-docker.yaml:/etc/promtail/promtail.yaml
     command: -config.file=/etc/promtail/promtail.yaml
 
   grafana:
@@ -100,7 +101,6 @@ services:
       - API_KEY=${API_KEY}
     volumes:
       - data_images:${IMAGE_FOLDER}
-      - ./logs/game:/gpb/game/logs
 
   backend:
     image: ghcr.io/illusiveman2186/game-price-bot-backend:latest
@@ -132,8 +132,6 @@ services:
       - API_KEY=${API_KEY}
       - TOKEN_SECRET_KEY=${TOKEN_SECRET_KEY}
       - REFRESH_TOKEN_SECRET_KEY=${REFRESH_TOKEN_SECRET_KEY}
-    volumes:
-      - ./logs/backend:/gpb/backend/logs
 
   telegram:
     image: ghcr.io/illusiveman2186/game-price-bot-telegram:latest
@@ -161,8 +159,6 @@ services:
       - GAME_SERVICE_URL=${GAME_SERVICE_URL}
       - API_KEY=${API_KEY}
       - FRONT_SERVICE_URL=${FRONT_SERVICE_URL}
-    volumes:
-      - ./logs/telegram:/gpb/telegram/logs
 
   email:
     image: ghcr.io/illusiveman2186/game-price-bot-email:latest
@@ -181,8 +177,6 @@ services:
       - KAFKA_SERVER_URL=${KAFKA_SERVER_URL}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - MAIL_USERNAME=${MAIL_USERNAME}
-    volumes:
-      - ./logs/email:/gpb/email/logs
 
 volumes:
   data_images:

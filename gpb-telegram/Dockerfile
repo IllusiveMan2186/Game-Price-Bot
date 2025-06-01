@@ -37,5 +37,8 @@ WORKDIR $APP_HOME
 # Copy built JAR from build stage
 COPY --from=build $APP_HOME/target/*.jar ${ARTIFACT_NAME}
 
+# Run as non-root user
+USER 1000:1000
+
 # Launch the application
 ENTRYPOINT ["java", "-jar", "./gpb-telegram.jar"]
