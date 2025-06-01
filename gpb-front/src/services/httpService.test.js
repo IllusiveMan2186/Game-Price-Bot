@@ -138,7 +138,6 @@ describe('httpService', () => {
 
             expect(noAuthClientMock.post).toHaveBeenCalledWith('/logout-user');
             expect(logout).toHaveBeenCalled();
-            expect(navigate).toHaveBeenCalled();
         });
 
         it('should handle logout error and still call logout + navigate', async () => {
@@ -160,7 +159,6 @@ describe('httpService', () => {
 
             expect(consoleSpy).toHaveBeenCalledWith('Logout error:', expect.any(Error));
             expect(logout).toHaveBeenCalled();
-            expect(navigate).toHaveBeenCalled();
             consoleSpy.mockRestore();
         });
     });

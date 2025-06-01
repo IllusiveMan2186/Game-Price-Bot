@@ -6,7 +6,7 @@ import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.repository.GameInShopRepository;
-import com.gpb.game.repository.GameRepositoryCustom;
+import com.gpb.game.repository.advanced.GameRepositoryAdvance;
 import com.gpb.game.service.GameInShopService;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.StoreAggregatorService;
@@ -37,7 +37,7 @@ class GameInShopServiceImplTest {
 
     StoreAggregatorService storeAggregatorService = mock(StoreAggregatorService.class);
 
-    GameRepositoryCustom gameRepositoryCustom = mock(GameRepositoryCustom.class);
+    GameRepositoryAdvance gameRepositoryAdvance = mock(GameRepositoryAdvance.class);
 
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
@@ -66,7 +66,7 @@ class GameInShopServiceImplTest {
     }
 
     @Test
-    void testGetSubscribedGames_whenSuccess_thenShouldGetGames() {
+    void testGetSubscribedGames_whenSuccess_shouldShouldGetGames() {
         List<GameInShop> games = new ArrayList<>();
         when(gameInShopRepository.findSubscribedGames()).thenReturn(games);
 
@@ -120,7 +120,7 @@ class GameInShopServiceImplTest {
     }
 
     @Test
-    void testChangeInfo_whenSuccess_thenSaveChanges() {
+    void testChangeInfo_whenSuccess_shouldSaveChanges() {
         List<GameInShop> changedGames = new ArrayList<>();
 
         gameInShopService.changeInfo(changedGames);
@@ -129,7 +129,7 @@ class GameInShopServiceImplTest {
     }
 
     @Test
-    void testGetUsersChangedGames_whenSuccess_thenShouldGetGames() {
+    void testGetUsersChangedGames_whenSuccess_shouldShouldGetGames() {
         List<GameInShop> changedGames = new ArrayList<>();
         GameInShop gameInShop1 = GameInShop.builder().id(0).build();
         GameInShop gameInShop2 = GameInShop.builder().id(1).build();

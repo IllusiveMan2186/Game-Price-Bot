@@ -3,9 +3,9 @@ package com.gpb.game.unit.repository;
 import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
 import com.gpb.game.entity.game.Game;
-import com.gpb.game.entity.game.GameRepositorySearchFilter;
 import com.gpb.game.entity.game.GameInShop;
-import com.gpb.game.repository.predicate.GamePredicateBuilder;
+import com.gpb.game.entity.game.GameRepositorySearchFilter;
+import com.gpb.game.repository.advanced.predicate.GameFilterPredicateBuilder;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -24,9 +24,9 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class GamePredicateBuilderTest {
+class GameFilterPredicateBuilderTest {
 
-    private GamePredicateBuilder predicateBuilder;
+    private GameFilterPredicateBuilder predicateBuilder;
 
     private CriteriaBuilder cb;
     private Root<Game> root;
@@ -34,14 +34,14 @@ class GamePredicateBuilderTest {
 
     @BeforeEach
     void setUp() {
-        predicateBuilder = new GamePredicateBuilder();
+        predicateBuilder = new GameFilterPredicateBuilder();
         cb = mock(CriteriaBuilder.class);
         root = mock(Root.class);
         shopJoin = mock(Join.class);
     }
 
     @Test
-    void testFindGames_whenByGenres_thenReturnsGenrePredicate() {
+    void testFindGames_whenByGenres_shouldReturnsGenrePredicate() {
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .genres(List.of(Genre.ACTION, Genre.RPG))
                 .build();
@@ -58,7 +58,7 @@ class GamePredicateBuilderTest {
     }
 
     @Test
-    void testFindGames_whenByTypes_thenReturnsTypePredicate() {
+    void testFindGames_whenByTypes_shouldReturnsTypePredicate() {
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .types(List.of(ProductType.ADDITION, ProductType.GAME))
                 .build();
@@ -75,7 +75,7 @@ class GamePredicateBuilderTest {
     }
 
     @Test
-    void testFindGames_whenByPriceRange_thenReturnsGameInPriceRange() {
+    void testFindGames_whenByPriceRange_shouldReturnsGameInPriceRange() {
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .maxPrice(BigDecimal.valueOf(30))
                 .minPrice(BigDecimal.valueOf(10))
@@ -93,7 +93,7 @@ class GamePredicateBuilderTest {
     }
 
     @Test
-    void testFindGames_whenByUserId_thenReturnsUserIdPredicate() {
+    void testFindGames_whenByUserId_shouldReturnsUserIdPredicate() {
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .userId(123L)
                 .build();
@@ -113,7 +113,7 @@ class GamePredicateBuilderTest {
     }
 
     @Test
-    void testFindGames_whenAllFilters_thenReturnsAllPredicates() {
+    void testFindGames_whenAllFilters_shouldReturnsAllPredicates() {
 
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .maxPrice(BigDecimal.valueOf(30))

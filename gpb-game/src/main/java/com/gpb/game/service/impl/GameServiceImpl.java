@@ -7,10 +7,10 @@ import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
 import com.gpb.common.exception.NotFoundException;
 import com.gpb.game.entity.game.Game;
-import com.gpb.game.entity.game.GameRepositorySearchFilter;
 import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.game.GameRepositorySearchFilter;
 import com.gpb.game.repository.GameRepository;
-import com.gpb.game.repository.GameRepositoryCustom;
+import com.gpb.game.repository.advanced.GameRepositoryAdvance;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.StoreAggregatorService;
 import lombok.AllArgsConstructor;
@@ -32,7 +32,7 @@ public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
     private final StoreAggregatorService storeAggregatorService;
-    private final GameRepositoryCustom gameRepositoryCustom;
+    private final GameRepositoryAdvance gameRepositoryAdvance;
     private final ModelMapper modelMapper;
 
     @Override
@@ -66,7 +66,7 @@ public class GameServiceImpl implements GameService {
         long elementAmount;
         List<Game> games;
 
-        Page<Game> gamePage = gameRepositoryCustom.searchByNameFullText(name, pageRequest);
+        Page<Game> gamePage = gameRepositoryAdvance.searchByNameFullText(name, pageRequest);
         if (gamePage.isEmpty()) {
             List<Game> foundedGames = storeAggregatorService.findGameByName(name);
             games = addGames(foundedGames);
@@ -99,7 +99,7 @@ public class GameServiceImpl implements GameService {
                 .maxPrice(maxPrice)
                 .build();
 
-        games = gameRepositoryCustom.findGames(gameRepositorySearchFilter, pageRequest);
+        games = gameRepositoryAdvance.findGames(gameRepositorySearchFilter, pageRequest);
 
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)
@@ -118,7 +118,7 @@ public class GameServiceImpl implements GameService {
                 .userId(userId)
                 .build();
 
-        Page<Game> games = gameRepositoryCustom.findGames(gameRepositorySearchFilter, pageRequest);
+        Page<Game> games = gameRepositoryAdvance.findGames(gameRepositorySearchFilter, pageRequest);
 
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)

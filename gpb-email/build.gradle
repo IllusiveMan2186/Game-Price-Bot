@@ -1,85 +1,89 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.0.4'
-	id 'io.spring.dependency-management' version '1.1.4'
-	id 'jacoco'
+    id 'java'
+    id 'org.springframework.boot' version '3.0.4'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'jacoco'
 }
 
 group = 'com.gpb'
-version = "1.3.0"
+version = '1.3.1'
 
 java {
-	sourceCompatibility = '17'
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
-springBoot {
-	mainClass = 'com.gpb.email.GpbEmailApplication' // Replace with your actual main class
+ext {
+    commonGpbVersion = '1.3.1'
+
+    jacksonVersion = '2.15.2'
+    lombokVersion = '1.18.30'
+    kafkaVersion = '3.1.1'
+    mockitoJUnitVersion = '5.5.0'
+    mockitoInlineVersion = '5.2.0'
 }
 
 def getEnvOrProperty(name) {
-	project.findProperty(name) ?: System.getenv(name) ?: {
-		throw new GradleException("$name not specified. Set '$name' property or $name environment variable.")
-	}()
+    project.findProperty(name) ?: System.getenv(name) ?: {
+        throw new GradleException("$name not specified. Set '$name' property or $name environment variable.")
+    }()
 }
 
 repositories {
-	mavenCentral()
-	maven {
-		allowInsecureProtocol = true
-		url = getEnvOrProperty("DEPENDENCY_REPO_URL")
-		credentials {
-			username = getEnvOrProperty("DEPENDENCY_REPO_USERNAME")
-			password = getEnvOrProperty("DEPENDENCY_REPO_PASSWORD")
-		}
-	}
+    mavenCentral()
+    maven {
+        allowInsecureProtocol = true
+        url = getEnvOrProperty("DEPENDENCY_REPO_URL")
+        credentials {
+            username = getEnvOrProperty("DEPENDENCY_REPO_USERNAME")
+            password = getEnvOrProperty("DEPENDENCY_REPO_PASSWORD")
+        }
+    }
 }
 
 configurations {
-	all {
-		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-	}
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
 }
 
 dependencies {
-	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.15.2'
-	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.2'
+    implementation "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 
-	implementation 'com.gpb:common:1.3.0'
+    implementation "com.gpb:common:$commonGpbVersion"
 
-	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
-	annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
 
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-	implementation group: 'org.springframework.kafka', name: 'spring-kafka', version: '3.1.1'
+    implementation "org.springframework.kafka:spring-kafka:$kafkaVersion"
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.5.0'
-	testImplementation 'org.mockito:mockito-inline:5.2.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.mockito:mockito-junit-jupiter:$mockitoJUnitVersion"
+    testImplementation "org.mockito:mockito-inline:$mockitoInlineVersion"
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 jacocoTestCoverageVerification {
-	violationRules {
-		rule {
-			element = 'CLASS'
-
-			limit {
-				minimum = 0.70
-			}
-
-			excludes = [
-					'**.configuration.*',
-					'com.gpb.email.GpbEmailApplication'
-			]
-		}
-	}
+    violationRules {
+        rule {
+            element = 'CLASS'
+            limit {
+                minimum = 0.70
+            }
+            excludes = [
+                    '**.configuration.*',
+                    'com.gpb.email.GpbEmailApplication'
+            ]
+        }
+    }
 }
 
 check.dependsOn jacocoTestCoverageVerification

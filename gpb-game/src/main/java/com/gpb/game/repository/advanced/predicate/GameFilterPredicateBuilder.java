@@ -1,8 +1,8 @@
-package com.gpb.game.repository.predicate;
+package com.gpb.game.repository.advanced.predicate;
 
 import com.gpb.game.entity.game.Game;
-import com.gpb.game.entity.game.GameRepositorySearchFilter;
 import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.game.GameRepositorySearchFilter;
 import com.gpb.game.entity.user.BasicUser;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
@@ -15,15 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Package for building dynamic query predicates used in {@link com.gpb.game.repository.GameRepositoryCustom}
- * implementations.
+ * Class for building dynamic query predicates .
  * <p>
  * This package contains predicate builders with filtering logic
  * for complex query construction using the JPA Criteria API.
  * </p>
  */
 @Component
-public class GamePredicateBuilder {
+public class GameFilterPredicateBuilder {
 
     /**
      * Constructs a list of conditions for filtering games based on the provided {@link GameRepositorySearchFilter}.

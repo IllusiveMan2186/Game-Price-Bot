@@ -1,4 +1,4 @@
-package com.gpb.game.repository;
+package com.gpb.game.repository.advanced;
 
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameRepositorySearchFilter;
@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
  *
  * @see com.gpb.game.entity.game.Game
  */
-public interface GameRepositoryCustom {
+public interface GameRepositoryAdvance {
 
     /**
      * Performs a full-text search on the {@link Game} entity's name field.

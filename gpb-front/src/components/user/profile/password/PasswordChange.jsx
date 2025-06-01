@@ -16,7 +16,6 @@ export default function PasswordChange() {
     const { passwordChangeRequest } = useUserActions();
 
     const { userLogoutRequest } = useAuthActions()
-    const { logout } = useAuth();
 
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');

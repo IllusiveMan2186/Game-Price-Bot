@@ -3,11 +3,11 @@ package com.gpb.game.integration.repository;
 import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
 import com.gpb.game.entity.game.Game;
-import com.gpb.game.entity.game.GameRepositorySearchFilter;
 import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.game.GameRepositorySearchFilter;
 import com.gpb.game.integration.BaseIntegration;
 import com.gpb.game.repository.GameRepository;
-import com.gpb.game.repository.impl.GameRepositoryCustomImpl;
+import com.gpb.game.repository.advanced.impl.GameRepositoryAdvancedImpl;
 import jakarta.persistence.EntityManager;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.session.SearchSession;
@@ -43,7 +43,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @AutoConfigureMockMvc
 @Sql(value = "classpath:/cleaning_db.sql", executionPhase = BEFORE_TEST_METHOD)
 @Transactional
-class GameRepositoryCustomImplIntegrationTest extends BaseIntegration {
+class GameRepositoryAdvancedImplIntegrationTest extends BaseIntegration {
 
     private static final String DATE_STRING_FORMAT = "dd/MM/yyyy";
 
@@ -54,7 +54,7 @@ class GameRepositoryCustomImplIntegrationTest extends BaseIntegration {
     private GameRepository gameRepository;
 
     @Autowired
-    private GameRepositoryCustomImpl gameRepositoryCustom;
+    private GameRepositoryAdvancedImpl gameRepositoryCustom;
 
     @BeforeEach
     void saveThreeGames() throws ParseException {
@@ -122,7 +122,7 @@ class GameRepositoryCustomImplIntegrationTest extends BaseIntegration {
     }
 
     @Test
-    void testSearchByNameFullText_whenGamesFound_thenReturnsTwoGames() {
+    void testSearchByNameFullText_whenGamesFound_shouldReturnsTwoGames() {
         prepareSearchSessionForNAmeSearch();
 
         PageRequest pageable = PageRequest.of(0, 10);
@@ -135,7 +135,7 @@ class GameRepositoryCustomImplIntegrationTest extends BaseIntegration {
     }
 
     @Test
-    void testSearchByNameFullText_whenGamesNotFound_thenReturnsEmptyList() {
+    void testSearchByNameFullText_whenGamesNotFound_shouldReturnsEmptyList() {
         prepareSearchSessionForNAmeSearch();
 
         PageRequest pageable = PageRequest.of(0, 10);
@@ -145,7 +145,7 @@ class GameRepositoryCustomImplIntegrationTest extends BaseIntegration {
     }
 
     @Test
-    void testFindGames_whenNoMatch_thenReturnsEmptyPage() {
+    void testFindGames_whenNoMatch_shouldReturnsEmptyPage() {
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .genres(List.of(Genre.RPG)).build();
         Pageable pageable = PageRequest.of(0, 10);
@@ -157,7 +157,7 @@ class GameRepositoryCustomImplIntegrationTest extends BaseIntegration {
     }
 
     @Test
-    void testFindGames_whenByGenres_thenReturnsGame() {
+    void testFindGames_whenByGenres_shouldReturnsGame() {
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .genres(List.of(Genre.ADVENTURES, Genre.ACTION)).build();
         Pageable pageable = PageRequest.of(0, 10);
@@ -171,7 +171,7 @@ class GameRepositoryCustomImplIntegrationTest extends BaseIntegration {
     }
 
     @Test
-    void testFindGames_whenByTypes_thenReturnsOneCurrency() {
+    void testFindGames_whenByTypes_shouldReturnsOneCurrency() {
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .types(List.of(ProductType.CURRENCY)).build();
         Pageable pageable = PageRequest.of(0, 10);
@@ -185,7 +185,7 @@ class GameRepositoryCustomImplIntegrationTest extends BaseIntegration {
     }
 
     @Test
-    void testFindGames_whenByPriceRange_thenReturnsGameInPriceRange() {
+    void testFindGames_whenByPriceRange_shouldReturnsGameInPriceRange() {
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .minPrice(new BigDecimal(1))
                 .maxPrice(new BigDecimal(230)).build();
@@ -200,7 +200,7 @@ class GameRepositoryCustomImplIntegrationTest extends BaseIntegration {
     }
 
     @Test
-    void testFindGames_whenWithSortByNameAscending_thenReturnsGamesSortedByName() {
+    void testFindGames_whenWithSortByNameAscending_shouldReturnsGamesSortedByName() {
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .minPrice(new BigDecimal(1))
                 .maxPrice(new BigDecimal(1000))
@@ -216,7 +216,7 @@ class GameRepositoryCustomImplIntegrationTest extends BaseIntegration {
     }
 
     @Test
-    void testFindGames_whenWithSortByNameDescending_thenReturnsGamesSortedByName() {
+    void testFindGames_whenWithSortByNameDescending_shouldReturnsGamesSortedByName() {
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .minPrice(new BigDecimal(1))
                 .maxPrice(new BigDecimal(1000))
@@ -232,7 +232,7 @@ class GameRepositoryCustomImplIntegrationTest extends BaseIntegration {
     }
 
     @Test
-    void testFindGames_whenWithSortByPriceAscending_thenReturnsGamesSortedByPrice() {
+    void testFindGames_whenWithSortByPriceAscending_shouldReturnsGamesSortedByPrice() {
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .minPrice(new BigDecimal(1))
                 .maxPrice(new BigDecimal(1000))
@@ -248,7 +248,7 @@ class GameRepositoryCustomImplIntegrationTest extends BaseIntegration {
     }
 
     @Test
-    void testFindGames_whenWithSortByPriceDescending_thenReturnsGamesSortedByPrice() {
+    void testFindGames_whenWithSortByPriceDescending_shouldReturnsGamesSortedByPrice() {
         GameRepositorySearchFilter filter = GameRepositorySearchFilter.builder()
                 .minPrice(new BigDecimal(1))
                 .maxPrice(new BigDecimal(1000))

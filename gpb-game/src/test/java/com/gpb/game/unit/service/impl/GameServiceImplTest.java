@@ -8,10 +8,10 @@ import com.gpb.common.entity.game.ProductType;
 import com.gpb.common.exception.NotFoundException;
 import com.gpb.game.configuration.MapperConfig;
 import com.gpb.game.entity.game.Game;
-import com.gpb.game.entity.game.GameRepositorySearchFilter;
 import com.gpb.game.entity.game.GameInShop;
+import com.gpb.game.entity.game.GameRepositorySearchFilter;
 import com.gpb.game.repository.GameRepository;
-import com.gpb.game.repository.GameRepositoryCustom;
+import com.gpb.game.repository.advanced.GameRepositoryAdvance;
 import com.gpb.game.service.GameService;
 import com.gpb.game.service.StoreAggregatorService;
 import com.gpb.game.service.impl.GameServiceImpl;
@@ -45,12 +45,12 @@ class GameServiceImplTest {
 
     StoreAggregatorService storeAggregatorService = mock(StoreAggregatorService.class);
 
-    GameRepositoryCustom gameRepositoryCustom = mock(GameRepositoryCustom.class);
+    GameRepositoryAdvance gameRepositoryAdvance = mock(GameRepositoryAdvance.class);
 
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
     GameService gameService = new GameServiceImpl(gameRepository, storeAggregatorService,
-            gameRepositoryCustom, modelMapper);
+            gameRepositoryAdvance, modelMapper);
 
     private final GameInShop gameInShop = GameInShop.builder()
             .price(new BigDecimal(2))
@@ -123,7 +123,7 @@ class GameServiceImplTest {
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
 
-        when(gameRepositoryCustom.searchByNameFullText(name, pageable))
+        when(gameRepositoryAdvance.searchByNameFullText(name, pageable))
                 .thenReturn(new PageImpl<>(gameList, pageable, 1L));
 
         GameListPageDto result = gameService.getByName(name, pageSize, pageNum, sort);
@@ -145,7 +145,7 @@ class GameServiceImplTest {
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
 
-        when(gameRepositoryCustom.searchByNameFullText(name, PageRequest.of(pageNum - 1, pageSize, sort)))
+        when(gameRepositoryAdvance.searchByNameFullText(name, PageRequest.of(pageNum - 1, pageSize, sort)))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), pageable, 1L));
         when(page.stream()).thenReturn(new ArrayList<>().stream());
         when(storeAggregatorService.findGameByName(name)).thenReturn(Collections.singletonList(game));
@@ -182,7 +182,7 @@ class GameServiceImplTest {
                 .maxPrice(new BigDecimal(1))
                 .build();
 
-        when(gameRepositoryCustom.findGames(gameRepositorySearchFilter, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(page);
+        when(gameRepositoryAdvance.findGames(gameRepositorySearchFilter, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(page);
         when(page.stream()).thenReturn(gameList.stream());
         when(page.getTotalElements()).thenReturn(1L);
 
@@ -209,7 +209,7 @@ class GameServiceImplTest {
                 .userId(userId)
                 .build();
 
-        when(gameRepositoryCustom.findGames(gameRepositorySearchFilter, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(page);        when(page.stream()).thenReturn(gameList.stream());
+        when(gameRepositoryAdvance.findGames(gameRepositorySearchFilter, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(page);        when(page.stream()).thenReturn(gameList.stream());
         when(page.getTotalElements()).thenReturn(1L);
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
 
