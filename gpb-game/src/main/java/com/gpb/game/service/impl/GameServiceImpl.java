@@ -7,13 +7,12 @@ import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
 import com.gpb.common.exception.NotFoundException;
 import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.game.GameRepositorySearchFilter;
 import com.gpb.game.entity.game.GameInShop;
-import com.gpb.game.entity.user.BasicUser;
-import com.gpb.game.repository.GameInShopRepository;
 import com.gpb.game.repository.GameRepository;
 import com.gpb.game.repository.GameRepositoryCustom;
 import com.gpb.game.service.GameService;
-import com.gpb.game.service.GameStoresService;
+import com.gpb.game.service.StoreAggregatorService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -21,13 +20,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Log4j2
@@ -35,7 +31,7 @@ import java.util.Optional;
 public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
-    private final GameStoresService gameStoresService;
+    private final StoreAggregatorService storeAggregatorService;
     private final GameRepositoryCustom gameRepositoryCustom;
     private final ModelMapper modelMapper;
 
@@ -43,12 +39,16 @@ public class GameServiceImpl implements GameService {
     public Game getById(long gameId) {
         log.info("Get game by id : {}", gameId);
 
-        final Game game = gameRepository.findById(gameId);
-        if (game == null) {
-            log.info("Game with id : '{}' not found", gameId);
-            throw new NotFoundException("app.game.error.id.not.found");
-        }
-        return game;
+        return gameRepository.findById(gameId)
+                .orElseThrow(() -> new NotFoundException("app.game.error.id.not.found"));
+    }
+
+    @Override
+    public Game getByIdWithLoadedUsers(long gameId) {
+        log.info("Get game by id : {} with loaded users", gameId);
+
+        return gameRepository.findByIdWithUsers(gameId)
+                .orElseThrow(() -> new NotFoundException("app.game.error.id.not.found"));
     }
 
     @Override
@@ -68,7 +68,7 @@ public class GameServiceImpl implements GameService {
 
         Page<Game> gamePage = gameRepositoryCustom.searchByNameFullText(name, pageRequest);
         if (gamePage.isEmpty()) {
-            List<Game> foundedGames = gameStoresService.findGameByName(name);
+            List<Game> foundedGames = storeAggregatorService.findGameByName(name);
             games = addGames(foundedGames);
             elementAmount = games.size();
         } else {
@@ -83,15 +83,6 @@ public class GameServiceImpl implements GameService {
         return new GameListPageDto(elementAmount, gameDtos);
     }
 
-
-    @Override
-    public Game getByUrl(String url) {
-        log.info("Get game by url : {}", url);
-
-        Game game = gameStoresService.findGameByUrl(url);
-        return gameRepository.save(game);
-    }
-
     @Override
     public GameListPageDto getByGenre(List<Genre> genre, List<ProductType> typesToExclude, final int pageSize,
                                       final int pageNum, BigDecimal minPrice, BigDecimal maxPrice, Sort sort) {
@@ -101,8 +92,14 @@ public class GameServiceImpl implements GameService {
         Page<Game> games;
         List<ProductType> types = getProductTypeThatNotExcluded(typesToExclude);
 
-        games = gameRepositoryCustom.findGamesByGenreAndTypeWithSorting(genre, types, minPrice
-                , maxPrice, pageRequest);
+        GameRepositorySearchFilter gameRepositorySearchFilter = GameRepositorySearchFilter.builder()
+                .genres(genre)
+                .types(types)
+                .minPrice(minPrice)
+                .maxPrice(maxPrice)
+                .build();
+
+        games = gameRepositoryCustom.findGames(gameRepositorySearchFilter, pageRequest);
 
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)
@@ -117,7 +114,11 @@ public class GameServiceImpl implements GameService {
                 userId, pageSize, pageNum);
         PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize, sort);
 
-        Page<Game> games = gameRepositoryCustom.findGamesByUserWithSorting(userId, pageRequest);
+        GameRepositorySearchFilter gameRepositorySearchFilter = GameRepositorySearchFilter.builder()
+                .userId(userId)
+                .build();
+
+        Page<Game> games = gameRepositoryCustom.findGames(gameRepositorySearchFilter, pageRequest);
 
         List<GameDto> gameDtos = games.stream()
                 .map(this::gameMap)
@@ -160,7 +161,7 @@ public class GameServiceImpl implements GameService {
         List<Game> addedGames = new ArrayList<>();
 
         for (Game game : games) {
-            if (gameRepository.findByName(game.getName()) == null) {
+            if (gameRepository.findByName(game.getName()).isEmpty()) {
                 log.info("Game added '{}' with game in shop {}", game.getName(), game.getGamesInShop());
                 addedGames.add(gameRepository.save(game));
             } else {

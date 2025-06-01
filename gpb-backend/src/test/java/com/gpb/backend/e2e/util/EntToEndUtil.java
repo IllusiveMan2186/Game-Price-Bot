@@ -15,7 +15,7 @@ import java.time.Duration;
 public class EntToEndUtil {
 
     public static final long WAIT_TIME = 30;
-    public static final int ATTEMPTS_AMOUNT = 10;
+    public static final int ATTEMPTS_AMOUNT = 1;
 
     public static WebDriver getGpbWebDriver(String gpbUrl) {
         WebDriverManager.chromedriver().setup();

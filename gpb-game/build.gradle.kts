@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.gpb"
-version = "1.3.0"
+version = "1.3.1"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 fun getEnvOrProperty(name: String): String {
@@ -53,8 +53,8 @@ dependencies {
     implementation("org.postgresql:postgresql:42.5.1")
     implementation("org.flywaydb:flyway-core")
 
-    implementation("org.hibernate.search:hibernate-search-mapper-orm:7.2.2.Final")
-    implementation("org.hibernate.search:hibernate-search-backend-lucene:7.2.2.Final")
+    implementation("org.hibernate.search:hibernate-search-mapper-orm-orm6:6.2.3.Final")
+    implementation("org.hibernate.search:hibernate-search-backend-lucene:6.2.3.Final")
     implementation("org.jboss.logging:jboss-logging:3.6.0.Final")
 
     compileOnly("org.projectlombok:lombok:1.18.24")

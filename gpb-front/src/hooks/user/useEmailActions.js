@@ -16,7 +16,7 @@ export const useEmailActions = () => {
     // Change Email
     const emailChangeRequest = (email, setErrorMessage) => {
         handleRequest(
-            "PUT",
+            "PATCH",
             API_ENDPOINTS.CHANGE_EMAIL,
             { email },
             (response) => {

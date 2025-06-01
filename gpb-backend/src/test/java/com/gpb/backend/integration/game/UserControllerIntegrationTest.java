@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class UserControllerIntegrationTest extends BaseAuthenticationIntegration {
+class UserControllerIntegrationTest extends BaseIntegration {
 
     @Test
     void testAccess_whenRequestGetUserInfo_shouldNotHaveAccess() throws Exception {

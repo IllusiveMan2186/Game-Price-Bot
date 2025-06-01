@@ -8,13 +8,12 @@ import com.gpb.common.entity.game.ProductType;
 import com.gpb.common.exception.NotFoundException;
 import com.gpb.game.configuration.MapperConfig;
 import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.game.GameRepositorySearchFilter;
 import com.gpb.game.entity.game.GameInShop;
-import com.gpb.game.entity.user.BasicUser;
-import com.gpb.game.repository.GameInShopRepository;
 import com.gpb.game.repository.GameRepository;
 import com.gpb.game.repository.GameRepositoryCustom;
 import com.gpb.game.service.GameService;
-import com.gpb.game.service.GameStoresService;
+import com.gpb.game.service.StoreAggregatorService;
 import com.gpb.game.service.impl.GameServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -34,8 +33,6 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -46,13 +43,13 @@ class GameServiceImplTest {
 
     GameRepository gameRepository = mock(GameRepository.class);
 
-    GameStoresService gameStoresService = mock(GameStoresService.class);
+    StoreAggregatorService storeAggregatorService = mock(StoreAggregatorService.class);
 
     GameRepositoryCustom gameRepositoryCustom = mock(GameRepositoryCustom.class);
 
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
-    GameService gameService = new GameServiceImpl(gameRepository, gameStoresService,
+    GameService gameService = new GameServiceImpl(gameRepository, storeAggregatorService,
             gameRepositoryCustom, modelMapper);
 
     private final GameInShop gameInShop = GameInShop.builder()
@@ -69,7 +66,7 @@ class GameServiceImplTest {
     @Test
     void testGetByIdGame_whenNotExist_ShouldThrowException() {
         long gameId = 123L;
-        when(gameRepository.findById(gameId)).thenReturn(null);
+        when(gameRepository.findById(gameId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> gameService.getById(gameId), "app.game.error.id.not.found");
         verify(gameRepository, times(1)).findById(gameId);
@@ -77,9 +74,9 @@ class GameServiceImplTest {
 
     @Test
     void testGetGameById_whenSuccess_shouldReturnGame() {
-        int id = 1;
+        long id = 1;
         game.setUserList(new ArrayList<>());
-        when(gameRepository.findById(id)).thenReturn(game);
+        when(gameRepository.findById(id)).thenReturn(Optional.of(game));
         GameInfoDto gameInfoDto = modelMapper.map(game, GameInfoDto.class);
 
         GameInfoDto result = gameService.getDtoById(id);
@@ -88,9 +85,29 @@ class GameServiceImplTest {
     }
 
     @Test
+    void testGetByIdWithLoadedUsers_whenNotExist_ShouldThrowException() {
+        long gameId = 123L;
+        when(gameRepository.findByIdWithUsers(gameId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> gameService.getById(gameId), "app.game.error.id.not.found");
+        verify(gameRepository, times(1)).findById(gameId);
+    }
+
+    @Test
+    void testGetGameByIdWithLoadedUsers_whenSuccess_shouldReturnGame() {
+        long id = 1;
+        game.setUserList(new ArrayList<>());
+        when(gameRepository.findByIdWithUsers(id)).thenReturn(Optional.of(game));
+
+        Game result = gameService.getByIdWithLoadedUsers(id);
+
+        assertEquals(game, result);
+    }
+
+    @Test
     void testGetGameById_whenNotFound_shouldThrowException() {
-        int id = 1;
-        when(gameRepository.findById(id)).thenReturn(null);
+        long id = 1;
+        when(gameRepository.findByIdWithUsers(id)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> gameService.getDtoById(id), "Game with id '1' not found");
     }
@@ -101,7 +118,7 @@ class GameServiceImplTest {
         int pageSize = 2;
         int pageNum = 1;
         List<Game> gameList = Collections.singletonList(game);
-        List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
+        List<GameDto> gameDtoList = gameList.stream().map(gameDto -> modelMapper.map(gameDto, GameDto.class)).toList();
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
@@ -124,15 +141,15 @@ class GameServiceImplTest {
         game.setName(name);
         List<Game> gameList = Collections.singletonList(game);
         List<Long> gameIds = Collections.singletonList(1L);
-        List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
+        List<GameDto> gameDtoList = gameList.stream().map(gameDto -> modelMapper.map(gameDto, GameDto.class)).toList();
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
 
         when(gameRepositoryCustom.searchByNameFullText(name, PageRequest.of(pageNum - 1, pageSize, sort)))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), pageable, 1L));
         when(page.stream()).thenReturn(new ArrayList<>().stream());
-        when(gameStoresService.findGameByName(name)).thenReturn(Collections.singletonList(game));
-        when(gameRepository.findByName(name)).thenReturn(null);
+        when(storeAggregatorService.findGameByName(name)).thenReturn(Collections.singletonList(game));
+        when(gameRepository.findByName(name)).thenReturn(Optional.empty());
         when(gameRepository.save(game)).thenReturn(game);
         when(gameRepository.findAllById(gameIds)).thenReturn(gameList);
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
@@ -146,25 +163,35 @@ class GameServiceImplTest {
 
     @Test
     void testFindByGenre_whenSuccess_shouldReturnGameList() {
-        Page page = mock(Page.class);
-        List<Genre> genre = Collections.singletonList(Genre.STRATEGIES);
         int pageSize = 2;
+        int pageNum = 2;
+        Page page = mock(Page.class);
+
+        List<Genre> genre = Collections.singletonList(Genre.STRATEGIES);
         List<ProductType> types = Collections.singletonList(ProductType.GAME);
         List<ProductType> typesToExclude = List.of(ProductType.ADDITION, ProductType.CURRENCY, ProductType.SUBSCRIPTION);
-        int pageNum = 2;
+
         List<Game> gameList = Collections.singletonList(game);
-        List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
+        List<GameDto> gameDtoList = gameList.stream().map(gameDto -> modelMapper.map(gameDto, GameDto.class)).toList();
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        when(gameRepositoryCustom.findGamesByGenreAndTypeWithSorting(
-                genre, types, new BigDecimal(0),
-                new BigDecimal(1),PageRequest.of(pageNum - 1, pageSize, sort)))
-                .thenReturn(page);
+
+        GameRepositorySearchFilter gameRepositorySearchFilter = GameRepositorySearchFilter.builder()
+                .genres(genre)
+                .types(types)
+                .minPrice(new BigDecimal(0))
+                .maxPrice(new BigDecimal(1))
+                .build();
+
+        when(gameRepositoryCustom.findGames(gameRepositorySearchFilter, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(page);
         when(page.stream()).thenReturn(gameList.stream());
         when(page.getTotalElements()).thenReturn(1L);
+
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
+
 
         GameListPageDto result = gameService.getByGenre(genre, typesToExclude, pageSize, pageNum,
                 new BigDecimal(0), new BigDecimal(1), sort);
+
 
         assertEquals(gameListPageDto, result);
     }
@@ -176,14 +203,19 @@ class GameServiceImplTest {
         long userId = 1;
         Page page = mock(Page.class);
         List<Game> gameList = Collections.singletonList(game);
-        List<GameDto> gameDtoList = gameList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
+        List<GameDto> gameDtoList = gameList.stream().map(gameDto -> modelMapper.map(gameDto, GameDto.class)).toList();
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        when(gameRepositoryCustom.findGamesByUserWithSorting(userId, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(page);
-        when(page.stream()).thenReturn(gameList.stream());
+        GameRepositorySearchFilter gameRepositorySearchFilter = GameRepositorySearchFilter.builder()
+                .userId(userId)
+                .build();
+
+        when(gameRepositoryCustom.findGames(gameRepositorySearchFilter, PageRequest.of(pageNum - 1, pageSize, sort))).thenReturn(page);        when(page.stream()).thenReturn(gameList.stream());
         when(page.getTotalElements()).thenReturn(1L);
         GameListPageDto gameListPageDto = new GameListPageDto(1, gameDtoList);
 
+
         GameListPageDto result = gameService.getUserGames(userId, pageSize, pageNum, sort);
+
 
         assertEquals(gameListPageDto, result);
     }
@@ -229,7 +261,7 @@ class GameServiceImplTest {
     @Test
     void testSetFollowGameOption_whenSuccess_shouldSetFollowedOptionToTrue() {
         long gameId = 1L;
-        when(gameRepository.findById(gameId)).thenReturn(game);
+        when(gameRepository.findById(gameId)).thenReturn(Optional.of(game));
         Game expectedGame = Game.builder()
                 .isFollowed(true)
                 .gamesInShop(Collections.singleton(gameInShop))

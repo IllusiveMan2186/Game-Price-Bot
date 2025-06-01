@@ -3,7 +3,8 @@ package com.gpb.backend.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,8 @@ public class RefreshToken {
     @Id
     private String token;
 
-    @ManyToOne
+    @OneToOne
+    @JoinColumn(name = "user_id", unique = true)
     private WebUser user;
 
     private LocalDateTime expiresAt;

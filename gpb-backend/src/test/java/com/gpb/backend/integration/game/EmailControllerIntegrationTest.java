@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class EmailControllerIntegrationTest  extends BaseAuthenticationIntegration {
+public class EmailControllerIntegrationTest  extends BaseIntegration {
 
     @Test
     void testUpdateUser_whenSuccess_shouldReturnUser() throws Exception {

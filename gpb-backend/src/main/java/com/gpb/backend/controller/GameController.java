@@ -71,7 +71,7 @@ public class GameController {
      * @param name     the game name to search for
      * @param pageSize the number of games per page (default is 25)
      * @param pageNum  the page number to retrieve (default is 1)
-     * @param sortBy   the sort parameter (default is "gamesInShop.discountPrice-ASC")
+     * @param sortBy   the sort parameter (default is "name-ASC")
      * @return a paginated list of games matching the name
      */
     @GetMapping(value = "/name/{name}")
@@ -86,7 +86,7 @@ public class GameController {
             @RequestParam(required = false, defaultValue = "1")
             @Min(value = 1) final int pageNum,
 
-            @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC")
+            @RequestParam(required = false, defaultValue = "name-ASC")
             @Pattern(regexp = CommonConstants.SORT_PARAM_REGEX) final String sortBy
     ) {
         log.info("Searching for game by name '{}'", name);
@@ -136,7 +136,7 @@ public class GameController {
      * @param pageNum  the page number to retrieve (default is 1)
      * @param minPrice the minimal price (default is 0)
      * @param maxPrice the maximal price (default is 10000)
-     * @param sortBy   the sort parameter (default is "gamesInShop.discountPrice-ASC")
+     * @param sortBy   the sort parameter (default is "name-ASC")
      * @return a paginated list of games matching the filters
      * @throws PriceRangeException if the price range is invalid (maxPrice < minPrice)
      */
@@ -158,7 +158,7 @@ public class GameController {
             @RequestParam(required = false, defaultValue = "10000")
             @Min(value = 0) final BigDecimal maxPrice,
 
-            @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC")
+            @RequestParam(required = false, defaultValue = "name-ASC")
             @Pattern(regexp = CommonConstants.SORT_PARAM_REGEX) final String sortBy
     ) {
         log.info("Retrieving games for genres: {} with exclusion types: {} and price range {} - {}; pageSize={}, pageNum={}, sortBy={}",
@@ -175,7 +175,7 @@ public class GameController {
      *
      * @param pageSize the number of games per page (default is 25)
      * @param pageNum  the page number to retrieve (default is 1)
-     * @param sortBy   the sort parameter (default is "gamesInShop.discountPrice-ASC")
+     * @param sortBy   the sort parameter (default is "name-ASC")
      * @param user     the authenticated user's details
      * @return a paginated list of the user's games
      */
@@ -188,7 +188,7 @@ public class GameController {
             @RequestParam(required = false, defaultValue = "1")
             @Positive final int pageNum,
 
-            @RequestParam(required = false, defaultValue = "gamesInShop.discountPrice-ASC")
+            @RequestParam(required = false, defaultValue = "name-ASC")
             @Pattern(regexp = CommonConstants.SORT_PARAM_REGEX) final String sortBy,
 
             @AuthenticationPrincipal final UserDto user

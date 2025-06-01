@@ -1,13 +1,9 @@
 package com.gpb.game.repository;
 
-import com.gpb.common.entity.game.Genre;
-import com.gpb.common.entity.game.ProductType;
 import com.gpb.game.entity.game.Game;
+import com.gpb.game.entity.game.GameRepositorySearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * Custom repository interface for performing advanced queries on {@link Game} entities.
@@ -34,43 +30,16 @@ public interface GameRepositoryCustom {
     Page<Game> searchByNameFullText(String name, Pageable pageable);
 
     /**
-     * Retrieves a paginated list of {@link Game} entities associated with a specific user.
+     * Retrieves a paginated and filtered list of {@link Game} entities based on the provided filter criteria.
      * <p>
-     * This method fetches games that are linked to a particular user, allowing for dynamic sorting
-     * based on various attributes such as name, price, and other game details.
+     * Supports dynamic filtering by genre, product type, price range, and associated user,
+     * as well as sorting by any supported property (including joined field discount price).
      * </p>
      *
-     * @param userId   The unique identifier of the user whose games should be retrieved.
+     * @param filter   A {@link GameRepositorySearchFilter} object containing optional filtering parameters
+     *                 such as genres, types, min/max price, and user ID.
      * @param pageable The pagination and sorting details.
-     * @return A {@link Page} of games belonging to the specified user.
+     * @return A {@link Page} of games that match the given filtering and sorting criteria.
      */
-    Page<Game> findGamesByUserWithSorting(Long userId, Pageable pageable);
-
-    /**
-     * Retrieves a paginated list of {@link Game} entities filtered by genre, type, and price range,
-     * with support for dynamic sorting.
-     * <p>
-     * This method allows filtering games based on multiple criteria:
-     * <ul>
-     *     <li>Genre: The type of game, such as "RPG" or "Action".</li>
-     *     <li>Product Type: The category of the game, such as "GAME" or "CURRENCY".</li>
-     *     <li>Discount Price Range: The minimum and maximum price of the game.</li>
-     * </ul>
-     * Additionally, results can be dynamically sorted based on various attributes.
-     * </p>
-     *
-     * @param genres   A list of {@link Genre} categories to filter the games.
-     * @param types    A list of {@link ProductType} categories to filter the games.
-     * @param minPrice The minimum discount price for filtering games.
-     * @param maxPrice The maximum discount price for filtering games.
-     * @param pageable The pagination and sorting details.
-     * @return A {@link Page} containing games that match the provided filters.
-     */
-    Page<Game> findGamesByGenreAndTypeWithSorting(
-            List<Genre> genres,
-            List<ProductType> types,
-            BigDecimal minPrice,
-            BigDecimal maxPrice,
-            Pageable pageable
-    );
+    Page<Game> findGames(GameRepositorySearchFilter filter, Pageable pageable);
 }

@@ -45,7 +45,7 @@ class UserServiceImplTest {
     void testGetUsersById_whenSuccess_shouldGetUser() {
         long userId = 1L;
         BasicUser user = new BasicUser();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findByIdWithGames(userId)).thenReturn(Optional.of(user));
 
         BasicUser result = userService.getUserById(userId);
 
@@ -55,7 +55,7 @@ class UserServiceImplTest {
     @Test
     void testGetUsersById_whenNotFound_shouldThrowException() {
         long userId = 1L;
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        when(userRepository.findByIdWithGames(userId)).thenReturn(Optional.empty());
 
 
         assertThrows(
@@ -121,7 +121,7 @@ class UserServiceImplTest {
         BasicUser targetUser = new BasicUser(1L, targetGameList, targetNotificationTypes);
         AccountLinker accountLinker = new AccountLinker(token, targetUser);
         when(accountLinkerRepository.findById(token)).thenReturn(Optional.of(accountLinker));
-        when(userRepository.findById(sourceUserId)).thenReturn(Optional.of(sourceUser));
+        when(userRepository.findByIdWithGames(sourceUserId)).thenReturn(Optional.of(sourceUser));
 
 
         userService.linkUsers(token, sourceUserId);
@@ -185,7 +185,7 @@ class UserServiceImplTest {
         BasicUser targetUser = new BasicUser();
         AccountLinker accountLinker = new AccountLinker(token, targetUser);
         when(accountLinkerRepository.findById(token)).thenReturn(Optional.of(accountLinker));
-        when(userRepository.findById(sourceUserId)).thenReturn(Optional.empty());
+        when(userRepository.findByIdWithGames(sourceUserId)).thenReturn(Optional.empty());
 
 
         NotFoundException exception = assertThrows(NotFoundException.class,

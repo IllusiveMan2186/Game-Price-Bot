@@ -6,7 +6,6 @@ import com.gpb.common.util.CommonConstants;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.BasicUser;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -21,11 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
-
-    @BeforeEach
-    void gameCreationBeforeAllTests() {
-    }
+class GameControllerIntegrationTest extends BaseControllersIntegration {
 
     @Test
     void testGetGameById_whenSuccess_shouldReturnGame() throws Exception {
@@ -64,7 +59,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("pageSize", String.valueOf(games.size() + 1))
                         .param("minPrice", "0")
                         .param("maxPrice", "10000")
-                        .param("sortBy", "gamesInShop.discountPrice-ASC")
+                        .param("sortBy", "name-ASC")
                         .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -78,13 +73,33 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
     }
 
     @Test
+    void testGetAllGamesByGenre_whenDiscountPriceSort_shouldReturnListOfGames() throws Exception {
+        mockMvc.perform(get("/game/genre")
+                        .param("pageNum", "1")
+                        .param("pageSize", "25")
+                        .param("minPrice", "0")
+                        .param("maxPrice", "10000")
+                        .param("sortBy", "gamesInShop.discountPrice-DESC")
+                        .header(CommonConstants.API_KEY_HEADER, API_KEY))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.elementAmount").value(3))
+                .andExpect(jsonPath("$.games").isArray())
+                .andExpect(jsonPath("$.games", hasSize(3)))
+                .andExpect(jsonPath("$.games[0].id").value(3))
+                .andExpect(jsonPath("$.games[1].id").value(2))
+                .andExpect(jsonPath("$.games[2].id").value(1));
+    }
+
+    @Test
     void testGetAllGamesByGenre_whenSuccess_shouldReturnListOfGames() throws Exception {
         mockMvc.perform(get("/game/genre")
                         .param("pageNum", "1")
                         .param("pageSize", "25")
                         .param("minPrice", "0")
                         .param("maxPrice", "10000")
-                        .param("sortBy", "gamesInShop.discountPrice-ASC")
+                        .param("sortBy", "name-ASC")
                         .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -105,7 +120,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("pageSize", "1")
                         .param("minPrice", "0")
                         .param("maxPrice", "10000")
-                        .param("sortBy", "gamesInShop.discountPrice-ASC")
+                        .param("sortBy", "name-ASC")
                         .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -134,7 +149,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("pageSize", "5")
                         .param("minPrice", "0")
                         .param("maxPrice", "10000")
-                        .param("sortBy", "gamesInShop.discountPrice-ASC")
+                        .param("sortBy", "name-ASC")
                         .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -167,7 +182,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("pageSize", "25")
                         .param("minPrice", "500")
                         .param("maxPrice", "1000")
-                        .param("sortBy", "gamesInShop.discountPrice-ASC")
+                        .param("sortBy", "name-ASC")
                         .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -175,9 +190,9 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                 .andExpect(jsonPath("$.elementAmount").value(3))
                 .andExpect(jsonPath("$.games").isArray())
                 .andExpect(jsonPath("$.games", hasSize(3)))
-                .andExpect(jsonPath("$.games[0].id").value(4))
-                .andExpect(jsonPath("$.games[1].id").value(2))
-                .andExpect(jsonPath("$.games[2].id").value(3));
+                .andExpect(jsonPath("$.games[0].id").value(2))
+                .andExpect(jsonPath("$.games[1].id").value(3))
+                .andExpect(jsonPath("$.games[2].id").value(4));
     }
 
     @Test
@@ -188,7 +203,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("pageSize", "25")
                         .param("minPrice", "500")
                         .param("maxPrice", "500")
-                        .param("sortBy", "gamesInShop.discountPrice-ASC")
+                        .param("sortBy", "name-ASC")
                         .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -206,7 +221,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
                         .param("pageSize", "25")
                         .param("minPrice", "501")
                         .param("maxPrice", "500")
-                        .param("sortBy", "gamesInShop.discountPrice-ASC")
+                        .param("sortBy", "name-ASC")
                         .header(CommonConstants.API_KEY_HEADER, API_KEY))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -221,7 +236,7 @@ class GameControllerIntegrationTest extends BaseAuthenticationIntegration {
         mockMvc.perform(get("/game/user/games")
                         .param("pageNum", "1")
                         .param("pageSize", "25")
-                        .param("sortBy", "gamesInShop.discountPrice-ASC") // Correct format
+                        .param("sortBy", "name-ASC") // Correct format
                         .header(CommonConstants.API_KEY_HEADER, API_KEY)
                         .header(CommonConstants.BASIC_USER_ID_HEADER, 1))
                 .andDo(print())

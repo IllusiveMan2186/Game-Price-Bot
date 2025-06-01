@@ -64,8 +64,15 @@ export default function PasswordChange() {
 
     // Validates a single field using Yup
     const validateField = (fieldName, value) => {
+        const data = {
+            oldPassword,
+            newPassword,
+            confirmPassword,
+            [fieldName]: value // this overrides the specific field with the latest typed value
+        };
+
         validationSchema
-            .validateAt(fieldName, { newPassword, confirmPassword: fieldName === 'confirmPassword' ? value : confirmPassword })
+            .validateAt(fieldName, data)
             .then(() => {
                 if (fieldName === 'oldPassword') setOLdErrorPassword('');
                 if (fieldName === 'newPassword') setNewErrorPassword('');
@@ -88,10 +95,8 @@ export default function PasswordChange() {
 
     const logoutCall = async () => {
         console.info("logout");
-        logout();
 
         await userLogoutRequest();
-        navigate("/")
     };
 
     // Handles form submission
@@ -133,7 +138,7 @@ export default function PasswordChange() {
                                 onChange={onChangeHandler}
                                 onBlur={() => validateField('oldPassword', oldPassword)}
                             />
-                            {newErrorPassword && <span className="Error">{newErrorPassword}</span>}
+                            {oldErrorPassword && <span className="Error">{oldErrorPassword}</span>}
                         </div>
 
                         <div className="form-outline mb-4">

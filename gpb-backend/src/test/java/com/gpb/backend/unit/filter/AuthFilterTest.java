@@ -1,13 +1,9 @@
 package com.gpb.backend.unit.filter;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.gpb.backend.configuration.security.UserAuthenticationProvider;
-import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.filter.AuthFilter;
-import com.gpb.backend.util.Constants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -2,28 +2,21 @@ package com.gpb.game.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gpb.common.entity.event.NotificationEvent;
 import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
-import com.gpb.common.util.CommonConstants;
 import com.gpb.game.GpbStoresApplication;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
-import com.gpb.game.listener.GameRequestListener;
-import com.gpb.game.listener.UserRequestListener;
 import com.gpb.game.repository.GameInShopRepository;
 import com.gpb.game.repository.GameRepository;
 import com.gpb.game.repository.UserRepository;
 import com.gpb.game.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,15 +31,12 @@ import java.util.List;
 import java.util.Set;
 
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = GpbStoresApplication.class)
 @AutoConfigureMockMvc
 @Sql(value = "classpath:/cleaning_db.sql", executionPhase = BEFORE_TEST_METHOD)
-class BaseAuthenticationIntegration {
+public class BaseControllersIntegration extends BaseIntegration{
 
     private static final String DATE_STRING_FORMAT = "dd/MM/yyyy";
 
@@ -69,22 +59,12 @@ class BaseAuthenticationIntegration {
     @Autowired
     protected GameInShopRepository gameInShopRepository;
 
-    @MockBean
-    protected KafkaTemplate<String, NotificationEvent> responseKafkaTemplate;
-    @MockBean
-    protected GameRequestListener gameRequestListener;
-    @MockBean
-    protected UserRequestListener userRequestListener;
-
     @BeforeAll
-    protected static void beforeAll() throws ParseException {
+    protected static void beforeAllGameCreation() throws ParseException {
         games.clear();
         games.add(gameCreation("name1", "url1", Genre.STRATEGIES, new BigDecimal("100.0"), new BigDecimal("100.0")));
         games.add(gameCreation("name2", "url2", Genre.RPG, new BigDecimal("500.0"), new BigDecimal("500.0")));
         games.add(gameCreation("name3", "url3", Genre.STRATEGIES, new BigDecimal("1000.0"), new BigDecimal("800.0")));
-        System.setProperty("IMAGE_FOLDER", "");
-        System.setProperty("KAFKA_SERVER_URL", "");
-        System.setProperty("API_KEY", API_KEY);
     }
 
     @BeforeEach
@@ -95,14 +75,6 @@ class BaseAuthenticationIntegration {
         games.set(2, gameRepository.save(games.get(2)));
         games.forEach(game -> game.getGamesInShop()
                 .forEach(gameInShop -> gameInShopRepository.save(gameInShop)));
-    }
-
-    @Test
-    void testRequestFilter_whenApiKeyMissing_shouldReturnUnauthorized() throws Exception {
-        mockMvc.perform(get("/game/{id}", games.get(0).getId())
-                        .header(CommonConstants.BASIC_USER_ID_HEADER, -1))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
     }
 
     protected static GameInShop gameInShopCreation(String url, BigDecimal price, BigDecimal discountPrice)

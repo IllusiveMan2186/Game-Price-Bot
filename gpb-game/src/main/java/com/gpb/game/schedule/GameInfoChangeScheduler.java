@@ -3,8 +3,8 @@ package com.gpb.game.schedule;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.service.GameInShopService;
-import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.NotificationManager;
+import com.gpb.game.service.StoreAggregatorService;
 import com.gpb.game.service.UserService;
 import com.gpb.game.util.Constants;
 import jakarta.transaction.Transactional;
@@ -38,7 +38,7 @@ import java.util.List;
 public class GameInfoChangeScheduler {
 
     private final GameInShopService gameInShopService;
-    private final GameStoresService gameStoresService;
+    private final StoreAggregatorService storeAggregatorService;
     private final NotificationManager notificationManager;
     private final UserService userService;
 
@@ -61,7 +61,7 @@ public class GameInfoChangeScheduler {
         log.info("Starting daily check for game information changes for subscribed games.");
 
         final List<GameInShop> subscribedGames = gameInShopService.getSubscribedGames();
-        final List<GameInShop> changedGames = gameStoresService.checkGameInStoreForChange(subscribedGames);
+        final List<GameInShop> changedGames = storeAggregatorService.checkGameInStoreForChange(subscribedGames);
 
         log.info("Amount of games that information was changed {}", changedGames.size());
 
@@ -93,7 +93,7 @@ public class GameInfoChangeScheduler {
         log.info("Starting weekly check for game information changes for all games in the shop.");
 
         final List<GameInShop> games = gameInShopService.getAllGamesInShop();
-        final List<GameInShop> changedGames = gameStoresService.checkGameInStoreForChange(games);
+        final List<GameInShop> changedGames = storeAggregatorService.checkGameInStoreForChange(games);
 
         gameInShopService.changeInfo(changedGames);
 

@@ -1,32 +1,20 @@
 package com.gpb.game.service.impl;
 
-import com.gpb.common.entity.game.GameDto;
 import com.gpb.common.entity.game.GameInfoDto;
-import com.gpb.common.entity.game.GameListPageDto;
-import com.gpb.common.entity.game.Genre;
-import com.gpb.common.entity.game.ProductType;
-import com.gpb.common.exception.NotFoundException;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.repository.GameInShopRepository;
-import com.gpb.game.repository.GameRepository;
-import com.gpb.game.repository.GameRepositoryCustom;
 import com.gpb.game.service.GameInShopService;
 import com.gpb.game.service.GameService;
-import com.gpb.game.service.GameStoresService;
+import com.gpb.game.service.StoreAggregatorService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +26,7 @@ public class GameInShopServiceImpl implements GameInShopService {
 
     private final GameService gameService;
     private final GameInShopRepository gameInShopRepository;
-    private final GameStoresService gameStoresService;
+    private final StoreAggregatorService storeAggregatorService;
     private final ModelMapper modelMapper;
 
     @Override
@@ -47,7 +35,7 @@ public class GameInShopServiceImpl implements GameInShopService {
 
         final GameInShop gameInShop = gameInShopRepository.findByUrl(url);
         if (gameInShop == null) {
-            return modelMapper.map(gameService.getByUrl(url), GameInfoDto.class);
+            return modelMapper.map(storeAggregatorService.findGameByUrl(url), GameInfoDto.class);
         }
 
         return modelMapper.map(gameInShop.getGame(), GameInfoDto.class);
@@ -64,7 +52,7 @@ public class GameInShopServiceImpl implements GameInShopService {
         log.info("Get game in store by url {} and adding to game {}", url, gameId);
 
         final Game game = gameService.getById(gameId);
-        final GameInShop gameInShop = gameStoresService.findGameInShopByUrl(url);
+        final GameInShop gameInShop = storeAggregatorService.findGameInShopByUrl(url);
         gameInShop.setGame(game);
         gameInShopRepository.save(gameInShop);
         return modelMapper.map(gameService.getById(gameId), GameInfoDto.class);
