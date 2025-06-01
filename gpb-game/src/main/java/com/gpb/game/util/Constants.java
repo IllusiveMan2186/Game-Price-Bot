@@ -10,6 +10,8 @@ public class Constants {
 
     public static final String PNG_IMG_FILE_EXTENSION = ".png";
 
+    public static final String PNG_IMG_FILE_EXTENSION = ".png";
+
     public static final String ATTRIBUTE_HREF = "href";
 
     public static final long SEARCH_MAX_RESULT_PER_STORE = 6;

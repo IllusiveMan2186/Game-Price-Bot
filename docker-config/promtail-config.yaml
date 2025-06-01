@@ -1,0 +1,42 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: backend
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: backend
+          __path__: /var/log/app/backend/*.log
+
+  - job_name: game
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: game
+          __path__: /var/log/app/game/*.log
+
+  - job_name: telegram
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: telegram
+          __path__: /var/log/app/telegram/*.log
+
+  - job_name: email
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: email
+          __path__: /var/log/app/email/*.log
