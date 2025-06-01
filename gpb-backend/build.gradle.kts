@@ -28,7 +28,6 @@ val mockitoVersion = "5.5.0"
 val mockitoInlineVersion = "4.8.0"
 val commonsIoVersion = "2.11.0"
 val jacocoVersion = "0.8.11"
-val log4jVersion = "2.20.0"
 
 // --- Env Resolver ---
 fun getEnvOrProperty(name: String): String {
@@ -81,10 +80,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-aop")
-
-    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
-    implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
-    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
 
     implementation("org.springframework:spring-context")
     implementation("org.springframework.kafka:spring-kafka")
