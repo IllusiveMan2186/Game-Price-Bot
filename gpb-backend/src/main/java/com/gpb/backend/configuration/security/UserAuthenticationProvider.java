@@ -10,7 +10,6 @@ import com.gpb.backend.entity.WebUser;
 import com.gpb.backend.entity.dto.UserDto;
 import com.gpb.backend.exception.GpbTokenExpireException;
 import com.gpb.backend.exception.RefreshTokenException;
-import com.gpb.backend.exception.GpbTokenExpireException;
 import com.gpb.backend.service.RefreshTokenService;
 import com.gpb.backend.service.UserAuthenticationService;
 import com.gpb.backend.util.Constants;
