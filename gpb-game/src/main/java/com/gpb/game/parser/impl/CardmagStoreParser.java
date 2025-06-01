@@ -7,6 +7,7 @@ import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.parser.AbstractStoreParser;
 import com.gpb.game.parser.StorePageParser;
 import com.gpb.game.parser.StoreParser;
+import com.gpb.game.resolver.store.CardmagTypesResolver;
 import com.gpb.game.service.ResourceService;
 import com.gpb.game.util.Constants;
 import com.gpb.game.util.store.CardmagConstants;
@@ -14,13 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -28,17 +27,11 @@ import java.util.Optional;
 public class CardmagStoreParser extends AbstractStoreParser implements StoreParser {
 
     private final ResourceService resourceService;
-    private final Map<String, ProductType> productTypeMap;
-    private final Map<String, ClientActivationType> clientActivationTypeMap;
+    private final CardmagTypesResolver typesResolver;
 
-    public CardmagStoreParser(ResourceService resourceService,
-                              @Qualifier("cardmagGeners") Map<String, Genre> genreMap,
-                              @Qualifier("cardmagProductTypes") Map<String, ProductType> productTypeMap,
-                              @Qualifier("cardmagClientActivation") Map<String, ClientActivationType> clientActivationTypeMap) {
-        super(genreMap);
+    public CardmagStoreParser(ResourceService resourceService, CardmagTypesResolver typesResolver) {
         this.resourceService = resourceService;
-        this.productTypeMap = productTypeMap;
-        this.clientActivationTypeMap = clientActivationTypeMap;
+        this.typesResolver = typesResolver;
     }
 
     @Override
@@ -70,27 +63,15 @@ public class CardmagStoreParser extends AbstractStoreParser implements StorePars
 
     @Override
     public List<Genre> getGenres(Document page) {
-        String title = getTitle(page);
-        return genreMap.entrySet()
-                .stream()
-                .filter(entry -> title.contains(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .toList();
+        String title = extractTitle(page);
+        return typesResolver.resolveGenres(title);
     }
+
 
     @Override
     public ProductType getProductType(Document page) {
-        String title = getTitle(page);
-
-        return productTypeMap.entrySet().stream()
-                .filter(entry -> title.contains(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElseGet(() -> page.getElementsByClass(CardmagConstants.DLC_FIELD)
-                        .stream()
-                        .findAny()
-                        .map(el -> ProductType.ADDITION)
-                        .orElse(ProductType.GAME));
+        String title = extractTitle(page);
+        return typesResolver.resolveProductType(title, page);
     }
 
     @Override
@@ -117,21 +98,8 @@ public class CardmagStoreParser extends AbstractStoreParser implements StorePars
     }
 
     private ClientActivationType getClientActivationTypeFromGameName(Document page) {
-        String title = getTitle(page);
-
-        return clientActivationTypeMap.entrySet()
-                .stream()
-                .filter(entry -> title.contains(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElse(null);
-    }
-
-    private String getTitle(Document page) {
-        return page
-                .getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_CLASS)
-                .first()
-                .attr(CardmagConstants.GAME_PAGE_TITLE_ATTR);
+        String title = extractTitle(page);
+        return typesResolver.resolveActivationType(title);
     }
 
     private boolean isAvailable(Document page) {
@@ -142,5 +110,11 @@ public class CardmagStoreParser extends AbstractStoreParser implements StorePars
         String text = page.select(CardmagConstants.GAME_PRICE_FIELD).text();
         String sanitized = text.replaceAll("\\D", "");
         return sanitized.isEmpty() ? 0 : Integer.parseInt(sanitized);
+    }
+
+    private String extractTitle(Document page) {
+        return page.getElementsByClass(CardmagConstants.GAME_PAGE_TITLE_CLASS)
+                .first()
+                .attr(CardmagConstants.GAME_PAGE_TITLE_ATTR);
     }
 }

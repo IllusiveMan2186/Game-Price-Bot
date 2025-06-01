@@ -7,19 +7,18 @@ import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.parser.AbstractStoreParser;
 import com.gpb.game.parser.StorePageParser;
 import com.gpb.game.parser.StoreParser;
+import com.gpb.game.resolver.store.GamazeyTypesResolver;
 import com.gpb.game.service.ResourceService;
 import com.gpb.game.util.Constants;
 import com.gpb.game.util.store.GamazeyConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -27,17 +26,11 @@ import java.util.Optional;
 public class GamazeyStoreParser extends AbstractStoreParser implements StoreParser {
 
     private final ResourceService resourceService;
-    private final Map<String, ProductType> productTypeMap;
-    private final Map<String, ClientActivationType> clientActivationTypeMap;
+    private final GamazeyTypesResolver typesResolver;
 
-    public GamazeyStoreParser(ResourceService resourceService,
-                              @Qualifier("gamazeyGenres") Map<String, Genre> genreMap,
-                              @Qualifier("gamazeyProductTypes") Map<String, ProductType> productTypeMap,
-                              @Qualifier("gamazeyClientActivation") Map<String, ClientActivationType> clientActivationTypeMap) {
-        super(genreMap);
+    public GamazeyStoreParser(ResourceService resourceService, GamazeyTypesResolver typesResolver) {
         this.resourceService = resourceService;
-        this.productTypeMap = productTypeMap;
-        this.clientActivationTypeMap = clientActivationTypeMap;
+        this.typesResolver = typesResolver;
     }
 
     @Override
@@ -48,7 +41,7 @@ public class GamazeyStoreParser extends AbstractStoreParser implements StorePars
                 .discountPrice(extractDiscountPrice(page))
                 .discount(extractDiscount(page))
                 .isAvailable(isGameAvailable(page))
-                .clientType(getClientActivationTypeFromGameName(page))
+                .clientType(resolveActivationType(page))
                 .build();
     }
 
@@ -61,6 +54,7 @@ public class GamazeyStoreParser extends AbstractStoreParser implements StorePars
     public List<String> parseSearchResults(String name, StorePageParser pageFetcher) {
         Optional<Document> page = pageFetcher.getPage(GamazeyConstants.GAMEZEY_SEARCH_URL + name);
         if (page.isEmpty()) return Collections.emptyList();
+
         return page.get().getElementsByClass(GamazeyConstants.GAME_IN_LIST)
                 .stream()
                 .map(element -> element.child(0).attr(Constants.ATTRIBUTE_HREF))
@@ -73,20 +67,14 @@ public class GamazeyStoreParser extends AbstractStoreParser implements StorePars
                 .stream()
                 .filter(ch -> ch.text().contains(GamazeyConstants.GAME_GENRES_FIELD))
                 .findFirst()
-                .map(this::getGenres)
+                .map(el -> typesResolver.resolveGenres(el.text()))
                 .orElse(Collections.emptyList());
     }
 
     @Override
     public ProductType getProductType(Document page) {
-        String originalName = page.getElementsByClass(GamazeyConstants.GAME_PAGE_NAME_FIELD).text();
-
-        return productTypeMap.entrySet()
-                .stream()
-                .filter(entry -> originalName.contains(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElse(ProductType.GAME);
+        String rawName = page.getElementsByClass(GamazeyConstants.GAME_PAGE_NAME_FIELD).text();
+        return typesResolver.resolveProductType(rawName);
     }
 
     @Override
@@ -110,17 +98,11 @@ public class GamazeyStoreParser extends AbstractStoreParser implements StorePars
                 .replaceAll(GamazeyConstants.GAME_NAME_PRODUCT_TYPE_PART, "")
                 .replaceAll(GamazeyConstants.GAME_NAME_SPECIFICATION_PART, "")
                 .replaceAll(GamazeyConstants.GAME_NAME_PROBLEMATIC_SYMBOLS, "");
-
     }
 
-    private ClientActivationType getClientActivationTypeFromGameName(Document page) {
-        String originalName = extractTextFromFirstElement(page, GamazeyConstants.GAME_PAGE_NAME_FIELD);
-        return clientActivationTypeMap.entrySet()
-                .stream()
-                .filter(entry -> originalName.contains(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElse(null);
+    private ClientActivationType resolveActivationType(Document page) {
+        String rawName = extractTextFromFirstElement(page, GamazeyConstants.GAME_PAGE_NAME_FIELD);
+        return typesResolver.resolveActivationType(rawName);
     }
 
     private boolean isGameAvailable(Document page) {
@@ -144,13 +126,5 @@ public class GamazeyStoreParser extends AbstractStoreParser implements StorePars
         String text = page.getElementById(GamazeyConstants.GAME_PAGE_DISCOUNT_FIELD).text();
         String sanitized = text.replaceAll("\\D", "");
         return sanitized.isEmpty() ? 0 : Integer.parseInt(sanitized);
-    }
-
-    private List<Genre> getGenres(Element genreElement) {
-        return genreMap.entrySet()
-                .stream()
-                .filter(entry -> genreElement.text().contains(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .toList();
     }
 }

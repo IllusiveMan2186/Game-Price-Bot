@@ -25,7 +25,7 @@ describe('useUserActions', () => {
     result.current.emailChangeRequest('test@example.com', setErrorMock);
 
     expect(handleRequestMock).toHaveBeenCalledWith(
-      'PUT',
+      'PATCH',
       '/email',
       { email: 'test@example.com' },
       expect.any(Function),
@@ -41,7 +41,7 @@ describe('useUserActions', () => {
     result.current.passwordChangeRequest('oldPass', 'newPass', setErrorMock, logoutMock);
 
     expect(handleRequestMock).toHaveBeenCalledWith(
-      'PUT',
+      'PATCH',
       '/user/password',
       { oldPassword: 'oldPass', newPassword: 'newPass' },
       expect.any(Function),
@@ -55,7 +55,7 @@ describe('useUserActions', () => {
     result.current.localeChangeRequest('en');
 
     expect(handleRequestMock).toHaveBeenCalledWith(
-      'PUT',
+      'PATCH',
       '/user/locale',
       { locale: 'en' },
       expect.any(Function),

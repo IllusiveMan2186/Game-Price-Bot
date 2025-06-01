@@ -2,7 +2,6 @@ package com.gpb.backend.unit.configuration.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.gpb.backend.configuration.security.UserAuthenticationProvider;
 import com.gpb.backend.entity.RefreshToken;
 import com.gpb.backend.entity.WebUser;

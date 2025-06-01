@@ -4,8 +4,8 @@ import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.schedule.GameInfoChangeScheduler;
 import com.gpb.game.service.GameInShopService;
-import com.gpb.game.service.GameStoresService;
 import com.gpb.game.service.NotificationManager;
+import com.gpb.game.service.StoreAggregatorService;
 import com.gpb.game.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +30,7 @@ class GameInfoChangeSchedulerTest {
     @Mock
     NotificationManager notificationManager;
     @Mock
-    GameStoresService gameStoresService;
+    StoreAggregatorService storeAggregatorService;
     @InjectMocks
     GameInfoChangeScheduler changeCheckerConfiguration;
 
@@ -39,7 +39,7 @@ class GameInfoChangeSchedulerTest {
         List<GameInShop> subscribedGame = new ArrayList<>();
         when(gameInShopService.getSubscribedGames()).thenReturn(subscribedGame);
         List<GameInShop> changedGames = new ArrayList<>();
-        when(gameStoresService.checkGameInStoreForChange(subscribedGame)).thenReturn(changedGames);
+        when(storeAggregatorService.checkGameInStoreForChange(subscribedGame)).thenReturn(changedGames);
         BasicUser user = new BasicUser();
         user.setId(1);
         List<BasicUser> users = Collections.singletonList(user);
@@ -58,7 +58,7 @@ class GameInfoChangeSchedulerTest {
         List<GameInShop> games = new ArrayList<>();
         when(gameInShopService.getAllGamesInShop()).thenReturn(games);
         List<GameInShop> changedGames = new ArrayList<>();
-        when(gameStoresService.checkGameInStoreForChange(games)).thenReturn(changedGames);
+        when(storeAggregatorService.checkGameInStoreForChange(games)).thenReturn(changedGames);
 
 
         changeCheckerConfiguration.scheduleGameInfoChangeEveryWeak();

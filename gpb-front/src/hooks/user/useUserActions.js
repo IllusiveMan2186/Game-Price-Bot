@@ -19,7 +19,7 @@ export const useUserActions = () => {
     // Change Email
     const emailChangeRequest = (email, setErrorMessage) => {
         handleRequest(
-            "PUT",
+            "PATCH",
             API_ENDPOINTS.CHANGE_EMAIL,
             { email },
             (response) => {
@@ -35,7 +35,7 @@ export const useUserActions = () => {
     const passwordChangeRequest = (oldPassword, newPassword, setErrorMessage, logoutCall) => {
 
         handleRequest(
-            "PUT",
+            "PATCH",
             API_ENDPOINTS.CHANGE_PASSWORD,
             { oldPassword, newPassword },
             () => {
@@ -50,7 +50,7 @@ export const useUserActions = () => {
     const localeChangeRequest = (locale) => {
         console.info(locale)
         handleRequest(
-            "PUT",
+            "PATCH",
             API_ENDPOINTS.CHANGE_LOCALE,
             { locale },
             () => console.log("Locale changed successfully"),

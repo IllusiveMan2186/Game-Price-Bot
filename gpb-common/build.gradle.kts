@@ -6,39 +6,50 @@ plugins {
     id("maven-publish")
 }
 
+group = "com.gpb"
+version = "1.3.1"
+java.sourceCompatibility = JavaVersion.VERSION_17
+
+// --- Versions ---
+val lombokVersion = "1.18.24"
+val jakartaValidationVersion = "3.1.1"
+val kafkaVersion = "3.0.4" // aligns with Spring Boot 3.0.4
+val mockitoVersion = "5.5.0"
+val jacocoVersion = "0.8.11"
+
+// --- Env Resolver ---
 fun getEnvOrProperty(name: String): String {
     return project.findProperty(name)?.toString()
             ?: System.getenv(name)
-            ?: throw GradleException("$name not specified. Set '$name' property or $name environment variable.")
+            ?: throw GradleException("$name not specified. Set '$name' property or environment variable.")
 }
 
-group = "com.gpb"
-version = "1.3.0"
-java.sourceCompatibility = JavaVersion.VERSION_17
-
+// --- Repositories ---
 repositories {
     mavenCentral()
 }
 
+// --- Dependencies ---
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.24")
-    annotationProcessor("org.projectlombok:lombok:1.18.24")
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-    implementation("jakarta.validation:jakarta.validation-api:3.1.1")
+    implementation("jakarta.validation:jakarta.validation-api:$jakartaValidationVersion")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.kafka:spring-kafka")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
 }
 
+// --- Java Artifacts ---
 java {
     withSourcesJar()
     withJavadocJar()
 }
 
-
+// --- Publishing ---
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
@@ -52,6 +63,7 @@ publishing {
                 description.set("Service with common classes of GPB")
                 url.set(getEnvOrProperty("DEPENDENCY_REPO_URL"))
             }
+
             versionMapping {
                 usage("java-api") {
                     fromResolutionResult()
@@ -62,6 +74,7 @@ publishing {
             }
         }
     }
+
     repositories {
         maven {
             isAllowInsecureProtocol = true
@@ -74,12 +87,14 @@ publishing {
     }
 }
 
+// --- Test ---
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+// --- Jacoco ---
 jacoco {
-    toolVersion = "0.8.11"
+    toolVersion = jacocoVersion
 }
 
 tasks.jacocoTestCoverageVerification {
@@ -90,7 +105,7 @@ tasks.jacocoTestCoverageVerification {
             excludes = listOf(
                     "**.entity.*",
                     "**.exception.*",
-                    "**.util.*",
+                    "**.util.*"
             )
 
             limit {

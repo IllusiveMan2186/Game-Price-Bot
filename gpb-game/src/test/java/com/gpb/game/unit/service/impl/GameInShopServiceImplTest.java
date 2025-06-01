@@ -6,10 +6,10 @@ import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.BasicUser;
 import com.gpb.game.repository.GameInShopRepository;
-import com.gpb.game.repository.GameRepositoryCustom;
+import com.gpb.game.repository.advanced.GameRepositoryAdvance;
 import com.gpb.game.service.GameInShopService;
 import com.gpb.game.service.GameService;
-import com.gpb.game.service.GameStoresService;
+import com.gpb.game.service.StoreAggregatorService;
 import com.gpb.game.service.impl.GameInShopServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -23,27 +23,25 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class GameInShopServiceImplTest {
+class GameInShopServiceImplTest {
 
     GameService gameService = mock(GameService.class);
     GameInShopRepository gameInShopRepository = mock(GameInShopRepository.class);
 
-    GameStoresService gameStoresService = mock(GameStoresService.class);
+    StoreAggregatorService storeAggregatorService = mock(StoreAggregatorService.class);
 
-    GameRepositoryCustom gameRepositoryCustom = mock(GameRepositoryCustom.class);
+    GameRepositoryAdvance gameRepositoryAdvance = mock(GameRepositoryAdvance.class);
 
     private final ModelMapper modelMapper = new MapperConfig().modelMapper();
 
-    GameInShopService gameInShopService = new GameInShopServiceImpl(gameService, gameInShopRepository, gameStoresService,
+    GameInShopService gameInShopService = new GameInShopServiceImpl(gameService, gameInShopRepository, storeAggregatorService,
             modelMapper);
 
     private final GameInShop gameInShop = GameInShop.builder()
@@ -68,7 +66,7 @@ public class GameInShopServiceImplTest {
     }
 
     @Test
-    void testGetSubscribedGames_whenSuccess_thenShouldGetGames() {
+    void testGetSubscribedGames_whenSuccess_shouldShouldGetGames() {
         List<GameInShop> games = new ArrayList<>();
         when(gameInShopRepository.findSubscribedGames()).thenReturn(games);
 
@@ -80,8 +78,8 @@ public class GameInShopServiceImplTest {
     @Test
     void testGetGameByUrl_whenGameWithUrlAlreadyRegistered_shouldReturnRegisteredGame() {
         String url = "url";
-        GameInShop gameInShop = GameInShop.builder().game(game).build();
-        when(gameInShopRepository.findByUrl(url)).thenReturn(gameInShop);
+        GameInShop registratedGameInShop = GameInShop.builder().game(game).build();
+        when(gameInShopRepository.findByUrl(url)).thenReturn(registratedGameInShop);
         GameInfoDto gameInfoDto = modelMapper.map(game, GameInfoDto.class);
 
         GameInfoDto result = gameInShopService.getByUrl(url);
@@ -96,9 +94,8 @@ public class GameInShopServiceImplTest {
         Game gameWithAddedShop = Game.builder().gamesInShop(new HashSet<>()).build();
 
         when(gameInShopRepository.findByUrl(url)).thenReturn(null);
-        when(gameStoresService.findGameByUrl(url)).thenReturn(game);
+        when(storeAggregatorService.findGameByUrl(url)).thenReturn(gameWithAddedShop);
         game.setName(name);
-        when(gameService.getByUrl(url)).thenReturn(gameWithAddedShop);
         GameInfoDto gameInfoDto = modelMapper.map(gameWithAddedShop, GameInfoDto.class);
 
         GameInfoDto result = gameInShopService.getByUrl(url);
@@ -112,7 +109,7 @@ public class GameInShopServiceImplTest {
         long gameId = 1L;
         Game gameAfterAdding = Game.builder().gamesInShop(Set.of(gameInShop)).build();
         when(gameService.getById(gameId)).thenReturn(game, gameAfterAdding);
-        when(gameStoresService.findGameInShopByUrl(url)).thenReturn(gameInShop);
+        when(storeAggregatorService.findGameInShopByUrl(url)).thenReturn(gameInShop);
         GameInfoDto gameInfoDto = modelMapper.map(gameAfterAdding, GameInfoDto.class);
 
         GameInfoDto result = gameInShopService.addGameInStore(gameId, url);
@@ -123,7 +120,7 @@ public class GameInShopServiceImplTest {
     }
 
     @Test
-    void testChangeInfo_whenSuccess_thenSaveChanges() {
+    void testChangeInfo_whenSuccess_shouldSaveChanges() {
         List<GameInShop> changedGames = new ArrayList<>();
 
         gameInShopService.changeInfo(changedGames);
@@ -132,7 +129,7 @@ public class GameInShopServiceImplTest {
     }
 
     @Test
-    void testGetUsersChangedGames_whenSuccess_thenShouldGetGames() {
+    void testGetUsersChangedGames_whenSuccess_shouldShouldGetGames() {
         List<GameInShop> changedGames = new ArrayList<>();
         GameInShop gameInShop1 = GameInShop.builder().id(0).build();
         GameInShop gameInShop2 = GameInShop.builder().id(1).build();

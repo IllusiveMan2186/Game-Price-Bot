@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class UserRequestListener {
 
+
     private final UserService userService;
     private final KafkaTemplate<String, ChangeBasicUserIdEvent> changeIdEventKafkaTemplate;
 

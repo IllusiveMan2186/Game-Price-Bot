@@ -1,16 +1,20 @@
 package com.gpb.game.repository;
 
 import com.gpb.game.entity.user.BasicUser;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface UserRepository extends CrudRepository<BasicUser, Long> {
+public interface UserRepository extends JpaRepository<BasicUser, Long> {
+
+    @Query("SELECT u FROM BasicUser u LEFT JOIN FETCH u.gameList WHERE u.id = :userId")
+    Optional<BasicUser> findByIdWithGames(@Param("userId") long userId);
 
     @Modifying
     @Query(value = "INSERT INTO user_game(user_id,game_id) VALUES(:userId,:gameId); ", nativeQuery = true)

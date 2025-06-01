@@ -103,8 +103,7 @@ export async function logoutRequest() {
     console.error("Logout error:", e);
   }
 
-  logoutHandler();
-  navigateHandler();
+  logoutHandler(navigateHandler);
 }
 
 /**

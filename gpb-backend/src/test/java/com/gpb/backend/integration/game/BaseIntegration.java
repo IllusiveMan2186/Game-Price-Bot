@@ -52,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @SpringBootTest(classes = GpbWebApplication.class)
 @AutoConfigureMockMvc
 @Sql(value = "classpath:/cleaning_db.sql", executionPhase = BEFORE_TEST_METHOD)
-public class BaseAuthenticationIntegration {
+public class BaseIntegration {
 
     protected static final String GAME_SERVICE_URL = "gameServiceUrl";
     private static final String DATE_STRING_FORMAT = "dd/MM/yyyy";

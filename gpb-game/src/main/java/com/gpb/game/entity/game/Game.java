@@ -39,7 +39,7 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @FullTextField
+    @FullTextField(analyzer = "standard")
     private String name;
 
     @Enumerated(EnumType.ORDINAL)

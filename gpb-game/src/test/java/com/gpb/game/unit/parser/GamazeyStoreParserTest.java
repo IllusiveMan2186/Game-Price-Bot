@@ -3,21 +3,20 @@ package com.gpb.game.unit.parser;
 import com.gpb.common.entity.game.ClientActivationType;
 import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
-import com.gpb.game.configuration.mapper.GamazeyEnumMapper;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.parser.StorePageParser;
 import com.gpb.game.parser.impl.GamazeyStoreParser;
+import com.gpb.game.resolver.store.GamazeyTypesResolver;
 import com.gpb.game.service.ResourceService;
 import com.gpb.game.util.Constants;
 import com.gpb.game.util.store.GamazeyConstants;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -51,26 +50,18 @@ class GamazeyStoreParserTest {
     @Mock
     private Map<String, Genre> genreMap;
 
-    private GamazeyStoreParser parser;
-    private final GamazeyEnumMapper gamazeyEnumMapper = new GamazeyEnumMapper();
-
     @Mock
     private Document mockDocument;
     @Mock
     private Elements mockElements;
     @Mock
     private Element mockElement;
+    @Mock
+    private GamazeyTypesResolver typesResolver;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        parser = new GamazeyStoreParser(
-                resourceService,
-                gamazeyEnumMapper.gamazeyGenreMap(),
-                gamazeyEnumMapper.gamazeyProductTypeMap(),
-                gamazeyEnumMapper.gamazeyClientActivationMap()
-        );
-    }
+    @InjectMocks
+    private GamazeyStoreParser parser;
+
 
     @Test
     void shouldReturnGameInShop_whenParsingIsSuccessful_shouldReturnGameInShop() {
@@ -80,6 +71,8 @@ class GamazeyStoreParserTest {
                 "2 699 ₴",
                 "-57%"
         );
+        when(typesResolver.resolveActivationType("Доповнення Test Game - Some Dlc для ПК (Ключ активації Steam)"))
+                .thenReturn(ClientActivationType.STEAM);
 
         GameInShop result = parser.parseGameInShopFromPage(mockDocument);
 
@@ -151,6 +144,7 @@ class GamazeyStoreParserTest {
         when(mockDocument.getElementsByClass(GamazeyConstants.GAME_PAGE_NAME_FIELD))
                 .thenReturn(new Elements(nameElement));
         when(nameElement.text()).thenReturn(name);
+        when(typesResolver.resolveProductType(name)).thenReturn(ProductType.GAME);
 
         ProductType type = parser.getProductType(mockDocument);
 
@@ -199,6 +193,7 @@ class GamazeyStoreParserTest {
         when(genreElement.text()).thenReturn("Жанр Екшен, Рольові");
         when(mockDocument.getElementsByClass(GamazeyConstants.GAME_PAGE_CHARACTERISTICS))
                 .thenReturn(new Elements(genreElement));
+        when(typesResolver.resolveGenres("Жанр Екшен, Рольові")).thenReturn(List.of(Genre.ACTION,Genre.RPG));
 
 
         List<Genre> genres = parser.getGenres(mockDocument);

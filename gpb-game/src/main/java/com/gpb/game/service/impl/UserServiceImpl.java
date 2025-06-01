@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public BasicUser getUserById(long userId) {
         return userRepository
-                .findById(userId)
+                .findByIdWithGames(userId)
                 .orElseThrow(() -> new NotFoundException("Target user not found with ID: " + userId));
     }
 
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
             throw new AccountAlreadyLinkedException();
         }
 
-        BasicUser sourceUser = userRepository.findById(sourceUserId)
+        BasicUser sourceUser = userRepository.findByIdWithGames(sourceUserId)
                 .orElseThrow(() -> new NotFoundException("Source user not found with ID: " + sourceUserId));
 
         targetUser.getGameList().addAll(sourceUser.getGameList());
