@@ -4,26 +4,27 @@ import com.gpb.common.entity.game.GameInStoreDto;
 import com.gpb.common.entity.user.UserNotificationType;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.user.BasicUser;
+import com.gpb.game.resolver.NotificationServiceResolver;
 import com.gpb.game.service.NotificationService;
 import com.gpb.game.service.impl.NotificationManagerImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class NotificationManagerImplTest {
 
     @Mock
@@ -32,17 +33,11 @@ class NotificationManagerImplTest {
     private NotificationService telegramNotificationService;
     @Mock
     private ModelMapper mapper;
+    @Mock
+    private NotificationServiceResolver notificationFactory;
 
+    @InjectMocks
     private NotificationManagerImpl notificationManager;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        Map<String, NotificationService> notificationServices = new HashMap<>();
-        notificationServices.put(UserNotificationType.EMAIL.name(), emailNotificationService);
-        notificationServices.put(UserNotificationType.TELEGRAM.name(), telegramNotificationService);
-        notificationManager = new NotificationManagerImpl(notificationServices, mapper);
-    }
 
     @Test
     void testSendGameInfoChange_whenSingleNotificationType_shouldSendGameInfoChanges() {
@@ -59,6 +54,8 @@ class NotificationManagerImplTest {
 
         when(mapper.map(game1, GameInStoreDto.class)).thenReturn(gameInStore1);
         when(mapper.map(game2, GameInStoreDto.class)).thenReturn(gameInStore2);
+
+        when(notificationFactory.getService(UserNotificationType.EMAIL)).thenReturn(emailNotificationService);
 
 
         notificationManager.sendGameInfoChange(user, gameInShopList);
@@ -80,6 +77,9 @@ class NotificationManagerImplTest {
         List<GameInStoreDto> gameInStoreDtoList = Collections.singletonList(gameInStore1);
 
         when(mapper.map(game1, GameInStoreDto.class)).thenReturn(gameInStore1);
+
+        when(notificationFactory.getService(UserNotificationType.EMAIL)).thenReturn(emailNotificationService);
+        when(notificationFactory.getService(UserNotificationType.TELEGRAM)).thenReturn(telegramNotificationService);
 
 
         notificationManager.sendGameInfoChange(user, gameInShopList);

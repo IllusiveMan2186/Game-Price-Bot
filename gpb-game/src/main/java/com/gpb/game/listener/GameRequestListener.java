@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -85,7 +84,7 @@ public class GameRequestListener {
 
         final GameFollowEvent event = unfollowRecord.value();
         userService.unsubscribeFromGame(event.getUserId(), event.getGameId());
-        final Game game = gameService.getById(event.getGameId());
+        final Game game = gameService.getByIdWithLoadedUsers(event.getGameId());
 
         if (game.isFollowed() && game.getUserList().isEmpty()) {
             log.info("Game {} has no more followers", game.getId());

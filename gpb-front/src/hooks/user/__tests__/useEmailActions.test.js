@@ -41,7 +41,7 @@ describe('useEmailActions', () => {
         });
 
         expect(handleRequestMock).toHaveBeenCalledWith(
-            "PUT",
+            "PATCH",
             '/email',
             { email: 'test@example.com' },
             expect.any(Function),

@@ -37,13 +37,13 @@ class GameRequestListenerTest {
         long userId = 1L;
         long gameId = 101L;
         GameFollowEvent event = new GameFollowEvent(userId, gameId);
-        ConsumerRecord<String, GameFollowEvent> record = new ConsumerRecord<>("topic", 0, 0, "key", event);
+        ConsumerRecord<String, GameFollowEvent> gameFollow = new ConsumerRecord<>("topic", 0, 0, "key", event);
         Game game = new Game();
 
         Mockito.when(gameService.getById(gameId)).thenReturn(game);
 
 
-        gameRequestListener.listenGameFollow(record);
+        gameRequestListener.listenGameFollow(gameFollow);
 
 
         Mockito.verify(userService).subscribeToGame(userId, gameId);
@@ -56,13 +56,13 @@ class GameRequestListenerTest {
         long userId = 1L;
         long gameId = 101L;
         GameFollowEvent event = new GameFollowEvent(userId, gameId);
-        ConsumerRecord<String, GameFollowEvent> record = new ConsumerRecord<>("topic", 0, 0, "key", event);
+        ConsumerRecord<String, GameFollowEvent> gameFollow = new ConsumerRecord<>("topic", 0, 0, "key", event);
         Game game = Game.builder().isFollowed(true).build();
 
         Mockito.when(gameService.getById(gameId)).thenReturn(game);
 
 
-        gameRequestListener.listenGameFollow(record);
+        gameRequestListener.listenGameFollow(gameFollow);
 
 
         Mockito.verify(userService).subscribeToGame(userId, gameId);
@@ -75,17 +75,17 @@ class GameRequestListenerTest {
         long userId = 1L;
         long gameId = 101L;
         GameFollowEvent event = new GameFollowEvent(userId, gameId);
-        ConsumerRecord<String, GameFollowEvent> record = new ConsumerRecord<>("topic", 0, 0, "key", event);
+        ConsumerRecord<String, GameFollowEvent> gameFollow = new ConsumerRecord<>("topic", 0, 0, "key", event);
         Game game = Game.builder().isFollowed(true).userList(new ArrayList<>()).build();
 
-        Mockito.when(gameService.getById(gameId)).thenReturn(game);
+        Mockito.when(gameService.getByIdWithLoadedUsers(gameId)).thenReturn(game);
 
 
-        gameRequestListener.listenGameUnfollow(record);
+        gameRequestListener.listenGameUnfollow(gameFollow);
 
 
         Mockito.verify(userService).unsubscribeFromGame(userId, gameId);
-        Mockito.verify(gameService).getById(gameId);
+        Mockito.verify(gameService).getByIdWithLoadedUsers(gameId);
         Mockito.verify(gameService).setFollowGameOption(gameId, false);
     }
 
@@ -94,27 +94,27 @@ class GameRequestListenerTest {
         long userId = 1L;
         long gameId = 101L;
         GameFollowEvent event = new GameFollowEvent(userId, gameId);
-        ConsumerRecord<String, GameFollowEvent> record = new ConsumerRecord<>("topic", 0, 0, "key", event);
+        ConsumerRecord<String, GameFollowEvent> gameFollow = new ConsumerRecord<>("topic", 0, 0, "key", event);
         Game game = Game.builder().isFollowed(true).userList(Collections.singletonList(new BasicUser())).build();
 
-        Mockito.when(gameService.getById(gameId)).thenReturn(game);
+        Mockito.when(gameService.getByIdWithLoadedUsers(gameId)).thenReturn(game);
 
 
-        gameRequestListener.listenGameUnfollow(record);
+        gameRequestListener.listenGameUnfollow(gameFollow);
 
 
         Mockito.verify(userService).unsubscribeFromGame(userId, gameId);
-        Mockito.verify(gameService).getById(gameId);
+        Mockito.verify(gameService).getByIdWithLoadedUsers(gameId);
         Mockito.verifyNoMoreInteractions(gameService);
     }
 
     @Test
     void testListenGameRemove_whenSuccess_shouldCallRemoveGameMethod() {
         long gameId = 101L;
-        ConsumerRecord<String, Long> record = new ConsumerRecord<>("topic", 0, 0, "key", gameId);
+        ConsumerRecord<String, Long> gameFollow = new ConsumerRecord<>("topic", 0, 0, "key", gameId);
 
 
-        gameRequestListener.listenGameRemove(record);
+        gameRequestListener.listenGameRemove(gameFollow);
 
 
         Mockito.verify(gameService).removeGame(gameId);
@@ -123,10 +123,10 @@ class GameRequestListenerTest {
     @Test
     void testListenGameInStoreRemove_whenSuccess_shouldCallRemoveGameInStoreMethod() {
         long gameId = 102L;
-        ConsumerRecord<String, Long> record = new ConsumerRecord<>("topic", 0, 0, "key", gameId);
+        ConsumerRecord<String, Long> gameFollow = new ConsumerRecord<>("topic", 0, 0, "key", gameId);
 
 
-        gameRequestListener.listenGameInStoreRemove(record);
+        gameRequestListener.listenGameInStoreRemove(gameFollow);
 
 
         Mockito.verify(gameInShopService).removeGameInStore(gameId);
@@ -137,10 +137,10 @@ class GameRequestListenerTest {
         long gameId = 102L;
         String url = "url";
         AddGameInStoreDto dto = AddGameInStoreDto.builder().gameId(gameId).url(url).build();
-        ConsumerRecord<String, AddGameInStoreDto> record = new ConsumerRecord<>("topic", 0, 0, "key", dto);
+        ConsumerRecord<String, AddGameInStoreDto> gameFollow = new ConsumerRecord<>("topic", 0, 0, "key", dto);
 
 
-        gameRequestListener.listenAddGameInStore(record);
+        gameRequestListener.listenAddGameInStore(gameFollow);
 
 
         Mockito.verify(gameInShopService).addGameInStore(gameId, url);

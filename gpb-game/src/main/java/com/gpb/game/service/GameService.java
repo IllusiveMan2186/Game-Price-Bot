@@ -6,7 +6,6 @@ import com.gpb.common.entity.game.Genre;
 import com.gpb.common.entity.game.ProductType;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
-import com.gpb.game.entity.user.BasicUser;
 import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
@@ -30,12 +29,12 @@ public interface GameService {
     Game getById(long gameId);
 
     /**
-     * Retrieves the game based on its URL.
+     * Retrieves the game with the specified identifier with loaded users.
      *
-     * @param url the URL associated with the game in the store.
-     * @return a {@link GameInfoDto} containing the game's detailed information.
+     * @param gameId the unique identifier of the game.
+     * @return the {@link Game} entity with loaded users corresponding to the given identifier.
      */
-    Game getByUrl(String url);
+    Game getByIdWithLoadedUsers(long gameId);
 
     /**
      * Retrieves a detailed Data Transfer Object (DTO) for the game with the specified identifier.

@@ -6,13 +6,13 @@ import com.gpb.game.entity.game.GameInShop;
 import java.util.List;
 
 /**
- * Service interface for handling operations related to game stores.
+ * Service interface for aggregation information about games from different stores.
  * <p>
  * This interface provides methods to search for games across integrated game stores and to verify
  * updates in game information for games in users' wishlists.
  * </p>
  */
-public interface GameStoresService {
+public interface StoreAggregatorService {
 
     /**
      * Searches for games by name across all available game stores.

@@ -1,6 +1,5 @@
 package com.gpb.game.service.impl.store;
 
-import com.gpb.common.exception.NotFoundException;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.parser.StorePageParser;
@@ -10,13 +9,14 @@ import com.gpb.game.util.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @AllArgsConstructor
@@ -24,6 +24,7 @@ public class CommonStoreServiceImpl implements StoreService {
 
     protected final StorePageParser pageFetcher;
     protected final StoreParser storeParser;
+    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
 
     @Override
@@ -71,11 +72,13 @@ public class CommonStoreServiceImpl implements StoreService {
 
         List<String> gameUrls = storeParser.parseSearchResults(name, pageFetcher);
 
-        long startTime = System.currentTimeMillis();
+        List<CompletableFuture<Optional<Game>>> futures = gameUrls.stream()
+                .limit(Constants.SEARCH_MAX_RESULT_PER_STORE)
+                .map(url -> CompletableFuture.supplyAsync(() -> findUncreatedGameByUrl(url), threadPoolTaskExecutor::execute))
+                .toList();
 
-        return gameUrls.stream()
-                .takeWhile(url -> System.currentTimeMillis() - startTime <= Constants.SEARCH_REQUEST_WAITING_TIME)
-                .map(this::findUncreatedGameByUrl)
+        return futures.stream()
+                .map(CompletableFuture::join)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
@@ -102,11 +105,16 @@ public class CommonStoreServiceImpl implements StoreService {
     public List<GameInShop> checkGameInStoreForChange(List<GameInShop> gameInShops) {
         log.info("Checking {} games from wishlist for changes in store", gameInShops.size());
 
-        return gameInShops.stream()
-                .map(this::processGameChange)
+        List<CompletableFuture<GameInShop>> futures = gameInShops.stream()
+                .map(game -> CompletableFuture.supplyAsync(() -> processGameChange(game), threadPoolTaskExecutor::execute))
+                .toList();
+
+        return futures.stream()
+                .map(CompletableFuture::join)
                 .filter(Objects::nonNull)
                 .toList();
     }
+
 
     private GameInShop processGameChange(GameInShop game) {
         Optional<Document> pageOpt = pageFetcher.getPage(game.getUrl());
