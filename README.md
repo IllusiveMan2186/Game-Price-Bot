@@ -162,8 +162,10 @@ Or download from: https://helm.sh/docs/intro/install/
 
 ## To run GPB in Minikube after installing in terminal run:
 
+#### For stable operation of all services (Ingress, Kafka, PostgreSQL, Grafana, Loki, your backend/frontend, etc.), it's strongly recommended to allocate at least 5.5–8 GB of RAM to Minikube.:
+
 ```console
-minikube start --driver=docker
+minikube start --driver=docker --cpus=4 --memory=8000
 ```
 
 #### Add to host file the following IP addresses:
