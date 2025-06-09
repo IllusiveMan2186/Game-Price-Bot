@@ -24,9 +24,12 @@ LABEL org.opencontainers.image.source="https://github.com/IllusiveMan2186/Game-P
 ENV APP_HOME=/gpb/backend/
 WORKDIR $APP_HOME
 
-COPY --from=build $APP_HOME/build/libs/*.jar app.jar
+COPY --from=build /gpb/backend/build/libs/*.jar ./
+
+RUN JAR_FILE=$(find . -maxdepth 1 -name "*.jar" ! -name "*plain*" | head -n 1) \
+    && mv "$JAR_FILE" gpb-backend.jar
 
 # Run as non-root user
 USER 1000:1000
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "gpb-backend.jar"]
