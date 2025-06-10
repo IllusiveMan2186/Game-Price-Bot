@@ -1,5 +1,5 @@
 #!/bin/bash
-if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+if [[ "$OSTYPE" == "win32" ]]; then
   echo "⚠️ Run this script using Git Bash or WSL, not CMD or PowerShell."
   exit 1
 fi
