@@ -168,18 +168,33 @@ Or download from: https://helm.sh/docs/intro/install/
 minikube start --driver=docker --cpus=4 --memory=8000
 ```
 
-#### Add to host file the following IP addresses:
+#### Add to your /etc/hosts (Linux/macOS) or C:\Windows\System32\drivers\etc\hosts (Windows):
+
+##### On Windows:
 
 ```console
-127.0.0.1 game.price.bot
-127.0.0.1 grafana.gpb
+127.0.0.1 game.price.bot grafana.gpb
+```
+
+##### On Linux/macOS:
+
+##### Use the EXTERNAL-IP of the ingress-nginx-controller service:
+
+```console
+kubectl get svc -n ingress-nginx
+```
+
+##### Then add the IP you see to /etc/hosts:
+
+```console
+EXTERNAL_IP game.price.bot grafana.gpb
 ```
 
 #### Create a ".env" file and use the following command in root of project:
 
 
 ```console
-sh full-deploy.sh
+bash full-deploy.sh
 ```
 
 #### Open minikube tunnel by the following command:

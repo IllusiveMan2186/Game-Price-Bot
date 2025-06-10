@@ -1,4 +1,9 @@
 #!/bin/bash
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+  echo "⚠️ Run this script using Git Bash or WSL, not CMD or PowerShell."
+  exit 1
+fi
+
 
 set -e  # Exit on error
 set -o pipefail  # Catch pipeline errors
@@ -19,7 +24,15 @@ fi
 # Step 2: Load .env File
 if [ -f .env ]; then
   echo "🔑 Loading environment variables from .env..."
-  export $(grep -v '^#' .env | xargs)
+  while IFS='=' read -r key value; do
+    if [[ "$key" =~ ^\s*# ]] || [[ -z "$key" ]]; then
+      continue
+    fi
+    value="${value%\"}"
+    value="${value#\"}"
+    value="${value//$'\r'/}"
+    export "$key=$value"
+  done < .env
   echo "✅ Environment variables loaded!"
 else
   echo "❌ .env file not found! Exiting..."
