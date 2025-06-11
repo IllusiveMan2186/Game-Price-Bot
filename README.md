@@ -162,27 +162,42 @@ Or download from: https://helm.sh/docs/intro/install/
 
 ## To run GPB in Minikube after installing in terminal run:
 
-#### For stable operation of all services (Ingress, Kafka, PostgreSQL, Grafana, Loki, your backend/frontend, etc.), it's strongly recommended to allocate at least 5.5–8 GB of RAM to Minikube.:
+### For stable operation of all services allocate at least 5.5–8 GB of RAM to Minikube.:
 
 ```console
 minikube start --driver=docker --cpus=4 --memory=8000
 ```
 
-#### Add to host file the following IP addresses:
+### Add to /etc/hosts (Linux/macOS) or C:\Windows\System32\drivers\etc\hosts (Windows):
+
+##### On Windows:
 
 ```console
-127.0.0.1 game.price.bot
-127.0.0.1 grafana.gpb
+127.0.0.1 game.price.bot grafana.gpb
 ```
 
-#### Create a ".env" file and use the following command in root of project:
+##### On Linux/macOS:
+
+1. Use the EXTERNAL-IP of the ingress-nginx-controller service:
+
+```console
+kubectl get svc -n ingress-nginx
+```
+
+2. Then add the IP to /etc/hosts:
+
+```console
+EXTERNAL_IP game.price.bot grafana.gpb
+```
+
+### Create a ".env" file and use the following command in root of project:
 
 
 ```console
-sh full-deploy.sh
+bash full-deploy.sh
 ```
 
-#### Open minikube tunnel by the following command:
+### Open minikube tunnel by the following command:
 
 ```console
 minikube tunnel

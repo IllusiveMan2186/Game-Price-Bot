@@ -27,7 +27,11 @@ ENV APP_HOME=/gpb/game/
 WORKDIR $APP_HOME
 
 # Copy built JAR from build stage
-COPY --from=build $APP_HOME/build/libs/*.jar gpb-game.jar
+COPY --from=build /gpb/game/build/libs/*.jar ./
+
+# Chose fat JAR and rename into gpb-game.jar
+RUN JAR_FILE=$(find . -maxdepth 1 -name "gpb-game-*.jar" ! -name "*plain*" | head -n 1) \
+    && mv "$JAR_FILE" gpb-game.jar
 
 # Copy default image resource into container
 COPY src/main/resources/defaultImage.png /image_folder/defaultImage.png
