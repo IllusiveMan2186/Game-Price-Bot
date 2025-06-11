@@ -34,8 +34,11 @@ ENV ARTIFACT_NAME=gpb-telegram.jar
 ENV APP_HOME=/gpb/telegram/
 WORKDIR $APP_HOME
 
-# Copy built JAR from build stage
-COPY --from=build $APP_HOME/target/*.jar ${ARTIFACT_NAME}
+# Copy JAR to the current workdir
+COPY --from=build /gpb/telegram/target/*.jar ./
+
+# Rename the desired JAR to ${ARTIFACT_NAME}
+RUN JAR=$(find . -name "*.jar" ! -name "*-plain.jar" | head -n 1) && mv "$JAR" ${ARTIFACT_NAME}
 
 # Run as non-root user
 USER 1000:1000
