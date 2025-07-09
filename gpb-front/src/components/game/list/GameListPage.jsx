@@ -1,9 +1,25 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useNavigation } from "@contexts/NavigationContext";
+import { useNavigation } from '@contexts/NavigationContext';
+import { useSelector, useDispatch } from 'react-redux';
 
-import * as constants from '@util/constants';
 import { useGameActions } from '@hooks/game/useGameActions';
+
+import {
+    setMode,
+    setSearch,
+    setGenres,
+    setTypes,
+    setSortBy,
+    setMinPrice,
+    setMaxPrice,
+    setPageNum,
+    setPageSize,
+    setGames,
+    setElementAmount
+} from '@features/params/paramsSlice';
+
+import { buildSearchParams } from '@util/searchParamsUtils';
 
 import GameListFilter from '@components/game/list/filter/GameListFilter';
 import GameListLoader from '@components/game/list/loader/GameListLoader';
@@ -23,111 +39,82 @@ const GameListPage = ({ mode: propMode }) => {
         };
     }, []);
 
-    const { url, searchName } = useParams(); // Extract URL params
-    const mode = propMode; // Use mode passed from the route
+    const dispatch = useDispatch();
+    const { name, mode, search } = useSelector((state) => state.params);
+
+    const { url, searchName } = useParams();
     const navigate = useNavigation();
     const { getGamesRequest } = useGameActions();
+    const [hasInitialized, setHasInitialized] = useState(false);
 
-    const [searchParams, setSearchParams] = React.useState(new URLSearchParams(url));
+    // 🔄 Sync URL params into Redux on mount
+    useEffect(() => {
+        const searchParams = new URLSearchParams(url || '');
 
-    const getParameterOrDefaultValue = (parameter, defaultValue) => {
-        return parameter !== null ? parameter : defaultValue;
-    }
+        if (propMode) dispatch(setMode(propMode));
+        if (searchName) dispatch(setSearch(searchName));
+        if (searchParams.has('pageNum')) dispatch(setPageNum(Number(searchParams.get('pageNum'))));
+        if (searchParams.has('pageSize')) dispatch(setPageSize(Number(searchParams.get('pageSize'))));
+        if (searchParams.has('sortBy')) dispatch(setSortBy(searchParams.get('sortBy')));
+        if (searchParams.has('minPrice')) dispatch(setMinPrice(Number(searchParams.get('minPrice'))));
+        if (searchParams.has('maxPrice')) dispatch(setMaxPrice(Number(searchParams.get('maxPrice'))));
+        if (searchParams.has('genre')) dispatch(setGenres(searchParams.get('genre').split(',')));
+        if (searchParams.has('type')) dispatch(setTypes(searchParams.get('type').split(',')));
 
-    const pageFromParams = searchParams.get('pageNum') || 1;
-    const [page, setPage] = React.useState(pageFromParams);
-    const pageSize = searchParams.get('pageSize') || constants.pageSizesOptions[0].label;
+        setHasInitialized(true)
+    }, []);
 
-    const [elementAmount, setElementAmount] = React.useState(0);
-    const [games, setGames] = React.useState(null);
-    const [name, setName] = React.useState(searchName);
+    // 🔁 Handle browser back/forward
+    useEffect(() => {
+        const handlePopState = () => {
+            window.location.reload();
+        };
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, []);
 
-    const parameterSetOrRemove = (parameter, value, defaultValue) => {
-        if (value !== defaultValue) {
-            searchParams.set(parameter, value);
-        } else {
-            searchParams.delete(parameter);
-        }
-    }
-
-    const updateSearchParams = useCallback((key, value, defaultValue) => {
-        if (value === defaultValue) {
-            searchParams.delete(key);
-        } else {
-            searchParams.set(key, value);
-        }
-        setSearchParams(new URLSearchParams(searchParams.toString())); // Trigger state update
-    }, [searchParams]);
-
-    const reloadPage = useCallback(() => {
-        const path =
-            mode === 'usersGames' ? `/user/games/` :
-                mode === 'search' ? `/search/${name}/` :
-                    '/games/';
-        navigate(`${path}${searchParams.toString()}`);
-        navigate(0);
-    }, [mode, name, searchParams, navigate]);
-
-
-    const getSearchParametrs = () => {
+    // 🔧 Builds full backend URL from current Redux params
+    const getSearchUrl = () => {
+        const query = buildSearchParams();
         switch (mode) {
-            case "usersGames":
-                return "/game/user/games?" + searchParams.toString()
-            case "search":
-                return "/game/name/" + name + "?" + searchParams.toString()
+            case 'usersGames':
+                return `/game/user/games?${query}`;
+            case 'search':
+                return `/game/name/${search}?${query}`;
             default:
-                return "/game/genre?" + searchParams.toString()
+                return `/game/genre?${query}`;
         }
     };
 
     useEffect(() => {
-        const fetchGame = async () => {
+        if (!hasInitialized) return;
+
+        const fetchGames = async () => {
             try {
-                await getGamesRequest(getSearchParametrs(), setElementAmount, setGames);
+                await getGamesRequest(
+                    getSearchUrl(),
+                    (amount) => dispatch(setElementAmount(amount)),
+                    (games) => dispatch(setGames(games))
+                );
             } catch (error) {
-                console.error('Failed to fetch game details:', error);
-                navigate('/error'); // Redirect to error page
+                console.error('Failed to fetch games:', error);
+                navigate('/error');
             }
         };
-        fetchGame();
-    }, [navigate, setElementAmount, setGames, getSearchParametrs()]);
+
+        fetchGames();
+    }, [hasInitialized]);
 
     return (
-        <>
-            <div className='app-game'>
-                {(mode === "list") &&
-                    <GameListFilter
-                        getParameterOrDefaultValue={getParameterOrDefaultValue}
-                        searchParams={searchParams}
-                        reloadPage={reloadPage}
-                        setPage={setPage}
-                        parameterSetOrRemove={parameterSetOrRemove}
-                    />
-                }
+        <div className='app-game'>
+            {mode === 'list' && <GameListFilter />}
 
-                <div className={(mode === "list") ? "app-game-content" : "app-game-search-content"}>
-                    <GameListPageHeader
-                        searchParams={searchParams}
-                        updateSearchParams={updateSearchParams}
-                        nameValue={name}
-                        mode={mode}
-                        reloadPage={reloadPage}
-                        pageSize={pageSize}
-                    />
-                    <GameListLoader
-                        games={games}
-                        elementAmount={elementAmount}
-                        page={page}
-                        mode={mode}
-                        pageSize={pageSize}
-                        updateSearchParams={updateSearchParams}
-                        reloadPage={reloadPage}
-                    />
-                </div>
-            </div >
-        </>
+            <div className={mode === 'list' ? 'app-game-content' : 'app-game-search-content'}>
+                <GameListPageHeader />
+                <GameListLoader />
+            </div>
+        </div>
     );
-
 };
 
 export default GameListPage;

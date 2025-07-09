@@ -1,5 +1,6 @@
 package com.gpb.game.repository.advanced.predicate;
 
+import com.gpb.common.entity.game.Genre;
 import com.gpb.game.entity.game.Game;
 import com.gpb.game.entity.game.GameInShop;
 import com.gpb.game.entity.game.GameRepositorySearchFilter;
@@ -40,7 +41,8 @@ public class GameFilterPredicateBuilder {
         List<Predicate> predicates = new ArrayList<>();
 
         if (filter.getGenres() != null && !filter.getGenres().isEmpty()) {
-            predicates.add(root.join("genres", JoinType.INNER).in(filter.getGenres()));
+            Join<Game, Genre> genreJoin = root.join("genres", JoinType.LEFT);
+            predicates.add(genreJoin.in(filter.getGenres()));
         }
 
         if (filter.getTypes() != null && !filter.getTypes().isEmpty()) {

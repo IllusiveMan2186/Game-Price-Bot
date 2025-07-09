@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { useSelector } from 'react-redux';
+
 import GameList from '@components/game/list/loader/list/GameList';
 import Pagination from '@components/game/list/loader/pagination/Pagination';
 import Loading from '@components/game/shared/loading/Loading';
@@ -7,9 +9,10 @@ import Message from '@util/message';
 
 import './GameListLoader.css';
 
-const GameListLoader = ({ games, elementAmount, page, mode, updateSearchParams, pageSize, reloadPage }) => {
+const GameListLoader = ({ }) => {
+    const { games, mode } = useSelector((state) => state.params);
 
-    if (!games) {
+    if (!games.length) {
         if (mode === "search") {
             return <Loading />
         } else {
@@ -22,16 +25,10 @@ const GameListLoader = ({ games, elementAmount, page, mode, updateSearchParams, 
     return (
         <div>
             <div className="app-list">
-                <GameList games={games} />
+                <GameList />
             </div>
             <div className="app-game-footer">
-                <Pagination
-                    elementAmount={elementAmount}
-                    page={page}
-                    pageSize={pageSize}
-                    reloadPage={reloadPage}
-                    updateSearchParams={updateSearchParams}
-                />
+                <Pagination />
             </div>
         </div>
     )

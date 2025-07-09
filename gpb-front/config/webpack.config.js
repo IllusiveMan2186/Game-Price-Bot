@@ -323,6 +323,8 @@ module.exports = function (webpackEnv) {
         '@util': path.resolve(__dirname, '../src/util'),
         '@contexts': path.resolve(__dirname, '../src/contexts'),
         '@hooks': path.resolve(__dirname, '../src/hooks'),
+        '@features': path.resolve(__dirname, '../src/features'),
+        '@store': path.resolve(__dirname, '../src/store'),
         ...(isEnvProductionProfile && {
           'react-dom$': 'react-dom/profiling',
           'scheduler/tracing': 'scheduler/tracing-profiling',

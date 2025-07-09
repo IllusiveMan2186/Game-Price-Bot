@@ -70,6 +70,7 @@ public class GameRepositoryAdvancedImpl implements GameRepositoryAdvance {
                                                  Pageable pageable) {
         CriteriaQuery<Game> query = cb.createQuery(Game.class);
         Root<Game> root = query.from(Game.class);
+        root.fetch("genres", JoinType.LEFT);
         Join<Game, GameInShop> shopJoin = root.join(GAME_IN_SHOP, JoinType.LEFT);
 
         List<Predicate> predicates = predicateBuilder.buildFilters(cb, root, shopJoin, filter);

@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { useNavigation } from "@contexts/NavigationContext";
+import { useSelector } from 'react-redux';
 import GameImage from '@components/game/shared/image/GameImage';
 import { CommonGameInfo } from '@components/game/shared/info/CommonGameInfo';
 
 import './GameList.css';
 
-const GameList = ({ games = [] }) => { // Destructure `games` from the passed object
+const GameList = ({ }) => { // Destructure `games` from the passed object
     const navigate = useNavigation();
+    const { games } = useSelector((state) => state.params);
 
     if (!Array.isArray(games)) { // Safeguard to ensure `games` is an array
         console.error("Expected games to be an array but got:", games);

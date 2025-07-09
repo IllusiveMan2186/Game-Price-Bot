@@ -1,10 +1,23 @@
 import React from "react";
 
+import { useSelector, useDispatch } from 'react-redux';
+
+import { setPageNum } from '@features/params/paramsSlice';
+
+import { useNavigation } from '@contexts/NavigationContext';
+
+import { reloadPage } from '@util/navigationUtils';
+
 import './Pagination.css'
 
-export default function Pagination({ elementAmount, pageSize, page, reloadPage, updateSearchParams }) {
+export default function Pagination({ }) {
+    const dispatch = useDispatch();
+    const { elementAmount, pageNum, pageSize } = useSelector((state) => state.params);
+
+    const navigate = useNavigation();
+
     const totalPages = Math.ceil(elementAmount / pageSize);
-    const currentPage = +page;
+    const currentPage = +pageNum;
 
     // Determine the range of page numbers to show
     const startPage = Math.max(1, currentPage - 2);
@@ -21,9 +34,8 @@ export default function Pagination({ elementAmount, pageSize, page, reloadPage, 
     );
 
     const onPageClick = (selectedPage) => {
-        console.info(selectedPage);
-        updateSearchParams("pageNum", selectedPage, 1); // Updates state
-        setTimeout(() => reloadPage(), 0); // Delays execution to the next tick
+        dispatch(setPageNum(selectedPage));
+        setTimeout(() => reloadPage(navigate), 0); // Delays execution to the next tick
     };
 
 
