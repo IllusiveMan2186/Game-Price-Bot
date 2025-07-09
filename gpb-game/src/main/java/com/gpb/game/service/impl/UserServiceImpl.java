@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BasicUser linkUsers(String token, long sourceUserId) {
-        AccountLinker connector = accountLinkerRepository.findById(token)
+        AccountLinker connector = accountLinkerRepository.findByIdWithUserAndNotifications(token)
                 .orElseThrow(NotExistingLinkerTokenException::new);
         BasicUser targetUser = connector.getUser();
 
@@ -77,6 +77,7 @@ public class UserServiceImpl implements UserService {
         return accountLinkerRepository.save(connector).getToken();
     }
 
+    //todo
     @Override
     public List<BasicUser> getUsersOfChangedGameInfo(List<GameInShop> changedGames) {
         List<Long> changedGamesIds = changedGames.stream()
