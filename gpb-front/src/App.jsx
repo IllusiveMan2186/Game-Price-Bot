@@ -8,27 +8,32 @@ import { RefreshProvider } from "@contexts/RefreshContext";
 import { NavigationProvider } from "@contexts/NavigationContext";
 import { NotificationContainer } from 'react-notifications';
 
+import { Provider } from 'react-redux';
+import { paramsStore } from '@store/store';
+
 function App() {
   return (
     <div className="app">
-      <BrowserRouter>
-        <NavigationProvider>
-          <AuthProvider>
-            <RefreshProvider>
-              <div className="notification-wrapper">
-                <NotificationContainer />
-              </div>
-
-              <div className="row">
-                <div className="col">
-                  <Router />
+      <Provider store={paramsStore}>
+        <BrowserRouter>
+          <NavigationProvider>
+            <AuthProvider>
+              <RefreshProvider>
+                <div className="notification-wrapper">
+                  <NotificationContainer />
                 </div>
-              </div>
-              <Footer />
-            </RefreshProvider>
-          </AuthProvider>
-        </NavigationProvider>
-      </BrowserRouter>
+
+                <div className="row">
+                  <div className="col">
+                    <Router />
+                  </div>
+                </div>
+                <Footer />
+              </RefreshProvider>
+            </AuthProvider>
+          </NavigationProvider>
+        </BrowserRouter>
+      </Provider>
     </div>
   );
 }

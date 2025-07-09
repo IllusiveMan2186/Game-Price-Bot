@@ -1,147 +1,103 @@
 import React, { useState, useCallback, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  setGenres, setTypes, setMinPrice, setMaxPrice, setPageNum
+} from '@features/params/paramsSlice';
 
+import { useNavigation } from '@contexts/NavigationContext';
+import { reloadPage } from '@util/navigationUtils';
 import * as constants from '@util/constants';
 import Message from '@util/message';
 
+import PriceFilterSection from '@components/game/list/filter/price/PriceFilterSection';
+import CheckboxGroupSection from '@components/game/list/filter/checkbox/CheckboxGroupSection';
+
 import './GameListFilter.css';
 
-export default function GameListFilter({ searchParams, parameterSetOrRemove, reloadPage, setPage }) {
+export default function GameListFilter() {
+  const dispatch = useDispatch();
+  const { genres, types, minPrice, maxPrice } = useSelector((state) => state.params);
+  const navigate = useNavigation();
 
-  const getParameterOrDefaultValue = (parameter, defaultValue) => {
-    return parameter !== null ? parameter : defaultValue;
-  }
-
-  const [formState, setFormState] = useState({
-    minPrice: +getParameterOrDefaultValue(searchParams.get("minPrice"), 0),
-    maxPrice: +getParameterOrDefaultValue(searchParams.get("maxPrice"), 10000),
-  });
+  const [formState, setFormState] = useState({ minPrice, maxPrice });
   const [isFormChanged, setFormChanged] = useState(false);
-  const [priceError, setPriceError] = useState("");
+  const [priceError, setPriceError] = useState('');
+
+  const handlePriceChange = useCallback((event) => {
+    const { name, value } = event.target;
+    const sanitizedValue = Math.max(0, +value);
+    const updatedState = { ...formState, [name]: sanitizedValue };
+
+    setFormState(updatedState);
+    setFormChanged(true);
+
+    setPriceError(updatedState.minPrice <= updatedState.maxPrice ? '' : <Message string="app.game.error.price" />);
+  }, [formState]);
 
   const handleFilterButtonClick = useCallback(() => {
-    parameterSetOrRemove("minPrice", formState.minPrice, 0);
-    parameterSetOrRemove("maxPrice", formState.maxPrice, 10000);
-    reloadPage();
-  }, [formState, parameterSetOrRemove, reloadPage]);
+    dispatch(setMinPrice(formState.minPrice));
+    dispatch(setMaxPrice(formState.maxPrice));
+    dispatch(setPageNum(1));
+    reloadPage(navigate);
+  }, [dispatch, formState, navigate]);
 
-  const handlePriceChange = useCallback(
-    (event) => {
-      const { name, value } = event.target;
-      
-      let sanitizedValue = Math.max(0, +value); 
-  
-      setFormState((prev) => ({ ...prev, [name]: sanitizedValue }));
-      setFormChanged(true);
-  
-      const { minPrice, maxPrice } = { ...formState, [name]: sanitizedValue };
-      if (minPrice <= maxPrice) {
-        setPriceError("");
-      } else {
-        setPriceError(<Message string="app.game.error.price" />);
-      }
-    },
-    [formState]
-  );  
+  const handleCheckboxChange = useCallback((event, isNotExcludedFieldType) => {
+    const { name, value, checked } = event.target;
+    const upperValue = value.toUpperCase();
+    const currentValues = name === 'genre' ? genres : name === 'type' ? types : [];
 
-  const isChecked = useCallback(
-    (value, field, isNotExcludedFieldType) =>
-      searchParams.has(field, value.toUpperCase()) === isNotExcludedFieldType,
-    [searchParams]
-  );
+    const updatedValues = checked === isNotExcludedFieldType
+      ? [...new Set([...currentValues, upperValue])]
+      : currentValues.filter((v) => v !== upperValue);
 
-  const handleCheckboxChange = useCallback(
-    (event, isNotExcludedFieldType) => {
-      const { name, value, checked } = event.target;
+    if (name === 'genre') dispatch(setGenres(updatedValues));
+    else if (name === 'type') dispatch(setTypes(updatedValues));
 
-      // Handle adding or removing the search parameter
-      const shouldAdd = checked === isNotExcludedFieldType;
-      const normalizedValue = value.toUpperCase();
-  
-      if (shouldAdd) {
-        searchParams.append(name, normalizedValue);
-      } else {
-        searchParams.delete(name, normalizedValue);
-      }
-  
-      // Reset pagination and mark form as changed
-      setPage(1);
-      setFormChanged(true);
-    },
-    [searchParams, setPage]
-  );
+    dispatch(setPageNum(1));
+    setFormChanged(true);
+  }, [dispatch, genres, types]);
 
-  const isFormValid = useMemo(() => {
-    return priceError === "" && isFormChanged;
-  }, [priceError, isFormChanged]);
+  const isChecked = useCallback((value, fieldValue, isNotExcludedFieldType) => {
+    const upperValue = value.toUpperCase();
+    return isNotExcludedFieldType === fieldValue.includes(upperValue);
+  }, [genres, types]);
 
-  const renderCheckboxGroup = (options, fieldName, isNotExcludedFieldType) =>
-    options.map((option) => (
-      <label key={option.value} className="App-game-filter-genre-button">
-        <input
-          type="checkbox"
-          className="App-game-filter-genre-button-checkbox"
-          name={fieldName}
-          value={option.value}
-          onChange={(event) => handleCheckboxChange(event, isNotExcludedFieldType)}
-          defaultChecked={isChecked(option.value, fieldName, isNotExcludedFieldType)}
-        />
-        <span className="App-game-filter-genre-button-text">{option.label}</span>
-      </label>
-    ));
+  const isFormValid = useMemo(() => priceError === '' && isFormChanged, [priceError, isFormChanged]);
 
   return (
     <aside className="col-lg-3 App-game-filter">
       <div className="App-game-filter-title">
         <Message string="app.game.filter.title" />
       </div>
+
       <div className="App-game-filter-subdiv">
-        {/* Price Section */}
-        <div className="App-game-filter-section">
-          <div className="App-game-filter-title">
-            <Message string="app.game.filter.price.title" />
-          </div>
-          <div className="App-game-filter-price-inputs">
-            <input
-              type="number"
-              min="0"
-              name="minPrice"
-              value={formState.minPrice}
-              onChange={handlePriceChange}
-            />
-            <span>-</span>
-            <input
-              type="number"
-              min="0"
-              name="maxPrice"
-              value={formState.maxPrice}
-              onChange={handlePriceChange}
-            />
-            <span>₴</span>
-          </div>
-          {priceError && <span className="Error">{priceError}</span>}
-        </div>
+        <PriceFilterSection
+          minPrice={formState.minPrice}
+          maxPrice={formState.maxPrice}
+          onChange={handlePriceChange}
+          error={priceError}
+        />
 
-        {/* Genre Section */}
-        <div className="App-game-filter-section">
-          <div className="App-game-filter-title">
-            <Message string="app.game.filter.genre.title" />
-          </div>
-          <div className="App-game-filter-genre">
-            {renderCheckboxGroup(constants.ganresOptions, "genre", true)}
-          </div>
-        </div>
+        <CheckboxGroupSection
+          title={<Message string="app.game.filter.genre.title" />}
+          options={constants.ganresOptions}
+          fieldName="genre"
+          fieldValue={genres}
+          isNotExcludedFieldType={true}
+          onChange={handleCheckboxChange}
+          isChecked={isChecked}
+        />
 
-        {/* Product Type Section */}
-        <div className="App-game-filter-section">
-          <div className="App-game-filter-title">
-            <Message string="app.game.info.type" />
-          </div>
-          <div className="App-game-filter-genre">
-            {renderCheckboxGroup(constants.productTypesOptions, "type", false)}
-          </div>
-        </div>
+        <CheckboxGroupSection
+          title={<Message string="app.game.info.type" />}
+          options={constants.productTypesOptions}
+          fieldName="type"
+          fieldValue={types}
+          isNotExcludedFieldType={false}
+          onChange={handleCheckboxChange}
+          isChecked={isChecked}
+        />
 
-        {/* Submit Button */}
         <button
           type="submit"
           className="btn btn-primary btn-block mb-3"
