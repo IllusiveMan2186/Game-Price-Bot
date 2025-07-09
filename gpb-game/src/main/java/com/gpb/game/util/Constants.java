@@ -18,4 +18,7 @@ public class Constants {
     public static final int THREAD_POOL_QUEUE_CAPACITY = 100;
 
     public static final String THREAD_POOL_NAME_PREFIX = "gpb-task-";
+
+    public static final String MIN_DISCOUNT_PRICE_FORMULA_FIELD = "minDiscountPriceForSort";
+    public static final String MAX_DISCOUNT_PRICE_FORMULA_FIELD = "maxDiscountPriceForSort";
 }

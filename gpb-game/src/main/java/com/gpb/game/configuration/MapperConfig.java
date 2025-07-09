@@ -77,39 +77,11 @@ public class MapperConfig {
         return context -> {
             Game source = context.getSource();
             GameDto destination = context.getDestination();
-            mapMinPriceField(source, destination);
-            mapMaxPriceField(source, destination);
+            destination.setMinPrice(source.getMinDiscountPriceForSort());
+            destination.setMaxPrice(source.getMaxDiscountPriceForSort());
             mapAvailableField(source, destination);
             return destination;
         };
-    }
-
-    /**
-     * Maps the minimum discount price from the game shops to the {@code minPrice} field of the destination.
-     *
-     * @param source      the source {@link Game} entity.
-     * @param destination the destination {@link GameDto} to be populated.
-     */
-    public void mapMinPriceField(Game source, GameDto destination) {
-        destination.setMinPrice(source == null ? null :
-                source.getGamesInShop().stream()
-                        .map(GameInShop::getDiscountPrice)
-                        .min(Comparator.naturalOrder())
-                        .orElse(null));
-    }
-
-    /**
-     * Maps the maximum discount price from the game shops to the {@code maxPrice} field of the destination.
-     *
-     * @param source      the source {@link Game} entity.
-     * @param destination the destination {@link GameDto} to be populated.
-     */
-    public void mapMaxPriceField(Game source, GameDto destination) {
-        destination.setMaxPrice(source == null ? null :
-                source.getGamesInShop().stream()
-                        .map(GameInShop::getDiscountPrice)
-                        .max(Comparator.naturalOrder())
-                        .orElse(null));
     }
 
     /**
@@ -135,8 +107,8 @@ public class MapperConfig {
         return context -> {
             Game source = context.getSource();
             GameInfoDto destination = context.getDestination();
-            mapMinPriceField(source, destination);
-            mapMaxPriceField(source, destination);
+            destination.setMinPrice(source.getMinDiscountPriceForSort());
+            destination.setMaxPrice(source.getMaxDiscountPriceForSort());
             mapGameInShopField(source, destination);
             mapAvailableField(source, destination);
             return destination;
