@@ -77,7 +77,6 @@ public class UserServiceImpl implements UserService {
         return accountLinkerRepository.save(connector).getToken();
     }
 
-    //todo
     @Override
     public List<BasicUser> getUsersOfChangedGameInfo(List<GameInShop> changedGames) {
         List<Long> changedGamesIds = changedGames.stream()
