@@ -120,7 +120,7 @@ class UserServiceImplTest {
 
         BasicUser targetUser = new BasicUser(1L, targetGameList, targetNotificationTypes);
         AccountLinker accountLinker = new AccountLinker(token, targetUser);
-        when(accountLinkerRepository.findById(token)).thenReturn(Optional.of(accountLinker));
+        when(accountLinkerRepository.findByIdWithUserAndNotifications(token)).thenReturn(Optional.of(accountLinker));
         when(userRepository.findByIdWithGames(sourceUserId)).thenReturn(Optional.of(sourceUser));
 
 
@@ -138,7 +138,7 @@ class UserServiceImplTest {
     void testLinkUsers_whenInvalidToken_shouldThrowException() {
         String token = "invalidToken";
 
-        when(accountLinkerRepository.findById(token)).thenReturn(Optional.empty());
+        when(accountLinkerRepository.findByIdWithUserAndNotifications(token)).thenReturn(Optional.empty());
 
         assertThrows(NotExistingLinkerTokenException.class, () -> userService.linkUsers(token, 1L));
     }
@@ -166,7 +166,7 @@ class UserServiceImplTest {
         String token = "token";
         long sourceUserId = 2L;
 
-        when(accountLinkerRepository.findById(token)).thenReturn(Optional.empty());
+        when(accountLinkerRepository.findByIdWithUserAndNotifications(token)).thenReturn(Optional.empty());
 
 
         NotExistingLinkerTokenException exception = assertThrows(NotExistingLinkerTokenException.class,
@@ -184,7 +184,7 @@ class UserServiceImplTest {
 
         BasicUser targetUser = new BasicUser();
         AccountLinker accountLinker = new AccountLinker(token, targetUser);
-        when(accountLinkerRepository.findById(token)).thenReturn(Optional.of(accountLinker));
+        when(accountLinkerRepository.findByIdWithUserAndNotifications(token)).thenReturn(Optional.of(accountLinker));
         when(userRepository.findByIdWithGames(sourceUserId)).thenReturn(Optional.empty());
 
 
@@ -204,7 +204,7 @@ class UserServiceImplTest {
         BasicUser targetUser = new BasicUser();
         targetUser.setId(sourceUserId);
         AccountLinker accountLinker = new AccountLinker(token, targetUser);
-        when(accountLinkerRepository.findById(token)).thenReturn(Optional.of(accountLinker));
+        when(accountLinkerRepository.findByIdWithUserAndNotifications(token)).thenReturn(Optional.of(accountLinker));
 
 
         assertThrows(AccountAlreadyLinkedException.class, () -> userService.linkUsers(token, sourceUserId));
