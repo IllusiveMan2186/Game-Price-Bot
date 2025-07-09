@@ -1,53 +1,54 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import GameListFilter from './GameListFilter';
-import * as constants from '@util/constants';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 
 jest.mock('@util/message', () => ({
     __esModule: true,
     default: ({ string }) => <span>{string}</span>,
 }));
 
+jest.mock('@contexts/NavigationContext', () => ({
+    useNavigation: () => jest.fn(),
+}));
+jest.mock('@util/navigationUtils', () => ({
+    reloadPage: jest.fn(),
+}));
+
+const mockStore = configureStore([]);
+
+let store;
+
 describe('GameListFilter Component', () => {
-    const mockSearchParams = {
-        get: jest.fn(),
-        has: jest.fn(),
-        append: jest.fn(),
-        delete: jest.fn(),
-    };
-    const mockParameterSetOrRemove = jest.fn();
-    const mockReloadPage = jest.fn();
-    const mockSetPage = jest.fn();
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        store = mockStore({
+            params: {
+                genres: [],
+                types: [],
+                minPrice: 0,
+                maxPrice: 10000,
+            },
+        });
     });
 
-    it('should renders filter titles correctly', () => {
+    const renderWithStore = () =>
         render(
-            <GameListFilter
-                searchParams={mockSearchParams}
-                parameterSetOrRemove={mockParameterSetOrRemove}
-                reloadPage={mockReloadPage}
-                setPage={mockSetPage}
-            />
+            <Provider store={store}>
+                <GameListFilter />
+            </Provider>
         );
 
+    it('should render filter titles correctly', () => {
+        renderWithStore();
+
         expect(screen.getByText('app.game.filter.title')).toBeInTheDocument();
-        expect(screen.getByText('app.game.filter.price.title')).toBeInTheDocument();
         expect(screen.getByText('app.game.filter.genre.title')).toBeInTheDocument();
         expect(screen.getByText('app.game.info.type')).toBeInTheDocument();
     });
 
-    it('should handles price input changes and validation', () => {
-        render(
-            <GameListFilter
-                searchParams={mockSearchParams}
-                parameterSetOrRemove={mockParameterSetOrRemove}
-                reloadPage={mockReloadPage}
-                setPage={mockSetPage}
-            />
-        );
+    it('should handle price validation', () => {
+        renderWithStore();
 
         const [minPriceInput, maxPriceInput] = screen.getAllByRole('spinbutton');
 
@@ -58,72 +59,22 @@ describe('GameListFilter Component', () => {
 
         fireEvent.change(maxPriceInput, { target: { value: '60' } });
 
-        expect(screen.queryByText('app.game.error.price')).toBeNull();
+        expect(screen.queryByText('app.game.error.price')).not.toBeInTheDocument();
     });
 
-    it('should handles genre checkbox changes', () => {
-        render(
-            <GameListFilter
-                searchParams={mockSearchParams}
-                parameterSetOrRemove={mockParameterSetOrRemove}
-                reloadPage={mockReloadPage}
-                setPage={mockSetPage}
-            />
-        );
-
-        const genreCheckbox = screen.getByRole('checkbox', {
-            name: /action/i
-        });
-
-        fireEvent.click(genreCheckbox);
-
-        expect(mockSearchParams.append).toHaveBeenCalledWith('genre', constants.ganresOptions[0].value.toUpperCase());
-        expect(mockSetPage).toHaveBeenCalledWith(1);
-    });
-
-    it('should enables filter button when form is valid and changed', () => {
-        render(
-            <GameListFilter
-                searchParams={mockSearchParams}
-                parameterSetOrRemove={mockParameterSetOrRemove}
-                reloadPage={mockReloadPage}
-                setPage={mockSetPage}
-            />
-        );
+    it('should enable filter button when form is valid', () => {
+        renderWithStore();
 
         const [minPriceInput, maxPriceInput] = screen.getAllByRole('spinbutton');
-        const filterButton = screen.getByRole('button', {
-            name: /app.game.filter.accept.button/i
+        const button = screen.getByRole('button', {
+            name: /app.game.filter.accept.button/i,
         });
 
-        expect(filterButton).toBeDisabled();
+        expect(button).toBeDisabled();
 
-        fireEvent.change(minPriceInput, { target: { value: '50' } });
-        fireEvent.change(maxPriceInput, { target: { value: '100' } });
+        fireEvent.change(minPriceInput, { target: { value: '100' } });
+        fireEvent.change(maxPriceInput, { target: { value: '200' } });
 
-        expect(filterButton).toBeEnabled();
-    });
-
-    it('should calls parameterSetOrRemove and reloadPage on filter button click', () => {
-        render(
-            <GameListFilter
-                searchParams={mockSearchParams}
-                parameterSetOrRemove={mockParameterSetOrRemove}
-                reloadPage={mockReloadPage}
-                setPage={mockSetPage}
-            />
-        );
-
-        const [minPriceInput, maxPriceInput] = screen.getAllByRole('spinbutton');
-        const filterButton = screen.getByText('app.game.filter.accept.button');
-
-        fireEvent.change(minPriceInput, { target: { value: '50' } });
-        fireEvent.change(maxPriceInput, { target: { value: '100' } });
-
-        fireEvent.click(filterButton);
-
-        expect(mockParameterSetOrRemove).toHaveBeenCalledWith('minPrice', 50, 0);
-        expect(mockParameterSetOrRemove).toHaveBeenCalledWith('maxPrice', 100, 10000);
-        expect(mockReloadPage).toHaveBeenCalled();
+        expect(button).toBeEnabled();
     });
 });

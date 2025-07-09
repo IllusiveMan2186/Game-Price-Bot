@@ -21,9 +21,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Formula;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -61,6 +63,12 @@ public class Game {
     @JsonIgnore
     @ToString.Exclude
     private List<BasicUser> userList;
+
+    @Formula("(select min(gs.discount_price) from game_in_shop gs where gs.game_id = id)")
+    private BigDecimal minDiscountPriceForSort;
+
+    @Formula("(select max(gs.discount_price) from game_in_shop gs where gs.game_id = id)")
+    private BigDecimal maxDiscountPriceForSort;
 
     private boolean isFollowed;
 }

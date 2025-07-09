@@ -149,6 +149,9 @@ class GameRepositoryAdvancedImplTest {
 
         when(tq.getResultList()).thenReturn(games);
         when(countTq.getSingleResult()).thenReturn(totalRecords);
+
+        when(cq.select(root)).thenReturn(cq);
+        when(cq.distinct(true)).thenReturn(cq);
     }
 }
 

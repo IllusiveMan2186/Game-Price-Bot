@@ -21,6 +21,7 @@ import org.hibernate.search.mapper.orm.Search;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -65,15 +66,24 @@ public class GameRepositoryAdvancedImpl implements GameRepositoryAdvance {
         return getPageResult(query, countQuery, pageable);
     }
 
-    private CriteriaQuery<Game> buildSelectQuery(CriteriaBuilder cb,
-                                                 GameRepositorySearchFilter filter,
-                                                 Pageable pageable) {
+    private CriteriaQuery<Game> buildSelectQuery(
+            CriteriaBuilder cb,
+            GameRepositorySearchFilter filter,
+            Pageable pageable
+    ) {
         CriteriaQuery<Game> query = cb.createQuery(Game.class);
         Root<Game> root = query.from(Game.class);
+
+        root.fetch("genres", JoinType.LEFT);
+        root.fetch(GAME_IN_SHOP, JoinType.LEFT);
         Join<Game, GameInShop> shopJoin = root.join(GAME_IN_SHOP, JoinType.LEFT);
 
         List<Predicate> predicates = predicateBuilder.buildFilters(cb, root, shopJoin, filter);
-        query.where(cb.and(predicates.toArray(new Predicate[0])));
+
+        query.select(root)
+                .distinct(true)
+                .where(cb.and(predicates.toArray(new Predicate[0])));
+
         gameSortBuilder.applySorting(query, cb, root, pageable);
 
         return query;
