@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.gpb"
-version = "1.3.3"
+version = "1.3.4"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 // Dependency versions

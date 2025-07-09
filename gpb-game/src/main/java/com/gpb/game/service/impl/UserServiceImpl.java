@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BasicUser linkUsers(String token, long sourceUserId) {
-        AccountLinker connector = accountLinkerRepository.findById(token)
+        AccountLinker connector = accountLinkerRepository.findByIdWithUserAndNotifications(token)
                 .orElseThrow(NotExistingLinkerTokenException::new);
         BasicUser targetUser = connector.getUser();
 
