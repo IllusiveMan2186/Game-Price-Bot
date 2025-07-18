@@ -31,4 +31,9 @@ public interface RefreshTokenService {
      * @return the created refresh token
      */
     RefreshToken createToken(RefreshToken refreshToken);
+
+    /**
+     * Remove expired token
+     */
+    void deleteExpiredTokens();
 }

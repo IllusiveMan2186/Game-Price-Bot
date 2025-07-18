@@ -215,6 +215,7 @@ class AuthenticationControllerTest {
 
     @Test
     void logout_shouldSetExpiredTokenCookie() {
+        String refreshToken = "token";
         HttpServletResponse response = mock(HttpServletResponse.class);
         Cookie cookie = new Cookie(Constants.REFRESH_TOKEN_COOKIES_ATTRIBUTE, null);
         cookie.setHttpOnly(true);
@@ -223,9 +224,10 @@ class AuthenticationControllerTest {
         cookie.setMaxAge(0);
 
 
-        controller.logout(response);
+        controller.logout(refreshToken, response);
 
 
         verify(response, times(1)).addCookie(cookie);
+        verify(refreshTokenService, times(1)).removeRefreshToken(refreshToken);
     }
 }

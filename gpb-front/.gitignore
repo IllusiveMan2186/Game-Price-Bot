@@ -11,6 +11,7 @@ public/env.js
 
 # testing
 /coverage
+/test-results
 
 # production
 /build
