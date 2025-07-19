@@ -31,8 +31,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     public RefreshToken createToken(RefreshToken refreshToken) {
         log.debug("Create new refresh token");
-        refreshTokenRepository.deleteByUserId(refreshToken.getUser().getId());
-        refreshTokenRepository.flush();
         return refreshTokenRepository.save(refreshToken);
+    }
+
+    @Override
+    public void deleteExpiredTokens() {
+        log.trace("Remove expired tokens");
+        refreshTokenRepository.deleteExpiredTokens();
     }
 }
