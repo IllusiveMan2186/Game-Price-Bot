@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -154,10 +155,12 @@ public class AuthenticationController {
      */
     @PostMapping("/logout-user")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void logout(final HttpServletResponse response) {
+    public void logout(@CookieValue(name = "refresh-token", required = false) String refreshToken,
+                       final HttpServletResponse response) {
         log.info("Processing user logout request");
         SecurityContextHolder.clearContext();
         response.addCookie(invalidateAuthCookie());
+        refreshTokenService.removeRefreshToken(refreshToken);
         log.debug("User successfully logged out");
     }
 

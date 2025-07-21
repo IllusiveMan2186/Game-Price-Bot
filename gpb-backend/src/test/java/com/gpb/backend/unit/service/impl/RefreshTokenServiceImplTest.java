@@ -52,8 +52,7 @@ public class RefreshTokenServiceImplTest {
     @Test
     void testCreateToken_whenSuccess_shouldRemoveUserTokenAndSave() {
         String token = "token";
-        long userId = 1L;
-        WebUser user = WebUser.builder().id(userId).build();
+        WebUser user = WebUser.builder().build();
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(token)
                 .user(user)
@@ -66,7 +65,14 @@ public class RefreshTokenServiceImplTest {
 
 
         assertEquals(result, newToken);
-        verify(refreshTokenRepository).deleteByUserId(userId);
         verify(refreshTokenRepository).save(refreshToken);
+    }
+
+    @Test
+    void testDeleteExpiredTokens_whenSuccess_shouldInvokeRepositoryMethod() {
+        refreshTokenService.deleteExpiredTokens();
+
+
+        verify(refreshTokenRepository).deleteExpiredTokens();
     }
 }

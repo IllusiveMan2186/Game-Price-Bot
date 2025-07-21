@@ -1,0 +1,2 @@
+ALTER TABLE refresh_token
+DROP CONSTRAINT uq_refresh_token_user;
